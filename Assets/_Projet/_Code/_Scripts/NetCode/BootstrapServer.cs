@@ -2,8 +2,6 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
-using UnityEngine.LightTransport;
-
 public class BootstrapServer : ClientServerBootstrap
 {
 #if UNITY_SERVER
