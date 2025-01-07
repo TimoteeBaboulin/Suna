@@ -33,7 +33,7 @@ public partial struct ServerConnectionListener : ISystem
         {
             commandBuffer.AddComponent<NetworkStreamInGame>(reqSrc.ValueRO.SourceConnection);
             NetworkId networkId = networkIdFromEntity[reqSrc.ValueRO.SourceConnection];
-            Debug.Log($"{networkId.Value}' connected");
+            Debug.Log($"{networkId.Value} connected to {worldName}");
             commandBuffer.DestroyEntity(reqEntity);
         }
         commandBuffer.Playback(state.EntityManager);

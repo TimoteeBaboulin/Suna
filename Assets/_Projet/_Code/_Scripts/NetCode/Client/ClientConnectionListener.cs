@@ -21,13 +21,13 @@ public partial struct ClientConnectionListener : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithEntityAccess().WithNone<NetworkStreamInGame>())
         {
             commandBuffer.AddComponent<NetworkStreamInGame>(entity);
-            var req = commandBuffer.CreateEntity();
-            commandBuffer.AddComponent<GoInGameRequest>(req);
-            commandBuffer.AddComponent(req, new SendRpcCommandRequest { TargetConnection = entity });
+            Entity tempEntity = commandBuffer.CreateEntity();
+            commandBuffer.AddComponent<GoInGameRequest>(tempEntity);
+            commandBuffer.AddComponent(tempEntity, new SendRpcCommandRequest { TargetConnection = entity });
         }
         commandBuffer.Playback(state.EntityManager);
     }
