@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: PistolTest
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 0}
+  weaponName: 
+  UIImage: {fileID: 0}
+  price: 0
+  type: 0
+  side: 0
+  damage: 0
+  range: 0
+  fireRate: 0
+  ergonomics: 0
+  reloadSpeed: 0
+  fastReloadSpeed: 0
+  accuracy: 0
+  dmgFallOff: 0
+  nbMagazine: 0
+  magazineCapacity: 0
+  scope: {fileID: 0}
+  handle: {fileID: 0}
+  silencer: {fileID: 0}
+  thorax: 0
+  stomach: 0
+  legs_Arms: 0
+  head: 0
+  sprayPattern: {fileID: 0}
+  ammoType: {fileID: 0}
