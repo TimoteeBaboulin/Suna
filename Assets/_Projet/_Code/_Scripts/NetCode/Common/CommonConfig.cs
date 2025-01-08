@@ -2,9 +2,9 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
-public class BootstrapServer : ClientServerBootstrap
+public class CommonConfig : ClientServerBootstrap
 {
-#if UNITY_SERVER
+#if UNITY_SERVER && !UNITY_EDITOR
     public override bool Initialize(string defaultWorldName)
     {
         AutoConnectPort = 7979;
@@ -18,6 +18,13 @@ public class BootstrapServer : ClientServerBootstrap
         //}
 
         return true;
+    }
+#endif
+
+#if UNITY_CLIENT || UNITY_EDITOR
+    public override bool Initialize(string defaultWorldName)
+    {
+        return false;
     }
 #endif
 }
