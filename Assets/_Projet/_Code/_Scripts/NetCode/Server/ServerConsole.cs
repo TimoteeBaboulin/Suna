@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class ServerConsol
+public class ServerConsole
 {
     public enum LogType
     {
