@@ -21,7 +21,7 @@ public partial struct ServerConnectionListener : ISystem
         networkIdFromEntity = state.GetComponentLookup<NetworkId>(true);
     }
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         FixedString128Bytes worldName = state.WorldUnmanaged.Name;
@@ -33,8 +33,8 @@ public partial struct ServerConnectionListener : ISystem
         {
             commandBuffer.AddComponent<NetworkStreamInGame>(id.ValueRO.SourceConnection);
             NetworkId networkId = networkIdFromEntity[id.ValueRO.SourceConnection];
-            Debug.Log($"{networkId.Value} connected to {worldName}");
-            //ServerConsole.Log(ServerConsole.LogType.Info, $"{networkId.Value} connected to {worldName}");
+            //Debug.Log($"{networkId.Value} connected to {worldName}");
+            ServerConsole.Log(ServerConsole.LogType.Info, $"{networkId.Value} connected to {worldName}");
             commandBuffer.DestroyEntity(entity);
         }
         commandBuffer.Playback(state.EntityManager);
