@@ -17,7 +17,7 @@ public class HandleData : ScriptableObject
 
     [Header("Operating Data")]
 
-    [Label("Reload Speed Reduce %"), Range(0, 1)]
+    [Tooltip("percent"), Range(0, 1)]
     public float reloadSpeedReduce;
 
     [Tooltip("percent"), Range(0, 1)]
