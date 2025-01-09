@@ -7,16 +7,18 @@ public class MeleeWeaponData : ScriptableObject
     [Header("Prefab")]
     public GameObject prefab;
 
-    [Header("Info Data")]
-    public string weaponName;
+    [Header("Stuff infos")]
+    public string entityName;
     public Image UIImage;
     public UsableEquipmentType type;
     public TeamSideType side;
 
-    [Header("Operating Data")]
+    [Header("Attack")]
     public float damage;
+    public float range;
+
+    [Header("Melee")]
     public float strongBlowDmg;
     public float backStabDmg;
-    public float range;
     public float strikeRate;
 }

@@ -7,14 +7,14 @@ public class ProjectileData : ScriptableObject
     [Header("Prefab")]
     public GameObject prefab;
 
-    [Header("Info Data")]
-    public string weaponName;
+    [Header("Stuff infos")]
+    public string entityName;
     public Image UIImage;
     public int price;
     public UsableEquipmentType type;
     public TeamSideType side;
 
-    [Header("Operating Data")]
+    [Header("Health")]
     public float impactDamage;
     public float effectRange;
     public float lowThrowRange;
@@ -22,7 +22,10 @@ public class ProjectileData : ScriptableObject
     public float hightThrowRange;
     public float heightCurve;
     public float timerBeforeActive;
+    public float knockbackForceOnKill;
+    public float bounceForce;
+    public bool activeWhenCollid;
 
-    [Header("To be defined")]
+    [Header("To be defined...")]
     public GameObject activeEffect;
 }

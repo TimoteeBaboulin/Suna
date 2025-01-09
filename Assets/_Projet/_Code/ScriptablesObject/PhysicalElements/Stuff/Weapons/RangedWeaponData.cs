@@ -9,20 +9,21 @@ public class RangedWeaponData : ScriptableObject
     [Header("Prefab")]
     public GameObject prefab;
 
-    [Header("Info Data")]
-    public string weaponName;
+    [Header("Stuff infos")]
+    public string entityName;
     public Image UIImage;
     public int price;
     public UsableEquipmentType type;
     public TeamSideType side;
 
-    [Header("Operating Data")]
+    [Header("Attack")]
+    [Tooltip("in life points")]
+    public float damage;
+    [Tooltip("in meter")]
+    public float range;
 
     [Tooltip("two scalars that can be used to control \nthe amplitude spray pattern functions")] 
     public Vector2 recoil;
-
-    [Tooltip("in life points")]         
-    public float damage;
 
     [Tooltip("in minutes of angle")]    
     public float spread;
@@ -51,14 +52,13 @@ public class RangedWeaponData : ScriptableObject
     [Tooltip("The coefficient of modification \nof movement speed while aiming (scalar)")] 
     public float coefModifMoveSpeedAiming;
 
-    [Tooltip("in meter")]
-    public float range;
-
     [Tooltip("in seconde")]
     public float reloadSpeed;
 
     [Tooltip("in seconde")]
     public float fastReloadSpeed;
+
+    public float knockbackForceOnKill;
 
     public int nbMagazine;
     public int magazineCapacity;
@@ -76,7 +76,7 @@ public class RangedWeaponData : ScriptableObject
     public float legs_Arms;
     public float head;
 
-    [Header("To be defined")]
+    [Header("To be defined...")]
     //public GameObject sprayPattern;
     public GameObject ammoType;
 
