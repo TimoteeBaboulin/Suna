@@ -16,14 +16,16 @@ public class RangedWeaponData : ScriptableObject
     public UsableEquipmentType type;
     public TeamSideType side;
 
-    [Header("Attack")]
+    [Header("Ranged Weapon Data")]
+
+    [Tooltip("two scalars that can be used to control \nthe amplitude spray pattern functions")]
+    public Vector2 recoil;
+
     [Tooltip("in life points")]
     public float damage;
+
     [Tooltip("in meter")]
     public float range;
-
-    [Tooltip("two scalars that can be used to control \nthe amplitude spray pattern functions")] 
-    public Vector2 recoil;
 
     [Tooltip("in minutes of angle")]    
     public float spread;
@@ -57,7 +59,8 @@ public class RangedWeaponData : ScriptableObject
 
     [Tooltip("in seconde")]
     public float fastReloadSpeed;
-
+    
+    [Tooltip("Propulsion of the enemy ragdoll when it dies")]
     public float knockbackForceOnKill;
 
     public int nbMagazine;
