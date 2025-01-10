@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Entities.Serialization;
 using UnityEngine;
 
-public struct PrefabComponent : IComponentData
+public struct PrefabReferenceComponent : IComponentData
 {
     public EntityPrefabReference prefab;
 }
@@ -93,14 +93,19 @@ public struct RangedWeaponComponent : IComponentData
 
 public struct ModifiersComponent : IComponentData
 {
-    public Entity scope;
-    public Entity handle;
-    public Entity cross;
-    public Entity silencer;
-    public Entity magazine;
+    public EntityPrefabReference scope;
+    public EntityPrefabReference handle;
+    public EntityPrefabReference cross;
+    public EntityPrefabReference silencer;
+    public EntityPrefabReference magazine;
 }
 
-public struct CorpsDmgComponent : IComponentData
+public struct ModifierPrefabComponent : IComponentData
+{
+    public Entity ModifierPrefab;
+}
+
+public struct OverrideCorpsDmgComponent : IComponentData
 {
     public float thorax;
     public float stomach;
@@ -110,54 +115,69 @@ public struct CorpsDmgComponent : IComponentData
 
 public class RangedWeaponAuthoring : MonoBehaviour
 {
-    [Header("Common Data")]
+    [Header("Weapon Data")]
     public RangedWeaponData commonData;
 
     public class Baker : Baker<RangedWeaponAuthoring>
     {
         public override void Bake(RangedWeaponAuthoring authoring)
         {
-            DependsOn(authoring.commonData);
+            RangedWeaponData d = authoring.commonData;
+            DependsOn(d);
 
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            AddComponent(entity, new PrefabComponent
+            AddComponent(entity, new PrefabReferenceComponent
             {
-                prefab = new EntityPrefabReference(authoring.commonData.prefab)
+                prefab = new EntityPrefabReference(d.prefab)
             });
 
             AddComponent(entity, new RangedWeaponComponent
             {
-                recoil = authoring.commonData.recoil,
-                damage = authoring.commonData.damage,
-                range = authoring.commonData.range,
-                spread = authoring.commonData.spread,
-                spreadAiming = authoring.commonData.spreadAiming,
-                coefSpray = authoring.commonData.coefSpray,
-                coefSprayAiming = authoring.commonData.coefSprayAiming,
-                ergonomics = authoring.commonData.ergonomics,
-                roundsPerMin = authoring.commonData.roundsPerMin,
-                dmgFallOff = authoring.commonData.dmgFallOff,
-                coefModifMoveSpeed = authoring.commonData.coefModifMoveSpeed,
-                coefModifMoveSpeedAiming = authoring.commonData.coefModifMoveSpeedAiming,
-                reloadSpeed = authoring.commonData.reloadSpeed,
-                fastReloadSpeed = authoring.commonData.fastReloadSpeed,
-                knockbackForceOnKill = authoring.commonData.knockbackForceOnKill,
-                nbMagazine = authoring.commonData.nbMagazine,
-                magazineCapacity = authoring.commonData.magazineCapacity,
+                recoil = d.recoil,
+                damage = d.damage,
+                range = d.range,
+                spread = d.spread,
+                spreadAiming = d.spreadAiming,
+                coefSpray = d.coefSpray,
+                coefSprayAiming = d.coefSprayAiming,
+                ergonomics = d.ergonomics,
+                roundsPerMin = d.roundsPerMin,
+                dmgFallOff = d.dmgFallOff,
+                coefModifMoveSpeed = d.coefModifMoveSpeed,
+                coefModifMoveSpeedAiming = d.coefModifMoveSpeedAiming,
+                reloadSpeed = d.reloadSpeed,
+                fastReloadSpeed = d.fastReloadSpeed,
+                knockbackForceOnKill = d.knockbackForceOnKill,
+                nbMagazine = d.nbMagazine,
+                magazineCapacity = d.magazineCapacity,
             });
 
+            //Warning : Some Modifiers prefabs can be null
             AddComponent(entity, new ModifiersComponent
             {
-                //scope = authoring.commonData.scope,
-                //handle = authoring.commonData.handle,
-                //cross = authoring.commonData.cross,
-                //silencer = authoring.commonData.silencer,
-                //magazine = authoring.commonData.magazine
+                //scope = d.scope.prefab != null ? GetEntity(d.scope.prefab, TransformUsageFlags.None) : Entity.Null,
+                //handle = d.handle.prefab != null ? GetEntity(d.handle.prefab, TransformUsageFlags.None) : Entity.Null,
+                //cross = d.cross.prefab != null ? GetEntity(d.cross.prefab, TransformUsageFlags.None) : Entity.Null,
+                //silencer = d.silencer.prefab != null ? GetEntity(d.silencer.prefab, TransformUsageFlags.None) : Entity.Null,
+                //magazine = d.magazine.prefab != null ? GetEntity(d.magazine.prefab, TransformUsageFlags.None) : Entity.Null,
 
-                //        if (authoring.commonData.scope != null)
-                //scope = GetEntity(authoring.commonData.scope.prefab, TransformUsageFlags.Dynamic),
+                //scope = new EntityPrefabReference(d.scope.prefab != null ? d.scope.prefab : null),
+                //handle = new EntityPrefabReference(d.handle.prefab != null ? d.handle.prefab : null),
+                //cross = new EntityPrefabReference(d.cross.prefab != null ? d.cross.prefab : null),
+                //silencer = new EntityPrefabReference(d.silencer.prefab != null ? d.silencer.prefab : null),
+                //magazine = new EntityPrefabReference(d.magazine.prefab != null ? d.magazine.prefab : null),
             });
+
+            AddComponent(entity, new OverrideCorpsDmgComponent
+            {
+                thorax = d.thorax,
+                stomach = d.stomach,
+                legs_Arms = d.stomach,
+                head = d.head
+            });
+
+            //Component
         }
     }
 }
