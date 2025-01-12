@@ -15,8 +15,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
 
     public enum RoleType
     {
-        ServerClient = 0, 
-        Server = 1, 
+        ServerClient = 0,
+        Server = 1,
         Client = 2
     }
 
@@ -28,26 +28,45 @@ public class ConnectionManager : Singleton<ConnectionManager>
 
     #region Properties
     public RoleType Role { get => _role; set => _role = value; }
-    public World Server { get => _serverWorld; set => _serverWorld = value; }
     #endregion
 
     #region Messages
     private void Start()
     {
-        if (Application.isEditor)
+        //if (Application.isEditor)
+        //{
+        //    if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
+        //    {
+        //        _role = RoleType.ServerClient;
+        //    }
+        //    else
+        //    {
+        //        _role = RoleType.Client;
+        //    }
+
+        //}
+        ////else if (Application.platform == RuntimePlatform.WindowsServer)
+        ////{
+        ////}
+        ////else
+        ////{
+
+        ////}
+
+        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         {
             _role = RoleType.ServerClient;
         }
-        else if (Application.platform == RuntimePlatform.WindowsServer)
+        else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
         {
             _role = RoleType.Server;
         }
-        else
+        else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Client)
         {
             _role = RoleType.Client;
         }
 
-        Debug.Log($"Role : {_role}");
+        Debug.Log($" Role local : {_role} \n Role Global {ClientServerBootstrap.RequestedPlayType}");
     }
     #endregion
 
@@ -57,6 +76,11 @@ public class ConnectionManager : Singleton<ConnectionManager>
         if (_role == RoleType.ServerClient || _role == RoleType.Client)
         {
             _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+        }
+
+        if (_role == RoleType.ServerClient)
+        {
+            _serverWorld = ClientServerBootstrap.ServerWorld;
         }
 
         DestroySimulationWorld();
