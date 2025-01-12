@@ -79,7 +79,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
     public void CreateServer()
     {
         _role = RoleType.Server;
-        _serverWorld = ClientServerBootstrap.CreateClientWorld("ServerWorld");
+        _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
     }
     #endregion
 
