@@ -18,10 +18,19 @@ public partial class ClientSystem : SystemBase
     }
     protected override void OnUpdate()
     {
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ServerMessageRpcCommand>>().WithEntityAccess())
+        {
+            ServerConsole.Log(ServerConsole.LogType.Info, $"message to client {command.ValueRO.message}");
+            commandBuffer.DestroyEntity(entity);
+        }
+        
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
         }
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
     }
 
     public void SendMessageRpc(string text, World world)
