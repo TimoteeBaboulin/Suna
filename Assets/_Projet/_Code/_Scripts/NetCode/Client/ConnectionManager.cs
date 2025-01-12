@@ -26,33 +26,10 @@ public class ConnectionManager : Singleton<ConnectionManager>
     private World _clientWorld = null;
     #endregion
 
-    #region Properties
-    public RoleType Role { get => _role; set => _role = value; }
-    #endregion
 
     #region Messages
     private void Start()
     {
-        //if (Application.isEditor)
-        //{
-        //    if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-        //    {
-        //        _role = RoleType.ServerClient;
-        //    }
-        //    else
-        //    {
-        //        _role = RoleType.Client;
-        //    }
-
-        //}
-        ////else if (Application.platform == RuntimePlatform.WindowsServer)
-        ////{
-        ////}
-        ////else
-        ////{
-
-        ////}
-
         if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         {
             _role = RoleType.ServerClient;
@@ -73,6 +50,12 @@ public class ConnectionManager : Singleton<ConnectionManager>
     #region Public Methods
     public void Connect()
     {
+        if (_clientWorld != null)
+        {
+            Debug.Log($"{_clientWorld} already created!");
+            return;
+        }
+
         if (_role == RoleType.ServerClient || _role == RoleType.Client)
         {
             _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
