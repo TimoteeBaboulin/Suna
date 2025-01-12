@@ -26,6 +26,9 @@ public class ConnectionManager : Singleton<ConnectionManager>
     private World _clientWorld = null;
     #endregion
 
+    #region Properties
+    public World Server => _serverWorld;
+    #endregion
 
     #region Messages
     private void Start()
