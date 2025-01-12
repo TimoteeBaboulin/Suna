@@ -28,6 +28,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
 
     #region Properties
     public World Server => _serverWorld;
+    public World Client => _clientWorld;
     #endregion
 
     #region Messages
@@ -46,7 +47,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
             _role = RoleType.Client;
         }
 
-        Debug.Log($" Role local : {_role} \n Role Global {ClientServerBootstrap.RequestedPlayType}");
+        Debug.Log($" Role : {_role}");
     }
     #endregion
 
