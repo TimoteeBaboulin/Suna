@@ -44,8 +44,9 @@ public class ConnectionManager : Singleton<ConnectionManager>
     #endregion
 
     #region Messages
-    private void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         {
             _role = RoleType.ServerClient;
