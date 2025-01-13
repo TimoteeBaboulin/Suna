@@ -1,9 +1,11 @@
+using System.Collections;
 using System.Net;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
+using Unity.Scenes;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -85,6 +87,18 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_clientWorld.EntityManager, connectionEndpoint);
             }
         }
+
+        SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        if (_serverWorld != null)
+        {
+            StartCoroutine(LoadSubScenes(subScenes, _serverWorld));
+        }
+
+        if (_clientWorld != null)
+        {
+            StartCoroutine(LoadSubScenes(subScenes, _clientWorld));
+        }
     }
 
     public void CreateServer()
@@ -103,6 +117,26 @@ public class ConnectionManager : Singleton<ConnectionManager>
             {
                 world.Dispose();
                 break;
+            }
+        }
+    }
+
+    private IEnumerator LoadSubScenes(SubScene[] subScenes, World world)
+    {
+        while (!world.IsCreated)
+        {
+            yield return null;
+        }
+        if (subScenes != null)
+        {
+            for (int i = 0; i < subScenes.Length; i++)
+            {
+                SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters() { Flags = SceneLoadFlags.BlockOnStreamIn };
+                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value), loadParameters);
+                while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
+                {
+                    world.Update();
+                }
             }
         }
     }
