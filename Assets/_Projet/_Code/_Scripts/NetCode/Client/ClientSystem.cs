@@ -36,10 +36,11 @@ public partial class ClientSystem : SystemBase
             SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
         }
 
-        //if ((Keyboard.current.wKey.wasPressedThisFrame))
-        //{
-        //    SpawnUnitRpc(ConnectionManager.Instance.Client);
-        //}
+        if ((Keyboard.current.wKey.wasPressedThisFrame))
+        {
+            SpawnUnitRpc(ConnectionManager.Instance.Client);
+            Debug.Log("W pressed");
+        }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
