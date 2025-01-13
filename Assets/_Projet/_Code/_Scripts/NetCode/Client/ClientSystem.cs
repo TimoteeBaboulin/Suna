@@ -14,6 +14,11 @@ public struct SpawnUnitRpcCommand : IRpcCommand
 
 }
 
+public struct ShootRcpCommand : IRpcCommand
+{
+
+}
+
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class ClientSystem : SystemBase
 {
@@ -40,6 +45,13 @@ public partial class ClientSystem : SystemBase
             SpawnUnitRpc(ConnectionManager.Instance.Client);
             Debug.Log("W pressed");
         }
+
+        if (Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            ShootRcp();
+            Debug.Log("Client shoot");
+        }
+
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
@@ -64,5 +76,10 @@ public partial class ClientSystem : SystemBase
             return;
         }
         world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(SpawnUnitRpcCommand));
+    }
+
+    public void ShootRcp()
+    {
+
     }
 }
