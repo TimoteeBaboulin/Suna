@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
+using UnityEditor.PackageManager;
 using UnityEngine;
+using Unity.Mathematics;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -17,11 +20,19 @@ public struct InitializedClient : IComponentData
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class ServerSystem : SystemBase
 {
+
+    private ComponentLookup<NetworkId> _clients;
+
+    protected override void OnCreate()
+    {
+        _clients = GetComponentLookup<NetworkId>(true);
+    }
     protected override void OnUpdate()
     {
+        _clients.Update(this);
+
         FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-
         //Message from all clients to server
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
         {
@@ -29,7 +40,30 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
+        //Handle playerTemp prefab from client to server
+        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnUnitRpcCommand>>().WithEntityAccess())
+        {
+            PrefabsData prefabs;
+            if (SystemAPI.TryGetSingleton<PrefabsData>(out prefabs) && prefabs.prefab != null)
+            {
+                Entity unit = commandBuffer.Instantiate(prefabs.prefab);
+                commandBuffer.SetComponent(unit, new LocalTransform()
+                {
+                    Position = new float3(UnityEngine.Random.Range(-10f,10f), 0, UnityEngine.Random.Range(-10f, 10f)),
+                    Rotation = Quaternion.identity,
+                    Scale = 1.0f
+                });
 
+                //Set owner of prefabs to client otherwise server is considered the owner
+                NetworkId networkId = _clients[request.ValueRO.SourceConnection];
+                commandBuffer.SetComponent(unit, new GhostOwner()
+                {
+                    NetworkId = networkId.Value
+                });
+
+                commandBuffer.DestroyEntity(entity);
+            }
+        }
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
             commandBuffer.AddComponent<InitializedClient>(entity);

@@ -3,10 +3,16 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Collections;
 using UnityEngine.InputSystem;
+using UnityEngine.LightTransport;
 
 public struct ClientMessageRpcCommand : IRpcCommand
 {
     public FixedString64Bytes message;
+}
+
+public struct SpawnUnitRpcCommand : IRpcCommand
+{
+
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -29,6 +35,11 @@ public partial class ClientSystem : SystemBase
         {
             SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
         }
+
+        if ((Keyboard.current.wKey.wasPressedThisFrame))
+        {
+            SpawnUnitRpc(ConnectionManager.Instance.Client);
+        }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
@@ -44,6 +55,14 @@ public partial class ClientSystem : SystemBase
         {
             message = text
         });
+    }
 
+    public void SpawnUnitRpc(World world)
+    {
+        if (world == null || !world.IsCreated)
+        {
+            return;
+        }
+        world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(SpawnUnitRpcCommand));
     }
 }
