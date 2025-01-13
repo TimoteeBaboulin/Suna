@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Net;
+using TMPro;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -19,7 +20,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
     private ushort _localPort = 7979;
 
     //TEMP
-    [SerializeField] private Canvas loginCanva;
+    [SerializeField] private Button connectionButton;
+    [SerializeField] private TMP_Text connectionInfoText;
 
     public enum RoleType
     {
@@ -54,14 +56,16 @@ public class ConnectionManager : Singleton<ConnectionManager>
         {
             _role = RoleType.Client;
         }
-
-        Debug.Log($" Role : {_role}");
+        //TEMP
+        connectionInfoText.enabled = false;
     }
     #endregion
 
     #region Public Methods
     public void Connect()
     {
+        //TEMP
+        connectionInfoText.enabled = true;
         if (_clientWorld != null)
         {
             Debug.Log($"{_clientWorld} already created!");
@@ -109,7 +113,11 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 using EntityQuery networkDriverQuery = _clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_clientWorld.EntityManager, connectionEndpoint);
             }
+            
+            connectionInfoText.text = $"IP : {ip}\nPort : {port} \nRole : {_role}";
         }
+
+        Debug.Log($" Role : {_role}");
 
         SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
@@ -122,9 +130,10 @@ public class ConnectionManager : Singleton<ConnectionManager>
         {
             StartCoroutine(LoadSubScenes(subScenes, _clientWorld));
         }
-
-        loginCanva.enabled = false;
+        connectionButton.enabled = false;
+        connectionButton.gameObject.SetActive(false);
     }
+
 
     public void CreateServer()
     {

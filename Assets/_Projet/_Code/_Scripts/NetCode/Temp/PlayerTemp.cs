@@ -1,5 +1,6 @@
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerTemp : MonoBehaviour
 {
