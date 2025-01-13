@@ -15,6 +15,9 @@ public class ConnectionManager : Singleton<ConnectionManager>
     [SerializeField] private string _ip = "127.0.0.1";
     [SerializeField] private ushort _port = 7979;
 
+    private string _localIp = "127.0.0.1";
+    private ushort _localPort = 7979;
+
     //TEMP
     [SerializeField] private Canvas loginCanva;
 
@@ -70,9 +73,9 @@ public class ConnectionManager : Singleton<ConnectionManager>
             _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
         }
 
-        if (_role == RoleType.ServerClient)
+        if (_role == RoleType.ServerClient && Application.isEditor)
         {
-            _serverWorld = ClientServerBootstrap.ServerWorld;
+            _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
         }
 
         DestroySimulationWorld();
@@ -80,11 +83,28 @@ public class ConnectionManager : Singleton<ConnectionManager>
         if (_serverWorld != null)
         {
             World.DefaultGameObjectInjectionWorld = _serverWorld;
+
+            NetworkEndpoint serverEndPoint = NetworkEndpoint.AnyIpv4.WithPort(_localPort);
+            {
+                using EntityQuery networkDriverQuery = _serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+                networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(serverEndPoint);
+            }
         }
-        else if (_clientWorld != null)
+
+        if (_clientWorld != null)
         {
             World.DefaultGameObjectInjectionWorld = _clientWorld;
-            NetworkEndpoint connectionEndpoint = NetworkEndpoint.Parse(_ip, _port);
+
+            string ip = _ip;
+            ushort port = _port;
+
+            if (_role == RoleType.ServerClient)
+            {
+                ip = _localIp;
+                port = _localPort;
+            }
+
+            NetworkEndpoint connectionEndpoint = NetworkEndpoint.Parse(ip, port);
             {
                 using EntityQuery networkDriverQuery = _clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_clientWorld.EntityManager, connectionEndpoint);
