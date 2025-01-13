@@ -1,0 +1,57 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "154",
+  "SoundBanks": [
+   {
+    "Id": "187290962",
+    "Type": "User",
+    "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
+    "Language": "SFX",
+    "Hash": "{38306D27-3260-25B5-2B79-21687429956B}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
+    "ShortName": "DefaultBank",
+    "Path": "DefaultBank.bnk",
+    "Media": [
+     {
+      "Id": "612258208",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "That Person's Name Is   Bravely Default OST.wav",
+      "CachePath": "56/{56AACBAB-372B-1291-E6A0-970043C86FBE}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "202194903",
+      "Name": "Music_Play",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music_Play",
+      "GUID": "{3EBA5C8C-4553-482C-90E4-A03692DA77AE}",
+      "DurationType": "OneShot",
+      "DurationMin": "338.2335",
+      "DurationMax": "338.2335",
+      "MediaRefs": [
+       {
+        "Id": "612258208"
+       }
+      ]
+     },
+     {
+      "Id": "3227181061",
+      "Name": "Music_Stop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music_Stop",
+      "GUID": "{ED12738B-57AB-4F92-9E1B-85F324984FA9}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{A92DA103-0D33-5F02-8E88-7356B353D374}"
+ }
+}

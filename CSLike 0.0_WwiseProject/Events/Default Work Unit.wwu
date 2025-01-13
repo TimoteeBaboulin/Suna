@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" SchemaVersion="123">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Music_Play" ID="{3EBA5C8C-4553-482C-90E4-A03692DA77AE}">
+					<ChildrenList>
+						<Action Name="" ID="{CC22E66D-1DAA-40F5-BDF4-D282DEF8BE49}" ShortID="62752791">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="That Person's Name Is   Bravely Default OST" ID="{5900C41B-8BB6-457C-AE06-CAAF40839D4A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Music_Stop" ID="{ED12738B-57AB-4F92-9E1B-85F324984FA9}">
+					<ChildrenList>
+						<Action Name="" ID="{77E20F8A-8E5F-42BB-8563-CF65F4D82C02}" ShortID="388070052">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="That Person's Name Is   Bravely Default OST" ID="{5900C41B-8BB6-457C-AE06-CAAF40839D4A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>
