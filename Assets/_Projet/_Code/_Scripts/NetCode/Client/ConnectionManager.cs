@@ -15,6 +15,9 @@ public class ConnectionManager : Singleton<ConnectionManager>
     [SerializeField] private string _ip = "127.0.0.1";
     [SerializeField] private ushort _port = 7979;
 
+    //TEMP
+    [SerializeField] private Canvas loginCanva;
+
     public enum RoleType
     {
         ServerClient = 0,
@@ -99,6 +102,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
         {
             StartCoroutine(LoadSubScenes(subScenes, _clientWorld));
         }
+
+        loginCanva.enabled = false;
     }
 
     public void CreateServer()
