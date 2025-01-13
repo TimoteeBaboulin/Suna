@@ -69,6 +69,12 @@ public class RangedWeaponAuthoring : MonoBehaviour
             //Warning : Some Modifiers prefabs can be null
             AddComponent(entity, new ModifiersComponent
             {
+                //scope = d.scope.prefab != null ? new EntityPrefabReference(d.scope.prefab) : default,
+                //handle = d.handle.prefab != null ? new EntityPrefabReference(d.handle.prefab) : default,
+                //cross = d.cross.prefab != null ? new EntityPrefabReference(d.cross.prefab) : default,
+                //silencer = d.silencer.prefab != null ? new EntityPrefabReference(d.silencer.prefab) : default,
+                //magazine = d.magazine.prefab != null ? new EntityPrefabReference(d.magazine.prefab) : default,
+               
                 //scope = new EntityPrefabReference(d.scope.prefab != null ? d.scope.prefab : null),
                 //handle = new EntityPrefabReference(d.handle.prefab != null ? d.handle.prefab : null),
                 //cross = new EntityPrefabReference(d.cross.prefab != null ? d.cross.prefab : null),
