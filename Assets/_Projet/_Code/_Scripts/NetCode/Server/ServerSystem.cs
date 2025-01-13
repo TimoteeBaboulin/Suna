@@ -6,6 +6,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEditor.PackageManager.Requests;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -72,7 +73,27 @@ public partial class ServerSystem : SystemBase
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
             commandBuffer.AddComponent<InitializedClient>(entity);
-            SendMessageRpc($"Client with id : {id.ValueRO}, connected to {worldName}", ConnectionManager.Instance.Server); //Send info to all clients, because there's no target
+            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+
+            ////Instantiate player at connection
+            //if (prefabManager.player != null)
+            //{
+            //    Entity player = commandBuffer.Instantiate(prefabManager.player);
+            //    commandBuffer.SetComponent(player, new LocalTransform() //Set position
+            //    {
+            //        Position = new float3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f)),
+            //        Rotation = Quaternion.identity,
+            //        Scale = 1.0f
+            //    });
+            //    commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection
+            //    {
+            //        NetworkId = id.ValueRO.Value
+            //    });
+            //    commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
+            //    {
+            //        Value = player
+            //    });
+            //}
             ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
         }
         commandBuffer.Playback(EntityManager);

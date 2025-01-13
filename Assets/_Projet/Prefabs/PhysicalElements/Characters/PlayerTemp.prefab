@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 5565817108548056303}
   - component: {fileID: 8189073516465091140}
   - component: {fileID: 7449595315750780023}
+  - component: {fileID: 839694577025870358}
   m_Layer: 0
   m_Name: PlayerTemp
   m_TagString: Untagged
@@ -173,7 +174,7 @@ MonoBehaviour:
   OptimizationMode: 0
   Importance: 1
   MaxSendRate: 0
-  prefabId: 31156b75a91de74459557fa2dc0bf9e4
+  prefabId: 9ee8e34b1a3ae2a44a0d5f599550f0b5
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0
@@ -181,3 +182,16 @@ MonoBehaviour:
   UsePreSerialization: 0
   RollbackPredictedSpawnedGhostState: 0
   RollbackPredictionOnStructuralChanges: 1
+--- !u!114 &839694577025870358
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359929325717710628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99ca7359d42575a4c86df68611c0e665, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 5

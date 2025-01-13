@@ -17,13 +17,21 @@ public class PrefabsBaker : Baker<PrefabsConverterTemp>
 {
     public override void Bake(PrefabsConverterTemp authoring)
     {
+        Entity unitPrefab = default;
+        Entity playerPrefab = default;
         if (authoring.unit != null)
         {
-            Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent(entity, new PrefabsData
-            {
-                unit = GetEntity(authoring.unit, TransformUsageFlags.Dynamic)
-            });
+            unitPrefab = GetEntity(authoring.unit, TransformUsageFlags.Dynamic);
         }
+        if (authoring.unit != null)
+        {
+            playerPrefab = GetEntity(authoring.player, TransformUsageFlags.Dynamic);
+        }
+        Entity entity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(entity, new PrefabsData
+        {
+            unit = unitPrefab,
+            player = playerPrefab
+        });
     }
 }

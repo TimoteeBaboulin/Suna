@@ -35,7 +35,7 @@ public partial class ClientSystem : SystemBase
             SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
         }
 
-        if ((Keyboard.current.wKey.wasPressedThisFrame))
+        if ((Keyboard.current.vKey.wasPressedThisFrame))
         {
             SpawnUnitRpc(ConnectionManager.Instance.Client);
             Debug.Log("W pressed");
