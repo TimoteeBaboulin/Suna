@@ -169,8 +169,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37552a61dc3cba047a11b7b5f333cf65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthArmorDocument: {fileID: 0}
-  ammoDocument: {fileID: 0}
+  healthArmorDocument: {fileID: 424740618}
+  ammoDocument: {fileID: 702470977}
+  C0: 'D : Damage (Reduce Health)'
+  C1: 'H : Heal (Increase Health)'
+  C2: 'P : Pierce (Decrease Armor)'
+  C3: 'U : Undamage (Increase Armor'
+  C4: 'Mouse0 : Shoot (Reduce Ammo)'
+  C5: 'R : Reload (Set Ammo to Capacity)'
+  C6: 'C : Change (Decrease Capacity)'
+  C7: 'V : Value (Increase Capacity)'
 --- !u!1 &352809074
 GameObject:
   m_ObjectHideFlags: 0
