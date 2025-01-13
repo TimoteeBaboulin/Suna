@@ -39,10 +39,12 @@ public class ConnectionManager : Singleton<ConnectionManager>
     #region Properties
     public World Server => _serverWorld;
     public World Client => _clientWorld;
+
+    public RoleType Role => _role;
     #endregion
 
     #region Messages
-    private void Start()
+    private void Awake()
     {
         if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         {
@@ -51,13 +53,18 @@ public class ConnectionManager : Singleton<ConnectionManager>
         else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
         {
             _role = RoleType.Server;
+            Debug.Log($" Role : {_role}");
         }
         else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Client)
         {
             _role = RoleType.Client;
         }
-        //TEMP
-        connectionInfoText.enabled = false;
+
+        if (connectionInfoText != null)
+        {
+            //TEMP
+            connectionInfoText.enabled = false;
+        }
     }
     #endregion
 

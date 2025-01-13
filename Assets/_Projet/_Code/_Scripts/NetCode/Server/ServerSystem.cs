@@ -19,7 +19,6 @@ public struct InitializedClient : IComponentData
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class ServerSystem : SystemBase
 {
-
     private ComponentLookup<NetworkId> _clients;
 
     protected override void OnCreate()

@@ -6,12 +6,12 @@ public class CommonAutoConnect : ClientServerBootstrap
 {
     public override bool Initialize(string defaultWorldName)
     {
-        if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer)
+        if (ConnectionManager.Instance.Role == ConnectionManager.RoleType.ServerClient || ConnectionManager.Instance.Role == ConnectionManager.RoleType.Client)
         {
             AutoConnectPort = 0;
             return false;
         }
-        else if (Application.platform == RuntimePlatform.WindowsServer)
+        else if (ConnectionManager.Instance.Role == ConnectionManager.RoleType.Server)
         {
             AutoConnectPort = 7979;
             ConnectionManager.Instance.CreateServer();
