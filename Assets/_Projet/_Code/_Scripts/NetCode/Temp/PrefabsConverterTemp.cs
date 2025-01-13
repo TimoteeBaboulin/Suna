@@ -23,7 +23,7 @@ public class PrefabsBaker : Baker<PrefabsConverterTemp>
         {
             unitPrefab = GetEntity(authoring.unit, TransformUsageFlags.Dynamic);
         }
-        if (authoring.player != null)
+        if (authoring.unit != null)
         {
             playerPrefab = GetEntity(authoring.player, TransformUsageFlags.Dynamic);
         }

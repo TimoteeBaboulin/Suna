@@ -921,7 +921,6 @@ GameObject:
   - component: {fileID: 2021676135}
   - component: {fileID: 2021676134}
   - component: {fileID: 2021676137}
-  - component: {fileID: 2021676139}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -997,7 +996,7 @@ Transform:
   m_GameObject: {fileID: 2021676133}
   serializedVersion: 2
   m_LocalRotation: {x: 0.27423012, y: 0.011534844, z: -0.0032895205, w: 0.9615893}
-  m_LocalPosition: {x: 1.6, y: 20, z: -34.8}
+  m_LocalPosition: {x: 0.450732, y: 54.07361, z: -85.29267}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1142,17 +1141,6 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
---- !u!1652712579 &2021676139
-MultiplayerRolesData:
-  m_ObjectHideFlags: 2
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021676133}
-  m_GameObjectRolesMask: 3
-  m_ComponentsRolesMasks:
-  - m_Object: {fileID: 0}
-    m_RolesMask: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

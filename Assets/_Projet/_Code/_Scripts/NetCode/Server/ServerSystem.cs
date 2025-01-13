@@ -78,7 +78,6 @@ public partial class ServerSystem : SystemBase
             if (prefabManager.player != null)
             {
                 Entity player = commandBuffer.Instantiate(prefabManager.player);
-                commandBuffer.AddComponent<ShootInput>(player);
                 commandBuffer.SetComponent(player, new LocalTransform() //Set position
                 {
                     Position = new float3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f)),
