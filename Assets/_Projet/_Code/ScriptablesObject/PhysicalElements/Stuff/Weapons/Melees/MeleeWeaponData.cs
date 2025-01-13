@@ -12,6 +12,8 @@ public class MeleeWeaponData : ScriptableObject
     public Image UIImage;
     public UsableEquipmentType type;
     public TeamSideType side;
+    public float deploymentSpeed;
+    public float storageSpeed;
 
     [Header("Attack")]
     public float damage;

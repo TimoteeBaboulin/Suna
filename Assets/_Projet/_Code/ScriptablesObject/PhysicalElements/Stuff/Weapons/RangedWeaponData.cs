@@ -1,5 +1,3 @@
-using System;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,6 +13,8 @@ public class RangedWeaponData : ScriptableObject
     public int price;
     public UsableEquipmentType type;
     public TeamSideType side;
+    public float deploymentSpeed;
+    public float storageSpeed;
 
     [Header("Ranged Weapon Data")]
 
