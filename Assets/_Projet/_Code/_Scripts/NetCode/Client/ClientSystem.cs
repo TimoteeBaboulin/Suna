@@ -3,7 +3,6 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Collections;
 using UnityEngine.InputSystem;
-using UnityEngine.LightTransport;
 
 public struct ClientMessageRpcCommand : IRpcCommand
 {

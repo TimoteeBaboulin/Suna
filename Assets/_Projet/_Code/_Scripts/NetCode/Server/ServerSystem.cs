@@ -4,7 +4,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using Unity.Mathematics;
 
@@ -44,9 +43,9 @@ public partial class ServerSystem : SystemBase
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnUnitRpcCommand>>().WithEntityAccess())
         {
             PrefabsData prefabs;
-            if (SystemAPI.TryGetSingleton<PrefabsData>(out prefabs) && prefabs.prefab != null)
+            if (SystemAPI.TryGetSingleton<PrefabsData>(out prefabs) && prefabs.unit != null)
             {
-                Entity unit = commandBuffer.Instantiate(prefabs.prefab);
+                Entity unit = commandBuffer.Instantiate(prefabs.unit);
                 commandBuffer.SetComponent(unit, new LocalTransform()
                 {
                     Position = new float3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f)),
@@ -61,7 +60,7 @@ public partial class ServerSystem : SystemBase
                     NetworkId = networkId.Value
                 });
 
-                //Link the units with the connection, if the connection is destroyed, destroy the unit aswell
+                //Link the units with the connection, if the connection is destroyed, destroy the unit as well
                 commandBuffer.AppendToBuffer(request.ValueRO.SourceConnection, new LinkedEntityGroup()
                 {
                     Value = unit

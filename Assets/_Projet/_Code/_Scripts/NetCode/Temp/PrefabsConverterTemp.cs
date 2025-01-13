@@ -3,24 +3,26 @@ using UnityEngine;
 
 public class PrefabsConverterTemp : MonoBehaviour
 {
-    public GameObject prefab = null;
+    public GameObject unit = null;
+    public GameObject player = null;
 }
 
 public struct PrefabsData : IComponentData
 {
-    public Entity prefab;
+    public Entity unit;
+    public Entity player;
 }
 
 public class PrefabsBaker : Baker<PrefabsConverterTemp>
 {
     public override void Bake(PrefabsConverterTemp authoring)
     {
-        if (authoring.prefab != null)
+        if (authoring.unit != null)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, new PrefabsData
             {
-                prefab = GetEntity(authoring.prefab, TransformUsageFlags.Dynamic)
+                unit = GetEntity(authoring.unit, TransformUsageFlags.Dynamic)
             });
         }
     }
