@@ -17,6 +17,7 @@ public struct ShootInput : IInputComponentData
     [GhostField] public InputEvent Value;
 }
 
+[UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial class ShootInputSystem : SystemBase
 {
     private InputAction _shootAction;
@@ -63,6 +64,9 @@ public partial struct ShootSystem : ISystem
 
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
 
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
         foreach (var (transform, shootInput, entity) in SystemAPI
             .Query<LocalTransform, ShootInput>()
             .WithAll<Simulate>()
@@ -75,13 +79,12 @@ public partial struct ShootSystem : ISystem
 
             RaycastInput raycastInput = new RaycastInput()
             {
-                Start = transform.Position + new float3(0, 0.5f, 0),
+                Start = transform.Position + new float3(0, 1.5f, 0),
                 End = transform.Position + (transform.Forward() * 100),
                 Filter = CollisionFilter.Default
             };
 
             NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
                 foreach (var hit in allHits)
@@ -91,13 +94,9 @@ public partial struct ShootSystem : ISystem
                         continue;
                     }
 
-                    if (state.World.IsServer())
+                    if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
                     {
-                        Debug.Log("Server side Hit " + hit.Entity.Index);
-                    }
-                    else
-                    {
-                        Debug.Log("Client side Hit " + hit.Entity.Index);
+                        ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
                     }
 
                     break;
