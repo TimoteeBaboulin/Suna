@@ -19,14 +19,12 @@ public struct CharacterControllerComponent : IComponentData
 
     public float sensivity;
 
-    public bool lockRotationX;
-    public bool lockRotationY;
-    public bool lockRotationZ;
-
     public float verticalCameraAngle;
 }
 
 public struct CameraAttachComponent : IComponentData
 {
     public LocalTransform transform;
+    public float cameraPitch;
+    public float cameraYaw;
 }

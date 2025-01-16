@@ -23,20 +23,21 @@ public partial struct MovementSystem : ISystem
             float x = zqsd.ReadValue<Vector2>().x;
             float z = zqsd.ReadValue<Vector2>().y;
 
-            float3 move = (playerTransform.Right() * x + playerTransform.Forward() * z) * controller.maxRunningSpeed * SystemAPI.Time.DeltaTime;
+            float3 move = controller.maxRunningSpeed * SystemAPI.Time.DeltaTime * (x * playerTransform.Right() + z * playerTransform.Forward());
             move.y = vel.Linear.y;
             vel.Linear = move;
 
             camera.transform.Position = playerTransform.Position;
 
-            float mouseX = look.ReadValue<Vector2>().x;
-            float mouseY = look.ReadValue<Vector2>().y;
+            float mouseX = SystemAPI.Time.DeltaTime * controller.sensivity * look.ReadValue<Vector2>().x;
+            float mouseY = SystemAPI.Time.DeltaTime * controller.sensivity * look.ReadValue<Vector2>().y;
 
-            quaternion playerNewRotation = math.mul(quaternion.Euler(0, mouseX, 0), playerTransform.Rotation);
-            playerTransform.Rotation = playerNewRotation;
+            camera.cameraYaw += mouseX;
+            playerTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
 
-            quaternion cameraNewRotation = math.mul(quaternion.Euler(-mouseY, mouseX, 0), camera.transform.Rotation);
-            camera.transform.Rotation = cameraNewRotation;
+            camera.cameraPitch -= mouseY;
+            camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
+            camera.transform.Rotation = math.mul(playerTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
         }
     }
 }

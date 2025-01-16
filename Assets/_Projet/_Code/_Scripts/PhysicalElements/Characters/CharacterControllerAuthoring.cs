@@ -41,13 +41,12 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 drag = cca.drag,
                 jumpRequest = false,
                 isGrounded = false,
-                sensivity = cca.sensivity,
-                lockRotationX = cca.lockRotationX,
-                lockRotationY = cca.lockRotationY,
-                lockRotationZ = cca.lockRotationZ
+                sensivity = cca.sensivity
             });
 
             AddComponent(entity, new CameraAttachComponent());
+
+            AddComponent(entity, new FreezeAllRotationTag());
 
             /*AddComponent(entity, new LocalTransform());
             AddComponent(entity, new PhysicsVelocity());*/
