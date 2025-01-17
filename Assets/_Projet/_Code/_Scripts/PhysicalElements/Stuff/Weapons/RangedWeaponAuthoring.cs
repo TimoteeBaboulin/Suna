@@ -69,26 +69,12 @@ public class RangedWeaponAuthoring : MonoBehaviour
             //Warning : Some Modifiers prefabs can be null
             AddComponent(entity, new ModifiersComponent
             {
-                //scope = new EntityPrefabReference(d.scope.prefab != null ? d.scope.prefab : null),
-                //handle = new EntityPrefabReference(d.handle.prefab != null ? d.handle.prefab : null),
-                //cross = new EntityPrefabReference(d.cross.prefab != null ? d.cross.prefab : null),
-                //silencer = new EntityPrefabReference(d.silencer.prefab != null ? d.silencer.prefab : null),
-                //magazine = new EntityPrefabReference(d.magazine.prefab != null ? d.magazine.prefab : null),
+                scope = d.scope != null ? new EntityPrefabReference(d.scope.prefab) : default,
+                handle = d.handle != null ? new EntityPrefabReference(d.handle.prefab) : default,
+                cross = d.cross != null ? new EntityPrefabReference(d.cross.prefab) : default,
+                silencer = d.silencer != null ? new EntityPrefabReference(d.silencer.prefab) : default,
+                magazine = d.magazine != null ? new EntityPrefabReference(d.magazine.prefab) : default,
             });
-
-            //scope = d.scope.prefab != null ? GetEntity(d.scope.prefab, TransformUsageFlags.None) : Entity.Null,
-            //handle = d.handle.prefab != null ? GetEntity(d.handle.prefab, TransformUsageFlags.None) : Entity.Null,
-            //cross = d.cross.prefab != null ? GetEntity(d.cross.prefab, TransformUsageFlags.None) : Entity.Null,
-            //silencer = d.silencer.prefab != null ? GetEntity(d.silencer.prefab, TransformUsageFlags.None) : Entity.Null,
-            //magazine = d.magazine.prefab != null ? GetEntity(d.magazine.prefab, TransformUsageFlags.None) : Entity.Null,
-
-            //scope = d.scope.prefab != null ? new EntityPrefabReference(d.scope.prefab) : null,
-            //handle = new EntityPrefabReference(d.handle.prefab != null ? d.handle.prefab : null),
-            //cross = new EntityPrefabReference(d.cross.prefab != null ? d.cross.prefab : null),
-            //silencer = new EntityPrefabReference(d.silencer.prefab != null ? d.silencer.prefab : null),
-            //magazine = new EntityPrefabReference(d.magazine.prefab != null ? d.magazine.prefab : null),
-
-            //Component
         }
     }
 }
