@@ -2,13 +2,12 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
-
-public struct MaxHealth : IComponentData
+public struct MaxHealthComponent : IComponentData
 {
     public int Value;
 }
 
-public struct CurrentHealth : IComponentData
+public struct CurrentHealthComponent : IComponentData
 {
     [GhostField] public int Value;
 }
@@ -20,7 +19,7 @@ public struct DamageBufferElement : IBufferElementData
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted, OwnerSendType = SendToOwnerType.SendToNonOwner)]
-public struct DamageThisTick : ICommandData
+public struct DamageThisTickCommand : ICommandData
 {
     public NetworkTick Tick { get; set; }
     public int Value;
@@ -42,12 +41,12 @@ public partial struct CalculateFrameDamageSystem : ISystem
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
 
         foreach (var (damageBuffer, damageThisTickBuffer) in SystemAPI
-            .Query<DynamicBuffer<DamageBufferElement>, DynamicBuffer<DamageThisTick>>()
+            .Query<DynamicBuffer<DamageBufferElement>, DynamicBuffer<DamageThisTickCommand>>()
             .WithAll<Simulate>())
         {
             if (damageBuffer.IsEmpty)
             {
-                damageThisTickBuffer.AddCommandData(new DamageThisTick { Tick = currentTick, Value = 0 });
+                damageThisTickBuffer.AddCommandData(new DamageThisTickCommand { Tick = currentTick, Value = 0 });
             }
             else
             {
@@ -63,7 +62,7 @@ public partial struct CalculateFrameDamageSystem : ISystem
                     totalDamage += damage.Value;
                 }
 
-                damageThisTickBuffer.AddCommandData(new DamageThisTick { Tick = currentTick, Value = totalDamage });
+                damageThisTickBuffer.AddCommandData(new DamageThisTickCommand { Tick = currentTick, Value = totalDamage });
                 damageBuffer.Clear();
             }
         }
@@ -85,7 +84,7 @@ public partial struct ApplyDamageSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (currentHealth, damageThisTickBuffer, entity) in SystemAPI
-            .Query<RefRW<CurrentHealth>, DynamicBuffer<DamageThisTick>>()
+            .Query<RefRW<CurrentHealthComponent>, DynamicBuffer<DamageThisTickCommand>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {

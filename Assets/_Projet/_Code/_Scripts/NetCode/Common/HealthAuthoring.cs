@@ -11,10 +11,10 @@ public class HealthAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            AddComponent(entity, new MaxHealth { Value = authoring._maxHealth });
-            AddComponent(entity, new CurrentHealth { Value = authoring._maxHealth});
+            AddComponent(entity, new MaxHealthComponent { Value = authoring._maxHealth });
+            AddComponent(entity, new CurrentHealthComponent { Value = authoring._maxHealth});
             AddComponent<DamageBufferElement>(entity);
-            AddComponent<DamageThisTick>(entity);
+            AddComponent<DamageThisTickCommand>(entity);
         }
     }
 }

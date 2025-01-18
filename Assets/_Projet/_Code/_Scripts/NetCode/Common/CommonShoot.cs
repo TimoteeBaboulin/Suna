@@ -1,4 +1,3 @@
-
 using System;
 using Unity.Collections;
 using Unity.Entities;
@@ -12,7 +11,7 @@ using UnityEngine.InputSystem;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct ShootInput : IInputComponentData
+public struct ShootInputComponent : IInputComponentData
 {
     [GhostField] public InputEvent Value;
 }
@@ -29,7 +28,7 @@ public partial class ShootInputSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        ShootInput newShootInput = new ShootInput();
+        ShootInputComponent newShootInput = new ShootInputComponent();
 
         if (_shootAction.WasPressedThisFrame())
         {
@@ -37,7 +36,7 @@ public partial class ShootInputSystem : SystemBase
         }
 
         foreach (var shootInput in SystemAPI
-            .Query<RefRW<ShootInput>>())
+            .Query<RefRW<ShootInputComponent>>())
         {
             shootInput.ValueRW = newShootInput;
         }
@@ -67,8 +66,8 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (transform, shootInput, entity) in SystemAPI
-            .Query<LocalTransform, ShootInput>()
+        foreach (var (transform, shootInput, cameraRotation, entity) in SystemAPI
+            .Query<LocalTransform, ShootInputComponent, CameraRotationComponent>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
@@ -77,10 +76,15 @@ public partial struct ShootSystem : ISystem
                 continue;
             }
 
+            float3 forwardVector = math.mul(cameraRotation.Value, new float3(0, 0, 1));
+
+            float3 startPosition = transform.Position + new float3(0, 1.5f, 0);
+            float3 endPosition = startPosition + (forwardVector * 100);
+
             RaycastInput raycastInput = new RaycastInput()
             {
-                Start = transform.Position + new float3(0, 1.5f, 0),
-                End = transform.Position + (transform.Forward() * 100),
+                Start = startPosition,
+                End = endPosition,
                 Filter = CollisionFilter.Default
             };
 
