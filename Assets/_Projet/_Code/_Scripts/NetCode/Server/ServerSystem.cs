@@ -6,10 +6,11 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 using Unity.Mathematics;
+using UnityEngine.InputSystem;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
-    public FixedString64Bytes message;
+    public FixedString128Bytes message;
 }
 public struct InitializedClient : IComponentData
 {
@@ -93,6 +94,11 @@ public partial class ServerSystem : SystemBase
                 });
             }
             ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
+        }
+
+        if (Keyboard.current.oKey.wasPressedThisFrame)
+        {
+            SendMessageRpc("Hello world", ConnectionManager.Instance.Server);
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
