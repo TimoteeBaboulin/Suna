@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}" SchemaVersion="123">
+	<AudioObjects>
+		<WorkUnit Name="Default Work Unit" ID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}" PersistMode="Standalone">
+			<ChildrenList>
+				<Sound Name="That Person's Name Is   Bravely Default OST" ID="{5900C41B-8BB6-457C-AE06-CAAF40839D4A}" ShortID="458041589">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="That Person's Name Is   Bravely Default OST" ID="{A04EAE6C-6017-4004-98AB-3A828AD3E27C}">
+							<Language>SFX</Language>
+							<AudioFile>That Person's Name Is   Bravely Default OST.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="612258208"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="That Person's Name Is   Bravely Default OST" ID="{A04EAE6C-6017-4004-98AB-3A828AD3E27C}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>
