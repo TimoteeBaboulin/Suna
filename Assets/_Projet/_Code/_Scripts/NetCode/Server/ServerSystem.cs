@@ -118,7 +118,6 @@ public partial class ServerSystem : SystemBase
                 Entity player = commandBuffer.Instantiate(prefabManager.player);
                 LocalTransform playerTransform = prefabManager.transformCompData;
 
-                Debug.Log($"transform {playerTransform}");
                 commandBuffer.SetComponent(player, new LocalTransform() //Set position
                 {
                     Position = playerTransform.Position,
