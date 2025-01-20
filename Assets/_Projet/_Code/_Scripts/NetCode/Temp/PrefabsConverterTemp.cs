@@ -22,10 +22,6 @@ public class PrefabsBaker : Baker<PrefabsConverterTemp>
         //Entity unitPrefab = default;
         Entity playerPrefab = default;
         LocalTransform transformPrefab = default;
-        //if (authoring.unit != null)
-        //{
-        //    unitPrefab = GetEntity(authoring.unit, TransformUsageFlags.Dynamic);
-        //}
         if (authoring.player != null)
         {
             playerPrefab = GetEntity(authoring.player, TransformUsageFlags.Dynamic);

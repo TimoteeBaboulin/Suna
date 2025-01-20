@@ -80,7 +80,6 @@ public partial class ClientSystem : SystemBase
             float3 position = transform.ValueRO.Position;
             quaternion rotation = transform.ValueRO.Rotation;
 
-           // Debug.Log(position.y);
             Camera.main.transform.position = position;
             Camera.main.transform.rotation = rotation;
         }
