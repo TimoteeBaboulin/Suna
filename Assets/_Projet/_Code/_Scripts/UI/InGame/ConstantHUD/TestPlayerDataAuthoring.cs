@@ -7,6 +7,7 @@ public class TestPlayerDataAuthoring : MonoBehaviour
     [SerializeField] uint armor = 0u;
     [SerializeField] uint ammoLeft = 30u;
     [SerializeField] uint ammoCapacity = 30u;
+    [SerializeField] uint cash = 600u;
 
     public class Baker : Baker<TestPlayerDataAuthoring>
     {
@@ -19,6 +20,7 @@ public class TestPlayerDataAuthoring : MonoBehaviour
                 Armor = authoring.armor,
                 AmmoLeft = authoring.ammoLeft,
                 AmmoCapacity = authoring.ammoCapacity,
+                Cash = authoring.cash
             });
         }
     }
@@ -30,4 +32,5 @@ public struct TestPlayerData : IComponentData
     public uint Armor;
     public uint AmmoLeft;
     public uint AmmoCapacity;
+    public uint Cash;
 }

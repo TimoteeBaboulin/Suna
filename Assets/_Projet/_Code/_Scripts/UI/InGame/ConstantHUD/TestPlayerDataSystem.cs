@@ -10,11 +10,13 @@ public partial class TestPlayerDataSystem : SystemBase
     public class ArmorArgs : EventArgs { public uint Armor; }
     public class AmmoArgs : EventArgs { public uint Ammo; }
     public class CapacityArgs : EventArgs { public uint Capacity; }
+    public class MoneyArgs : EventArgs { public uint Cash; }
 
     public event EventHandler<HealthArgs> OnHealthChange;
     public event EventHandler<ArmorArgs> OnArmorChange;
     public event EventHandler<AmmoArgs> OnAmmoChange;
     public event EventHandler<CapacityArgs> OnCapacityChange;
+    public event EventHandler<MoneyArgs> OnCashChange;
 
     protected override void OnCreate()
     {
@@ -52,7 +54,7 @@ public partial class TestPlayerDataSystem : SystemBase
         {
             foreach (RefRW<TestPlayerData> data in SystemAPI.Query<RefRW<TestPlayerData>>())
             {
-                if (data.ValueRO.Armor < 95) data.ValueRW.Armor = data.ValueRO.Armor + 5;
+                if (data.ValueRO.Armor < 100) data.ValueRW.Armor = data.ValueRO.Armor + 5;
                 OnArmorChange?.Invoke(this, new ArmorArgs { Armor = data.ValueRO.Armor });
             }
         }
@@ -92,5 +94,26 @@ public partial class TestPlayerDataSystem : SystemBase
                 OnAmmoChange?.Invoke(this, new AmmoArgs { Ammo = data.ValueRO.AmmoLeft });
             }
         }
+        else if (Input.GetKey(KeyCode.B))
+        {
+            foreach (RefRW<TestPlayerData> data in SystemAPI.Query<RefRW<TestPlayerData>>())
+            {
+                if (data.ValueRO.Cash > 0) data.ValueRW.Cash = data.ValueRO.Cash - 100;
+                OnCashChange?.Invoke(this, new MoneyArgs { Cash = data.ValueRO.Cash });
+            }
+        }
+        else if (Input.GetKey(KeyCode.G))
+        {
+            foreach (RefRW<TestPlayerData> data in SystemAPI.Query<RefRW<TestPlayerData>>())
+            {
+                if (data.ValueRO.Cash < uint.MaxValue - 100) data.ValueRW.Cash = data.ValueRO.Cash + 100;
+                OnCashChange?.Invoke(this, new MoneyArgs { Cash = data.ValueRO.Cash });
+            }
+        }
+    }
+
+    public void InvokeCashUpdate(uint cash)
+    {
+        OnCashChange?.Invoke(this, new MoneyArgs { Cash = cash });
     }
 }

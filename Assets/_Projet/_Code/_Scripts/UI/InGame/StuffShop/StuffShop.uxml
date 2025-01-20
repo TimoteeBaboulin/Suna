@@ -1,0 +1,5 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.65); align-self: auto; align-items: center; justify-content: center; visibility: visible; display: flex;">
+        <engine:VisualElement name="Shop" style="flex-grow: 1; position: absolute; width: 80%; align-items: center; justify-content: space-around; align-self: center; align-content: stretch; height: 80%; top: auto; left: auto; bottom: auto; right: auto; background-color: rgba(0, 0, 0, 0.5);" />
+    </engine:VisualElement>
+</engine:UXML>
