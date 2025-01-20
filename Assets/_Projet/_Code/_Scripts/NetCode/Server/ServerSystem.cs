@@ -7,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 using Unity.Mathematics;
 using System.ComponentModel;
+using UnityEngine.Rendering;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -70,38 +71,12 @@ public partial class ServerSystem : SystemBase
         //        commandBuffer.DestroyEntity(entity);
         //    }
         //}
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
-        {
-            commandBuffer.AddComponent<InitializedClient>(entity);
-            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
-            //Instantiate player at connection
-            if (prefabManager.player != null)
-            {
-                Entity player = commandBuffer.Instantiate(prefabManager.player);
-                LocalTransform playerPos = prefabManager.transformCompData;
-
-                Debug.Log($"transform {playerPos}");
-                commandBuffer.SetComponent(player, new LocalTransform() //Set position
-                {
-                    Position = playerPos.Position,
-                    Rotation = Quaternion.identity,
-                    Scale = 1.0f
-                });
-                commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection
-                {
-                    NetworkId = id.ValueRO.Value,
-                });
-                commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
-                {
-                    Value = player
-                });
-            }
-            ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
-        }
-        commandBuffer.Playback(EntityManager);
-        commandBuffer.Dispose();
+        UpdatePlayer(ref commandBuffer, ref worldName);
     }
+
+    #region Public Methods
+    #endregion
 
     //Broadcast message to a target/client or to all clients if no target
     public void SendMessageRpc(string text, World world, Entity target = default)
@@ -125,4 +100,42 @@ public partial class ServerSystem : SystemBase
         }
 
     }
+
+    #region Private Methods
+
+    private void UpdatePlayer(ref EntityCommandBuffer commandBuffer, ref FixedString128Bytes worldName)
+    {
+        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
+        {
+            commandBuffer.AddComponent<InitializedClient>(entity);
+            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+
+            //Instantiate player at connection
+            if (prefabManager.player != null)
+            {
+                Entity player = commandBuffer.Instantiate(prefabManager.player);
+                LocalTransform playerTransform = prefabManager.transformCompData;
+
+                Debug.Log($"transform {playerTransform}");
+                commandBuffer.SetComponent(player, new LocalTransform() //Set position
+                {
+                    Position = playerTransform.Position,
+                    Rotation = playerTransform.Rotation,
+                    Scale = 1.0f
+                });
+                commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection
+                {
+                    NetworkId = id.ValueRO.Value,
+                });
+                commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
+                {
+                    Value = player
+                });
+            }
+            ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
+        }
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
+    }
+    #endregion
 }
