@@ -74,7 +74,36 @@ public partial class ServerSystem : SystemBase
         //    }
         //}
 
-        UpdatePlayer(ref commandBuffer, ref worldName);
+        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
+        {
+            commandBuffer.AddComponent<InitializedClient>(entity);
+            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+
+            //Instantiate player at connection
+            if (prefabManager.player != null)
+            {
+                Entity player = commandBuffer.Instantiate(prefabManager.player);
+                LocalTransform playerTransform = prefabManager.transformCompData;
+
+                commandBuffer.SetComponent(player, new LocalTransform() //Set position
+                {
+                   // Position = playerTransform.Position,
+                   // Rotation = playerTransform.Rotation,
+                    Scale = 1.0f
+                });
+                commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection
+                {
+                    NetworkId = id.ValueRO.Value,
+                });
+                commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
+                {
+                    Value = player
+                });
+            }
+            ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
+        }
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
     }
 
     #region Public Methods
