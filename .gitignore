@@ -72,8 +72,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
-.cache
+# Wwise
+.backup*
+.cache*
 *.akd
 *.prof
 *.validationcache
-*/Assets/Wwise/Editor/ProjectData/AkWwiseProjectData.asset*
+IncrementalSoundBankData.xml
