@@ -53,7 +53,9 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
 
             AddComponent(entity, new FreezeAllRotationTag());
 
-            AddComponent(entity, new CharacterTag());
+            AddComponent(entity, new CharacterTag()); //Multiplayer
+
+            AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
 
             /*AddComponent(entity, new LocalTransform());
             AddComponent(entity, new PhysicsVelocity());*/

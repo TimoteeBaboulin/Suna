@@ -87,8 +87,8 @@ public partial class ServerSystem : SystemBase
 
                 commandBuffer.SetComponent(player, new LocalTransform() //Set position
                 {
-                   // Position = playerTransform.Position,
-                   // Rotation = playerTransform.Rotation,
+                    Position = playerTransform.Position,
+                    Rotation = playerTransform.Rotation,
                     Scale = 1.0f
                 });
                 commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection

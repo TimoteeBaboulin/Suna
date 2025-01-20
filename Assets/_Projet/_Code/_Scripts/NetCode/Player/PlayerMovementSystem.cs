@@ -16,8 +16,7 @@ public partial struct PlayerMovementSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-       // builder.WithAll<PlayerData, PlayerInputData, LocalTransform>();
-        builder.WithAll<CharacterControllerComponent, LocalTransform, PhysicsVelocity, CameraAttachComponent>();
+        builder.WithAll<PlayerInputData, CharacterControllerComponent, LocalTransform, PhysicsVelocity, CameraAttachComponent>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
 
@@ -32,63 +31,20 @@ public partial struct PlayerMovementSystem : ISystem
     }
 }
 
-//[BurstCompile]
-//public partial struct PlayerMovementJob : IJobEntity
-//{
-//    public float dt;
-
-//    public void Execute(PlayerData player, PlayerInputData input, ref LocalTransform transform)
-//    {
-//        float3 movement = new float3(input.move.x, 0, input.move.y) * player.speed * dt;
-//        transform.Position = transform.Translate(movement).Position;
-//    }
-//}
-
-
-//[BurstCompile]
-//[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-//public partial struct PlayerMovementSystem : ISystem
-//{
-//    [BurstCompile]
-//    public void OnCreate(ref SystemState state)
-//    {
-//        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-//        // builder.WithAll<PlayerData, PlayerInputData, LocalTransform>();
-//        builder.WithAll<RefRO<CharacterControllerComponent>, RefRW<LocalTransform>, RefRW<PhysicsVelocity>, RefRW<CameraAttachComponent>>();
-//        state.RequireForUpdate(state.GetEntityQuery(builder));
-//    }
-
-//    [BurstCompile]
-//    public void OnUpdate(ref SystemState state)
-//    {
-//        PlayerMovementJob job = new PlayerMovementJob
-//        {
-//            dt = SystemAPI.Time.DeltaTime
-//        };
-//        state.Dependency = job.ScheduleParallel(state.Dependency);
-//    }
-//}
-
 [BurstCompile]
 public partial struct PlayerMovementJob : IJobEntity
 {
     public float dt;
 
-    public void Execute(RefRO<CharacterControllerComponent> characterController, ref LocalTransform localTransform, ref CameraAttachComponent cameraAttach, ref PhysicsVelocity physicsVelocity)
+    public void Execute(ref PlayerInputData playerInput,RefRO<CharacterControllerComponent> characterController, ref LocalTransform localTransform, ref CameraAttachComponent cameraAttach, ref PhysicsVelocity physicsVelocity)
     {
-        //float3 movement = new float3(input.move.x, 0, input.move.y) * player.speed * dt;
-        //localTransform.Position = localTransform.Translate(movement).Position;
-
-        InputAction zqsd = InputSystem.actions.FindAction("Move");
-        InputAction look = InputSystem.actions.FindAction("Look");
-
         ref readonly CharacterControllerComponent controller = ref characterController.ValueRO;
         ref LocalTransform playerTransform = ref localTransform;
         ref PhysicsVelocity vel = ref physicsVelocity;
         ref CameraAttachComponent camera = ref cameraAttach;
 
-        float x = zqsd.ReadValue<Vector2>().x;
-        float z = zqsd.ReadValue<Vector2>().y;
+        float x = playerInput.move.x;
+        float z = playerInput.move.y;
 
         float3 move = controller.maxRunningSpeed * dt * (x * playerTransform.Right() + z * playerTransform.Forward());
         move.y = vel.Linear.y;
@@ -96,8 +52,8 @@ public partial struct PlayerMovementJob : IJobEntity
 
         camera.transform.Position = playerTransform.Position;
 
-        float mouseX = dt * controller.sensivity * look.ReadValue<Vector2>().x;
-        float mouseY = dt * controller.sensivity * look.ReadValue<Vector2>().y;
+        float mouseX = dt * controller.sensivity * playerInput.look.x;
+        float mouseY = dt * controller.sensivity * playerInput.look.y;
 
         camera.cameraYaw += mouseX;
         playerTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
