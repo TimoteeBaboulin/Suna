@@ -27,6 +27,8 @@ public partial class ServerSystem : SystemBase
     protected override void OnCreate()
     {
         _clients = GetComponentLookup<NetworkId>(true);
+
+        RequireForUpdate<NetworkId>();
     }
     protected override void OnUpdate()
     {
