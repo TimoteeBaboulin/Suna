@@ -2,5 +2,5 @@ using UnityEngine;
 
 public enum TeamSideType
 {
-    Neutre, Robot, Natif
+    Neutre, Corpo, Natif
 }
