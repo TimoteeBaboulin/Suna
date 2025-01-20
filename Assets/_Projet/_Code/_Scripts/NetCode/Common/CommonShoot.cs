@@ -13,7 +13,8 @@ using RaycastHit = Unity.Physics.RaycastHit;
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct ShootInputComponent : IInputComponentData
 {
-    [GhostField] public InputEvent Value;
+    [GhostField] public InputEvent Input;
+    [GhostField] public LocalTransform CameraTransform;
 }
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
@@ -32,12 +33,13 @@ public partial class ShootInputSystem : SystemBase
 
         if (_shootAction.WasPressedThisFrame())
         {
-            newShootInput.Value.Set();
+            newShootInput.Input.Set();
         }
 
-        foreach (var shootInput in SystemAPI
-            .Query<RefRW<ShootInputComponent>>())
+        foreach (var (shootInput, camera) in SystemAPI
+            .Query<RefRW<ShootInputComponent>, RefRO<CameraAttachComponent>>())
         {
+            newShootInput.CameraTransform = camera.ValueRO.transform;
             shootInput.ValueRW = newShootInput;
         }
     }
@@ -66,20 +68,18 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (transform, shootInput, cameraRotation, entity) in SystemAPI
-            .Query<LocalTransform, ShootInputComponent, CameraRotationComponent>()
+        foreach (var (transform, shootInput, entity) in SystemAPI
+            .Query<RefRO<LocalTransform>, RefRO<ShootInputComponent>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
-            if (!shootInput.Value.IsSet)
+            if (!shootInput.ValueRO.Input.IsSet)
             {
                 continue;
             }
 
-            float3 forwardVector = math.mul(cameraRotation.Value, new float3(0, 0, 1));
-
-            float3 startPosition = transform.Position + new float3(0, 1.5f, 0);
-            float3 endPosition = startPosition + (forwardVector * 100);
+            float3 startPosition = shootInput.ValueRO.CameraTransform.Position;
+            float3 endPosition = startPosition + (shootInput.ValueRO.CameraTransform.Forward() * 100);
 
             RaycastInput raycastInput = new RaycastInput()
             {
