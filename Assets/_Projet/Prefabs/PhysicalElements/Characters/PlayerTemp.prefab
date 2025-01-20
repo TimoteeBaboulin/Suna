@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 839694577025870358}
   - component: {fileID: 5910562356363059466}
   - component: {fileID: 8405201792804454799}
+  - component: {fileID: -6017652394105891902}
   m_Layer: 0
   m_Name: PlayerTemp
   m_TagString: Untagged
@@ -220,7 +221,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3359929325717710628}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 99ca7359d42575a4c86df68611c0e665, type: 3}
   m_Name: 
@@ -251,6 +252,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHealth: 100
+--- !u!114 &-6017652394105891902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3359929325717710628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e820a080fe9c84408a14a9ddbd26b6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxRunningSpeed: 1.5
+  maxWalkingSpeed: 0.5
+  maxStepHeight: 0.5
+  gravity: 9.81
+  jumpForce: 3
+  drag: 0.1
+  sensivity: 1
+  lockRotationX: 0
+  lockRotationY: 0
+  lockRotationZ: 0
 --- !u!1 &7062908528661753356
 GameObject:
   m_ObjectHideFlags: 0

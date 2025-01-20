@@ -5,6 +5,11 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+public struct CharacterTag : IComponentData
+{
+
+}
+
 public sealed class CharacterControllerAuthoring : MonoBehaviour
 {
     [Header("Movement Parameters")]
@@ -47,6 +52,8 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
             AddComponent(entity, new CameraAttachComponent());
 
             AddComponent(entity, new FreezeAllRotationTag());
+
+            AddComponent(entity, new CharacterTag());
 
             /*AddComponent(entity, new LocalTransform());
             AddComponent(entity, new PhysicsVelocity());*/

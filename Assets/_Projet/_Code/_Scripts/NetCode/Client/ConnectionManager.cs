@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Net;
 using Unity.Burst;
@@ -20,6 +21,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
 
     //TEMP
     [SerializeField] private Canvas loginCanva;
+
+    public event Action Connected;
 
     public enum RoleType
     {
@@ -71,6 +74,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
         if (_role == RoleType.ServerClient || _role == RoleType.Client)
         {
             _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+            Connected?.Invoke();
         }
 
         if (_role == RoleType.ServerClient && Application.isEditor)
