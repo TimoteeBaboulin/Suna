@@ -74,39 +74,56 @@ public partial class ServerSystem : SystemBase
         //    }
         //}
 
+
+
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
             commandBuffer.AddComponent<InitializedClient>(entity);
-            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
-            //Instantiate player at connection
+            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
             if (prefabManager.player != null)
             {
-                Entity player = commandBuffer.Instantiate(prefabManager.player);
-                LocalTransform playerTransform = prefabManager.transformCompData;
-
-                commandBuffer.SetComponent(player, new LocalTransform() //Set position
-                {
-                    Position = playerTransform.Position,
-                    Rotation = playerTransform.Rotation,
-                    Scale = 1.0f
-                });
-                commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection
-                {
-                    NetworkId = id.ValueRO.Value,
-                });
-                commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
-                {
-                    Value = player
-                });
+                SpawnPlayer(entity, commandBuffer, prefabManager.transformCompData.Position);
             }
-            ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
         }
+
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
 
     #region Public Methods
+
+    public void SpawnPlayer(Entity ownerEntity, EntityCommandBuffer ecb, float3 position)
+    {
+        PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+        if (prefabManager.player == null)
+        {
+            ServerConsole.Log(ServerConsole.LogType.Error, $"Player prefab in Player Manager is null during SpawnPlayer execution");
+            return;
+        }
+
+        NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
+        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
+
+        Entity player = ecb.Instantiate(prefabManager.player);
+        ecb.SetComponent(player, new LocalTransform() //Set position
+        {
+            Position = position,
+            Rotation = quaternion.identity,
+            Scale = 1.0f
+        });
+        ecb.SetComponent(player, new GhostOwner() //Set owner of player to connection
+        {
+            NetworkId = networkId.Value
+        });
+        ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
+        {
+            Value = player
+        });
+
+        ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId.Value}, in the world {worldName}");
+    }
+
     #endregion
 
     //Broadcast message to a target/client or to all clients if no target
