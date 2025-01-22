@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Projet/_Code/_Scripts/UI/OutGame/MainMenu/main-menu.uss?fileID=7433441132597879392&amp;guid=a94d734d4c6be40489081ba40fa40f7f&amp;type=3#main-menu" />
+    <ui:VisualElement name="Background" style="flex-grow: 1; background-color: rgb(37, 46, 51);">
+        <ui:VisualElement name="ElementBackground" class="element-background" style="flex-grow: 1;">
+            <ui:VisualElement name="Logo" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/NaughtyAttributes/Samples/DemoScene/TestAssets/icon-github.png?fileID=2800000&amp;guid=005888ede18a58e4db8d069cfa3007cb&amp;type=3#icon-github&quot;); -unity-background-image-tint-color: rgb(255, 255, 255); background-color: rgba(0, 0, 0, 0); align-items: auto; justify-content: flex-start; align-content: auto; -unity-background-scale-mode: scale-to-fit; background-position-y: center 10px; width: 50%; height: auto; -unity-text-align: upper-left; transform-origin: center; display: flex; visibility: visible; overflow: visible; max-height: none; min-height: auto; align-self: auto; flex-direction: column; flex-wrap: nowrap; flex-basis: auto; margin-top: 5px; margin-right: 5px; margin-bottom: 5px; margin-left: 5px; background-position-x: center 0;" />
+            <ui:Button text="Play" name="PlayButton" class="main-menu-button" />
+            <ui:Button text="Quit" name="QuitButton" class="main-menu-button" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

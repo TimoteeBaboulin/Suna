@@ -1,0 +1,56 @@
+.main-menu-button {
+    width: 50%;
+    height: 20%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-size: 48px;
+    background-color: rgb(151, 197, 209);
+    transition-property: scale;
+    transition-duration: 50ms;
+    text-overflow: clip;
+    -unity-text-align: middle-center;
+}
+
+.main-menu-button:hover {
+    scale: 1.1 1.1;
+    rotate: 0;
+    transition-property: scale;
+    transition-duration: 50ms;
+    font-size: 48px;
+    -unity-text-align: middle-center;
+}
+
+.main-menu-button:active {
+    scale: 1.1 1.1;
+    rotate: 0;
+    background-color: rgb(131, 171, 182);
+    -unity-text-align: middle-center;
+    font-size: 48px;
+}
+
+.element-background {
+    align-self: center;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: auto;
+    width: 50%;
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0.23);
+    max-height: 80%;
+    -unity-slice-left: 0;
+    -unity-slice-top: 0;
+    -unity-slice-right: 0;
+    -unity-slice-bottom: 0;
+    -unity-slice-scale: 1px;
+    height: auto;
+    top: auto;
+    bottom: auto;
+    margin-top: auto;
+    margin-right: 0;
+    margin-bottom: auto;
+    margin-left: 0;
+    flex-direction: column;
+    background-position-y: center 0;
+    visibility: visible;
+    flex-grow: 0;
+}
