@@ -1,6 +1,7 @@
 using NaughtyAttributes;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UIElements;
 
 public class HUDController : MonoBehaviour
@@ -25,6 +26,8 @@ public class HUDController : MonoBehaviour
     Label ammo;
     Label capacity;
 
+    private InGameHUDSystem _inGameHUDSystem = null;
+
     private void Awake()
     {
         healthArmor = healthArmorDocument.rootVisualElement;
@@ -36,15 +39,26 @@ public class HUDController : MonoBehaviour
         ammo = ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
         capacity = ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
 
-        TestPlayerDataSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TestPlayerDataSystem>();
-        system.OnHealthChange += System_OnHealthChange;
-        system.OnArmorChange += System_OnArmorChange;
-        system.OnAmmoChange += System_OnAmmoChange;
-        system.OnCapacityChange += System_OnCapacityChange;
+        //InGameHUDSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
+        //system.HealthChangedEvent += System_OnHealthChange;
+        //system.OnArmorChange += System_OnArmorChange;
+        //system.OnAmmoChange += System_OnAmmoChange;
+        //system.OnCapacityChange += System_OnCapacityChange;
     }
-    private void System_OnHealthChange(object sender, TestPlayerDataSystem.HealthArgs e)
+
+    private void Update()
     {
-        if (e is TestPlayerDataSystem.HealthArgs arg) health.text = arg.Health.ToString();
+        if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
+            _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
+        }
+    }
+
+    private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs e)
+    {
+        if (e is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
+        Debug.Log("UNE TUILE");
     }
     private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs e)
     {
