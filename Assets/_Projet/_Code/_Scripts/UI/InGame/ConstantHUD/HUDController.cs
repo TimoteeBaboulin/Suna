@@ -58,7 +58,6 @@ public class HUDController : MonoBehaviour
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs e)
     {
         if (e is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
-        Debug.Log("UNE TUILE");
     }
     private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs e)
     {

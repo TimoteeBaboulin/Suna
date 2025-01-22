@@ -9,6 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6666698356759163468}
+  - component: {fileID: 8509456122086647768}
+  - component: {fileID: 5597533594698051892}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -37,6 +39,39 @@ Transform:
   - {fileID: 4258322407874652066}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8509456122086647768
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2506461295743325042}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37552a61dc3cba047a11b7b5f333cf65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthArmorDocument: {fileID: 5896056415210191107}
+  ammoDocument: {fileID: 3905521520513475144}
+  C0: 'D : Damage (Reduce Health)'
+  C1: 'H : Heal (Increase Health)'
+  C2: 'P : Pierce (Decrease Armor)'
+  C3: 'U : Undamage (Increase Armor'
+  C4: 'Mouse0 : Shoot (Reduce Ammo)'
+  C5: 'R : Reload (Set Ammo to Capacity)'
+  C6: 'C : Change (Decrease Capacity)'
+  C7: 'V : Value (Increase Capacity)'
+--- !u!1652712579 &5597533594698051892
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2506461295743325042}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 8509456122086647768}
+    m_RolesMask: 1
 --- !u!1 &2919832933324044720
 GameObject:
   m_ObjectHideFlags: 0
