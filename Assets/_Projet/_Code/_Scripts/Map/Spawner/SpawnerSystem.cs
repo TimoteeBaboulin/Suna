@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Transforms;
+using UnityEngine;
 
 public struct WaitingForRespawnTag : IComponentData { }
 
@@ -63,13 +64,13 @@ public partial struct SpawnerSystem : ISystem
                         playerTransform.Position = respawnZoneTransform.Position;
                     }
                     else 
-                        UnityEngine.Debug.LogWarning($"Respawn zone entity {respawnZoneEntity} does not have a LocalTransform component.");
+                        Debug.LogWarning($"Respawn zone entity {respawnZoneEntity} does not have a LocalTransform component.");
                 }
                 else 
-                    UnityEngine.Debug.LogWarning($"No respawn zones found for team entity {player.teamEntity}.");
+                    Debug.LogWarning($"No respawn zones found for team entity {player.teamEntity}.");
             }
             else 
-                UnityEngine.Debug.LogWarning($"Team entity {player.teamEntity} does not have a RespawnZones component.");
+                Debug.LogWarning($"Team entity {player.teamEntity} does not have a RespawnZones component.");
         }
     }
 }

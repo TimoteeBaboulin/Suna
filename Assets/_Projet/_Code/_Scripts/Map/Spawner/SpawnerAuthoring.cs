@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.Physics;
 using UnityEngine;
 
 public class SpawnerAuthoring : MonoBehaviour
@@ -19,10 +18,10 @@ public class SpawnerAuthoring : MonoBehaviour
                 playerLifeSpaceSize = authoring.playerLifeSpaceSize,
             });
 
-            //if (authoring.side == TeamSideType.Corpo)
-            //    AddComponent(entity, new CorpoTeamTag { });
-            //else
-            //    AddComponent(entity, new NatifTeamTag { });
+            if (authoring.side == TeamSideType.Corpo)
+                AddComponent(entity, new CorpoTeamTag { });
+            else
+                AddComponent(entity, new NatifTeamTag { });
         }
     }
 }
