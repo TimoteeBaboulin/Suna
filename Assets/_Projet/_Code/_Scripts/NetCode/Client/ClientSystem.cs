@@ -3,6 +3,9 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Collections;
 using UnityEngine.InputSystem;
+using Unity.Transforms;
+using Unity.Mathematics;
+using Unity.VisualScripting.Dependencies.NCalc;
 
 public struct ClientMessageRpcCommand : IRpcCommand
 {
@@ -29,7 +32,9 @@ public partial class ClientSystem : SystemBase
             ServerConsole.Log(ServerConsole.LogType.Info, $"message to client {command.ValueRO.message}");
             commandBuffer.DestroyEntity(entity);
         }
-        
+
+        UpdatePlayerCamera();
+
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
@@ -65,4 +70,16 @@ public partial class ClientSystem : SystemBase
         }
         world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(SpawnUnitRpcCommand));
     }
+
+    #region PrivateMethods
+
+    private void UpdatePlayerCamera()
+    {
+        foreach (RefRO<CameraAttachComponent> cameraAttach in SystemAPI.Query<RefRO<CameraAttachComponent>>().WithAll<GhostOwnerIsLocal>())
+        {
+            Camera.main.transform.position = cameraAttach.ValueRO.transform.Position;
+            Camera.main.transform.rotation = cameraAttach.ValueRO.transform.Rotation;
+        }
+    }
+    #endregion
 }
