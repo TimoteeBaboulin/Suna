@@ -4,14 +4,13 @@ using UnityEngine;
 
 public struct WaitingForRespawnTag : IComponentData { }
 
-public struct RespawnZones : IBufferElementData
+public struct RespawnPoints : IBufferElementData
 {
     public Entity entity; // Référence à une entité représentant une zone de respawn
 }
 public struct Player : IComponentData
 {
     public Entity teamEntity; // Référence à l'entité de l'équipe du joueur
-    public TeamSideType side;
     public int hp;
 }
 
@@ -42,23 +41,31 @@ public partial struct SpawnerSystem : ISystem
     {
         EntityManager entityManager = state.EntityManager;
 
+        //On recupére les joueurs qui sont en attente d'un respawn
         foreach (var (playerRef, playerTransformRef, entity) in SystemAPI.Query<RefRO<Player>, RefRW<LocalTransform>>()
             .WithAll<WaitingForRespawnTag>()
             .WithEntityAccess())
         {
+            //Simplification des appels
             ref readonly Player player = ref playerRef.ValueRO;
             ref LocalTransform playerTransform = ref playerTransformRef.ValueRW;
 
-            if (entityManager.HasComponent<RespawnZones>(player.teamEntity))
+            //On verifie si des entitées avec le composant "RespawnPoint" exist
+            if (entityManager.HasComponent<RespawnPoints>(player.teamEntity))
             {
-                DynamicBuffer<RespawnZones> respawnZonesBuffer = entityManager.GetBuffer<RespawnZones>(player.teamEntity);
+                //On récupére la liste des points de respawn
+                DynamicBuffer<RespawnPoints> respawnZonesBuffer = entityManager.GetBuffer<RespawnPoints>(player.teamEntity);
 
+                //On verifie que le nombre de point de respawn est > 0
                 if (respawnZonesBuffer.Length > 0)
                 {
+                    //On recupere le premier point de spawn de la liste 
                     Entity respawnZoneEntity = respawnZonesBuffer[0].entity;
 
+                    //On verifie que le point de respawn a bien un transform
                     if (entityManager.HasComponent<LocalTransform>(respawnZoneEntity))
                     {
+                        //On le recupére
                         LocalTransform respawnZoneTransform = entityManager.GetComponentData<LocalTransform>(respawnZoneEntity);
 
                         playerTransform.Position = respawnZoneTransform.Position;
