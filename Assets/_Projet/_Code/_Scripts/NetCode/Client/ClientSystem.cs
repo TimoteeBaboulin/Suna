@@ -75,13 +75,10 @@ public partial class ClientSystem : SystemBase
 
     private void UpdatePlayerCamera()
     {
-        foreach (RefRO<LocalTransform> transform in SystemAPI.Query<RefRO<LocalTransform>>().WithAll<GhostOwnerIsLocal>())
+        foreach (RefRO<CameraAttachComponent> cameraAttach in SystemAPI.Query<RefRO<CameraAttachComponent>>().WithAll<GhostOwnerIsLocal>())
         {
-            float3 position = transform.ValueRO.Position;
-            quaternion rotation = transform.ValueRO.Rotation;
-
-            Camera.main.transform.position = position;
-            Camera.main.transform.rotation = rotation;
+            Camera.main.transform.position = cameraAttach.ValueRO.transform.Position;
+            Camera.main.transform.rotation = cameraAttach.ValueRO.transform.Rotation;
         }
     }
     #endregion

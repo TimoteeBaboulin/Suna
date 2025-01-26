@@ -40,41 +40,32 @@ using UnityEngine;
 //    }
 //}
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
-public partial class CameraAttachmentSystem : SystemBase
-{
-    private Camera mainCamera;
-    private EntityQuery cameraAttachQuery;
+//[UpdateInGroup(typeof(SimulationSystemGroup))]
+//public partial class CameraAttachmentSystem : SystemBase
+//{
+//    private Camera mainCamera;
+//    private EntityQuery cameraAttachQuery;
 
-    protected override void OnCreate()
-    {
-        base.OnCreate();
+//    protected override void OnCreate()
+//    {
+//        base.OnCreate();
 
-        // Find the main camera in the scene
-        mainCamera = Camera.main;
+//        // Find the main camera in the scene
+//        mainCamera = Camera.main;
 
-        if (mainCamera == null)
-        {
-            Debug.LogError("Main camera not found!");
-            return;
-        }
+//        if (mainCamera == null)
+//        {
+//            Debug.LogError("Main camera not found!");
+//            return;
+//        }
 
-        EntityQueryBuilder builder = new EntityQueryBuilder(Unity.Collections.Allocator.Temp)
-            .WithAll<CameraAttachComponent>();
+//        EntityQueryBuilder builder = new EntityQueryBuilder(Unity.Collections.Allocator.Temp)
+//            .WithAll<CameraAttachComponent>();
 
-        RequireForUpdate(GetEntityQuery(builder));
-    }
+//        RequireForUpdate(GetEntityQuery(builder));
+//    }
 
-    protected override void OnUpdate()
-    {
-        if (mainCamera == null) { return; }         
-
-        foreach (var cameraAttach in SystemAPI.Query<CameraAttachComponent>())
-        {
-           // Debug.Log(cameraAttach.transform.Rotation);
-            mainCamera.transform.position = cameraAttach.transform.Position;
-            mainCamera.transform.rotation = cameraAttach.transform.Rotation;
-            mainCamera.transform.position += Vector3.up * 0.8f;
-        }
-    }
-}
+//    protected override void OnUpdate()
+//    {
+//    }
+//}
