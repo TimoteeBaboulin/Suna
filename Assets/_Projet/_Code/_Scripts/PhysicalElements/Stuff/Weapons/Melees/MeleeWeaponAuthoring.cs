@@ -18,7 +18,7 @@ public class MeleeWeaponAuthoring : MonoBehaviour
 
             AddComponent(entity, new PrefabReferenceComponent
             {
-                prefab = new EntityPrefabReference(d.prefab)
+                prefab = GetEntity(d.prefab, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new StuffInfosComponent

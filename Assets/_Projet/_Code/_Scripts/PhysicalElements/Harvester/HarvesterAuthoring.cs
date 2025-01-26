@@ -41,7 +41,7 @@ public class HarvesterAuthoring : MonoBehaviour
 
             AddComponent(entity, new PrefabReferenceComponent
             {
-                prefab = new EntityPrefabReference(authoring.prefab)
+                prefab = GetEntity(authoring.prefab, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new HarvesterComponent
