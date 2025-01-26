@@ -38,6 +38,7 @@ public partial class PlayerInputSystem : SystemBase
         bool isJumpPerfomered = actions.Jump.phase == InputActionPhase.Performed;
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
+        bool isShootPressed = actions.Attack.WasPressedThisFrame();
         foreach (RefRW<PlayerInput> input in SystemAPI.Query<RefRW<PlayerInput>>().
             WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
@@ -69,6 +70,15 @@ public partial class PlayerInputSystem : SystemBase
             else
             {
                 input.ValueRW.walkCanceled = default; //Important to unset or we will have issues down the line
+            }
+
+            if (isShootPressed)
+            {
+                input.ValueRW.shoot.Set();
+            }
+            else
+            {
+                input.ValueRW.shoot = default;
             }
         }
     }

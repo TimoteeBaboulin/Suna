@@ -95,12 +95,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7095689921242147679}
-  - component: {fileID: 2717752743986560582}
   - component: {fileID: 8152830554212466766}
   - component: {fileID: 1715078069933390235}
+  - component: {fileID: 2717752743986560582}
   - component: {fileID: 2657201299575732514}
   - component: {fileID: -1226755385133520682}
-  - component: {fileID: 3943190729507159312}
   - component: {fileID: 4763154914594263826}
   - component: {fileID: 5081496929180248068}
   m_Layer: 0
@@ -126,27 +125,6 @@ Transform:
   - {fileID: 4655899981044389367}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2717752743986560582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584918407947073280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9e820a080fe9c84408a14a9ddbd26b6c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxRunningSpeed: 5
-  maxWalkingSpeed: 2.2
-  acceleration: 50
-  deceleration: 4
-  decelerationFactor: 5
-  drag: 0.5
-  maxStepHeight: 0.5
-  jumpForce: 5.8
-  sensivity: 6
 --- !u!54 &8152830554212466766
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -197,6 +175,27 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2717752743986560582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584918407947073280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9e820a080fe9c84408a14a9ddbd26b6c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxRunningSpeed: 5
+  maxWalkingSpeed: 2.2
+  acceleration: 50
+  deceleration: 4
+  decelerationFactor: 5
+  drag: 0.5
+  maxStepHeight: 0.5
+  jumpForce: 5.8
+  sensivity: 6
 --- !u!114 &2657201299575732514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,18 +221,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHealth: 100
---- !u!114 &3943190729507159312
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584918407947073280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 141c021b24cceb4409b0076af5478175, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4763154914594263826
 MonoBehaviour:
   m_ObjectHideFlags: 0

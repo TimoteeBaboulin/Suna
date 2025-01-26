@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,4 +12,5 @@ public struct PlayerInput :IInputComponentData
     [GhostField] public InputEvent jump;
     [GhostField] public InputEvent walkStarted;
     [GhostField] public InputEvent walkCanceled;
+    [GhostField] public InputEvent shoot;
 }

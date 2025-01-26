@@ -1,4 +1,3 @@
-using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -6,44 +5,8 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 using RaycastHit = Unity.Physics.RaycastHit;
-
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct ShootInputComponent : IInputComponentData
-{
-    [GhostField] public InputEvent Input;
-    [GhostField] public LocalTransform CameraTransform;
-}
-
-[UpdateInGroup(typeof(GhostInputSystemGroup))]
-public partial class ShootInputSystem : SystemBase
-{
-    private InputAction _shootAction;
-
-    protected override void OnCreate()
-    {
-        _shootAction = InputSystem.actions.FindActionMap("Player").FindAction("Attack");
-    }
-
-    protected override void OnUpdate()
-    {
-        ShootInputComponent newShootInput = new ShootInputComponent();
-
-        if (_shootAction.WasPressedThisFrame())
-        {
-            newShootInput.Input.Set();
-        }
-
-        foreach (var (shootInput, camera) in SystemAPI
-            .Query<RefRW<ShootInputComponent>, RefRO<CameraAttachComponent>>())
-        {
-            newShootInput.CameraTransform = camera.ValueRO.transform;
-            shootInput.ValueRW = newShootInput;
-        }
-    }
-}
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct ShootSystem : ISystem
@@ -68,18 +31,18 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (transform, shootInput, entity) in SystemAPI
-            .Query<RefRO<LocalTransform>, RefRO<ShootInputComponent>>()
+        foreach (var (transform, shootInput, cameraAttach, entity) in SystemAPI
+            .Query<RefRO<LocalTransform>, RefRO<PlayerInput>, RefRO<CameraAttachComponent>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
-            if (!shootInput.ValueRO.Input.IsSet)
+            if (!shootInput.ValueRO.shoot.IsSet)
             {
                 continue;
             }
 
-            float3 startPosition = shootInput.ValueRO.CameraTransform.Position;
-            float3 endPosition = startPosition + (shootInput.ValueRO.CameraTransform.Forward() * 100);
+            float3 startPosition = cameraAttach.ValueRO.transform.Position;
+            float3 endPosition = startPosition + (cameraAttach.ValueRO.transform.Forward() * 100);
 
             RaycastInput raycastInput = new RaycastInput()
             {
