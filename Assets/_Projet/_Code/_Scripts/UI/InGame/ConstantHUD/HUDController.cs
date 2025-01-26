@@ -1,4 +1,4 @@
-using NaughtyAttributes;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.Rendering.VirtualTexturing;
