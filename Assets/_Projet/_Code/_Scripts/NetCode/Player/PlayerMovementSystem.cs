@@ -112,6 +112,7 @@ public partial struct PlayerMovementJob : IJobEntity
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
         camera.transform.Position = playerTransform.Position;
+        camera.transform.Position += new float3(0f, 0.8f, 0f);
 
         float mouseX = dt * controller.sensivity * input.look.x;
         float mouseY = dt * controller.sensivity * input.look.y;
