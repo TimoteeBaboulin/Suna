@@ -18,7 +18,7 @@ public partial struct PlayerMovementSystem : ISystem
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<
-            PlayerInputData,
+            PlayerInput,
             CharacterControllerComponent,
             LocalTransform,
             PhysicsVelocity,
@@ -33,7 +33,7 @@ public partial struct PlayerMovementSystem : ISystem
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
-            worldName = state.World.Name
+           // worldName = state.World.Name
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -44,9 +44,9 @@ public partial struct PlayerMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
-    public string worldName;
+   // public FixedString32Bytes worldName;
 
-    public void Execute(ref PlayerInputData input, RefRW<CharacterControllerComponent> characterController,
+    public void Execute(ref PlayerInput input, RefRW<CharacterControllerComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<CameraAttachComponent> cameraAttach, RefRW<PhysicsVelocity> physicsVelocity)
     {
         if (!(networkTime.IsFirstPredictionTick))
@@ -120,28 +120,40 @@ public partial struct PlayerMovementJob : IJobEntity
         camera.cameraPitch -= mouseY;
         camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
         camera.transform.Rotation = math.mul(playerTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
+
+        //Same as below but related to multiplayer it's the same logic but not the same synthax
+        if (input.jump.IsSet)
+        {
+            //  Debug.Log("Jump" + worldName);
+            physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
+            characterController.ValueRW.isGrounded = false;
+        }
+
+        if (input.walkStarted.IsSet)
+        {
+            characterController.ValueRW.isWalking = true;
+        }
+
+        if (input.walkCanceled.IsSet)
+        {
+            characterController.ValueRW.isWalking = false;
+        }
         //playerInput.jump.started += ctx =>
         //{
         //    physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
         //    characterController.ValueRW.isGrounded = false;
         //};
 
-        //Same as above but related to multiplayer it's the same logic but not the same synthax
-        if (input.jump.IsSet)
-        {
-            Debug.Log("Jump" + worldName);
-            physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
-            characterController.ValueRW.isGrounded = false;
-        }
-
-        //playerInput.walk.started += ctx =>
+        //input.walk.canceled += ctx =>
+        //{
+        //    characterController.ValueRW.isWalking = false;
+        //};
+        //input.walk.started += ctx =>
         //{
         //    characterController.ValueRW.isWalking = true;
         //};
 
-        //playerInput.walk.canceled += ctx =>
-        //{
-        //    characterController.ValueRW.isWalking = false;
-        //};
+
+
     }
 }

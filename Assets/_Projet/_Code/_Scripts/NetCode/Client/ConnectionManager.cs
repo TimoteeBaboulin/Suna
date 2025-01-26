@@ -65,6 +65,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
     #region Public Methods
     public void Connect()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         if (_clientWorld != null)
         {
             Debug.Log($"{_clientWorld} already created!");

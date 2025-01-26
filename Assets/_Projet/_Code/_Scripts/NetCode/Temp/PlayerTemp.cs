@@ -20,6 +20,6 @@ public class PlayerBaker : Baker<PlayerTemp>
         {
             speed = authoring.speed
         });
-        AddComponent<PlayerInputData>(entity);
+        AddComponent<PlayerInput>(entity);
     }
 }
