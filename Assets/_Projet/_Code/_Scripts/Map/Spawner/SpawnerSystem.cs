@@ -1,84 +1,170 @@
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
+using Unity.NetCode;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-public struct WaitingForRespawnTag : IComponentData { }
+public struct WaitForRespawnTag : IComponentData { }
+public struct ResetStuffTag : IComponentData { }
 
 public struct RespawnPoints : IBufferElementData
 {
-    public Entity entity; // Référence à une entité représentant une zone de respawn
-}
-public struct Player : IComponentData
-{
-    public Entity teamEntity; // Référence à l'entité de l'équipe du joueur
-    public int hp;
+    public Entity entity;
 }
 
-public partial struct WaitingForRespawnSystem : ISystem
+[BurstCompile]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+public partial struct OnDieSystem : ISystem
 {
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
+        builder.WithAll<CurrentHealthComponent>();
+        state.RequireForUpdate(state.GetEntityQuery(builder));
+    }
+
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-        foreach (var (playerRef, entity) in SystemAPI.Query<RefRO<Player>>()
-            .WithEntityAccess())
+        OnDieJob job = new OnDieJob
         {
-            if (entityManager.HasComponent<WaitingForRespawnTag>(entity)) continue;
+            dt = SystemAPI.Time.DeltaTime,
+            networkTime = SystemAPI.GetSingleton<NetworkTime>(),
+            commandBuffer = ecb.AsParallelWriter(),
+            resetStuffLookup = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true),
+        };
 
-            ref readonly Player player = ref playerRef.ValueRO;
+        state.Dependency = job.ScheduleParallel(state.Dependency);
 
-            if (player.hp <= 0)
+        state.Dependency.Complete();
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+    }
+}
+
+[BurstCompile]
+[WithAll(typeof(Simulate))]
+public partial struct OnDieJob : IJobEntity
+{
+    public float dt;
+    public NetworkTime networkTime;
+    public EntityCommandBuffer.ParallelWriter commandBuffer;
+
+    [ReadOnly]
+    public ComponentLookup<ResetStuffTag> resetStuffLookup;
+
+    public void Execute(Entity entity, in CurrentHealthComponent hp)
+    {
+        if (!resetStuffLookup.HasComponent(entity))
+        {
+            if (hp.Value <= 0)
             {
-                entityManager.AddComponent<WaitingForRespawnTag>(entity);
+                //commandBuffer.AddComponent<WaitForRespawnTag>(entity.Index, entity);
+                commandBuffer.AddComponent<ResetStuffTag>(entity.Index, entity);
             }
         }
     }
 }
 
-public partial struct SpawnerSystem : ISystem
+
+
+
+
+
+// /////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+[BurstCompile]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+public partial struct RespawnSystem : ISystem
 {
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
+        builder.WithAll<WaitForRespawnTag>();
+        state.RequireForUpdate(state.GetEntityQuery(builder));
+    }
+
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        EntityManager entityManager = state.EntityManager;
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-        //On recupére les joueurs qui sont en attente d'un respawn
-        foreach (var (playerRef, playerTransformRef, entity) in SystemAPI.Query<RefRO<Player>, RefRW<LocalTransform>>()
-            .WithAll<WaitingForRespawnTag>()
-            .WithEntityAccess())
+        RespawnJob job = new RespawnJob
         {
-            //Simplification des appels
-            ref readonly Player player = ref playerRef.ValueRO;
-            ref LocalTransform playerTransform = ref playerTransformRef.ValueRW;
+            dt = SystemAPI.Time.DeltaTime,
+            networkTime = SystemAPI.GetSingleton<NetworkTime>(),
+            commandBuffer = ecb.AsParallelWriter(),
+            respawnPointsLookup = state.GetBufferLookup<RespawnPoints>(isReadOnly: true),
+            respawnPtLookup = state.GetComponentLookup<LocalTransform>(isReadOnly: true),
+            resetStuffLookup = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true)
+        };
+        state.Dependency = job.ScheduleParallel(state.Dependency);
 
-            //On verifie si des entitées avec le composant "RespawnPoint" exist
-            if (entityManager.HasComponent<RespawnPoints>(player.teamEntity))
+        state.Dependency.Complete();
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+    }
+}
+
+[BurstCompile]
+[WithAll(typeof(Simulate))]
+public partial struct RespawnJob : IJobEntity
+{
+    public float dt;
+    public NetworkTime networkTime;
+    public EntityCommandBuffer.ParallelWriter commandBuffer;
+
+    [ReadOnly] public BufferLookup<RespawnPoints> respawnPointsLookup;
+    [ReadOnly] public ComponentLookup<LocalTransform> respawnPtLookup;
+    [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
+
+    public void Execute(Entity entity, in CharacterControllerComponent controler, ref LocalTransform transform,
+        ref CurrentHealthComponent hp, in MaxHealthComponent maxHp)
+    {
+        ////On verifie si des entitées avec le composant "RespawnPoint" exist
+        if (respawnPointsLookup.HasBuffer(controler.teamEntity))
+        {
+            //On récupére la liste des points de respawn
+            DynamicBuffer<RespawnPoints> respawnZonesBuffer;
+            respawnPointsLookup.TryGetBuffer(controler.teamEntity, out respawnZonesBuffer);
+
+            //On verifie que le nombre de point de respawn est > 0
+            if (respawnZonesBuffer.Length > 0)
             {
-                //On récupére la liste des points de respawn
-                DynamicBuffer<RespawnPoints> respawnZonesBuffer = entityManager.GetBuffer<RespawnPoints>(player.teamEntity);
+                //On recupere le premier point de spawn de la liste 
+                Entity respawnZoneEntity = respawnZonesBuffer[0].entity;
 
-                //On verifie que le nombre de point de respawn est > 0
-                if (respawnZonesBuffer.Length > 0)
+                //On le recupére
+                LocalTransform respawnZoneTransform;
+                    respawnPtLookup.TryGetComponent(respawnZoneEntity, out respawnZoneTransform);
+
+                //Changement de position, récupération des PV
+                transform.Position = respawnZoneTransform.Position;
+                hp.Value = maxHp.Value;
+
+                if (resetStuffLookup.HasComponent(respawnZoneEntity))
                 {
-                    //On recupere le premier point de spawn de la liste 
-                    Entity respawnZoneEntity = respawnZonesBuffer[0].entity;
+                    //TODO : Vider l'inventaire
 
-                    //On verifie que le point de respawn a bien un transform
-                    if (entityManager.HasComponent<LocalTransform>(respawnZoneEntity))
-                    {
-                        //On le recupére
-                        LocalTransform respawnZoneTransform = entityManager.GetComponentData<LocalTransform>(respawnZoneEntity);
-
-                        playerTransform.Position = respawnZoneTransform.Position;
-                    }
-                    else 
-                        Debug.LogWarning($"Respawn zone entity {respawnZoneEntity} does not have a LocalTransform component.");
+                    commandBuffer.RemoveComponent<ResetStuffTag>(entity.Index, entity);
                 }
-                else 
-                    Debug.LogWarning($"No respawn zones found for team entity {player.teamEntity}.");
             }
-            else 
-                Debug.LogWarning($"Team entity {player.teamEntity} does not have a RespawnZones component.");
+            else
+                Debug.LogWarning($"No respawn zones found for team entity {controler.teamEntity}.");
         }
+        else
+            Debug.LogWarning($"Team entity {controler.teamEntity} does not have a RespawnZones component.");
     }
 }
 

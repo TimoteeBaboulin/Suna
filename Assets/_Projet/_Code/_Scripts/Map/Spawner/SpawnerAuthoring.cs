@@ -3,8 +3,7 @@ using UnityEngine;
 
 public class SpawnerAuthoring : MonoBehaviour
 {
-    [SerializeField] TeamSideType side;
-    [SerializeField] float playerLifeSpaceSize;
+    public TeamSideType side;
 
     public class Baker : Baker<SpawnerAuthoring>
     {
@@ -15,7 +14,6 @@ public class SpawnerAuthoring : MonoBehaviour
             AddComponent(entity, new SpawnerComponent
             {
                 side = authoring.side,
-                playerLifeSpaceSize = authoring.playerLifeSpaceSize,
             });
 
             if (authoring.side == TeamSideType.Corpo)

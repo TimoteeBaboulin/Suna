@@ -5,7 +5,4 @@ using Unity.Physics;
 public struct SpawnerComponent : IComponentData
 {
     public TeamSideType side;
-    public float playerLifeSpaceSize;
-
-
 }

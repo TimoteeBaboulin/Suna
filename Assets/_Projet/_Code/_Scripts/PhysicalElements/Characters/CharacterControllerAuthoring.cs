@@ -1,9 +1,6 @@
 using Unity.Entities;
-using Unity.Physics;
-using Unity.Rendering;
-using Unity.Transforms;
+using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public struct CharacterTag : IComponentData
 {
@@ -27,11 +24,27 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
     [Header("Camera Parameters")]
     public float sensivity = 1f;
 
+    [Header("Temp(Debug)")]
+    public TeamSideType side;
+
     public class Baker : Baker<CharacterControllerAuthoring>
     {
         public override void Bake(CharacterControllerAuthoring cca)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            if (cca.side == TeamSideType.Corpo)
+                AddComponent(entity, new CorpoTeamTag { });
+            else
+                AddComponent(entity, new NatifTeamTag { });
+
+            GameObject teamObj = default;
+            TeamAuthoring[] teams = FindObjectsByType<TeamAuthoring>(FindObjectsSortMode.None);
+            foreach (var item in teams)
+            {
+                if (item.side == cca.side)
+                    teamObj = item.gameObject;
+            }
 
             AddComponent(entity, new CharacterControllerComponent
             {
@@ -47,7 +60,8 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 jumpRequest = false,
                 isGrounded = false,
                 isWalking = false,
-                sensivity = cca.sensivity
+                sensivity = cca.sensivity,
+                teamEntity = teamObj != default ? GetEntity(teamObj, TransformUsageFlags.None) : default
             });
 
             AddComponent(entity, new CameraAttachComponent());
@@ -57,7 +71,7 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
             AddComponent(entity, new CharacterTag()); //Multiplayer
             AddComponent(entity, new PlayerInput()); //Inputs for multiplayer
 
-           // AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
+            // AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
         }
     }
 }

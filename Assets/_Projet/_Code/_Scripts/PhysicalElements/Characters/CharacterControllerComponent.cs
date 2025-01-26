@@ -2,8 +2,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 [GhostComponent]
 public struct CharacterControllerComponent : IComponentData
@@ -22,7 +20,6 @@ public struct CharacterControllerComponent : IComponentData
 
     [GhostField] public float maxStepHeight;
 
-
     [GhostField] public float jumpForce;
 
     [GhostField] public bool jumpRequest;
@@ -32,6 +29,8 @@ public struct CharacterControllerComponent : IComponentData
     [GhostField] public float sensivity;
 
     [GhostField] public float verticalCameraAngle;
+
+    [GhostField] public Entity teamEntity;
 }
 
 public struct CameraAttachComponent : IComponentData
