@@ -15,19 +15,17 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
     [Header("Movement Parameters")]
     public float maxRunningSpeed = 1.5f;
     public float maxWalkingSpeed = 0.5f;
+    public float acceleration = 3.0f;
+    public float deceleration = 4.0f;
+    public float decelerationFactor = 1.4f;
+    public float drag = 0.1f;
     public float maxStepHeight = 0.5f;
 
     [Header("Vertical Movement Parameters")]
-    public float gravity = 9.81f;
     public float jumpForce = 3f;
-    public float drag = 0.1f;
 
     [Header("Camera Parameters")]
     public float sensivity = 1f;
-
-    public bool lockRotationX = false;
-    public bool lockRotationY = false;
-    public bool lockRotationZ = false;
 
     public class Baker : Baker<CharacterControllerAuthoring>
     {
@@ -37,15 +35,18 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterControllerComponent
             {
-                currentSpeed = 0f,
+                currentSpeed = cca.maxRunningSpeed,
                 maxRunningSpeed = cca.maxRunningSpeed,
                 maxWalkingSpeed = cca.maxWalkingSpeed,
-                maxStepHeight = cca.maxStepHeight,
-                gravity = cca.gravity,
-                jumpForce = cca.jumpForce,
+                acceleration = cca.acceleration,
+                deceleration = cca.deceleration,
+                decelerationFactor = cca.decelerationFactor,
                 drag = cca.drag,
+                maxStepHeight = cca.maxStepHeight,
+                jumpForce = cca.jumpForce,
                 jumpRequest = false,
                 isGrounded = false,
+                isWalking = false,
                 sensivity = cca.sensivity
             });
 
@@ -54,11 +55,9 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
             AddComponent(entity, new FreezeAllRotationTag());
 
             AddComponent(entity, new CharacterTag()); //Multiplayer
+            AddComponent(entity, new PlayerInput()); //Inputs for multiplayer
 
-            AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
-
-            /*AddComponent(entity, new LocalTransform());
-            AddComponent(entity, new PhysicsVelocity());*/
+           // AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
         }
     }
 }

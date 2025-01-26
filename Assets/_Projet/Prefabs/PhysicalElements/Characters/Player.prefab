@@ -108,14 +108,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxRunningSpeed: 500
   maxWalkingSpeed: 0.5
-  maxStepHeight: 0.5
-  gravity: 9.81
-  jumpForce: 3
+  acceleration: 3
+  deceleration: 4
+  decelerationFactor: 1.4
   drag: 0.1
-  sensivity: 2
-  lockRotationX: 1
-  lockRotationY: 0
-  lockRotationZ: 1
+  maxStepHeight: 0.5
+  jumpForce: 3
+  sensivity: 65.65
 --- !u!54 &8152830554212466766
 Rigidbody:
   m_ObjectHideFlags: 0
