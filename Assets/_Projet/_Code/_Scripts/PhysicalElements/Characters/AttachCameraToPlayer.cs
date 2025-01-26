@@ -40,7 +40,8 @@ using UnityEngine;
 //    }
 //}
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+//[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial class CameraAttachmentSystem : SystemBase
 {
     private Camera mainCamera;
@@ -69,7 +70,7 @@ public partial class CameraAttachmentSystem : SystemBase
     {
         if (mainCamera == null) { return; }         
 
-        foreach (var cameraAttach in SystemAPI.Query<CameraAttachComponent>())
+        foreach (var cameraAttach in SystemAPI.Query<CameraAttachComponent>().WithAll<GhostOwnerIsLocal>())
         {
            // Debug.Log(cameraAttach.transform.Rotation);
             mainCamera.transform.position = cameraAttach.transform.Position;

@@ -10,6 +10,7 @@ using UnityEngine.InputSystem;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+//[UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial struct PlayerMovementSystem : ISystem
 {
 
@@ -40,6 +41,7 @@ public partial struct PlayerMovementSystem : ISystem
 }
 
 [BurstCompile]
+[WithAll(typeof(Simulate))]
 public partial struct PlayerMovementJob : IJobEntity
 {
     public float dt;

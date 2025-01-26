@@ -2,7 +2,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 
-public class PrefabsConverterTemp : MonoBehaviour
+public class NetcodePrefabsConverter : MonoBehaviour
 {
     //public GameObject unit = null;
     public GameObject player = null;
@@ -15,9 +15,9 @@ public struct PrefabsData : IComponentData
     public LocalTransform transformCompData;
 }
 
-public class PrefabsBaker : Baker<PrefabsConverterTemp>
+public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 {
-    public override void Bake(PrefabsConverterTemp authoring)
+    public override void Bake(NetcodePrefabsConverter authoring)
     {
         //Entity unitPrefab = default;
         Entity playerPrefab = default;
