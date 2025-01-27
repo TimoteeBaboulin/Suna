@@ -69,14 +69,18 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         if (team == TimoteeTeam.Corporation)
         {
             component.corporationScore++;
-            component.nativeLossStreak++;
             component.corporationLossStreak = 0;
+
+            if (component.nativeLossStreak < component.maxStreakCount)
+                component.nativeLossStreak++;
         }
         else
         {
             component.nativeScore++;
-            component.corporationLossStreak++;
             component.nativeLossStreak = 0;
+
+            if (component.corporationLossStreak < component.maxStreakCount)
+                component.corporationLossStreak++;
         }
     }
 
