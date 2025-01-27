@@ -38,15 +38,14 @@ public partial struct ShootSystem : ISystem
 
         foreach (var (transform, shootInput, cameraAttach, entity) in SystemAPI
             .Query<RefRO<LocalTransform>, RefRO<PlayerInput>, RefRO<CameraAttachComponent>>()
-            .WithAll<Simulate>()
+            .WithAll<HasHitComponent, Simulate>()
             .WithEntityAccess())
         {
             if (!shootInput.ValueRO.shoot.IsSet)
             {
+                ecb.SetComponent(entity, new HasHitComponent { Value = false });
                 continue;
             }
-
-            bool hasHit = false;
 
             float3 startPosition = cameraAttach.ValueRO.transform.Position;
             float3 endPosition = startPosition + (cameraAttach.ValueRO.transform.Forward() * 100);
@@ -75,8 +74,7 @@ public partial struct ShootSystem : ISystem
                             ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
                         }
 
-                        hasHit = true;
-                        ecb.SetComponent(entity, new HasHitComponent { Value = hasHit });
+                        ecb.SetComponent(entity, new HasHitComponent { Value = true });
                     }
 
                     break;
