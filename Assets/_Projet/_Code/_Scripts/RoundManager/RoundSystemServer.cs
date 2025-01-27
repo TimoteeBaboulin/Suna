@@ -7,6 +7,11 @@ using UnityEngine.InputSystem;
 public partial struct RoundManagerServer : ISystem, ISystemStartStop
 {
     private EntityQuery _query;
+    private enum TimoteeTeam
+    {
+        Corporation,
+        Natives
+    };
 
     [BurstCompile]
     public void OnStartRunning(ref SystemState state)
@@ -22,7 +27,7 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         InitGame(ref state, entity, ref component);
 
         //Need to write the changed values back onto the component
-        SystemAPI.SetSingleton<RoundComponent>(component);
+        SystemAPI.SetSingleton(component);
     }
 
     //[BurstCompile]
@@ -36,7 +41,7 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
 
         //Check if the bomb was planted
         Entity entity = _query.GetSingletonEntity();
-        if (state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
+        if (roundComponent.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
             CollectorPlanted(ref state, entity, ref roundComponent);
         }
@@ -51,7 +56,7 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         }
 
         //Write the values in memory
-        SystemAPI.SetSingleton<RoundComponent>(roundComponent);
+        SystemAPI.SetSingleton(roundComponent);
 
         if (Keyboard.current[Key.Space].wasPressedThisFrame)
         {
@@ -59,13 +64,36 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         }
     }
 
+    private void Victory(ref SystemState state, Entity entity, ref RoundComponent component, TimoteeTeam team)
+    {
+        if (team == TimoteeTeam.Corporation)
+        {
+            component.corporationScore++;
+            component.nativeLossStreak++;
+            component.corporationLossStreak = 0;
+        }
+        else
+        {
+            component.nativeScore++;
+            component.corporationLossStreak++;
+            component.nativeLossStreak = 0;
+        }
+    }
+
     private void TimeOutPhase(ref SystemState state, Entity entity, ref RoundComponent component)
     {
         //Gets to next phase because of time out
         if (component.currentPhase == RoundPhase.ActionPhase)
-            component.currentPhase = RoundPhase.PostRoundPhase;
+        {
+            Victory(ref state, entity, ref component, TimoteeTeam.Natives);
+            component.currentPhase = RoundPhase.PostRoundPhase; 
+        }
         else
+        {
+            if (component.currentPhase == RoundPhase.PostPlantPhase)
+                Victory(ref state, entity, ref component, TimoteeTeam.Corporation);
             component.currentPhase++;
+        }
 
         //If the round ended, get to next one
         if (component.currentPhase > RoundPhase.PostRoundPhase)
@@ -84,6 +112,8 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         component.currentPhase = RoundPhase.BuyPhase;
         component.timer = buffer[(int)component.currentPhase];
         component.currentRound = 1;
+        component.nativeScore = 0;
+        component.corporationScore = 0;
     }
 
     private void InitRound(ref SystemState state, Entity entity, ref RoundComponent component)
@@ -92,6 +122,14 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         component.currentRound++;
 
         Debug.Log("Passing to round number " +  component.currentRound);
+        ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
+        if (system == null)
+        {
+            Debug.Log("Couldn't server system reference.");
+            return;
+        }
+
+        system.SendMessageRpc("Init Round", ConnectionManager.Instance.Server);
     }
 
     private void CollectorPlanted(ref SystemState state, Entity entity, ref RoundComponent component)
