@@ -23,7 +23,7 @@ public class HUDController : MonoBehaviour
 
     bool hitRegistered = false;
 
-    //private InGameHUDSystem _inGameHUDSystem = null;
+    private InGameHUDSystem system = null;
 
     private void Awake()
     {
@@ -37,12 +37,6 @@ public class HUDController : MonoBehaviour
         capacity = ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
 
         crosshairElement = crosshairDocument.rootVisualElement.Q("Crosshair");
-
-        //InGameHUDSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
-        //system.HealthChangedEvent += System_OnHealthChange;
-        //system.OnArmorChange += System_OnArmorChange;
-        //system.OnAmmoChange += System_OnAmmoChange;
-        //system.OnCapacityChange += System_OnCapacityChange;
     }
 
     private void Update()
@@ -51,11 +45,12 @@ public class HUDController : MonoBehaviour
         //{
         //    System_OnHitRegistered(null, null);
         //}
-        /*if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (system == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
-            _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
-            _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
-        }*/
+            system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
+            system.HealthChangedEvent += System_OnHealthChange;
+            system.HitRegister += System_OnHitRegistered;
+        }
         if (hitRegistered)
         {
             hitRegistered = false;
