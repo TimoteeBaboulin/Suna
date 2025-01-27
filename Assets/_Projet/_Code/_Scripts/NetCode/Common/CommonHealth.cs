@@ -29,8 +29,8 @@ public struct DamageThisTickCommand : ICommandData
 
 public struct HasNoHealthTag : IComponentData { }
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [BurstCompile]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 public partial struct CalculateFrameDamageSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -45,10 +45,12 @@ public partial struct CalculateFrameDamageSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
+        ComponentLookup<HasNoHealthTag> lookup = state.GetComponentLookup<HasNoHealthTag>();
 
         CalculateFrameDamageJob job = new CalculateFrameDamageJob
         {
-            CurrentTick = currentTick
+            CurrentTick = currentTick,
+            Lookup = lookup
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -58,9 +60,16 @@ public partial struct CalculateFrameDamageSystem : ISystem
 public partial struct CalculateFrameDamageJob : IJobEntity
 {
     [ReadOnly] public NetworkTick CurrentTick;
+    [ReadOnly] public ComponentLookup<HasNoHealthTag> Lookup;
 
-    public void Execute(DynamicBuffer<DamageBufferElement> damageBuffer, DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
+    public void Execute(Entity entity, DynamicBuffer<DamageBufferElement> damageBuffer, DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
     {
+        if (Lookup.HasComponent(entity))
+        {
+            damageBuffer.Clear();
+            return;
+        }
+
         if (damageBuffer.IsEmpty)
         {
             damageThisTickBuffer.AddCommandData(new DamageThisTickCommand { Tick = CurrentTick, Value = 0 });
@@ -85,15 +94,16 @@ public partial struct CalculateFrameDamageJob : IJobEntity
     }
 }
 
+[BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [UpdateAfter(typeof(CalculateFrameDamageSystem))]
-[BurstCompile]
 public partial struct ApplyDamageSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<CurrentHealthComponent, DamageThisTickCommand, Simulate>();
+        builder.WithAll<CurrentHealthComponent, DamageThisTickCommand, Simulate>()
+            .WithNone<HasNoHealthTag>();
 
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
@@ -119,6 +129,7 @@ public partial struct ApplyDamageSystem : ISystem
 }
 
 [BurstCompile]
+[WithNone(typeof(HasNoHealthTag))]
 public partial struct ApplyDamageJob : IJobEntity
 {
     [ReadOnly] public NetworkTick CurrentTick;
@@ -140,6 +151,7 @@ public partial struct ApplyDamageJob : IJobEntity
 
         if (currentHealth.ValueRO.Value <= 0)
         {
+            currentHealth.ValueRW.Value = 0;
             ECB.AddComponent<HasNoHealthTag>(sortKey, entity);
         }
     }
