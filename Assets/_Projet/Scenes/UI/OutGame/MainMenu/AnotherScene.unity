@@ -878,10 +878,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
-      propertyPath: crosshairDocument
-      value: 
-      objectReference: {fileID: 9196977983040027840}
     - target: {fileID: 2642215316524588410, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -931,17 +927,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
---- !u!114 &9196977983040027840 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4848861561753351359, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
-  m_PrefabInstance: {fileID: 9196977983040027839}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
