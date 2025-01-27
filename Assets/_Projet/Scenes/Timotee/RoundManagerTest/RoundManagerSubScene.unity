@@ -194,12 +194,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 576c8512e662bc44eb53e4617677a283, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _baseTimer: 10
   _phaseTimes:
   - 5
   - 5
   - 5
   - 5
+  _defaultCredits: 1000
+  _victoryCredits: 3400
+  _lossCredits: 750
+  _lossStreakBonus: 550
+  _maxStreakCount: 5
 --- !u!4 &1536811831
 Transform:
   m_ObjectHideFlags: 0
