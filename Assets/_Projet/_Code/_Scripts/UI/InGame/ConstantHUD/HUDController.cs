@@ -41,10 +41,6 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.Space))
-        //{
-        //    System_OnHitRegistered(null, null);
-        //}
         if (system == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
@@ -65,24 +61,24 @@ public class HUDController : MonoBehaviour
         yield return null;
     }
 
-    private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs e)
+    private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
-        //if (e is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
+        if (args is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
     }
-    private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs e)
+    private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs args)
     {
-        //if (e is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
+        //if (args is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
     }
-    private void System_OnAmmoChange(object sender, TestPlayerDataSystem.AmmoArgs e)
+    private void System_OnAmmoChange(object sender, TestPlayerDataSystem.AmmoArgs args)
     {
-       // if (e is TestPlayerDataSystem.AmmoArgs arg) ammo.text = arg.Ammo.ToString();
+        // if (args is TestPlayerDataSystem.AmmoArgs arg) ammo.text = arg.Ammo.ToString();
     }
-    private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs e)
+    private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs args)
     {
-        //if (e is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
+        //if (args is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
     }
 
-    private void System_OnHitRegistered(object sender, EventArgs e)
+    private void System_OnHitRegistered(object sender, EventArgs args)
     {
         hitRegistered = true;
         crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
