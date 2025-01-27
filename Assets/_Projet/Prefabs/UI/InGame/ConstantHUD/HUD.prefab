@@ -358,14 +358,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   healthArmorDocument: {fileID: 720649181454907442}
   ammoDocument: {fileID: 8025272320702470711}
-  cashDocument: {fileID: 9119319340460733690}
-  C0: 'D : Damage (Reduce Health)'
-  C1: 'H : Heal (Increase Health)'
-  C2: 'P : Pierce (Decrease Armor)'
-  C3: 'U : Undamage (Increase Armor'
-  C4: 'Mouse0 : Shoot (Reduce Ammo)'
-  C5: 'R : Reload (Set Ammo to Capacity)'
-  C6: 'C : Change (Decrease Capacity)'
-  C7: 'V : Value (Increase Capacity)'
-  C8: 'B : Buy (Decrease Money)'
-  C9: 'G : Gain (Increase Money)'
+  crosshairDocument: {fileID: 4848861561753351359}

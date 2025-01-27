@@ -8,6 +8,11 @@ using UnityEngine;
 
 using RaycastHit = Unity.Physics.RaycastHit;
 
+public struct HasHitComponent : IComponentData
+{
+    [GhostField] public bool Value;
+}
+
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct ShootSystem : ISystem
 {
@@ -33,11 +38,12 @@ public partial struct ShootSystem : ISystem
 
         foreach (var (transform, shootInput, cameraAttach, entity) in SystemAPI
             .Query<RefRO<LocalTransform>, RefRO<PlayerInput>, RefRO<CameraAttachComponent>>()
-            .WithAll<Simulate>()
+            .WithAll<HasHitComponent, Simulate>()
             .WithEntityAccess())
         {
             if (!shootInput.ValueRO.shoot.IsSet)
             {
+                ecb.SetComponent(entity, new HasHitComponent { Value = false });
                 continue;
             }
 
@@ -61,9 +67,14 @@ public partial struct ShootSystem : ISystem
                         continue;
                     }
 
-                    if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
+                    if (state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
                     {
-                        ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
+                        if (state.World.IsServer())
+                        {
+                            ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
+                        }
+
+                        ecb.SetComponent(entity, new HasHitComponent { Value = true });
                     }
 
                     break;
