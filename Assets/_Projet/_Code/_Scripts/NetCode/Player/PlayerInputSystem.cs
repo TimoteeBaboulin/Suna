@@ -31,6 +31,7 @@ public partial class PlayerInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
+
        // InputSystem.Update();
         Vector2 playerMove = actions.Move.ReadValue<Vector2>();
         Vector2 playerLook = actions.Look.ReadValue<Vector2>();

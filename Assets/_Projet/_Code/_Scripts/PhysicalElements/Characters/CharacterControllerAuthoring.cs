@@ -44,6 +44,7 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 if (item.side == cca.side)
                     teamObj = item.gameObject;
             }
+            Debug.Log("FOUND" + teamObj);
 
             AddComponent(entity, new CharacterControllerComponent
             {
@@ -60,7 +61,7 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 isGrounded = false,
                 isWalking = false,
                 sensivity = cca.sensivity,
-                teamEntity = teamObj != default ? GetEntity(teamObj, TransformUsageFlags.None) : default
+                teamEntity = teamObj != default ? GetEntity(teamObj, TransformUsageFlags.Dynamic) : default
             });
 
             AddComponent(entity, new CameraAttachComponent());
