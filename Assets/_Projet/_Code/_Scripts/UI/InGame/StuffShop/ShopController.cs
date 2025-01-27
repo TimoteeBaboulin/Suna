@@ -19,6 +19,8 @@ public class ShopController : MonoBehaviour
     {
         root = GetComponent<UIDocument>().rootVisualElement;
         shop = root.Q<VisualElement>("Shop");
+        root.style.opacity = 0;
+        root.SetEnabled(false);
     }
 
     private void Start()
@@ -58,18 +60,18 @@ public class ShopController : MonoBehaviour
             foreach (Button button in child.Children())
             {
                 button.clicked += () => {
-                    EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                    EntityQuery query = entityManager.CreateEntityQuery(typeof(TestPlayerData));
-                    Entity entity = query.ToEntityArray(Allocator.Temp).First();
-                    TestPlayerData data = query.ToComponentDataArray<TestPlayerData>(Allocator.Temp).First();
-                    if (data.Cash >= 100)
-                    {
-                        data.Cash -= 100;
-                        Debug.Log("Bought " + button.text);
-                    }
-                    entityManager.SetComponentData(entity, data);
-                    TestPlayerDataSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TestPlayerDataSystem>();
-                    system.InvokeCashUpdate(data.Cash);
+                    Debug.Log("Bought " + button.text);
+                    //EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
+                    //EntityQuery query = entityManager.CreateEntityQuery(typeof(TestPlayerData));
+                    //Entity entity = query.ToEntityArray(Allocator.Temp).First();
+                    //TestPlayerData data = query.ToComponentDataArray<TestPlayerData>(Allocator.Temp).First();
+                    //if (data.Cash >= 100)
+                    //{
+                    //    data.Cash -= 100;
+                    //}
+                    //entityManager.SetComponentData(entity, data);
+                    //TestPlayerDataSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TestPlayerDataSystem>();
+                    //system.InvokeCashUpdate(data.Cash);
                 };
             }
         }
@@ -79,7 +81,8 @@ public class ShopController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            root.visible = !root.visible;
+            root.style.opacity = root.style.opacity.value == 1 ? 0 : 1;
+            root.SetEnabled(!root.enabledInHierarchy);
         }
     }
 
