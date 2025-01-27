@@ -6,6 +6,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -73,14 +74,7 @@ public partial struct OnDieJob : IJobEntity
 }
 
 
-
-
-
-
-// /////////////////////////////////////////////////////////////////////////////////
-
-
-
+// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 [BurstCompile]
@@ -105,6 +99,7 @@ public partial struct RespawnSystem : ISystem
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
+
             respawnPointsLookup = state.GetBufferLookup<RespawnPoints>(isReadOnly: true),
             respawnPtLookup = state.GetComponentLookup<LocalTransform>(isReadOnly: true),
             resetStuffLookup = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true)
@@ -118,7 +113,7 @@ public partial struct RespawnSystem : ISystem
 }
 
 [BurstCompile]
-[WithAll(typeof(Simulate))]
+//[WithAll(typeof(Simulate))]
 public partial struct RespawnJob : IJobEntity
 {
     public float dt;
@@ -129,7 +124,7 @@ public partial struct RespawnJob : IJobEntity
     [ReadOnly] public ComponentLookup<LocalTransform> respawnPtLookup;
     [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
 
-    public void Execute(Entity entity, in CharacterControllerComponent controler, ref LocalTransform transform,
+    public void Execute(Entity entity, in CharacterControllerComponent controler,
         ref CurrentHealthComponent hp, in MaxHealthComponent maxHp)
     {
         ////On verifie si des entitées avec le composant "RespawnPoint" exist
@@ -145,12 +140,14 @@ public partial struct RespawnJob : IJobEntity
                 //On recupere le premier point de spawn de la liste 
                 Entity respawnZoneEntity = respawnZonesBuffer[0].entity;
 
-                //On le recupére
+                LocalTransform playerTransform;
+                respawnPtLookup.TryGetComponent(entity, out playerTransform);
+
                 LocalTransform respawnZoneTransform;
-                    respawnPtLookup.TryGetComponent(respawnZoneEntity, out respawnZoneTransform);
+                respawnPtLookup.TryGetComponent(respawnZoneEntity, out respawnZoneTransform);
 
                 //Changement de position, récupération des PV
-                transform.Position = respawnZoneTransform.Position;
+                playerTransform.Position = respawnZoneTransform.Position;
                 hp.Value = maxHp.Value;
 
                 if (resetStuffLookup.HasComponent(respawnZoneEntity))

@@ -30,7 +30,7 @@ public class MainMenuController : MonoBehaviour
 
     void OnPlayButton_Click()
     {
-        SceneManager.LoadScene((int)sceneLoadOnPlay);
+        SceneLoader.Instance.ChangeScene(sceneLoadOnPlay);
     }
 
     void OnQuitButton_Click()
