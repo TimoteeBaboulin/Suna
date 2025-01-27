@@ -67,7 +67,7 @@ public class HUDController : MonoBehaviour
 
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs e)
     {
-        //if (e is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
+        if (e is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
     }
     private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs e)
     {
