@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
@@ -18,9 +20,10 @@ public class HUDController : MonoBehaviour
     Label armor;
     Label ammo;
     Label capacity;
-    Background crosshair;
 
-    private InGameHUDSystem _inGameHUDSystem = null;
+    bool hitRegistered = false;
+
+    //private InGameHUDSystem _inGameHUDSystem = null;
 
     private void Awake()
     {
@@ -33,6 +36,8 @@ public class HUDController : MonoBehaviour
         ammo = ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
         capacity = ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
 
+        crosshairElement = crosshairDocument.rootVisualElement.Q("Crosshair");
+
         //InGameHUDSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
         //system.HealthChangedEvent += System_OnHealthChange;
         //system.OnArmorChange += System_OnArmorChange;
@@ -42,11 +47,27 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    System_OnHitRegistered(null, null);
+        //}
         /*if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
             _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
         }*/
+        if (hitRegistered)
+        {
+            hitRegistered = false;
+            StartCoroutine(HitRegistered());
+        }
+    }
+
+    IEnumerator HitRegistered()
+    {
+        yield return new WaitForSeconds(1f);
+        crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.black);
+        yield return null;
     }
 
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs e)
@@ -64,5 +85,11 @@ public class HUDController : MonoBehaviour
     private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs e)
     {
         //if (e is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
+    }
+
+    private void System_OnHitRegistered(object sender, EventArgs e)
+    {
+        hitRegistered = true;
+        crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
 }
