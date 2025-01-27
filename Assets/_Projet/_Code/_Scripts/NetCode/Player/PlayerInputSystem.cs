@@ -36,7 +36,7 @@ public partial class PlayerInputSystem : SystemBase
         Vector2 playerMove = actions.Move.ReadValue<Vector2>();
         Vector2 playerLook = actions.Look.ReadValue<Vector2>();
 
-        bool isJumpPerfomered = actions.Jump.phase == InputActionPhase.Performed;
+        bool isJumpPerfomered = actions.Jump.WasPressedThisFrame();
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
