@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
@@ -12,7 +11,7 @@ public class TeamAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.None);
 
-            var buffer = AddBuffer<RespawnPoints>(entity);
+            //var buffer = AddBuffer<RespawnPoints>(entity);
 
             SpawnerAuthoring[] spawns = FindObjectsByType<SpawnerAuthoring>(FindObjectsSortMode.None);
 
@@ -22,10 +21,10 @@ public class TeamAuthoring : MonoBehaviour
                 {
                     Entity spawnEntity = GetEntity(spawnPoint.gameObject, TransformUsageFlags.Dynamic);
 
-                    buffer.Add(new RespawnPoints
-                    {
-                        entity = spawnEntity
-                    });
+                    //buffer.Add(new RespawnPoints
+                    //{
+                    //    entity = spawnEntity
+                    //});
                 }
             }
 

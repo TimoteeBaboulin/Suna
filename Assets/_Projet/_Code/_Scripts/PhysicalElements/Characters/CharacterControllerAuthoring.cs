@@ -37,14 +37,6 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
             else
                 AddComponent(entity, new NatifTeamTag { });
 
-            GameObject teamObj = default;
-            TeamAuthoring[] teams = FindObjectsByType<TeamAuthoring>(FindObjectsSortMode.None);
-            foreach (var item in teams)
-            {
-                if (item.side == cca.side)
-                    teamObj = item.gameObject;
-            }
-
             AddComponent(entity, new CharacterControllerComponent
             {
                 currentSpeed = cca.maxRunningSpeed,
@@ -60,7 +52,6 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 isGrounded = false,
                 isWalking = false,
                 sensivity = cca.sensivity,
-                teamEntity = teamObj != default ? GetEntity(teamObj, TransformUsageFlags.Dynamic) : default
             });
 
             AddComponent(entity, new CameraAttachComponent());
