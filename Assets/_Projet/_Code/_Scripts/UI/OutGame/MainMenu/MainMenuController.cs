@@ -11,7 +11,8 @@ public class MainMenuController : MonoBehaviour
     Button playButton;
     Button quitButton;
 
-    [SerializeField] string playSceneToLoad;
+    [SerializeField] SceneID sceneLoadOnPlay = SceneID.MultipayerTest;
+
 
     private void Awake()
     {
@@ -29,11 +30,7 @@ public class MainMenuController : MonoBehaviour
 
     void OnPlayButton_Click()
     {
-        Debug.Log("Play !");
-        if (playSceneToLoad.Length > 0)
-        {
-            SceneManager.LoadScene(playSceneToLoad);
-        }
+        SceneManager.LoadScene((int)sceneLoadOnPlay);
     }
 
     void OnQuitButton_Click()

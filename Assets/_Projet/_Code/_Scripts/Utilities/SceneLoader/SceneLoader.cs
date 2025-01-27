@@ -6,8 +6,7 @@ using UnityEngine.SceneManagement;
 public enum SceneID
 {
     MainMenu,
-    World,
-    Fight
+    MultipayerTest
 }
 
 public class SceneLoader : Singleton<SceneLoader>
@@ -87,7 +86,7 @@ public class SceneLoader : Singleton<SceneLoader>
     {
         Canvas canvas = FindFirstObjectByType<Canvas>();
         if (canvas == null) Debug.LogWarning("No Canvas is present in the scene to implement SceneLoaderDebugMessage");
-        else if(debugMesage == null)
+        else if (debugMesage == null)
         {
             debugMesage = Instantiate(sceneDebugMessagePrefab, canvas.transform).GetComponent<TextMeshProUGUI>();
             debugMesage.text = $"Scene : {SceneManager.GetActiveScene().name}";
@@ -97,38 +96,4 @@ public class SceneLoader : Singleton<SceneLoader>
             debugMesage.text = $"Scene : {SceneManager.GetActiveScene().name}";
         }
     }
-    //static SceneLoader instance;
-
-
-    //private void Awake()
-    //{
-    //    if (instance != null && instance != this)
-    //    {
-    //        Debug.LogWarning("An other same instance of SceneLoader exist! It was deleted");
-    //        Destroy(gameObject);
-    //        return;
-    //    }
-
-    //    instance = this;
-    //    DontDestroyOnLoad(gameObject);
-    //}
-
-    //public static SceneLoader Instance
-    //{
-    //    get
-    //    {
-    //        if (instance == null)
-    //        {
-    //            instance = FindFirstObjectByType<SceneLoader>();
-
-    //            if (instance == null)
-    //            {
-    //                GameObject singletonObject = new GameObject("SceneLoader");
-    //                instance = singletonObject.AddComponent<SceneLoader>();
-    //            }
-    //        }
-
-    //        return instance;
-    //    }
-    //}
 }
