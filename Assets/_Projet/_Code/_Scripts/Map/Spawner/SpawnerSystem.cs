@@ -1,12 +1,11 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Physics;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -20,25 +19,30 @@ public struct RespawnPoints : IBufferElementData
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct OnDieSystem : ISystem
 {
+    [ReadOnly]
+    public ComponentLookup<ResetStuffTag> resetStuffLookupInit;
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<CurrentHealthComponent>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
+        resetStuffLookupInit = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true);
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var ecb = new EntityCommandBuffer(Allocator.TempJob);
+        resetStuffLookupInit.Update(ref state);
 
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
         OnDieJob job = new OnDieJob
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
-            resetStuffLookup = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true),
+            resetStuffLookup = resetStuffLookupInit
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
@@ -81,17 +85,29 @@ public partial struct OnDieJob : IJobEntity
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct RespawnSystem : ISystem
 {
+    BufferLookup<RespawnPoints> respawnPointsLookupInit;
+    ComponentLookup<LocalTransform> respawnPtLookupInit;
+    ComponentLookup<ResetStuffTag> resetStuffLookupInit;
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<WaitForRespawnTag>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
+
+        respawnPointsLookupInit = state.GetBufferLookup<RespawnPoints>(isReadOnly: true);
+        respawnPtLookupInit = state.GetComponentLookup<LocalTransform>(isReadOnly: true);
+        resetStuffLookupInit = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true);
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        respawnPointsLookupInit.Update(ref state);
+        respawnPtLookupInit.Update(ref state);
+        resetStuffLookupInit.Update(ref state);
+
         var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
         RespawnJob job = new RespawnJob
@@ -100,9 +116,9 @@ public partial struct RespawnSystem : ISystem
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
 
-            respawnPointsLookup = state.GetBufferLookup<RespawnPoints>(isReadOnly: true),
-            respawnPtLookup = state.GetComponentLookup<LocalTransform>(isReadOnly: true),
-            resetStuffLookup = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true)
+            respawnPointsLookup = respawnPointsLookupInit,
+            respawnPtLookup = respawnPtLookupInit,
+            resetStuffLookup = resetStuffLookupInit
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
 
@@ -113,7 +129,6 @@ public partial struct RespawnSystem : ISystem
 }
 
 [BurstCompile]
-//[WithAll(typeof(Simulate))]
 public partial struct RespawnJob : IJobEntity
 {
     public float dt;

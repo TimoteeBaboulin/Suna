@@ -44,7 +44,6 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 if (item.side == cca.side)
                     teamObj = item.gameObject;
             }
-            Debug.Log("FOUND" + teamObj);
 
             AddComponent(entity, new CharacterControllerComponent
             {

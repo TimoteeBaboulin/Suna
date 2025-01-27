@@ -13,7 +13,6 @@ public partial struct InputDebugSystem : ISystem
             foreach (var (hp, entity) in SystemAPI.Query<RefRO<CurrentHealthComponent>>().WithNone<WaitForRespawnTag>().WithEntityAccess())
             {
                 ecb.AddComponent<WaitForRespawnTag>(entity);
-                Debug.Log("TEST");
             }
             ecb.Playback(state.EntityManager);
             ecb.Dispose();
