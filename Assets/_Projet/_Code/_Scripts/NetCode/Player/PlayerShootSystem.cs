@@ -8,6 +8,7 @@ using UnityEngine;
 
 using RaycastHit = Unity.Physics.RaycastHit;
 
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct HasHitComponent : IComponentData
 {
     [GhostField] public bool Value;
@@ -43,7 +44,11 @@ public partial struct ShootSystem : ISystem
         {
             if (!shootInput.ValueRO.shoot.IsSet)
             {
-                ecb.SetComponent(entity, new HasHitComponent { Value = false });
+                if (state.World.IsServer())
+                {
+                    ecb.SetComponent(entity, new HasHitComponent { Value = false });
+                }
+                
                 continue;
             }
 
@@ -67,13 +72,9 @@ public partial struct ShootSystem : ISystem
                         continue;
                     }
 
-                    if (state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
+                    if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
                     {
-                        if (state.World.IsServer())
-                        {
-                            ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
-                        }
-
+                        ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
                         ecb.SetComponent(entity, new HasHitComponent { Value = true });
                     }
 
