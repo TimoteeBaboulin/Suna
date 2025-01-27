@@ -16,20 +16,28 @@ public class MainMenuController : MonoBehaviour
 
     private void Awake()
     {
-        ui = GetComponent<UIDocument>().rootVisualElement;
+        UIDocument component;
+        if (TryGetComponent<UIDocument>(out component))
+        {
+            ui = component.rootVisualElement;
+        }
     }
 
     private void OnEnable()
     {
-        playButton = ui.Q<Button>("PlayButton");
-        playButton.clicked += OnPlayButton_Click;
+        if (ui != null)
+        {
+            playButton = ui.Q<Button>("PlayButton");
+            playButton.clicked += OnPlayButton_Click;
 
-        quitButton = ui.Q<Button>("QuitButton");
-        quitButton.clicked += OnQuitButton_Click;
+            quitButton = ui.Q<Button>("QuitButton");
+            quitButton.clicked += OnQuitButton_Click;
+        }
     }
 
     void OnPlayButton_Click()
     {
+        ConnectionManager.Instance.Connect();
         SceneManager.LoadScene((int)sceneLoadOnPlay);
     }
 
