@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 //[UpdateInGroup(typeof(GhostInputSystemGroup))]
-public partial struct PlayerMovementSystem : ISystem
+public partial struct CharacterMovementSystem : ISystem
 {
 
     [BurstCompile]
@@ -19,7 +19,7 @@ public partial struct PlayerMovementSystem : ISystem
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<
-            PlayerInput,
+            CharacterInput,
             CharacterControllerComponent,
             LocalTransform,
             PhysicsVelocity,
@@ -30,7 +30,7 @@ public partial struct PlayerMovementSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        PlayerMovementJob job = new PlayerMovementJob
+        CharacterMovementJob job = new CharacterMovementJob
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
@@ -42,13 +42,13 @@ public partial struct PlayerMovementSystem : ISystem
 
 [BurstCompile]
 [WithAll(typeof(Simulate))]
-public partial struct PlayerMovementJob : IJobEntity
+public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
    // public FixedString32Bytes worldName;
 
-    public void Execute(ref PlayerInput input, RefRW<CharacterControllerComponent> characterController,
+    public void Execute(ref CharacterInput input, RefRW<CharacterControllerComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<CameraAttachComponent> cameraAttach, RefRW<PhysicsVelocity> physicsVelocity)
     {
         if (!(networkTime.IsFirstPredictionTick))
@@ -57,7 +57,7 @@ public partial struct PlayerMovementJob : IJobEntity
         }
 
         ref CharacterControllerComponent controller = ref characterController.ValueRW;
-        ref LocalTransform playerTransform = ref localTransform.ValueRW;
+        ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
         ref CameraAttachComponent camera = ref cameraAttach.ValueRW;
 
@@ -73,7 +73,7 @@ public partial struct PlayerMovementJob : IJobEntity
             controller.direction = float2.zero;
         }
 
-        float3 dir = math.rotate(playerTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
+        float3 dir = math.rotate(characterTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
         controller.direction = new float2(dir.x, dir.z);
 
         float decelerationFactor = math.dot(controller.direction, controller.inertia) < 0 ? controller.decelerationFactor : 1.0f;
@@ -111,18 +111,18 @@ public partial struct PlayerMovementJob : IJobEntity
         // Easeout la vélocité quand on s'approche de la maxSpeed
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-        camera.transform.Position = playerTransform.Position;
+        camera.transform.Position = characterTransform.Position;
         camera.transform.Position += new float3(0f, 0.8f, 0f);
 
         float mouseX = dt * controller.sensivity * input.look.x;
         float mouseY = dt * controller.sensivity * input.look.y;
 
         camera.cameraYaw += mouseX;
-        playerTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
+        characterTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
 
         camera.cameraPitch -= mouseY;
         camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
-        camera.transform.Rotation = math.mul(playerTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
+        camera.transform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
 
         //Same as below but related to multiplayer it's the same logic but not the same synthax
         if (input.jump.IsSet)
