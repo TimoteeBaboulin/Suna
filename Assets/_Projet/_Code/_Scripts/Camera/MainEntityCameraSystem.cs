@@ -1,11 +1,10 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.NetCode;
 using Unity.Transforms;
 
-public struct MainEntityCamera : IComponentData
-{
-
-}
+[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+public struct MainEntityCamera : IComponentData { }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup))]
