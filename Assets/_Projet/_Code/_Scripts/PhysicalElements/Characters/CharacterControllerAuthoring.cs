@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 public struct CharacterTag : IComponentData
@@ -59,7 +60,7 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterViewComponent
             {
-                View = GetEntity(cca._viewGameObject, TransformUsageFlags.Dynamic),
+                Entity = GetEntity(cca._viewGameObject, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new CameraAttachComponent());

@@ -35,7 +35,7 @@ public struct CharacterControllerComponent : IComponentData
 
 public struct CharacterViewComponent : IComponentData
 {
-    [GhostField] public Entity View;
+    [GhostField] public Entity Entity;
 }
 
 public struct CameraAttachComponent : IComponentData
