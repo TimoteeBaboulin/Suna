@@ -23,6 +23,9 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
     [Header("Camera Parameters")]
     public float sensivity = 1f;
 
+    [Header("View GameObject")]
+    [SerializeField] private GameObject _viewGameObject;
+
     [Header("Temp(Debug)")]
     public TeamSideType side;
 
@@ -52,6 +55,11 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 isGrounded = false,
                 isWalking = false,
                 sensivity = cca.sensivity,
+            });
+
+            AddComponent(entity, new CharacterViewComponent
+            {
+                View = GetEntity(cca._viewGameObject, TransformUsageFlags.Dynamic),
             });
 
             AddComponent(entity, new CameraAttachComponent());

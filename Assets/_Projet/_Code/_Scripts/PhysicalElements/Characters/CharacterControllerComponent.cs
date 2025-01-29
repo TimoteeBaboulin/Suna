@@ -33,6 +33,11 @@ public struct CharacterControllerComponent : IComponentData
     [GhostField] public Entity teamEntity;
 }
 
+public struct CharacterViewComponent : IComponentData
+{
+    [GhostField] public Entity View;
+}
+
 public struct CameraAttachComponent : IComponentData
 {
     [GhostField] public LocalTransform transform;

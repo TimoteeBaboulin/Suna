@@ -111,8 +111,8 @@ public partial struct CharacterMovementJob : IJobEntity
         // Easeout la vélocité quand on s'approche de la maxSpeed
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-        camera.transform.Position = characterTransform.Position;
-        camera.transform.Position += new float3(0f, 0.8f, 0f);
+        //camera.transform.Position = characterTransform.Position;
+        //camera.transform.Position += new float3(0f, 0.8f, 0f);
 
         float mouseX = dt * controller.sensivity * input.look.x;
         float mouseY = dt * controller.sensivity * input.look.y;
@@ -141,6 +141,10 @@ public partial struct CharacterMovementJob : IJobEntity
         {
             characterController.ValueRW.isWalking = false;
         }
+
+        physicsVelocity.ValueRW.Linear.y += Physics.gravity.y * dt;
+
+
         //playerInput.jump.started += ctx =>
         //{
         //    physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
