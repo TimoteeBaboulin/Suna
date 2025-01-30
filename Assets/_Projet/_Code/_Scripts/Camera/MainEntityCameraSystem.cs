@@ -1,5 +1,6 @@
 using Unity.Burst;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
@@ -22,16 +23,19 @@ partial class MainEntityCameraSystem : SystemBase
         if (MainGameObjectCamera.Instance == null)
         {
             return;
-            Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCamera>();
-            LocalToWorld targetLocalToWorld = SystemAPI.GetComponent<LocalToWorld>(mainEntityCameraEntity);
-            //MainGameObjectCamera.Instance.transform.SetPositionAndRotation(targetLocalToWorld.Position, targetLocalToWorld.Rotation);
         }
 
-        foreach (RefRO<CameraAttachComponent> cameraAttach in SystemAPI.Query<RefRO<CameraAttachComponent>>().WithAll<GhostOwnerIsLocal>())
+        foreach (RefRO<CharacterViewComponent> view in SystemAPI
+            .Query<RefRO<CharacterViewComponent>>()
+            .WithAll<GhostOwnerIsLocal>())
         {
             Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCamera>();
             LocalToWorld targetLocalToWorld = SystemAPI.GetComponent<LocalToWorld>(mainEntityCameraEntity);
-            MainGameObjectCamera.Instance.transform.SetPositionAndRotation(targetLocalToWorld.Position, cameraAttach.ValueRO.transform.Rotation);
+
+            float3 cameraPosition = targetLocalToWorld.Position + view.ValueRO.DeltaPosition;
+            quaternion cameraRotation = math.mul(targetLocalToWorld.Rotation, quaternion.RotateX(math.radians(view.ValueRO.Pitch)));
+
+            MainGameObjectCamera.Instance.transform.SetPositionAndRotation(cameraPosition, cameraRotation);
         }
     }
 }

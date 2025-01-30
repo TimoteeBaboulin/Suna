@@ -38,7 +38,7 @@ public partial struct ShootSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (transform, shootInput, cameraAttach, entity) in SystemAPI
-            .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRO<CameraAttachComponent>>()
+            .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRO<CharacterViewComponent>>()
             .WithAll<HasHitComponent, Simulate>()
             .WithEntityAccess())
         {
@@ -52,37 +52,37 @@ public partial struct ShootSystem : ISystem
                 continue;
             }
 
-            float3 startPosition = cameraAttach.ValueRO.transform.Position;
-            float3 endPosition = startPosition + (cameraAttach.ValueRO.transform.Forward() * 100);
+            //float3 startPosition = cameraAttach.ValueRO.transform.Position;
+            //float3 endPosition = startPosition + (cameraAttach.ValueRO.transform.Forward() * 100);
 
-            RaycastInput raycastInput = new RaycastInput()
-            {
-                Start = startPosition,
-                End = endPosition,
-                Filter = CollisionFilter.Default
-            };
+            //RaycastInput raycastInput = new RaycastInput()
+            //{
+            //    Start = startPosition,
+            //    End = endPosition,
+            //    Filter = CollisionFilter.Default
+            //};
 
-            NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-            if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
-            {
-                foreach (var hit in allHits)
-                {
-                    if (hit.Entity == entity)
-                    {
-                        continue;
-                    }
+            //NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+            //if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
+            //{
+            //    foreach (var hit in allHits)
+            //    {
+            //        if (hit.Entity == entity)
+            //        {
+            //            continue;
+            //        }
 
-                    if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
-                    {
-                        ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
-                        ecb.SetComponent(entity, new HasHitComponent { Value = true });
-                    }
+            //        if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
+            //        {
+            //            ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
+            //            ecb.SetComponent(entity, new HasHitComponent { Value = true });
+            //        }
 
-                    break;
-                }
-            }
+            //        break;
+            //    }
+            //}
 
-            Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 1);
+            //Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 1);
         }
     }
 }

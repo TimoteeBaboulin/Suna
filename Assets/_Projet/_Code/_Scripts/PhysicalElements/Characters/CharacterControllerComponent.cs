@@ -35,12 +35,6 @@ public struct CharacterControllerComponent : IComponentData
 
 public struct CharacterViewComponent : IComponentData
 {
-    [GhostField] public Entity Entity;
-}
-
-public struct CameraAttachComponent : IComponentData
-{
-    [GhostField] public LocalTransform transform;
-    [GhostField] public float cameraPitch;
-    [GhostField] public float cameraYaw;
+    [GhostField] public float Pitch;
+    [GhostField] public float3 DeltaPosition;
 }

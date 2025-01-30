@@ -1,6 +1,6 @@
 using Unity.Entities;
-using Unity.Transforms;
 using UnityEngine;
+using Unity.Mathematics;
 
 public struct CharacterTag : IComponentData
 {
@@ -60,10 +60,9 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterViewComponent
             {
-                Entity = GetEntity(cca._viewGameObject, TransformUsageFlags.Dynamic)
+                Pitch = 0f,
+                DeltaPosition = new float3(0f, 0.8f, 0f),
             });
-
-            AddComponent(entity, new CameraAttachComponent());
 
             AddComponent(entity, new FreezeAllRotationTag());
 

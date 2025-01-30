@@ -1,3 +1,4 @@
+using System.Threading;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -23,7 +24,7 @@ public partial struct CharacterMovementSystem : ISystem
             CharacterControllerComponent,
             LocalTransform,
             PhysicsVelocity,
-            CameraAttachComponent>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
+            CharacterViewComponent>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
 
@@ -49,7 +50,7 @@ public partial struct CharacterMovementJob : IJobEntity
    // public FixedString32Bytes worldName;
 
     public void Execute(ref CharacterInput input, RefRW<CharacterControllerComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<CameraAttachComponent> cameraAttach, RefRW<PhysicsVelocity> physicsVelocity)
+        RefRW<LocalTransform> localTransform, RefRW<CharacterViewComponent> view, RefRW<PhysicsVelocity> physicsVelocity)
     {
         if (!(networkTime.IsFirstPredictionTick))
         {
@@ -59,7 +60,6 @@ public partial struct CharacterMovementJob : IJobEntity
         ref CharacterControllerComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
-        ref CameraAttachComponent camera = ref cameraAttach.ValueRW;
 
         float x = input.move.x;
         float z = input.move.y;
@@ -111,19 +111,24 @@ public partial struct CharacterMovementJob : IJobEntity
         // Easeout la vélocité quand on s'approche de la maxSpeed
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-        camera.transform.Position = characterTransform.Position;
 
-        camera.transform.Position += new float3(0f, 0.8f, 0f);
+
+        //camera.transform.Position = characterTransform.Position;
+
+        //camera.transform.Position += new float3(0f, 0.8f, 0f);
 
         float mouseX = dt * controller.sensivity * input.look.x;
         float mouseY = dt * controller.sensivity * input.look.y;
 
-        camera.cameraYaw += mouseX;
-        characterTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
+        characterTransform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateY(math.radians(mouseX)));
+        view.ValueRW.Pitch -= mouseY;
 
-        camera.cameraPitch -= mouseY;
-        camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
-        camera.transform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
+        //camera.cameraYaw += mouseX;
+        //characterTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
+
+        //camera.cameraPitch -= mouseY;
+        //camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
+        //camera.transform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
 
         //Same as below but related to multiplayer it's the same logic but not the same synthax
         if (input.jump.IsSet)
