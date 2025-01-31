@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [BurstCompile]
-[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 //[UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial struct CharacterMovementSystem : ISystem
 {
@@ -52,10 +52,10 @@ public partial struct CharacterMovementJob : IJobEntity
     public void Execute(ref CharacterInput input, RefRW<CharacterControllerComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<CharacterViewComponent> view, RefRW<PhysicsVelocity> physicsVelocity)
     {
-        //if (!(networkTime.IsFirstPredictionTick))
-        //{
-        //    return;
-        //}
+        if (!networkTime.IsFirstPredictionTick)
+        {
+            return;
+        }
 
         ref CharacterControllerComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -147,8 +147,6 @@ public partial struct CharacterMovementJob : IJobEntity
         {
             characterController.ValueRW.isWalking = false;
         }
-
-        physicsVelocity.ValueRW.Linear.y += Physics.gravity.y * dt;
 
 
         //playerInput.jump.started += ctx =>
