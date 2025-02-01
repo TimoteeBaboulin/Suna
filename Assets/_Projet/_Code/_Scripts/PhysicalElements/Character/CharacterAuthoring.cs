@@ -2,12 +2,7 @@ using Unity.Entities;
 using UnityEngine;
 using Unity.Mathematics;
 
-public struct CharacterTag : IComponentData
-{
-
-}
-
-public sealed class CharacterControllerAuthoring : MonoBehaviour
+public sealed class CharacterAuthoring : MonoBehaviour
 {
     [Header("Movement Parameters")]
     public float maxRunningSpeed = 1.5f;
@@ -24,15 +19,12 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
     [Header("Camera Parameters")]
     public float sensivity = 1f;
 
-    [Header("View GameObject")]
-    [SerializeField] private GameObject _viewGameObject;
-
     [Header("Temp(Debug)")]
     public TeamSideType side;
 
-    public class Baker : Baker<CharacterControllerAuthoring>
+    public class Baker : Baker<CharacterAuthoring>
     {
-        public override void Bake(CharacterControllerAuthoring cca)
+        public override void Bake(CharacterAuthoring cca)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
@@ -41,7 +33,7 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
             else
                 AddComponent(entity, new NatifTeamTag { });
 
-            AddComponent(entity, new CharacterControllerComponent
+            AddComponent(entity, new CharacterComponent
             {
                 currentSpeed = cca.maxRunningSpeed,
                 maxRunningSpeed = cca.maxRunningSpeed,
@@ -58,20 +50,12 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 sensivity = cca.sensivity,
             });
 
-            AddComponent(entity, new CharacterViewComponent
-            {
-                Pitch = 0f,
-                DeltaPosition = new float3(0f, 0.8f, 0f),
-            });
-
             AddComponent(entity, new FreezeAllRotationTag());
 
             AddComponent(entity, new CharacterTag()); //Multiplayer
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
-
-            // AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
         }
     }
 }

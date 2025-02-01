@@ -41,7 +41,7 @@ public partial class CharacterInputSystem : SystemBase
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
         foreach (var (controller, input) in SystemAPI
-            .Query<RefRO<CharacterControllerComponent>, RefRW<CharacterInput>>()
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>>()
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;

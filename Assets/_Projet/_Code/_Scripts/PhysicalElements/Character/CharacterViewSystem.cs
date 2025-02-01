@@ -13,7 +13,7 @@ partial struct CharacterLookSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<MainEntityCamera>();
+        state.RequireForUpdate<MainEntityCameraTag>();
     }
 
     [BurstCompile]
@@ -28,7 +28,7 @@ partial struct CharacterLookSystem : ISystem
 
         foreach (var (transform, parent) in SystemAPI
             .Query<RefRW<LocalTransform>, RefRO<Parent>>()
-            .WithAll<MainEntityCamera>())
+            .WithAll<MainEntityCameraTag>())
         {
             RefRW<LocalTransform> characterTransform = SystemAPI.GetComponentRW<LocalTransform>(parent.ValueRO.Value);
             RefRO<CharacterInput> input = SystemAPI.GetComponentRO<CharacterInput>(parent.ValueRO.Value);

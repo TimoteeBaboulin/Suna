@@ -21,10 +21,9 @@ public partial struct CharacterMovementSystem : ISystem
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<
             CharacterInput,
-            CharacterControllerComponent,
+            CharacterComponent,
             LocalTransform,
-            PhysicsVelocity,
-            CharacterViewComponent>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
+            PhysicsVelocity>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
 
@@ -49,15 +48,15 @@ public partial struct CharacterMovementJob : IJobEntity
     public NetworkTime networkTime;
    // public FixedString32Bytes worldName;
 
-    public void Execute(ref CharacterInput input, RefRW<CharacterControllerComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<CharacterViewComponent> view, RefRW<PhysicsVelocity> physicsVelocity)
+    public void Execute(ref CharacterInput input, RefRW<CharacterComponent> characterController,
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
         if (!networkTime.IsFirstPredictionTick)
         {
             return;
         }
 
-        ref CharacterControllerComponent controller = ref characterController.ValueRW;
+        ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
 

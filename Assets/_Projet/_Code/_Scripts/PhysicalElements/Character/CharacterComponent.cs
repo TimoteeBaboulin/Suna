@@ -3,8 +3,10 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 
+public struct CharacterTag : IComponentData { }
+
 [GhostComponent]
-public struct CharacterControllerComponent : IComponentData
+public struct CharacterComponent : IComponentData
 {
     [GhostField] public float currentSpeed;
     [GhostField] public float maxRunningSpeed;
@@ -31,10 +33,4 @@ public struct CharacterControllerComponent : IComponentData
     [GhostField] public float verticalCameraAngle;
 
     [GhostField] public Entity teamEntity;
-}
-
-public struct CharacterViewComponent : IComponentData
-{
-    [GhostField] public float Pitch;
-    [GhostField] public float3 DeltaPosition;
 }

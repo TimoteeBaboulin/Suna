@@ -1,11 +1,8 @@
 using Unity.Burst;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct MainEntityCamera : IComponentData { }
+using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup))]
@@ -25,11 +22,11 @@ partial class MainEntityCameraSystem : SystemBase
             return;
         }
 
-        foreach (RefRO<CharacterViewComponent> view in SystemAPI
-            .Query<RefRO<CharacterViewComponent>>()
-            .WithAll<GhostOwnerIsLocal>())
+        foreach (var view in SystemAPI
+            .Query<RefRO<MainEntityCameraTag>>()
+            /*.WithAll<GhostOwnerIsLocal>()*/)
         {
-            Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCamera>();
+            Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCameraTag>();
             LocalToWorld targetLocalToWorld = SystemAPI.GetComponent<LocalToWorld>(mainEntityCameraEntity);
 
             MainGameObjectCamera.Instance.transform.SetPositionAndRotation(targetLocalToWorld.Position, targetLocalToWorld.Rotation);
