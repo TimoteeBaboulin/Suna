@@ -117,11 +117,11 @@ public partial struct CharacterMovementJob : IJobEntity
 
         //camera.transform.Position += new float3(0f, 0.8f, 0f);
 
-        float mouseX = dt * controller.sensivity * input.look.x;
-        float mouseY = dt * controller.sensivity * input.look.y;
+        //float mouseX = dt * input.look.x;
+        //float mouseY = dt * controller.sensivity * input.look.y;
 
-        characterTransform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateY(math.radians(mouseX)));
-        view.ValueRW.Pitch -= mouseY;
+        //characterTransform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateY(math.radians(mouseX)));
+        //view.ValueRW.Pitch -= mouseY;
 
         //camera.cameraYaw += mouseX;
         //characterTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;

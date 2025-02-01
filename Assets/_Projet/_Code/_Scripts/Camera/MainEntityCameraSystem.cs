@@ -32,10 +32,7 @@ partial class MainEntityCameraSystem : SystemBase
             Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCamera>();
             LocalToWorld targetLocalToWorld = SystemAPI.GetComponent<LocalToWorld>(mainEntityCameraEntity);
 
-            float3 cameraPosition = targetLocalToWorld.Position + view.ValueRO.DeltaPosition;
-            quaternion cameraRotation = math.mul(targetLocalToWorld.Rotation, quaternion.RotateX(math.radians(view.ValueRO.Pitch)));
-
-            MainGameObjectCamera.Instance.transform.SetPositionAndRotation(cameraPosition, cameraRotation);
+            MainGameObjectCamera.Instance.transform.SetPositionAndRotation(targetLocalToWorld.Position, targetLocalToWorld.Rotation);
         }
     }
 }

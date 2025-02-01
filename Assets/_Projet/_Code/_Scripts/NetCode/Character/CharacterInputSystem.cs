@@ -40,11 +40,14 @@ public partial class CharacterInputSystem : SystemBase
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
-        foreach (RefRW<CharacterInput> input in SystemAPI.Query<RefRW<CharacterInput>>().
-            WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
+        foreach (var (controller, input) in SystemAPI
+            .Query<RefRO<CharacterControllerComponent>, RefRW<CharacterInput>>()
+            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;
-            input.ValueRW.look = CharacterLook;
+
+            input.ValueRW.look = CharacterLook * controller.ValueRO.sensivity;
+
             //TODO :Make these into a function
             if (isJumpPerfomered)
             {
