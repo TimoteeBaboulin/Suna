@@ -16,7 +16,6 @@ partial struct CharacterViewSystem : ISystem
         state.RequireForUpdate<MainEntityCameraTag>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
@@ -54,7 +53,6 @@ partial struct CharacterViewSystem : ISystem
     }
 }
 
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct ReceiveRcpCharacterViewSystem : ISystem
 {

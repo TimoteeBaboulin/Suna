@@ -167,7 +167,6 @@ public partial class ServerSystem : SystemBase
                 TargetConnection = target
             });
         }
-
     }
 
     #region Private Methods
