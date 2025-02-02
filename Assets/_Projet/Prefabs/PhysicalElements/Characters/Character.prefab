@@ -197,8 +197,8 @@ MonoBehaviour:
   maxStepHeight: 0.5
   jumpForce: 5.8
   sensivity: 6
-  _viewGameObject: {fileID: 0}
   side: 0
+  _view: {fileID: 5705571733313933505}
 --- !u!114 &2657201299575732514
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -271,7 +271,7 @@ MonoBehaviour:
     EntityIndex: 0
     PrefabType: 7
     SendTypeOptimization: 3
-    VariantHash: 6907887384974514810
+    VariantHash: 18225908329647095764
 --- !u!1 &5705571733313933505
 GameObject:
   m_ObjectHideFlags: 0
@@ -282,7 +282,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5616467393425774460}
   - component: {fileID: 3609768130497393143}
-  - component: {fileID: 8481382384570955074}
   m_Layer: 0
   m_Name: View
   m_TagString: Untagged
@@ -317,21 +316,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd6947504365c104eb305dc6d360a521, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8481382384570955074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5705571733313933505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfdaa6c06fe64fbda2b16e07a4ee0b25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ComponentOverrides:
-  - FullTypeName: Unity.Transforms.LocalTransform
-    EntityIndex: 0
-    PrefabType: -1
-    SendTypeOptimization: 3
-    VariantHash: 7796477309335575595

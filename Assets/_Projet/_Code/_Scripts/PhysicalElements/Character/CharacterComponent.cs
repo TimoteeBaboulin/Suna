@@ -34,3 +34,8 @@ public struct CharacterComponent : IComponentData
 
     [GhostField] public Entity teamEntity;
 }
+
+public struct CharacterViwEntityComponent : IComponentData
+{
+    public Entity View;
+}

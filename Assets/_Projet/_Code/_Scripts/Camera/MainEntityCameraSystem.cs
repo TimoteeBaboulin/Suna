@@ -23,8 +23,7 @@ partial class MainEntityCameraSystem : SystemBase
         }
 
         foreach (var view in SystemAPI
-            .Query<RefRO<MainEntityCameraTag>>()
-            /*.WithAll<GhostOwnerIsLocal>()*/)
+            .Query<RefRO<MainEntityCameraTag>>())
         {
             Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCameraTag>();
             LocalToWorld targetLocalToWorld = SystemAPI.GetComponent<LocalToWorld>(mainEntityCameraEntity);

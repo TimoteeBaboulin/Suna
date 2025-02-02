@@ -22,6 +22,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
     [Header("Temp(Debug)")]
     public TeamSideType side;
 
+    [SerializeField] private GameObject _view;
+
     public class Baker : Baker<CharacterAuthoring>
     {
         public override void Bake(CharacterAuthoring cca)
@@ -56,6 +58,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
+
+            AddComponent(entity, new CharacterViwEntityComponent { View = GetEntity(cca._view, TransformUsageFlags.Dynamic) });
         }
     }
 }
