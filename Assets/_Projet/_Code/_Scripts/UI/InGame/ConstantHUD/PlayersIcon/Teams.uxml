@@ -1,4 +1,8 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:VisualElement name="Corporation" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/PlayersIcon/Equipe_robot.png?fileID=2800000&amp;guid=c34fae2e8d418a54db5f5b915ca5b4f9&amp;type=3#Equipe_robot&quot;); position: absolute; width: 597px; height: 73px; right: auto; left: 200px; top: 25px;" />
-    <engine:VisualElement name="Natif" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/PlayersIcon/Equipe_Natif.png?fileID=2800000&amp;guid=9c5dea1980228d345a3f514f8613998f&amp;type=3#Equipe_Natif&quot;); position: absolute; width: 594px; height: 67px; right: 200px; top: 25px;" />
+    <engine:VisualElement name="Corporation" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/PlayersIcon/Equipe_robot.png?fileID=2800000&amp;guid=c34fae2e8d418a54db5f5b915ca5b4f9&amp;type=3#Equipe_robot&quot;); position: absolute; width: 597px; height: 73px; right: auto; left: 200px; top: 25px;">
+        <engine:Label text="00" name="Score" style="-unity-text-align: middle-center; position: absolute; right: 50px; top: 0; font-size: 40px; -unity-font-style: bold; left: auto; bottom: auto;" />
+    </engine:VisualElement>
+    <engine:VisualElement name="Natif" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/PlayersIcon/Equipe_Natif.png?fileID=2800000&amp;guid=9c5dea1980228d345a3f514f8613998f&amp;type=3#Equipe_Natif&quot;); position: absolute; width: 594px; height: 67px; right: 200px; top: 25px;">
+        <engine:Label text="00" name="Score" style="-unity-text-align: middle-center; position: absolute; right: auto; top: 0; font-size: 40px; -unity-font-style: bold; left: 54px; bottom: auto;" />
+    </engine:VisualElement>
 </engine:UXML>
