@@ -8,7 +8,7 @@ public class CharacterInputDebugAuthoring : MonoBehaviour
         public override void Bake(CharacterInputDebugAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-            AddComponent<CharacterDebugInputComponent>(entity);
+            AddComponent<CharacterDebugInput>(entity);
         }
     }
 }

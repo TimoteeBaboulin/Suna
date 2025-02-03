@@ -37,10 +37,10 @@ public struct CharacterComponent : IComponentData
 
 public struct CharacterViwEntityComponent : IComponentData
 {
-    public Entity View;
+    public Entity Value;
 }
 
-public struct CharacterPlayerAttached : IComponentData
+public struct CharacterPlayerAttachedComponent : IComponentData
 {
     [GhostField] public Entity Value;
 }

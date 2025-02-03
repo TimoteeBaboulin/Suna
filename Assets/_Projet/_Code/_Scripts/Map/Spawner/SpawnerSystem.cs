@@ -57,7 +57,7 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
     [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
 
-    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterPlayerAttached> CharacterPlayerAttached)
+    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterPlayerAttachedComponent> CharacterPlayerAttached)
     {
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
@@ -154,7 +154,7 @@ public partial struct RespawnSystem : ISystem
         });
 
         ecb.SetComponent(player, new PlayerCharacterAttached { Value = character });
-        ecb.SetComponent(character, new CharacterPlayerAttached { Value = player });
+        ecb.SetComponent(character, new CharacterPlayerAttachedComponent { Value = player });
 
         //ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId}, in the world {worldName}");
     }

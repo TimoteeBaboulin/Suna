@@ -53,6 +53,7 @@ partial struct CharacterViewSystem : ISystem
     }
 }
 
+//TODO: Prediction rotation
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct ReceiveRcpCharacterViewSystem : ISystem
 {
@@ -85,7 +86,7 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
 
                 transform.ValueRW.Rotation = viewRotationCommand.ValueRO.RotationX;
 
-                RefRW<LocalTransform> viewTransform = SystemAPI.GetComponentRW<LocalTransform>(characterViewEntity.ValueRO.View);
+                RefRW<LocalTransform> viewTransform = SystemAPI.GetComponentRW<LocalTransform>(characterViewEntity.ValueRO.Value);
                 viewTransform.ValueRW.Rotation = viewRotationCommand.ValueRO.RotationY;
             }
         }
