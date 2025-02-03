@@ -67,6 +67,19 @@ public partial struct ShootSystem : ISystem
             NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
+                RaycastHit closestHit;
+
+                if (allHits[0].Entity == entity)
+                {
+                    closestHit = allHits[1];
+                }
+                else
+                {
+                    closestHit = allHits[0];
+                }
+
+                float closestDistance = math.distancesq(raycastInput.Start, closestHit.Position);
+
                 foreach (var hit in allHits)
                 {
                     if (hit.Entity == entity)
@@ -74,13 +87,19 @@ public partial struct ShootSystem : ISystem
                         continue;
                     }
 
-                    if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
-                    {
-                        ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = 10 });
-                        ecb.SetComponent(entity, new HasHitComponent { Value = true });
-                    }
+                    float distance = math.distancesq(raycastInput.Start, hit.Position);
 
-                    break;
+                    if (distance < closestDistance)
+                    {
+                        closestHit = hit;
+                        closestDistance = distance;
+                    }
+                }
+
+                if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
+                {
+                    ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = 10 });
+                    ecb.SetComponent(entity, new HasHitComponent { Value = true });
                 }
             }
 
