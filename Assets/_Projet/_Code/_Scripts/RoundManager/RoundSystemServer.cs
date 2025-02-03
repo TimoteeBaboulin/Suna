@@ -4,7 +4,7 @@ using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public partial struct RoundManagerServer : ISystem, ISystemStartStop
+public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManager
 {
     private EntityQuery _query;
     private enum TimoteeTeam
@@ -13,9 +13,20 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         Natives
     };
 
+    private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
+
     [BurstCompile]
     public void OnStartRunning(ref SystemState state)
     {
+        //TODO: Switch to a RequireForUpdate to avoid performance drops
+        if (ConnectionManager.Instance.Server == null)
+        {
+            _running = false;
+            return;
+        }
+
+        _running = true;
+
         //Create the query and store it for future use
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         _query = builder.Build(ref state);
@@ -33,6 +44,8 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
     //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        if (!_running) return;
+
         //Check if the singleton exists to avoid crashes
         if (!SystemAPI.TryGetSingleton<RoundComponent>(out var roundComponent))
         {
@@ -129,11 +142,15 @@ public partial struct RoundManagerServer : ISystem, ISystemStartStop
         ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
         if (system == null)
         {
-            Debug.Log("Couldn't server system reference.");
+            Debug.Log("Couldn't find server system reference.");
             return;
         }
 
-        system.SendMessageRpc("Init Round", ConnectionManager.Instance.Server);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        foreach (var client in query.ToEntityArray(Allocator.Temp))
+        {
+            //system.SendMessageRpc("Init Round", ConnectionManager.Instance.Server, client);
+        }
     }
 
     private void CollectorPlanted(ref SystemState state, Entity entity, ref RoundComponent component)

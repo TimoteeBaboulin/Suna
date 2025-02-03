@@ -7,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 using Unity.Mathematics;
 using UnityEngine.InputSystem;
+using Unity.VisualScripting;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -98,24 +99,25 @@ public partial class ServerSystem : SystemBase
 
         if (Keyboard.current.oKey.wasPressedThisFrame)
         {
-            SendMessageRpc("Hello world", ConnectionManager.Instance.Server);
+            ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
+
+            SendMessageRpc("Hello world", ConnectionManager.Instance.Server, ref command);
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
 
     //Broadcast message to a target/client or to all clients if no target
-    public void SendMessageRpc(string text, World world, Entity target = default)
+    public void SendMessageRpc<T>(string text, World world, ref T command, Entity target = default) where T : unmanaged, IRpcCommand
     {
         if (world == null || !world.IsCreated)
         {
             return;
         }
-        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(ServerMessageRpcCommand));
-        world.EntityManager.SetComponentData(entity, new ServerMessageRpcCommand()
-        {
-            message = text
-        });
+
+        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
+        world.EntityManager.SetComponentData(entity, command);
+        
 
         if (target != Entity.Null)
         {
