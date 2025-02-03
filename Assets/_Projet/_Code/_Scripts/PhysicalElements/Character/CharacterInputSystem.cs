@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-public partial class PlayerInputSystem : SystemBase
+public partial class CharacterInputSystem : SystemBase
 {
     //private ControlsTemp _controls;
 
@@ -20,7 +20,7 @@ public partial class PlayerInputSystem : SystemBase
         input.Enable();
         actions = input.Player;
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAny<PlayerInput>();
+        builder.WithAny<CharacterInput>();
         RequireForUpdate(GetEntityQuery(builder));
     }
 
@@ -33,18 +33,21 @@ public partial class PlayerInputSystem : SystemBase
     {
 
        // InputSystem.Update();
-        Vector2 playerMove = actions.Move.ReadValue<Vector2>();
-        Vector2 playerLook = actions.Look.ReadValue<Vector2>();
+        Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
+        Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
         bool isJumpPerfomered = actions.Jump.WasPressedThisFrame();
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
-        foreach (RefRW<PlayerInput> input in SystemAPI.Query<RefRW<PlayerInput>>().
-            WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
+        foreach (var (controller, input) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>>()
+            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
-            input.ValueRW.move = playerMove;
-            input.ValueRW.look = playerLook;
+            input.ValueRW.move = CharacterMove;
+
+            input.ValueRW.look = CharacterLook * controller.ValueRO.sensivity;
+
             //TODO :Make these into a function
             if (isJumpPerfomered)
             {

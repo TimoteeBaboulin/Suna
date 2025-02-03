@@ -1,10 +1,11 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Transforms;
+
+public struct CharacterTag : IComponentData { }
 
 [GhostComponent]
-public struct CharacterControllerComponent : IComponentData
+public struct CharacterComponent : IComponentData
 {
     [GhostField] public float currentSpeed;
     [GhostField] public float maxRunningSpeed;
@@ -33,9 +34,12 @@ public struct CharacterControllerComponent : IComponentData
     [GhostField] public Entity teamEntity;
 }
 
-public struct CameraAttachComponent : IComponentData
+public struct CharacterViwEntityComponent : IComponentData
 {
-    [GhostField] public LocalTransform transform;
-    [GhostField] public float cameraPitch;
-    [GhostField] public float cameraYaw;
+    public Entity Value;
+}
+
+public struct CharacterPlayerAttachedComponent : IComponentData
+{
+    [GhostField] public Entity Value;
 }

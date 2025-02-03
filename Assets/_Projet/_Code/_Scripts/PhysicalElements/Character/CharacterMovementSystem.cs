@@ -5,13 +5,10 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-//[UpdateInGroup(typeof(GhostInputSystemGroup))]
-public partial struct PlayerMovementSystem : ISystem
+public partial struct CharacterMovementSystem : ISystem
 {
 
     [BurstCompile]
@@ -19,22 +16,20 @@ public partial struct PlayerMovementSystem : ISystem
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<
-            PlayerInput,
-            CharacterControllerComponent,
+            CharacterInput,
+            CharacterComponent,
             LocalTransform,
-            PhysicsVelocity,
-            CameraAttachComponent>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
+            PhysicsVelocity>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        PlayerMovementJob job = new PlayerMovementJob
+        CharacterMovementJob job = new CharacterMovementJob
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
-           // worldName = state.World.Name
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -42,24 +37,22 @@ public partial struct PlayerMovementSystem : ISystem
 
 [BurstCompile]
 [WithAll(typeof(Simulate))]
-public partial struct PlayerMovementJob : IJobEntity
+public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
-   // public FixedString32Bytes worldName;
 
-    public void Execute(ref PlayerInput input, RefRW<CharacterControllerComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<CameraAttachComponent> cameraAttach, RefRW<PhysicsVelocity> physicsVelocity)
+    public void Execute(ref CharacterInput input, RefRW<CharacterComponent> characterController,
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
-        if (!(networkTime.IsFirstPredictionTick))
+        if (!networkTime.IsFirstPredictionTick)
         {
             return;
         }
 
-        ref CharacterControllerComponent controller = ref characterController.ValueRW;
-        ref LocalTransform playerTransform = ref localTransform.ValueRW;
+        ref CharacterComponent controller = ref characterController.ValueRW;
+        ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
-        ref CameraAttachComponent camera = ref cameraAttach.ValueRW;
 
         float x = input.move.x;
         float z = input.move.y;
@@ -73,7 +66,7 @@ public partial struct PlayerMovementJob : IJobEntity
             controller.direction = float2.zero;
         }
 
-        float3 dir = math.rotate(playerTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
+        float3 dir = math.rotate(characterTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
         controller.direction = new float2(dir.x, dir.z);
 
         float decelerationFactor = math.dot(controller.direction, controller.inertia) < 0 ? controller.decelerationFactor : 1.0f;
@@ -111,23 +104,8 @@ public partial struct PlayerMovementJob : IJobEntity
         // Easeout la vélocité quand on s'approche de la maxSpeed
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-        camera.transform.Position = playerTransform.Position;
-        camera.transform.Position += new float3(0f, 0.8f, 0f);
-
-        float mouseX = dt * controller.sensivity * input.look.x;
-        float mouseY = dt * controller.sensivity * input.look.y;
-
-        camera.cameraYaw += mouseX;
-        playerTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
-
-        camera.cameraPitch -= mouseY;
-        camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
-        camera.transform.Rotation = math.mul(playerTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
-
-        //Same as below but related to multiplayer it's the same logic but not the same synthax
         if (input.jump.IsSet)
         {
-            //  Debug.Log("Jump" + worldName);
             physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
             characterController.ValueRW.isGrounded = false;
         }
@@ -141,22 +119,5 @@ public partial struct PlayerMovementJob : IJobEntity
         {
             characterController.ValueRW.isWalking = false;
         }
-        //playerInput.jump.started += ctx =>
-        //{
-        //    physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
-        //    characterController.ValueRW.isGrounded = false;
-        //};
-
-        //input.walk.canceled += ctx =>
-        //{
-        //    characterController.ValueRW.isWalking = false;
-        //};
-        //input.walk.started += ctx =>
-        //{
-        //    characterController.ValueRW.isWalking = true;
-        //};
-
-
-
     }
 }

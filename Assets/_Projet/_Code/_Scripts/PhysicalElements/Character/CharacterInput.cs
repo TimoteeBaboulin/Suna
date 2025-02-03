@@ -1,11 +1,8 @@
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted,OwnerSendType = SendToOwnerType.SendToNonOwner)]
-public struct PlayerInput :IInputComponentData
+public struct CharacterInput :IInputComponentData
 {
     [GhostField] public float2 move;
     [GhostField] public float2 look;

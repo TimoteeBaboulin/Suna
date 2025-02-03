@@ -2657,6 +2657,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Map
       objectReference: {fileID: 0}
+    - target: {fileID: 5127967498087649638, guid: 1d7cd68c93af9f24db2fcfd7a6c4d613, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5138155660786714065, guid: 1d7cd68c93af9f24db2fcfd7a6c4d613, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -4831,7 +4835,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eeb689d0abd23694ea97ed3c7a71a282, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 2584918407947073280, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+  player: {fileID: 3792611864182489402, guid: 39feb9559076cec40a82e01fd155145c, type: 3}
+  character: {fileID: 2584918407947073280, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
 --- !u!4 &1917095821
 Transform:
   m_ObjectHideFlags: 0

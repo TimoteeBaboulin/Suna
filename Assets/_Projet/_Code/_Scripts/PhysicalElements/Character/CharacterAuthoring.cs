@@ -1,12 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
-public struct CharacterTag : IComponentData
-{
-
-}
-
-public sealed class CharacterControllerAuthoring : MonoBehaviour
+public sealed class CharacterAuthoring : MonoBehaviour
 {
     [Header("Movement Parameters")]
     public float maxRunningSpeed = 1.5f;
@@ -26,9 +21,11 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
     [Header("Temp(Debug)")]
     public TeamSideType side;
 
-    public class Baker : Baker<CharacterControllerAuthoring>
+    [SerializeField] private GameObject _view;
+
+    public class Baker : Baker<CharacterAuthoring>
     {
-        public override void Bake(CharacterControllerAuthoring cca)
+        public override void Bake(CharacterAuthoring cca)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
@@ -37,7 +34,7 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
             else
                 AddComponent(entity, new NatifTeamTag { });
 
-            AddComponent(entity, new CharacterControllerComponent
+            AddComponent(entity, new CharacterComponent
             {
                 currentSpeed = cca.maxRunningSpeed,
                 maxRunningSpeed = cca.maxRunningSpeed,
@@ -54,16 +51,15 @@ public sealed class CharacterControllerAuthoring : MonoBehaviour
                 sensivity = cca.sensivity,
             });
 
-            AddComponent(entity, new CameraAttachComponent());
-
             AddComponent(entity, new FreezeAllRotationTag());
 
             AddComponent(entity, new CharacterTag()); //Multiplayer
-            AddComponent(entity, new PlayerInput()); //Inputs for multiplayer
+            AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
 
-            // AddComponent<PlayerInputData>(entity); //Inputs for multiplayer
+            AddComponent(entity, new CharacterViwEntityComponent { Value = GetEntity(cca._view, TransformUsageFlags.Dynamic) });
+            AddComponent(entity, new CharacterPlayerAttachedComponent { Value = Entity.Null });
         }
     }
 }
