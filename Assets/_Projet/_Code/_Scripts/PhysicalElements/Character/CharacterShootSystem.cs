@@ -38,7 +38,7 @@ public partial struct ShootSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (transform, shootInput, hasHit, characterViewEntity, entity) in SystemAPI
-            .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRW<HasHitComponent>, RefRO<CharacterViwEntityComponent>>()
+            .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRW<HasHitComponent>, RefRO<CharacterViewEntityComponent>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {

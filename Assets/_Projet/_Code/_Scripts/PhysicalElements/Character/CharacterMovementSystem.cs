@@ -30,6 +30,7 @@ public partial struct CharacterMovementSystem : ISystem
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
+            physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -41,8 +42,9 @@ public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
+    [ReadOnly] public PhysicsWorld physicsWorld;
 
-    public void Execute(ref CharacterInput input, RefRW<CharacterComponent> characterController,
+    public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
         if (!networkTime.IsFirstPredictionTick)
@@ -53,6 +55,31 @@ public partial struct CharacterMovementJob : IJobEntity
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
+
+        float3 feetPosition = characterTransform.Position - new float3(0, 0.95f, 0);
+        float3 checkPosition = feetPosition - new float3(0, 0.15f, 0);
+
+        RaycastInput raycastInput = new RaycastInput()
+        {
+            Start = feetPosition,
+            End = checkPosition,
+            Filter = CollisionFilter.Default
+        };
+
+        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+        controller.isGrounded = false;
+
+        if (physicsWorld.CastRay(raycastInput, ref allHits))
+        {
+            foreach (var hit in allHits)
+            {
+                if (hit.Entity != entity)
+                {
+                    controller.isGrounded = true;
+                    break;
+                }
+            }
+        }
 
         float x = input.move.x;
         float z = input.move.y;
@@ -104,7 +131,7 @@ public partial struct CharacterMovementJob : IJobEntity
         // Easeout la vélocité quand on s'approche de la maxSpeed
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-        if (input.jump.IsSet)
+        if (input.jump.IsSet && controller.isGrounded)
         {
             physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
             characterController.ValueRW.isGrounded = false;
