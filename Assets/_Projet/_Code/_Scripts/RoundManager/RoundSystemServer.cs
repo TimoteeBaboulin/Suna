@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -170,12 +171,15 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         component.currentRound++;
 
         IRoundManager.OnRoundStart?.Invoke(component.corporationScore, component.nativeScore);
+        Vector3 spawnPosition;
+        Entity respawnEntity = new EntityQueryBuilder(Allocator.Temp).WithAll<SpawnerComponent>().Build(ref state).ToEntityArray(Allocator.Temp)[0];
+        spawnPosition = state.EntityManager.GetComponentData<LocalTransform>(respawnEntity).Position;
 
-        foreach (var character in SystemAPI.Query<RefRW<CharacterComponent>>())
+        foreach (var (health, transform) in SystemAPI.Query<RefRW<CurrentHealthComponent>, RefRW<LocalTransform>>())
         {
+            transform.ValueRW.Position = spawnPosition;
+            health.ValueRW.Value = 100;
         }
-
-        Debug.Log("Passing to round number " +  component.currentRound);
     }
 
     private void CollectorPlanted(ref SystemState state, Entity entity, ref RoundComponent component)
