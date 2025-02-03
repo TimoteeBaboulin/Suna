@@ -1,4 +1,3 @@
-using System.Threading;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,12 +5,9 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.InputSystem;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-//[UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial struct CharacterMovementSystem : ISystem
 {
 
@@ -34,7 +30,6 @@ public partial struct CharacterMovementSystem : ISystem
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
-           // worldName = state.World.Name
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -46,7 +41,6 @@ public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
-   // public FixedString32Bytes worldName;
 
     public void Execute(ref CharacterInput input, RefRW<CharacterComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
@@ -110,29 +104,8 @@ public partial struct CharacterMovementJob : IJobEntity
         // Easeout la vélocité quand on s'approche de la maxSpeed
         // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-
-
-        //camera.transform.Position = characterTransform.Position;
-
-        //camera.transform.Position += new float3(0f, 0.8f, 0f);
-
-        //float mouseX = dt * input.look.x;
-        //float mouseY = dt * controller.sensivity * input.look.y;
-
-        //characterTransform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateY(math.radians(mouseX)));
-        //view.ValueRW.Pitch -= mouseY;
-
-        //camera.cameraYaw += mouseX;
-        //characterTransform.Rotation = quaternion.RotateY(math.radians(camera.cameraYaw)); ;
-
-        //camera.cameraPitch -= mouseY;
-        //camera.cameraPitch = math.clamp(camera.cameraPitch, -89f, 89f);
-        //camera.transform.Rotation = math.mul(characterTransform.Rotation, quaternion.RotateX(math.radians(camera.cameraPitch)));
-
-        //Same as below but related to multiplayer it's the same logic but not the same synthax
         if (input.jump.IsSet)
         {
-            //  Debug.Log("Jump" + worldName);
             physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
             characterController.ValueRW.isGrounded = false;
         }
@@ -146,24 +119,5 @@ public partial struct CharacterMovementJob : IJobEntity
         {
             characterController.ValueRW.isWalking = false;
         }
-
-
-        //playerInput.jump.started += ctx =>
-        //{
-        //    physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
-        //    characterController.ValueRW.isGrounded = false;
-        //};
-
-        //input.walk.canceled += ctx =>
-        //{
-        //    characterController.ValueRW.isWalking = false;
-        //};
-        //input.walk.started += ctx =>
-        //{
-        //    characterController.ValueRW.isWalking = true;
-        //};
-
-
-
     }
 }

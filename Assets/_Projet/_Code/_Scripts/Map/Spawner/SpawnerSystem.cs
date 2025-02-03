@@ -39,10 +39,6 @@ public partial struct OnDieSystem : ISystem
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
-        //state.Dependency.Complete();
-
-        //ecb.Playback(state.EntityManager);
-        //ecb.Dispose();
     }
 }
 
@@ -106,10 +102,6 @@ public partial struct RespawnSystem : ISystem
                 Entity spawnerEntity = SystemAPI.GetSingletonEntity<SpawnerComponent>();
                 LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
 
-
-
-                //transform.ValueRW.Position = respawnZoneTransform.Position;
-                //hp.ValueRW.Value = maxHp.ValueRO.Value;
                 int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
                 SpawnCharacter(entity, networkId, ecb, respawnZoneTransform.Position);
 
@@ -117,8 +109,7 @@ public partial struct RespawnSystem : ISystem
                 ecb.RemoveComponent<WaitForRespawnTag>(entity);
             }
         }
-        //ecb.Playback(state.EntityManager);
-        //ecb.Dispose();
+
         //if (resetStuffLookup.HasComponent(spawnerEntity))
         //{
         //    //TODO : Vider l'inventaire
@@ -156,7 +147,7 @@ public partial struct RespawnSystem : ISystem
         ecb.SetComponent(player, new PlayerCharacterAttached { Value = character });
         ecb.SetComponent(character, new CharacterPlayerAttachedComponent { Value = player });
 
-        //ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId}, in the world {worldName}");
+        ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId}, in the world {worldName}");
     }
 }
 

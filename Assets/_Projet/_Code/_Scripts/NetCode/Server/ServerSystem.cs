@@ -1,13 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
-using Unity.Mathematics;
-using System.ComponentModel;
-using UnityEngine.Rendering;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -35,6 +29,7 @@ public partial class ServerSystem : SystemBase
 
         FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+
         //Message from all clients to server
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
         {
@@ -42,46 +37,12 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        //Handle playerTemp prefab from client to server
-        //foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnUnitRpcCommand>>().WithEntityAccess())
-        //{
-        //    PrefabsData prefabs;
-        //    if (SystemAPI.TryGetSingleton<PrefabsData>(out prefabs) && prefabs.unit != null)
-        //    {
-        //        Entity unit = commandBuffer.Instantiate(prefabs.unit);
-        //        commandBuffer.SetComponent(unit, new LocalTransform()
-        //        {
-        //            Position = new float3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f)),
-        //            Rotation = Quaternion.identity,
-        //            Scale = 1.0f
-        //        });
-
-        //        //Set owner of prefabs to client otherwise server is considered the owner
-        //        NetworkId networkId = _clients[request.ValueRO.SourceConnection];
-        //        commandBuffer.SetComponent(unit, new GhostOwner()
-        //        {
-        //            NetworkId = networkId.Value
-        //        });
-
-        //        //Link the units with the connection, if the connection is destroyed, destroy the unit as well
-        //        commandBuffer.AppendToBuffer(request.ValueRO.SourceConnection, new LinkedEntityGroup()
-        //        {
-        //            Value = unit
-        //        });
-
-        //        commandBuffer.DestroyEntity(entity);
-        //    }
-        //}
-
-
-
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
             commandBuffer.AddComponent<InitializedClient>(entity);
 
             PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
             InstantiatePlayer(entity, commandBuffer);
-            //SpawnPlayer(entity, commandBuffer, prefabManager.transformCompData.Position);
         }
 
         commandBuffer.Playback(EntityManager);
@@ -113,37 +74,6 @@ public partial class ServerSystem : SystemBase
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"New Player connected with NetworkId {networkId.Value}, in the world {worldName}");
     }
-
-    //public void SpawnCharacter(Entity ownerEntity, EntityCommandBuffer ecb, float3 position)
-    //{
-    //    PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
-    //    if (prefabManager.player == null)
-    //    {
-    //        ServerConsole.Log(ServerConsole.LogType.Error, $"Player prefab in Player Manager is null during SpawnPlayer execution");
-    //        return;
-    //    }
-
-    //    NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
-    //    FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
-
-    //    Entity player = ecb.Instantiate(prefabManager.player);
-    //    ecb.SetComponent(player, new LocalTransform() //Set position
-    //    {
-    //        Position = position,
-    //        Rotation = quaternion.identity,
-    //        Scale = 1.0f
-    //    });
-    //    ecb.SetComponent(player, new GhostOwner() //Set owner of player to connection
-    //    {
-    //        NetworkId = networkId.Value
-    //    });
-    //    ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
-    //    {
-    //        Value = player
-    //    });
-
-    //    ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId.Value}, in the world {worldName}");
-    //}
 
     #endregion
 
