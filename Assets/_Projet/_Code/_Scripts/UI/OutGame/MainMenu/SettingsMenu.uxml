@@ -1,0 +1,13 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="Background" style="flex-grow: 1; background-color: rgb(37, 46, 51); visibility: visible; display: flex;">
+        <engine:VisualElement name="Container" style="flex-grow: 0; width: 80%; align-self: center; height: 80%; margin-top: auto; margin-bottom: auto; background-color: rgba(0, 0, 0, 0.25); flex-direction: column;">
+            <engine:Label text="Settings" name="Title" style="position: relative; font-size: 100px; -unity-font-style: bold; color: rgb(0, 0, 0); margin-top: 20px; margin-right: 20px; margin-bottom: 20px; margin-left: 20px;" />
+            <engine:VisualElement name="SensitivityContainer" style="margin-top: 0; margin-bottom: 0; margin-right: auto; margin-left: auto; flex-direction: row;">
+                <engine:Label text="Sensitivity" name="SensitivityLabel" style="font-size: 50px; color: rgb(0, 0, 0);" />
+                <engine:Slider value="1" high-value="5" fill="false" low-value="0.1" name="SensitivitySlider" inverted="false" style="color: rgb(0, 0, 0); font-size: 50px; width: 490px; justify-content: space-evenly;" />
+                <engine:FloatField value="1" name="SensitivityField" style="width: 125px; height: auto; font-size: 40px; -unity-text-align: upper-right; -unity-font-style: normal;" />
+            </engine:VisualElement>
+            <engine:Button text="X" name="ExitButton" style="position: absolute; top: 0; left: auto; right: 0; width: 100px; height: 100px; font-size: 80px; -unity-font-style: bold; background-color: rgba(0, 0, 0, 0.25); color: rgb(255, 0, 0); border-top-width: 0; border-right-width: 0; border-bottom-width: 0; border-left-width: 0; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>
