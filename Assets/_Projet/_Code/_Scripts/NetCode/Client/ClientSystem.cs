@@ -24,12 +24,29 @@ public partial class ClientSystem : SystemBase
     protected override void OnUpdate()
     {
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ServerMessageRpcCommand>>().WithEntityAccess())
+        foreach (var (command, entity) in SystemAPI.Query<RefRO<ServerRpcCommand>>().WithEntityAccess())
         {
             ServerConsole.Log(ServerConsole.LogType.Info, $"message to client {command.ValueRO.message}");
             Debug.Log($"message to client {command.ValueRO.message}");
             commandBuffer.DestroyEntity(entity);
         }
+        //foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ServerMessageRpcCommand>>().WithEntityAccess())
+        //{
+        //    ServerConsole.Log(ServerConsole.LogType.Info, $"message to client {command.ValueRO.message}");
+        //    Debug.Log($"message to client {command.ValueRO.GetType()}");
+        //    commandBuffer.DestroyEntity(entity);
+        //}
+
+
+        //foreach (var (rpc, entity) in SystemAPI.Query<RefRO<ServerRpcCommand>>().WithEntityAccess())
+        //{
+        //    Debug.Log($"Received RPC from server with value: {rpc.ValueRO.message}");
+
+        //    // Remove the RPC after processing
+        //    var ecb = new EntityCommandBuffer(Allocator.Temp);
+        //    ecb.DestroyEntity(entity);
+        //    ecb.Playback(EntityManager);
+        //}
 
         UpdatePlayerCamera();
 

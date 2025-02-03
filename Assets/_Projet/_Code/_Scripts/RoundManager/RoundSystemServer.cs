@@ -13,14 +13,11 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         Natives
     };
 
-    private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
-
     [BurstCompile]
     public void OnStartRunning(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<ServerComponent>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
-        _running = true;
 
         //Create the query and store it for future use
         builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
@@ -39,8 +36,6 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
     //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        if (!_running) return;
-
         //Check if the singleton exists to avoid crashes
         if (!SystemAPI.TryGetSingleton<RoundComponent>(out var roundComponent))
         {

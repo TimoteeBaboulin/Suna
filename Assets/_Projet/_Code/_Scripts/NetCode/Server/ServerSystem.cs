@@ -8,6 +8,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using UnityEngine.InputSystem;
 using Unity.VisualScripting;
+using UnityEngine.LightTransport;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -69,7 +70,11 @@ public partial class ServerSystem : SystemBase
         {
             ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
 
-            SendMessageRpc("Hello world", ConnectionManager.Instance.Server, ref command);
+            //SendMessageRpc("Hello world", ConnectionManager.Instance.Server, ref command);
+
+            //var ecb = new EntityCommandBuffer(Allocator.Temp);
+            RpcUtils.SendServerRpc(commandBuffer, "Hello world"); 
+           // ecb.Playback(EntityManager);
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
