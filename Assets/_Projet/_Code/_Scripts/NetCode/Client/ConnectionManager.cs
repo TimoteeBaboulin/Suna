@@ -37,6 +37,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
     #region Properties
     public World Server => _serverWorld;
     public World Client => _clientWorld;
+
+    public string IP { get => _ip; set => _ip = value; }
     #endregion
 
     #region Messages
@@ -64,11 +66,11 @@ public class ConnectionManager : Singleton<ConnectionManager>
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
-        if (_clientWorld != null)
-        {
-            Debug.Log($"{_clientWorld} already created!");
-            return;
-        }
+        //if (_clientWorld != null)
+        //{
+        //    Debug.Log($"{_clientWorld} already created!");
+        //    return;
+        //}
 
         if (_role == RoleType.ServerClient || _role == RoleType.Client)
         {
