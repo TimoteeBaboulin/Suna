@@ -8,14 +8,10 @@ using UnityEngine.UIElements;
 
 public class HUDController : MonoBehaviour
 {
-    [SerializeField] private UIDocument _healthArmorDocument;
-    [SerializeField] private UIDocument _ammoDocument;
-    [SerializeField] private UIDocument _crosshairDocument;
-    [SerializeField] private UIDocument _teamsDocument;
-    [SerializeField] private UIDocument _timerDocument;
+    private UIDocument _HUDDocument;
 
-    private VisualElement _healthArmor;
-    private VisualElement _ammoLeftCapacity;
+    private VisualElement _HUD;
+
     private VisualElement _crosshairElement;
 
     private Label _health;
@@ -34,20 +30,20 @@ public class HUDController : MonoBehaviour
 
     private void Awake()
     {
-        _healthArmor = _healthArmorDocument.rootVisualElement;
-        _ammoLeftCapacity = _ammoDocument.rootVisualElement;
+        _HUDDocument = GetComponent<UIDocument>();
+        _HUD = _HUDDocument.rootVisualElement;
 
-        _health = _healthArmor.Q<Label>("HealthLabel");
-        _armor = _healthArmor.Q<Label>("ArmorLabel");
+        _health = _HUD.Q<Label>("HealthLabel");
+        _armor = _HUD.Q<Label>("ArmorLabel");
 
-        _ammo = _ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
-        _capacity = _ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
+        _ammo = _HUD.Q<Label>("AmmoLeftLabel");
+        _capacity = _HUD.Q<Label>("AmmoCapacityLabel");
 
-        _crosshairElement = _crosshairDocument.rootVisualElement.Q("Crosshair");
+        _crosshairElement = _HUD.Q("Crosshair");
         _crosshairBaseColor = _crosshairElement.style.unityBackgroundImageTintColor;
 
-        _corpoScore = _teamsDocument.rootVisualElement.Q<Label>("CorpoScore");
-        _natifScore = _teamsDocument.rootVisualElement.Q<Label>("NatifScore");
+        _corpoScore = _HUD.Q<Label>("CorpoScore");
+        _natifScore = _HUD.Q<Label>("NatifScore");
     }
 
     private void Update()
