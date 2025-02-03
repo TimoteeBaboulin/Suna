@@ -1,13 +1,24 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManager
 {
+    public struct VictoryRpcCommand : IRpcCommand
+    {
+        public TimoteeTeam team;
+    }
+
+    public struct ChangePhaseRpcCommand : IRpcCommand
+    {
+        public RoundPhase phase;
+    }
+
     private EntityQuery _query;
-    private enum TimoteeTeam
+    public enum TimoteeTeam : byte //TODO: Switch to a normalized enum for the whole project
     {
         Corporation,
         Natives
@@ -15,11 +26,11 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
 
     private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnStartRunning(ref SystemState state)
     {
         //TODO: Switch to a RequireForUpdate to avoid performance drops
-        if (ConnectionManager.Instance.Server == null)
+        if (state.World != ConnectionManager.Instance.Server)
         {
             _running = false;
             return;
@@ -33,15 +44,16 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
 
         //Get the necessary references to set up the start of the game
         var entity = _query.GetSingletonEntity();
-        RoundComponent component = SystemAPI.GetSingleton<RoundComponent>();
+        RoundComponent component = _query.GetSingleton<RoundComponent>();
 
         InitGame(ref state, entity, ref component);
+        IRoundManager._currentTime = component.timer;
 
         //Need to write the changed values back onto the component
         SystemAPI.SetSingleton(component);
     }
 
-    //[BurstCompile]
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         if (!_running) return;
@@ -67,6 +79,8 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
                 TimeOutPhase(ref state, entity, ref roundComponent);
             }
         }
+
+        IRoundManager._currentTime = roundComponent.timer;
 
         //Write the values in memory
         SystemAPI.SetSingleton(roundComponent);
@@ -95,6 +109,20 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
             if (component.corporationLossStreak < component.maxStreakCount)
                 component.corporationLossStreak++;
         }
+
+        ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
+        if (system == null)
+        {
+            Debug.Log("Couldn't find server system reference.");
+            return;
+        }
+
+        VictoryRpcCommand rpc = new() { team = team };
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        foreach (var client in query.ToEntityArray(Allocator.Temp))
+        {
+            system.SendMessageRpc("message", ConnectionManager.Instance.Server, ref rpc, client);
+        }
     }
 
     private void TimeOutPhase(ref SystemState state, Entity entity, ref RoundComponent component)
@@ -121,6 +149,8 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         //Sets the timer for the new phase
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
         component.timer = buffer[(int)component.currentPhase];
+
+        SendCurrentPhase(ref state, entity, ref component);
     }
 
     private void InitGame(ref SystemState state, Entity entity, ref RoundComponent component)
@@ -128,9 +158,10 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
         component.currentPhase = RoundPhase.BuyPhase;
         component.timer = buffer[(int)component.currentPhase];
-        component.currentRound = 1;
+        component.currentRound = 0;
         component.nativeScore = 0;
         component.corporationScore = 0;
+        InitRound(ref state, entity, ref component);
     }
 
     private void InitRound(ref SystemState state, Entity entity, ref RoundComponent component)
@@ -138,19 +169,13 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         component.currentPhase = RoundPhase.BuyPhase;
         component.currentRound++;
 
-        Debug.Log("Passing to round number " +  component.currentRound);
-        ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
-        if (system == null)
+        IRoundManager.OnRoundStart?.Invoke(component.corporationScore, component.nativeScore);
+
+        foreach (var character in SystemAPI.Query<RefRW<CharacterComponent>>())
         {
-            Debug.Log("Couldn't find server system reference.");
-            return;
         }
 
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
-        foreach (var client in query.ToEntityArray(Allocator.Temp))
-        {
-            //system.SendMessageRpc("Init Round", ConnectionManager.Instance.Server, client);
-        }
+        Debug.Log("Passing to round number " +  component.currentRound);
     }
 
     private void CollectorPlanted(ref SystemState state, Entity entity, ref RoundComponent component)
@@ -163,9 +188,32 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
 
         //Make sure to delete the tag so it doesn't get detected twice
         state.EntityManager.RemoveComponent<RoundCollectorPlantedComponent>(entity);
+
+        SendCurrentPhase(ref state, entity, ref component);
+
+        IRoundManager.OnCollectorPlanted?.Invoke();
+    }
+
+    private void SendCurrentPhase(ref SystemState state, Entity entity, ref RoundComponent component)
+    {
+        ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
+        if (system == null)
+        {
+            Debug.Log("Couldn't find server system reference.");
+            return;
+        }
+
+        ChangePhaseRpcCommand rpc = new() { phase = component.currentPhase};
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        foreach (var client in query.ToEntityArray(Allocator.Temp))
+        {
+            system.SendMessageRpc("message", ConnectionManager.Instance.Server, ref rpc, client);
+        }
     }
 
     public void OnStopRunning(ref SystemState state)
     {
     }
+
+    
 }

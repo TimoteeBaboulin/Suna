@@ -10,7 +10,6 @@ using UnityEngine;
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct PlayerMovementSystem : ISystem
 {
-    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);

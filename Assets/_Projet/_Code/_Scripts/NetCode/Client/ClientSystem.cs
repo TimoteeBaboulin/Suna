@@ -27,6 +27,7 @@ public partial class ClientSystem : SystemBase
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ServerMessageRpcCommand>>().WithEntityAccess())
         {
             ServerConsole.Log(ServerConsole.LogType.Info, $"message to client {command.ValueRO.message}");
+            Debug.Log($"message to client {command.ValueRO.message}");
             commandBuffer.DestroyEntity(entity);
         }
         
