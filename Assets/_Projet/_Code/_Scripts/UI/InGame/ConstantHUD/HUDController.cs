@@ -8,48 +8,57 @@ using UnityEngine.UIElements;
 
 public class HUDController : MonoBehaviour
 {
-    [SerializeField] UIDocument healthArmorDocument;
-    [SerializeField] UIDocument ammoDocument;
-    [SerializeField] UIDocument crosshairDocument;
+    [SerializeField] private UIDocument _healthArmorDocument;
+    [SerializeField] private UIDocument _ammoDocument;
+    [SerializeField] private UIDocument _crosshairDocument;
+    [SerializeField] private UIDocument _teamsDocument;
+    [SerializeField] private UIDocument _timerDocument;
 
-    VisualElement healthArmor;
-    VisualElement ammoLeftCapacity;
-    VisualElement crosshairElement;
+    private VisualElement _healthArmor;
+    private VisualElement _ammoLeftCapacity;
+    private VisualElement _crosshairElement;
 
-    Label health;
-    Label armor;
-    Label ammo;
-    Label capacity;
+    private Label _health;
+    private Label _armor;
+    private Label _ammo;
+    private Label _capacity;
 
-    bool hitRegistered = false;
+    private Label _corpoScore;
+    private Label _natifScore;
 
-    private InGameHUDSystem system = null;
+    private bool _hitRegistered = false;
+
+    private InGameHUDSystem _inGameHUDSystem = null;
 
     private void Awake()
     {
-        healthArmor = healthArmorDocument.rootVisualElement;
-        ammoLeftCapacity = ammoDocument.rootVisualElement;
+        _healthArmor = _healthArmorDocument.rootVisualElement;
+        _ammoLeftCapacity = _ammoDocument.rootVisualElement;
 
-        health = healthArmor.Q<Label>("HealthLabel");
-        armor = healthArmor.Q<Label>("ArmorLabel");
+        _health = _healthArmor.Q<Label>("HealthLabel");
+        _armor = _healthArmor.Q<Label>("ArmorLabel");
 
-        ammo = ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
-        capacity = ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
+        _ammo = _ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
+        _capacity = _ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
 
-        crosshairElement = crosshairDocument.rootVisualElement.Q("Crosshair");
+        _crosshairElement = _crosshairDocument.rootVisualElement.Q("Crosshair");
+
+        _corpoScore = _teamsDocument.rootVisualElement.Q<Label>("CorpoScore");
+        _natifScore = _teamsDocument.rootVisualElement.Q<Label>("NatifScore");
     }
 
     private void Update()
     {
-        if (system == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
-            system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
-            system.HealthChangedEvent += System_OnHealthChange;
-            system.HitRegister += System_OnHitRegistered;
+            _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
+            _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
+            _inGameHUDSystem.HitRegister += System_OnHitRegistered;
         }
-        if (hitRegistered)
+
+        if (_hitRegistered)
         {
-            hitRegistered = false;
+            _hitRegistered = false;
             StartCoroutine(HitRegistered());
         }
     }
@@ -57,13 +66,13 @@ public class HUDController : MonoBehaviour
     IEnumerator HitRegistered()
     {
         yield return new WaitForSeconds(1f);
-        crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.black);
+        _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.black);
         yield return null;
     }
 
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
-        if (args is InGameHUDSystem.HealthArgs arg) health.text = arg.Health.ToString();
+        if (args is InGameHUDSystem.HealthArgs arg) _health.text = arg.Health.ToString();
     }
     private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs args)
     {
@@ -80,7 +89,7 @@ public class HUDController : MonoBehaviour
 
     private void System_OnHitRegistered(object sender, EventArgs args)
     {
-        hitRegistered = true;
-        crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
+        _hitRegistered = true;
+        _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
 }
