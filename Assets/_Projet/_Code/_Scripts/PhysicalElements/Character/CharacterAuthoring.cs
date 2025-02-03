@@ -60,6 +60,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new WaitForRespawnTag { });
 
             AddComponent(entity, new CharacterViwEntityComponent { View = GetEntity(cca._view, TransformUsageFlags.Dynamic) });
+            AddComponent(entity, new CharacterPlayerAttached { Value = Entity.Null });
         }
     }
 }

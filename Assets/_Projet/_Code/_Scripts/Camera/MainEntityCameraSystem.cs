@@ -22,13 +22,11 @@ partial class MainEntityCameraSystem : SystemBase
             return;
         }
 
-        foreach (var view in SystemAPI
-            .Query<RefRO<MainEntityCameraTag>>())
+        foreach (var (view, localToWorld, entity) in SystemAPI
+            .Query<RefRO<MainEntityCameraTag>, RefRO<LocalToWorld>>()
+            .WithEntityAccess())
         {
-            Entity mainEntityCameraEntity = SystemAPI.GetSingletonEntity<MainEntityCameraTag>();
-            LocalToWorld targetLocalToWorld = SystemAPI.GetComponent<LocalToWorld>(mainEntityCameraEntity);
-
-            MainGameObjectCamera.Instance.transform.SetPositionAndRotation(targetLocalToWorld.Position, targetLocalToWorld.Rotation);
+            MainGameObjectCamera.Instance.transform.SetPositionAndRotation(localToWorld.ValueRO.Position, localToWorld.ValueRO.Rotation);
         }
     }
 }

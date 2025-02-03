@@ -9,64 +9,63 @@ using UnityEngine;
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct OnDieSystem : ISystem
 {
-    [ReadOnly]
-    public ComponentLookup<ResetStuffTag> resetStuffLookupInit;
-
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<CurrentHealthComponent>();
+        builder.WithAll<HasNoHealthTag>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
-        resetStuffLookupInit = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true);
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        resetStuffLookupInit.Update(ref state);
+        ComponentLookup<HasNoHealthTag> hasNoHealthTagLookup = SystemAPI.GetComponentLookup<HasNoHealthTag>();
+        ComponentLookup<ResetStuffTag> resetStuffLookupInit = SystemAPI.GetComponentLookup<ResetStuffTag>();
 
-        var ecb = new EntityCommandBuffer(Allocator.TempJob);
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
         OnDieJob job = new OnDieJob
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
-            resetStuffLookup = resetStuffLookupInit
+            resetStuffLookup = resetStuffLookupInit,
+            HasNoHealthTagLookup = hasNoHealthTagLookup,
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
+        //state.Dependency.Complete();
 
-        state.Dependency.Complete();
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
+        //ecb.Playback(state.EntityManager);
+        //ecb.Dispose();
     }
 }
 
 [BurstCompile]
-[WithAll(typeof(Simulate))]
+[WithAll(typeof(CurrentHealthComponent), typeof(Simulate))]
 public partial struct OnDieJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
     public EntityCommandBuffer.ParallelWriter commandBuffer;
 
-    [ReadOnly]
-    public ComponentLookup<ResetStuffTag> resetStuffLookup;
+    [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
+    [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
 
-    public void Execute(Entity entity, in CurrentHealthComponent hp)
+    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterPlayerAttached> CharacterPlayerAttached)
     {
-        if (!resetStuffLookup.HasComponent(entity))
+        if (!resetStuffLookup.HasComponent(entity)
+            && HasNoHealthTagLookup.HasComponent(entity))
         {
-            if (hp.Value <= 0)
-            {
-                //commandBuffer.AddComponent<WaitForRespawnTag>(entity.Index, entity);
-                commandBuffer.AddComponent<ResetStuffTag>(entity.Index, entity);
-            }
+            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.Value);
+            commandBuffer.DestroyEntity(sortKey, entity);
+
+            //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
         }
     }
 }
@@ -75,7 +74,6 @@ public partial struct OnDieJob : IJobEntity
 // ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RespawnSystem : ISystem
 {
@@ -95,30 +93,32 @@ public partial struct RespawnSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        foreach (var (player, entity) in SystemAPI.Query<RefRW<PlayerComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
+        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<PlayerComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             SpawnerComponent spawnerComponent;
 
             if (SystemAPI.TryGetSingleton(out spawnerComponent))
             {
-                
+
                 Entity spawnerEntity = SystemAPI.GetSingletonEntity<SpawnerComponent>();
                 LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
 
-                
+
 
                 //transform.ValueRW.Position = respawnZoneTransform.Position;
                 //hp.ValueRW.Value = maxHp.ValueRO.Value;
                 int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
                 SpawnCharacter(entity, networkId, ecb, respawnZoneTransform.Position);
-               
+
 
                 ecb.RemoveComponent<WaitForRespawnTag>(entity);
             }
         }
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
+        //ecb.Playback(state.EntityManager);
+        //ecb.Dispose();
         //if (resetStuffLookup.HasComponent(spawnerEntity))
         //{
         //    //TODO : Vider l'inventaire
@@ -126,10 +126,10 @@ public partial struct RespawnSystem : ISystem
         //}
     }
 
-    public void SpawnCharacter(Entity ownerEntity, int networkId, EntityCommandBuffer ecb, float3 position)
+    public void SpawnCharacter(Entity player, int networkId, EntityCommandBuffer ecb, float3 position)
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
-        
+
         if (prefabManager.character == null)
         {
             return;
@@ -137,21 +137,24 @@ public partial struct RespawnSystem : ISystem
 
         FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
 
-        Entity player = ecb.Instantiate(prefabManager.character);
-        ecb.SetComponent(player, new LocalTransform() //Set position
+        Entity character = ecb.Instantiate(prefabManager.character);
+        ecb.SetComponent(character, new LocalTransform() //Set position
         {
             Position = position,
             Rotation = quaternion.identity,
             Scale = 1.0f
         });
-        ecb.SetComponent(player, new GhostOwner() //Set owner of player to connection
+        ecb.SetComponent(character, new GhostOwner() //Set owner of player to connection
         {
             NetworkId = networkId
         });
-        ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
+        ecb.AppendToBuffer(player, new LinkedEntityGroup() //Link it to connection
         {
-            Value = player
+            Value = character
         });
+
+        ecb.SetComponent(player, new PlayerCharacterAttached { Value = character });
+        ecb.SetComponent(character, new CharacterPlayerAttached { Value = player });
 
         //ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId}, in the world {worldName}");
     }

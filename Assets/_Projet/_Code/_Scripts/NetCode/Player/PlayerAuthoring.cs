@@ -9,6 +9,7 @@ public class PlayerAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, new PlayerComponent { });
+            AddComponent(entity, new PlayerCharacterAttached { Value = Entity.Null });
             AddComponent<WaitForRespawnTag>(entity);
         }
     }

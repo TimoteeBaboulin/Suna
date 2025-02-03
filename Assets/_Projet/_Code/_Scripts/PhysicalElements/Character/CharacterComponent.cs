@@ -39,3 +39,8 @@ public struct CharacterViwEntityComponent : IComponentData
 {
     public Entity View;
 }
+
+public struct CharacterPlayerAttached : IComponentData
+{
+    [GhostField] public Entity Value;
+}
