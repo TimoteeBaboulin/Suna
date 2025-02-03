@@ -30,6 +30,8 @@ public class HUDController : MonoBehaviour
 
     private InGameHUDSystem _inGameHUDSystem = null;
 
+    private StyleColor _crosshairBaseColor;
+
     private void Awake()
     {
         _healthArmor = _healthArmorDocument.rootVisualElement;
@@ -42,6 +44,7 @@ public class HUDController : MonoBehaviour
         _capacity = _ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
 
         _crosshairElement = _crosshairDocument.rootVisualElement.Q("Crosshair");
+        _crosshairBaseColor = _crosshairElement.style.unityBackgroundImageTintColor;
 
         _corpoScore = _teamsDocument.rootVisualElement.Q<Label>("CorpoScore");
         _natifScore = _teamsDocument.rootVisualElement.Q<Label>("NatifScore");
@@ -66,7 +69,7 @@ public class HUDController : MonoBehaviour
     IEnumerator HitRegistered()
     {
         yield return new WaitForSeconds(1f);
-        _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.black);
+        _crosshairElement.style.unityBackgroundImageTintColor = _crosshairBaseColor;
         yield return null;
     }
 
