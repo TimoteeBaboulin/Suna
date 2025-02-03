@@ -39,7 +39,6 @@ partial struct CharacterViewSystem : ISystem
 
             characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(math.radians(mouseX)));
             transform.ValueRW.Rotation = math.mul(transform.ValueRO.Rotation, quaternion.RotateX(math.radians(-mouseY)));
-
             Entity rcpEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRcpCommand), typeof(SendRpcCommandRequest));
             state.EntityManager.SetComponentData(rcpEntity, new UpdateViewRotationRcpCommand
             {
