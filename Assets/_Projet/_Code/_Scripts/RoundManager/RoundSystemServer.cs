@@ -18,17 +18,12 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
     [BurstCompile]
     public void OnStartRunning(ref SystemState state)
     {
-        //TODO: Switch to a RequireForUpdate to avoid performance drops
-        if (ConnectionManager.Instance.Server == null)
-        {
-            _running = false;
-            return;
-        }
-
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<ServerComponent>();
+        state.RequireForUpdate(state.GetEntityQuery(builder));
         _running = true;
 
         //Create the query and store it for future use
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
+        builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         _query = builder.Build(ref state);
 
         //Get the necessary references to set up the start of the game

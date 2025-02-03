@@ -169,4 +169,22 @@ public class ConnectionManager : Singleton<ConnectionManager>
         }
     }
     #endregion
+
+    public class Baker : Baker<ConnectionManager>
+    {
+        public override void Bake(ConnectionManager authoring)
+        {
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            if (authoring._role == RoleType.Server)
+            {
+                AddComponent<ServerComponent>(entity);
+            }
+
+            if (authoring._role == RoleType.Client)
+            {
+                AddComponent<ClientComponent>(entity);
+            }
+        }
+    }
 }

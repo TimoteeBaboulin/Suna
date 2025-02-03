@@ -13,10 +13,8 @@ public struct ServerMessageRpcCommand : IRpcCommand
 {
     public FixedString128Bytes message;
 }
-public struct InitializedClient : IComponentData
-{
-
-}
+public struct InitializedClient : IComponentData{}
+public struct ServerComponent : IComponentData{}
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class ServerSystem : SystemBase
@@ -40,36 +38,6 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        //Handle playerTemp prefab from client to server
-        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SpawnUnitRpcCommand>>().WithEntityAccess())
-        {
-            PrefabsData prefabs;
-            if (SystemAPI.TryGetSingleton<PrefabsData>(out prefabs) && prefabs.unit != null)
-            {
-                Entity unit = commandBuffer.Instantiate(prefabs.unit);
-                commandBuffer.SetComponent(unit, new LocalTransform()
-                {
-                    Position = new float3(UnityEngine.Random.Range(-10f, 10f), 0, UnityEngine.Random.Range(-10f, 10f)),
-                    Rotation = Quaternion.identity,
-                    Scale = 1.0f
-                });
-
-                //Set owner of prefabs to client otherwise server is considered the owner
-                NetworkId networkId = _clients[request.ValueRO.SourceConnection];
-                commandBuffer.SetComponent(unit, new GhostOwner()
-                {
-                    NetworkId = networkId.Value
-                });
-
-                //Link the units with the connection, if the connection is destroyed, destroy the unit as well
-                commandBuffer.AppendToBuffer(request.ValueRO.SourceConnection, new LinkedEntityGroup()
-                {
-                    Value = unit
-                });
-
-                commandBuffer.DestroyEntity(entity);
-            }
-        }
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
             commandBuffer.AddComponent<InitializedClient>(entity);
