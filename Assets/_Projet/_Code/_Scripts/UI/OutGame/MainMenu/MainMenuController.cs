@@ -11,29 +11,34 @@ public class MainMenuController : MonoBehaviour
     Button playButton;
     Button quitButton;
 
-    [SerializeField] string playSceneToLoad;
+    [SerializeField] SceneID sceneLoadOnPlay = SceneID.MultipayerTest;
+
 
     private void Awake()
     {
-        ui = GetComponent<UIDocument>().rootVisualElement;
+        UIDocument component;
+        if (TryGetComponent<UIDocument>(out component))
+        {
+            ui = component.rootVisualElement;
+        }
     }
 
     private void OnEnable()
     {
-        playButton = ui.Q<Button>("PlayButton");
-        playButton.clicked += OnPlayButton_Click;
+        if (ui != null)
+        {
+            playButton = ui.Q<Button>("PlayButton");
+            playButton.clicked += OnPlayButton_Click;
 
-        quitButton = ui.Q<Button>("QuitButton");
-        quitButton.clicked += OnQuitButton_Click;
+            quitButton = ui.Q<Button>("QuitButton");
+            quitButton.clicked += OnQuitButton_Click;
+        }
     }
 
     void OnPlayButton_Click()
     {
-        Debug.Log("Play !");
-        if (playSceneToLoad.Length > 0)
-        {
-            SceneManager.LoadScene(playSceneToLoad);
-        }
+        ConnectionManager.Instance.Connect();
+        SceneManager.LoadScene((int)sceneLoadOnPlay);
     }
 
     void OnQuitButton_Click()

@@ -1,6 +1,6 @@
+using System;
 using System.Collections;
 using System.Net;
-using TMPro;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -19,9 +19,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
     private string _localIp = "127.0.0.1";
     private ushort _localPort = 7979;
 
-    //TEMP
-    [SerializeField] private Button connectionButton;
-    [SerializeField] private TMP_Text connectionInfoText;
+    //public event Action Connected;
 
     public enum RoleType
     {
@@ -39,14 +37,11 @@ public class ConnectionManager : Singleton<ConnectionManager>
     #region Properties
     public World Server => _serverWorld;
     public World Client => _clientWorld;
-
-    public RoleType Role => _role;
     #endregion
 
     #region Messages
-    protected override void Awake()
+    private void Start()
     {
-        base.Awake();
         if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         {
             _role = RoleType.ServerClient;
@@ -54,26 +49,21 @@ public class ConnectionManager : Singleton<ConnectionManager>
         else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
         {
             _role = RoleType.Server;
-            Debug.Log($" Role : {_role}");
         }
         else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Client)
         {
             _role = RoleType.Client;
         }
 
-        if (connectionInfoText != null)
-        {
-            //TEMP
-            connectionInfoText.enabled = false;
-        }
+        Debug.Log($" Role : {_role}");
     }
     #endregion
 
     #region Public Methods
     public void Connect()
     {
-        //TEMP
-        connectionInfoText.enabled = true;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         if (_clientWorld != null)
         {
             Debug.Log($"{_clientWorld} already created!");
@@ -83,6 +73,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
         if (_role == RoleType.ServerClient || _role == RoleType.Client)
         {
             _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+            //Connected?.Invoke();
         }
 
         if (_role == RoleType.ServerClient && Application.isEditor)
@@ -121,11 +112,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 using EntityQuery networkDriverQuery = _clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_clientWorld.EntityManager, connectionEndpoint);
             }
-            
-            connectionInfoText.text = $"IP : {ip}\nPort : {port} \nRole : {_role}";
         }
-
-        Debug.Log($" Role : {_role}");
 
         SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
@@ -138,10 +125,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
         {
             StartCoroutine(LoadSubScenes(subScenes, _clientWorld));
         }
-        connectionButton.enabled = false;
-        connectionButton.gameObject.SetActive(false);
     }
-
 
     public void CreateServer()
     {

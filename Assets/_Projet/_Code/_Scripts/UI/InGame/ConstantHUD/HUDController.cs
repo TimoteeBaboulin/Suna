@@ -1,61 +1,95 @@
-using NaughtyAttributes;
+using System;
+using System.Collections;
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
+using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UIElements;
 
 public class HUDController : MonoBehaviour
 {
-    [SerializeField] UIDocument healthArmorDocument;
-    [SerializeField] UIDocument ammoDocument;
+    [SerializeField] private UIDocument _healthArmorDocument;
+    [SerializeField] private UIDocument _ammoDocument;
+    [SerializeField] private UIDocument _crosshairDocument;
+    [SerializeField] private UIDocument _teamsDocument;
+    [SerializeField] private UIDocument _timerDocument;
 
-    [ReadOnly] public string C0 = "D : Damage (Reduce Health)";
-    [ReadOnly] public string C1 = "H : Heal (Increase Health)";
-    [ReadOnly] public string C2 = "P : Pierce (Decrease Armor)";
-    [ReadOnly] public string C3 = "U : Undamage (Increase Armor";
-    [ReadOnly] public string C4 = "Mouse0 : Shoot (Reduce Ammo)";
-    [ReadOnly] public string C5 = "R : Reload (Set Ammo to Capacity)";
-    [ReadOnly] public string C6 = "C : Change (Decrease Capacity)";
-    [ReadOnly] public string C7 = "V : Value (Increase Capacity)";
+    private VisualElement _healthArmor;
+    private VisualElement _ammoLeftCapacity;
+    private VisualElement _crosshairElement;
 
-    VisualElement healthArmor;
-    VisualElement ammoLeftCapacity;
+    private Label _health;
+    private Label _armor;
+    private Label _ammo;
+    private Label _capacity;
 
-    Label health;
-    Label armor;
-    Label ammo;
-    Label capacity;
+    private Label _corpoScore;
+    private Label _natifScore;
+
+    private bool _hitRegistered = false;
+
+    private InGameHUDSystem _inGameHUDSystem = null;
 
     private void Awake()
     {
-        healthArmor = healthArmorDocument.rootVisualElement;
-        ammoLeftCapacity = ammoDocument.rootVisualElement;
+        _healthArmor = _healthArmorDocument.rootVisualElement;
+        _ammoLeftCapacity = _ammoDocument.rootVisualElement;
 
-        health = healthArmor.Q<Label>("HealthLabel");
-        armor = healthArmor.Q<Label>("ArmorLabel");
+        _health = _healthArmor.Q<Label>("HealthLabel");
+        _armor = _healthArmor.Q<Label>("ArmorLabel");
 
-        ammo = ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
-        capacity = ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
+        _ammo = _ammoLeftCapacity.Q<Label>("AmmoLeftLabel");
+        _capacity = _ammoLeftCapacity.Q<Label>("AmmoCapacityLabel");
 
-        TestPlayerDataSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TestPlayerDataSystem>();
-        system.OnHealthChange += System_OnHealthChange;
-        system.OnArmorChange += System_OnArmorChange;
-        system.OnAmmoChange += System_OnAmmoChange;
-        system.OnCapacityChange += System_OnCapacityChange;
+        _crosshairElement = _crosshairDocument.rootVisualElement.Q("Crosshair");
+
+        _corpoScore = _teamsDocument.rootVisualElement.Q<Label>("CorpoScore");
+        _natifScore = _teamsDocument.rootVisualElement.Q<Label>("NatifScore");
     }
-    private void System_OnHealthChange(object sender, TestPlayerDataSystem.HealthArgs e)
+
+    private void Update()
     {
-        if (e is TestPlayerDataSystem.HealthArgs arg) health.text = arg.Health.ToString();
+        if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
+            _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
+            _inGameHUDSystem.HitRegister += System_OnHitRegistered;
+        }
+
+        if (_hitRegistered)
+        {
+            _hitRegistered = false;
+            StartCoroutine(HitRegistered());
+        }
     }
-    private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs e)
+
+    IEnumerator HitRegistered()
     {
-        if (e is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
+        yield return new WaitForSeconds(1f);
+        _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.black);
+        yield return null;
     }
-    private void System_OnAmmoChange(object sender, TestPlayerDataSystem.AmmoArgs e)
+
+    private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
-        if (e is TestPlayerDataSystem.AmmoArgs arg) ammo.text = arg.Ammo.ToString();
+        if (args is InGameHUDSystem.HealthArgs arg) _health.text = arg.Health.ToString();
     }
-    private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs e)
+    private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs args)
     {
-        if (e is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
+        //if (args is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
+    }
+    private void System_OnAmmoChange(object sender, TestPlayerDataSystem.AmmoArgs args)
+    {
+        // if (args is TestPlayerDataSystem.AmmoArgs arg) ammo.text = arg.Ammo.ToString();
+    }
+    private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs args)
+    {
+        //if (args is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
+    }
+
+    private void System_OnHitRegistered(object sender, EventArgs args)
+    {
+        _hitRegistered = true;
+        _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
 }

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public struct ModifiersComponent : IComponentData
 {
-    public EntityPrefabReference scope;
-    public EntityPrefabReference handle;
-    public EntityPrefabReference cross;
-    public EntityPrefabReference silencer;
-    public EntityPrefabReference magazine;
+    public Entity scope;
+    public Entity handle;
+    public Entity cross;
+    public Entity silencer;
+    public Entity magazine;
 }
 
 public class RangedWeaponAuthoring : MonoBehaviour
@@ -27,7 +27,7 @@ public class RangedWeaponAuthoring : MonoBehaviour
 
             AddComponent(entity, new PrefabReferenceComponent
             {
-                prefab = new EntityPrefabReference(d.prefab)
+                prefab = GetEntity(d.prefab, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new StuffInfosComponent
@@ -69,11 +69,11 @@ public class RangedWeaponAuthoring : MonoBehaviour
             AddComponent(entity, new ModifiersComponent
             {
 
-                scope = d.scope != null ? new EntityPrefabReference(d.scope.prefab) : default,
-                handle = d.handle != null ? new EntityPrefabReference(d.handle.prefab) : default,
-                cross = d.cross != null ? new EntityPrefabReference(d.cross.prefab) : default,
-                silencer = d.silencer != null ? new EntityPrefabReference(d.silencer.prefab) : default,
-                magazine = d.magazine != null ? new EntityPrefabReference(d.magazine.prefab) : default,
+                scope = d.scope != null ? GetEntity(d.scope.prefab, TransformUsageFlags.Dynamic) : default,
+                handle = d.handle != null ? GetEntity(d.handle.prefab, TransformUsageFlags.Dynamic) : default,
+                cross = d.cross != null ? GetEntity(d.cross.prefab, TransformUsageFlags.Dynamic) : default,
+                silencer = d.silencer != null ? GetEntity(d.silencer.prefab, TransformUsageFlags.Dynamic) : default,
+                magazine = d.magazine != null ? GetEntity(d.magazine.prefab, TransformUsageFlags.Dynamic) : default,
             });
         }
     }

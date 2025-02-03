@@ -3,5 +3,5 @@ using Unity.Entities;
 
 public struct PrefabReferenceComponent : IComponentData
 {
-    public EntityPrefabReference prefab;
+    public Entity prefab;
 }

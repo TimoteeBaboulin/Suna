@@ -1,7 +1,7 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:VisualElement name="Background" style="flex-grow: 0; flex-basis: auto; flex-direction: row; align-items: center; align-self: center; align-content: center; -unity-text-align: middle-center; font-size: 75%; color: rgb(255, 255, 255);">
-        <engine:Label text="00" name="MinuteLabel" />
-        <engine:Label text=":" name="Separator" />
-        <engine:Label text="00" name="SecondLabel" />
+    <engine:VisualElement name="Background" style="flex-grow: 1; flex-basis: auto; flex-direction: row; align-items: center; align-self: center; align-content: center; -unity-text-align: middle-center; font-size: 75%; color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/Chrono/Timer.png?fileID=2800000&amp;guid=20c6cb10ba19e7747978931505c32e44&amp;type=3#Timer&quot;); position: absolute; flex-shrink: 1; width: 276px; height: 53px; justify-content: center; top: 45px;">
+        <engine:Label text="00" name="MinuteLabel" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
+        <engine:Label text=":" name="Separator" style="color: rgb(0, 0, 0); font-size: 40%; flex-grow: 0; flex-shrink: 0; -unity-font-style: bold;" />
+        <engine:Label text="00" name="SecondLabel" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
     </engine:VisualElement>
 </engine:UXML>
