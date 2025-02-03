@@ -8,6 +8,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using System.ComponentModel;
 using UnityEngine.Rendering;
+using UnityEngine.InputSystem;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -84,6 +85,7 @@ public partial class ServerSystem : SystemBase
             {
                 SpawnPlayer(entity, commandBuffer, prefabManager.transformCompData.Position);
             }
+            SendMessageRpc("messageServer", ConnectionManager.Instance.Server, entity);
         }
 
         commandBuffer.Playback(EntityManager);
