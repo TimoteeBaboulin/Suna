@@ -1,7 +1,6 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEditor.Search;
 using UnityEngine;
 
 partial struct RpcLoggerSystem : ISystem

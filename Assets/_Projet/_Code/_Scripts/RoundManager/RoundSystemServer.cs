@@ -1,12 +1,14 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Services.Matchmaker.Models;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManager
+public partial struct RoundSystemServer : ISystem, ISystemStartStop
 {
     public struct VictoryRpcCommand : IRpcCommand
     {
@@ -27,6 +29,9 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
 
     private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
 
+    //public Action<int, int> OnRoundStart;
+    //public Action OnCollectorPlanted;
+
     //[BurstCompile]
     public void OnStartRunning(ref SystemState state)
     {
@@ -43,15 +48,13 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         _query = builder.Build(ref state);
 
+        RefRW<RoundComponent> roundComponent = _query.GetSingletonRW<RoundComponent>();
+
         //Get the necessary references to set up the start of the game
         var entity = _query.GetSingletonEntity();
-        RoundComponent component = _query.GetSingleton<RoundComponent>();
 
-        InitGame(ref state, entity, ref component);
-        IRoundManager._currentTime = component.timer;
-
-        //Need to write the changed values back onto the component
-        SystemAPI.SetSingleton(component);
+        InitGame(ref state, entity, roundComponent);
+        //IRoundManager._currentTime = roundComponent.ValueRW.timer;
     }
 
     [BurstCompile]
@@ -59,118 +62,104 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
     {
         if (!_running) return;
 
-        //Check if the singleton exists to avoid crashes
-        if (!SystemAPI.TryGetSingleton<RoundComponent>(out var roundComponent))
-        {
-            throw new System.Exception("Couldn't find RoundComponent Singleton, please check that there is a single RoundManager in the world.");
-        }
+        RefRW<RoundComponent> roundComponent = _query.GetSingletonRW<RoundComponent>();
 
         //Check if the bomb was planted
         Entity entity = _query.GetSingletonEntity();
-        if (roundComponent.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
+        if (roundComponent.ValueRW.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
-            CollectorPlanted(ref state, entity, ref roundComponent);
+            CollectorPlanted(ref state, entity, roundComponent);
         }
         else
         {
             //Update the timer and change to next phase in case the timer runs out
-            roundComponent.timer -= Time.deltaTime;
-            if (roundComponent.timer < 0)
+            roundComponent.ValueRW.timer -= Time.deltaTime;
+            if (roundComponent.ValueRW.timer < 0)
             {
-                TimeOutPhase(ref state, entity, ref roundComponent);
+                TimeOutPhase(ref state, entity, roundComponent);
             }
         }
 
-        IRoundManager._currentTime = roundComponent.timer;
-
-        //Write the values in memory
-        SystemAPI.SetSingleton(roundComponent);
-
-        if (Keyboard.current[Key.Space].wasPressedThisFrame)
-        {
-            state.EntityManager.AddComponent<RoundCollectorPlantedComponent>(entity);
-        }
+        //IRoundManager._currentTime = roundComponent.ValueRW.timer;
     }
 
-    private void Victory(ref SystemState state, Entity entity, ref RoundComponent component, TimoteeTeam team)
+    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TimoteeTeam team)
     {
         if (team == TimoteeTeam.Corporation)
         {
-            component.corporationScore++;
-            component.corporationLossStreak = 0;
+            component.ValueRW.corporationScore++;
+            component.ValueRW.corporationLossStreak = 0;
 
-            if (component.nativeLossStreak < component.maxStreakCount)
-                component.nativeLossStreak++;
+            if (component.ValueRW.nativeLossStreak < component.ValueRW.maxStreakCount)
+                component.ValueRW.nativeLossStreak++;
         }
         else
         {
-            component.nativeScore++;
-            component.nativeLossStreak = 0;
+            component.ValueRW.nativeScore++;
+            component.ValueRW.nativeLossStreak = 0;
 
-            if (component.corporationLossStreak < component.maxStreakCount)
-                component.corporationLossStreak++;
-        }
-
-        ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
-        if (system == null)
-        {
-            Debug.Log("Couldn't find server system reference.");
-            return;
+            if (component.ValueRW.corporationLossStreak < component.ValueRW.maxStreakCount)
+                component.ValueRW.corporationLossStreak++;
         }
 
         VictoryRpcCommand rpc = new() { team = team };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        EntityManager entityManager = state.WorldUnmanaged.EntityManager;
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
-            system.SendMessageRpc("message", ConnectionManager.Instance.Server, ref rpc, client);
+            Entity rpcEntity = entityManager.CreateEntity();
+            entityManager.AddComponentData(rpcEntity, new SendRpcCommandRequest() { TargetConnection = client });
+            entityManager.AddComponentData(rpcEntity, rpc);
         }
+
+        entityManager.AddComponent<ScoreChangedComponent>(entity);
     }
 
-    private void TimeOutPhase(ref SystemState state, Entity entity, ref RoundComponent component)
+    private void TimeOutPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
     {
         //Gets to next phase because of time out
-        if (component.currentPhase == RoundPhase.ActionPhase)
+        if (component.ValueRW.currentPhase == RoundPhase.ActionPhase)
         {
-            Victory(ref state, entity, ref component, TimoteeTeam.Natives);
-            component.currentPhase = RoundPhase.PostRoundPhase; 
+            Victory(ref state, entity, component, TimoteeTeam.Natives);
+            component.ValueRW.currentPhase = RoundPhase.PostRoundPhase; 
         }
         else
         {
-            if (component.currentPhase == RoundPhase.PostPlantPhase)
-                Victory(ref state, entity, ref component, TimoteeTeam.Corporation);
-            component.currentPhase++;
+            if (component.ValueRW.currentPhase == RoundPhase.PostPlantPhase)
+                Victory(ref state, entity, component, TimoteeTeam.Corporation);
+            component.ValueRW.currentPhase++;
         }
 
         //If the round ended, get to next one
-        if (component.currentPhase > RoundPhase.PostRoundPhase)
+        if (component.ValueRW.currentPhase > RoundPhase.PostRoundPhase)
         {
-            InitRound(ref state, entity, ref component);
+            InitRound(ref state, entity, component);
         }
 
         //Sets the timer for the new phase
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
-        component.timer = buffer[(int)component.currentPhase];
+        component.ValueRW.timer = buffer[(int)component.ValueRW.currentPhase];
 
-        SendCurrentPhase(ref state, entity, ref component);
+        SendCurrentPhase(ref state, entity, component);
     }
 
-    private void InitGame(ref SystemState state, Entity entity, ref RoundComponent component)
+    private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
     {
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
-        component.currentPhase = RoundPhase.BuyPhase;
-        component.timer = buffer[(int)component.currentPhase];
-        component.currentRound = 0;
-        component.nativeScore = 0;
-        component.corporationScore = 0;
-        InitRound(ref state, entity, ref component);
+        component.ValueRW.currentPhase = RoundPhase.BuyPhase;
+        component.ValueRW.timer = buffer[(int)component.ValueRW.currentPhase];
+        component.ValueRW.currentRound = 0;
+        component.ValueRW.nativeScore = 0;
+        component.ValueRW.corporationScore = 0;
+        InitRound(ref state, entity, component);
     }
 
-    private void InitRound(ref SystemState state, Entity entity, ref RoundComponent component)
+    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
     {
-        component.currentPhase = RoundPhase.BuyPhase;
-        component.currentRound++;
+        component.ValueRW.currentPhase = RoundPhase.BuyPhase;
+        component.ValueRW.currentRound++;
 
-        IRoundManager.OnRoundStart?.Invoke(component.corporationScore, component.nativeScore);
+        //IRoundManager.OnRoundStart?.Invoke(component.ValueRW.corporationScore, component.ValueRW.nativeScore);
         Vector3 spawnPosition;
         Entity respawnEntity = new EntityQueryBuilder(Allocator.Temp).WithAll<SpawnerComponent>().Build(ref state).ToEntityArray(Allocator.Temp)[0];
         spawnPosition = state.EntityManager.GetComponentData<LocalTransform>(respawnEntity).Position;
@@ -182,36 +171,33 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop, IRoundManag
         }
     }
 
-    private void CollectorPlanted(ref SystemState state, Entity entity, ref RoundComponent component)
+    private void CollectorPlanted(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
     {
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         //Set the round into Post Plant
-        component.currentPhase = RoundPhase.PostPlantPhase;
-        component.timer = buffer[(int)RoundPhase.PostPlantPhase];
+        component.ValueRW.currentPhase = RoundPhase.PostPlantPhase;
+        component.ValueRW.timer = buffer[(int)RoundPhase.PostPlantPhase];
 
         //Make sure to delete the tag so it doesn't get detected twice
         state.EntityManager.RemoveComponent<RoundCollectorPlantedComponent>(entity);
 
-        SendCurrentPhase(ref state, entity, ref component);
+        SendCurrentPhase(ref state, entity, component);
 
-        IRoundManager.OnCollectorPlanted?.Invoke();
+        state.EntityManager.AddComponent<CollectorPlantedComponent>(entity);
+        //IRoundManager.OnCollectorPlanted?.Invoke();
     }
 
-    private void SendCurrentPhase(ref SystemState state, Entity entity, ref RoundComponent component)
+    private void SendCurrentPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
     {
-        ServerSystem system = state.World.GetOrCreateSystemManaged<ServerSystem>();
-        if (system == null)
-        {
-            Debug.Log("Couldn't find server system reference.");
-            return;
-        }
-
-        ChangePhaseRpcCommand rpc = new() { phase = component.currentPhase};
+        ChangePhaseRpcCommand rpc = new() { phase = component.ValueRW.currentPhase };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        EntityManager entityManager = state.WorldUnmanaged.EntityManager;
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
-            system.SendMessageRpc("message", ConnectionManager.Instance.Server, ref rpc, client);
+            Entity rpcEntity = entityManager.CreateEntity();
+            entityManager.AddComponentData(rpcEntity, new SendRpcCommandRequest() { TargetConnection = client });
+            entityManager.AddComponentData(rpcEntity, rpc);
         }
     }
 
