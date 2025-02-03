@@ -3,6 +3,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using static RoundSystemServer;
 
@@ -103,3 +104,6 @@ partial struct RoundSystemClient : IRoundManager, ISystem
         
     }
 }
+
+
+
