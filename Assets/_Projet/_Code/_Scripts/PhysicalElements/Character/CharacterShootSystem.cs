@@ -69,7 +69,8 @@ public partial struct ShootSystem : ISystem
             {
                 RaycastHit closestHit;
 
-                if (allHits[0].Entity == entity)
+                if (allHits[0].Entity == entity
+                    && allHits.Length > 1)
                 {
                     closestHit = allHits[1];
                 }
@@ -96,14 +97,24 @@ public partial struct ShootSystem : ISystem
                     }
                 }
 
-                if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
+                if (state.World.IsServer() 
+                    && closestHit.Entity != entity 
+                    && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
                 {
                     ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = 10 });
                     ecb.SetComponent(entity, new HasHitComponent { Value = true });
                 }
             }
 
-            Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 1);
+            if (state.World.IsServer())
+            {
+                Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.green, 60);
+            }
+            else
+            {
+                Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 60);
+            }
+            
         }
     }
 }
