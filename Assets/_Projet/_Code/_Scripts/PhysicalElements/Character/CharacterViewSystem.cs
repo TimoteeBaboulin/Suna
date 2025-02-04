@@ -16,6 +16,7 @@ partial struct CharacterViewSystem : ISystem
         state.RequireForUpdate<MainEntityCameraTag>();
     }
 
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
@@ -38,7 +39,11 @@ partial struct CharacterViewSystem : ISystem
             float mouseY = SystemAPI.Time.DeltaTime * input.ValueRO.look.y;
 
             characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(math.radians(mouseX)));
-            transform.ValueRW.Rotation = math.mul(transform.ValueRO.Rotation, quaternion.RotateX(math.radians(-mouseY)));
+
+            float newRotationYDeg = math.degrees(transform.ValueRO.Rotation.value.x) - mouseY;
+            newRotationYDeg = math.clamp(newRotationYDeg, -40, 40);
+            transform.ValueRW.Rotation.value.x = math.radians(newRotationYDeg);
+
             Entity rcpEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRcpCommand), typeof(SendRpcCommandRequest));
             state.EntityManager.SetComponentData(rcpEntity, new UpdateViewRotationRcpCommand
             {
@@ -46,8 +51,6 @@ partial struct CharacterViewSystem : ISystem
                 RotationX = characterTransform.ValueRO.Rotation,
                 RotationY = transform.ValueRO.Rotation
             });
-
-            //transform.ValueRW.Rotation.value.x = math.clamp(transform.ValueRO.Rotation.value.x, math.radians(-89f), math.radians(89f));
         }
     }
 }
