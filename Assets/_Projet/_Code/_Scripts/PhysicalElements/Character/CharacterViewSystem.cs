@@ -75,7 +75,7 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
             ecb.DestroyEntity(entity);
 
             foreach (var (transform, characterViewEntity, ghostOwner) in SystemAPI
-                .Query<RefRW<LocalTransform>, RefRO<CharacterViwEntityComponent>, RefRO<GhostOwner>>()
+                .Query<RefRW<LocalTransform>, RefRO<CharacterViewEntityComponent>, RefRO<GhostOwner>>()
                 .WithAll<CharacterComponent>())
             {
                 if (ghostOwner.ValueRO.NetworkId != viewRotationCommand.ValueRO.NetworkId)
