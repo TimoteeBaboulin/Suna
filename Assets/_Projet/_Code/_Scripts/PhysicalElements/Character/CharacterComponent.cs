@@ -27,8 +27,6 @@ public struct CharacterComponent : IComponentData
     [GhostField] public bool isGrounded;
     [GhostField] public bool isWalking;
 
-    [GhostField] public float sensivity;
-
     [GhostField] public float verticalCameraAngle;
 
     [GhostField] public Entity teamEntity;
