@@ -37,12 +37,12 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (transform, shootInput, hasHit, characterViewEntity, entity) in SystemAPI
+        foreach (var (transform, input, hasHit, characterViewEntity, entity) in SystemAPI
             .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRW<HasHitComponent>, RefRO<CharacterViewEntityComponent>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
-            if (!shootInput.ValueRO.shoot.IsSet)
+            if (!input.ValueRO.shoot.IsSet)
             {
                 if (state.World.IsServer())
                 {
@@ -52,7 +52,13 @@ public partial struct ShootSystem : ISystem
                 continue;
             }
 
-            RefRW<LocalToWorld> viewTransform = SystemAPI.GetComponentRW<LocalToWorld>(characterViewEntity.ValueRO.Value);
+            RefRO<LocalToWorld> viewTransform = SystemAPI.GetComponentRO<LocalToWorld>(characterViewEntity.ValueRO.Value);
+            LocalTransform shootTransform = new LocalTransform
+            {
+                Position = viewTransform.ValueRO.Position,
+                Rotation = input.ValueRO.shootRotation,
+                Scale = 1,
+            };
 
             float3 startPosition = viewTransform.ValueRO.Position;
             float3 endPosition = startPosition + (viewTransform.ValueRO.Forward * 100);
