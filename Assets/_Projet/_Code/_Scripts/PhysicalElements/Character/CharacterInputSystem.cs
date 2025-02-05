@@ -5,11 +5,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class CharacterInputSystem : SystemBase
 {
-    //private ControlsTemp _controls;
-
     private DefaultInputSystem input;
 
     DefaultInputSystem.PlayerActions actions;
@@ -46,7 +43,7 @@ public partial class CharacterInputSystem : SystemBase
         {
             input.ValueRW.move = CharacterMove;
 
-            input.ValueRW.look = CharacterLook * controller.ValueRO.sensivity;
+            input.ValueRW.look = CharacterLook * ClientSettings.Instance.Sensivity;
 
             //TODO :Make these into a function
             if (isJumpPerfomered)
