@@ -60,8 +60,8 @@ public partial struct ShootSystem : ISystem
                 Scale = 1,
             };
 
-            float3 startPosition = viewTransform.ValueRO.Position;
-            float3 endPosition = startPosition + (viewTransform.ValueRO.Forward * 100);
+            float3 startPosition = shootTransform.Position;
+            float3 endPosition = startPosition + (shootTransform.Forward() * 100);
 
             RaycastInput raycastInput = new RaycastInput()
             {
