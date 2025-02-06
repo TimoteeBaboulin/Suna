@@ -29,7 +29,6 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-
        // InputSystem.Update();
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
@@ -44,7 +43,7 @@ public partial class CharacterInputSystem : SystemBase
         {
             input.ValueRW.move = CharacterMove;
 
-            input.ValueRW.look = CharacterLook * ClientSettings.Instance.Sensivity;
+            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
 
             //TODO :Make these into a function
             if (isJumpPerfomered)
