@@ -6,7 +6,6 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 [WorldSystemFilter(WorldSystemFilterFlags.Default, WorldSystemFilterFlags.ClientSimulation)]
 partial struct ClientSettingsSystem : ISystem
 {
-    [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         if (SystemAPI.HasSingleton<ClientSettingsComponent>())
