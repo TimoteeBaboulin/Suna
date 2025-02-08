@@ -7,7 +7,7 @@ using Unity.Physics;
 using Unity.Transforms;
 
 [BurstCompile]
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
 public partial struct CharacterMovementSystem : ISystem
 {
 
@@ -47,11 +47,6 @@ public partial struct CharacterMovementJob : IJobEntity
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
-        if (!networkTime.IsFirstPredictionTick)
-        {
-            return;
-        }
-
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
