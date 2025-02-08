@@ -51,7 +51,6 @@ partial struct ClientSettingsSystem : ISystem
         }
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         Entity entity = SystemAPI.GetSingletonEntity<ClientSettingsComponent>();
