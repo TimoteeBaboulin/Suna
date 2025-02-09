@@ -51,7 +51,6 @@ partial struct CharacterViewSystem : ISystem
     }
 }
 
-//TODO: Prediction rotation
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct ReceiveRcpCharacterViewSystem : ISystem
 {
