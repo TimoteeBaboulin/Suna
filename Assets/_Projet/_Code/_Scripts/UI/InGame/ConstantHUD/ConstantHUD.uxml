@@ -19,10 +19,10 @@
         <engine:Label text="00" name="NatifScore" style="-unity-text-align: middle-center; position: absolute; right: auto; top: 0; font-size: 40px; -unity-font-style: bold; left: 54px; bottom: auto;" />
     </engine:VisualElement>
     <engine:VisualElement name="Minimap" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/MiniMap/Map.png?fileID=2800000&amp;guid=17a73f7d6eba6954d8f484b676ae9ca2&amp;type=3#Map&quot;); position: absolute; top: 100px; left: 30px; -unity-background-scale-mode: scale-to-fit; width: 259px; height: 263px;" />
-    <engine:VisualElement name="Background" style="flex-grow: 1; flex-basis: auto; flex-direction: row; align-items: center; align-self: center; align-content: center; -unity-text-align: middle-center; font-size: 75%; color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/Chrono/Timer.png?fileID=2800000&amp;guid=20c6cb10ba19e7747978931505c32e44&amp;type=3#Timer&quot;); position: absolute; flex-shrink: 1; width: 276px; height: 53px; justify-content: center; top: 45px;">
-        <engine:Label text="00" name="MinuteLabel" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
+    <engine:VisualElement name="Timer" style="flex-grow: 1; flex-basis: auto; flex-direction: row; align-items: center; align-self: center; align-content: center; -unity-text-align: middle-center; font-size: 75%; color: rgb(255, 255, 255); background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/Chrono/Timer.png?fileID=2800000&amp;guid=20c6cb10ba19e7747978931505c32e44&amp;type=3#Timer&quot;); position: absolute; flex-shrink: 1; width: 276px; height: 53px; justify-content: center; top: 45px;">
+        <engine:Label text="00" name="Minute" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
         <engine:Label text=":" name="Separator" style="color: rgb(0, 0, 0); font-size: 40%; flex-grow: 0; flex-shrink: 0; -unity-font-style: bold;" />
-        <engine:Label text="00" name="SecondLabel" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
+        <engine:Label text="00" name="Second" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
     </engine:VisualElement>
     <engine:VisualElement name="WeaponContainer" style="flex-grow: 1; position: absolute; right: 40px; bottom: 150px; flex-direction: column;" />
 </engine:UXML>

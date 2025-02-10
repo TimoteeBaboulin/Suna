@@ -24,9 +24,13 @@ public class HUDController : MonoBehaviour
     private Label _corpoScore;
     private Label _natifScore;
 
+    private Label _minute;
+    private Label _second;
+
     private bool _hitRegistered = false;
 
     private InGameHUDSystem _inGameHUDSystem = null;
+    private RoundManagerLinkSystem _roundManagerLinkSystem = null;
 
     private StyleColor _crosshairBaseColor;
 
@@ -36,7 +40,6 @@ public class HUDController : MonoBehaviour
     [SerializeField] List<WeaponMap> _weaponMap;
     [SerializeField] List<WeaponSlot> _weaponSlot;
     private int selectedSlot = 0;
-
 
     private void Awake()
     {
@@ -54,6 +57,9 @@ public class HUDController : MonoBehaviour
 
         _corpoScore = _HUD.Q<Label>("CorpoScore");
         _natifScore = _HUD.Q<Label>("NatifScore");
+
+        _minute = _HUD.Q<VisualElement>("Timer").Q<Label>("Minute");
+        _second = _HUD.Q<VisualElement>("Timer").Q<Label>("Second");
 
         _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
 
@@ -81,6 +87,11 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
         }
 
+        if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _roundManagerLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RoundManagerLinkSystem>();
+        }
+
         if (_hitRegistered)
         {
             _hitRegistered = false;
@@ -99,6 +110,19 @@ public class HUDController : MonoBehaviour
             if (selectedSlot == 0) selectedSlot = _weaponSlot.Count - 1;
             else selectedSlot = (selectedSlot - 1) % _weaponSlot.Count;
             _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
+        }
+
+        if (_roundManagerLinkSystem != null)
+        {
+            if (_roundManagerLinkSystem.TryGetRoundComponent(out RoundComponent roundComponent))
+            {
+                _corpoScore.text = roundComponent.corporationScore.ToString().PadLeft(2, '0');
+                _natifScore.text = roundComponent.nativeScore.ToString().PadLeft(2, '0');
+                int seconds = Mathf.FloorToInt(roundComponent.timer) % 60;
+                int minutes = Mathf.FloorToInt(roundComponent.timer) / 60;
+                _second.text = seconds.ToString().PadLeft(2, '0');
+                _minute.text = minutes.ToString().PadLeft(2, '0');
+            }
         }
     }
 
