@@ -13,7 +13,7 @@ using UnityEngine.UI;
 public class ConnectionManager : Singleton<ConnectionManager>
 {
     #region Fields
-    [SerializeField] private string _ip = "127.0.0.1";
+    [SerializeField] private string _ip = "141.94.194.103";
     [SerializeField] private ushort _port = 7979;
 
     private string _localIp = "127.0.0.1";

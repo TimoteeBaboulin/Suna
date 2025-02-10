@@ -6,7 +6,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-public partial struct RoundSystemServer : ISystem, ISystemStartStop
+public partial struct RoundSystemServer : ISystem
 {
     public struct VictoryRpcCommand : IRpcCommand
     {
@@ -28,7 +28,7 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
     private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
 
     //[BurstCompile]
-    public void OnStartRunning(ref SystemState state)
+    public void OnCreate(ref SystemState state)
     {
         //TODO: Switch to a RequireForUpdate to avoid performance drops
         //if (state.World != ConnectionManager.Instance.Server)
@@ -69,11 +69,13 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
             return;
         }
 
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
         //Check if the bomb was planted
         Entity entity = _query.GetSingletonEntity();
         if (roundComponent.ValueRO.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
-            CollectorPlanted(ref state, entity, roundComponent);
+            CollectorPlanted(ref state, entity, roundComponent, ecb);
         }
         else
         {
@@ -81,9 +83,12 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
             roundComponent.ValueRW.timer -= Time.deltaTime;
             if (roundComponent.ValueRO.timer < 0)
             {
-                TimeOutPhase(ref state, entity, roundComponent);
+                TimeOutPhase(ref state, entity, roundComponent, ecb);
             }
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
 
         //if (Keyboard.current[Key.Space].wasPressedThisFrame)
         //{
@@ -91,7 +96,7 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         //}
     }
 
-    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TimoteeTeam team)
+    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TimoteeTeam team, EntityCommandBuffer ecb)
     {
         if (team == TimoteeTeam.Corporation)
         {
@@ -115,27 +120,28 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
 
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
-            Entity newEntity = state.EntityManager.CreateEntity();
-            state.EntityManager.AddComponentData(newEntity, rpc);
-            state.EntityManager.AddComponentData(newEntity, new SendRpcCommandRequest()
+
+            Entity newEntity = ecb.CreateEntity();
+            ecb.AddComponent(newEntity, rpc);
+            ecb.AddComponent(newEntity, new SendRpcCommandRequest()
             {
                 TargetConnection = client
             });
         }
     }
 
-    private void TimeOutPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
+    private void TimeOutPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Gets to next phase because of time out
         if (component.ValueRW.currentPhase == RoundPhase.ActionPhase)
         {
-            Victory(ref state, entity, component, TimoteeTeam.Natives);
+            Victory(ref state, entity, component, TimoteeTeam.Natives, ecb);
             component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
         }
         else
         {
             if (component.ValueRW.currentPhase == RoundPhase.PostPlantPhase)
-                Victory(ref state, entity, component, TimoteeTeam.Corporation);
+                Victory(ref state, entity, component, TimoteeTeam.Corporation, ecb);
             component.ValueRW.currentPhase++;
         }
 
@@ -149,7 +155,7 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
         component.ValueRW.timer = buffer[(int)component.ValueRW.currentPhase];
 
-        SendCurrentPhase(ref state, entity, component);
+        SendCurrentPhase(ref state, entity, component, ecb);
     }
 
     private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
@@ -179,7 +185,7 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         }
     }
 
-    private void CollectorPlanted(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
+    private void CollectorPlanted(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
@@ -190,28 +196,27 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         //Make sure to delete the tag so it doesn't get detected twice
         state.EntityManager.RemoveComponent<RoundCollectorPlantedComponent>(entity);
 
-        SendCurrentPhase(ref state, entity, component);
+        SendCurrentPhase(ref state, entity, component, ecb);
     }
 
-    private void SendCurrentPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
+    private void SendCurrentPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         ChangePhaseRpcCommand rpc = new() { phase = component.ValueRW.currentPhase };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
 
+
+
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
-            Entity newEntity = state.EntityManager.CreateEntity();
-            state.EntityManager.AddComponentData(newEntity, rpc);
-            state.EntityManager.AddComponentData(newEntity, new SendRpcCommandRequest()
+            Entity newEntity = ecb.CreateEntity();
+            ecb.AddComponent(newEntity, rpc);
+            ecb.AddComponent(newEntity, new SendRpcCommandRequest()
             {
                 TargetConnection = client
             });
         }
     }
 
-    public void OnStopRunning(ref SystemState state)
-    {
-    }
 
 
 }
