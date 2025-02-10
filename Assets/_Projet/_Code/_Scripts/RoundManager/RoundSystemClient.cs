@@ -3,11 +3,10 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Transforms;
 using UnityEngine;
 using static RoundSystemServer;
 
-partial struct RoundSystemClient : IRoundManager, ISystem
+partial struct RoundSystemClient : ISystem
 {
     private bool _running;
 
@@ -19,30 +18,17 @@ partial struct RoundSystemClient : IRoundManager, ISystem
             return;
         }
 
-        //Check if the singleton exists to avoid crashes
-        if (!SystemAPI.TryGetSingleton<RoundComponent>(out var roundComponent))
-        {
-            return;
-            throw new System.Exception("Couldn't find RoundComponent Singleton, please check that there is a single RoundManager in the world.");
-        }
+        RoundComponent roundComponent = SystemAPI.GetSingleton<RoundComponent>();
         Entity entity = SystemAPI.GetSingletonEntity<RoundComponent>();
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         roundComponent.timer = buffer[0];
-        IRoundManager._currentTime = buffer[0];
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         if (!_running) return;
-
-        //Check if the singleton exists to avoid crashes
-        if (!SystemAPI.TryGetSingleton<RoundComponent>(out var roundComponent))
-        {
-            return;
-            throw new System.Exception("Couldn't find RoundComponent Singleton, please check that there is a single RoundManager in the world.");
-        }
 
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAllRW<RoundComponent>().Build(ref state);
         RefRW<RoundComponent> round = query.GetSingletonRW<RoundComponent>();
@@ -57,23 +43,23 @@ partial struct RoundSystemClient : IRoundManager, ISystem
 
         foreach(var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
         {
-            ChangeScore(ref state, entity, newRoundComponent.ValueRO.team, round);
+            ChangeScore(ref state, newRoundComponent.ValueRO.team, round);
             buffer.DestroyEntity(entity);
         }
 
         foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ChangePhaseRpcCommand>>().WithEntityAccess())
         {
-            ChangePhase(ref state, query.GetSingletonEntity(), newRoundComponent.ValueRO.phase, round);
+            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round);
             buffer.DestroyEntity(entity);
         }
 
         buffer.Playback(state.EntityManager);
         buffer.Dispose();
 
-        //IRoundManager._currentTime = roundComponent.timer;
+        RoundComponent roundComponent = SystemAPI.GetSingleton<RoundComponent>();
     }
 
-    public void ChangeScore(ref SystemState state, Entity entity, TimoteeTeam team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TimoteeTeam team, RefRW<RoundComponent> component) {
         switch (team)
         {
             case TimoteeTeam.Corporation:
@@ -90,25 +76,13 @@ partial struct RoundSystemClient : IRoundManager, ISystem
 
                 break;
         }
-
-        
-        state.EntityManager.AddComponent<ScoreChangedComponent>(entity);
     }
-    public void ChangePhase(ref SystemState state, Entity entity, RoundPhase phase, RefRW<RoundComponent> component)
+    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component)
     {
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         component.ValueRW.currentPhase = phase;
         component.ValueRW.timer = buffer[(int)phase];
-
-        if (phase == RoundPhase.BuyPhase)
-        {
-            //IRoundManager.OnRoundStart?.Invoke(component.ValueRW.corporationScore, component.ValueRW.nativeScore);
-        }
-        else if (phase == RoundPhase.PostPlantPhase)
-        {
-            state.EntityManager.AddComponent<CollectorPlantedComponent>(entity);
-        }
     }
 
     [BurstCompile]
@@ -117,6 +91,3 @@ partial struct RoundSystemClient : IRoundManager, ISystem
         
     }
 }
-
-
-

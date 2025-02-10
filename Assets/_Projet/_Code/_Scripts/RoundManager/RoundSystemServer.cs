@@ -1,12 +1,9 @@
-using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Services.Matchmaker.Models;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public partial struct RoundSystemServer : ISystem, ISystemStartStop
 {
@@ -29,9 +26,6 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
 
     private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
 
-    //public Action<int, int> OnRoundStart;
-    //public Action OnCollectorPlanted;
-
     //[BurstCompile]
     public void OnStartRunning(ref SystemState state)
     {
@@ -48,13 +42,11 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         _query = builder.Build(ref state);
 
-        RefRW<RoundComponent> roundComponent = _query.GetSingletonRW<RoundComponent>();
-
         //Get the necessary references to set up the start of the game
         var entity = _query.GetSingletonEntity();
+        RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
 
-        InitGame(ref state, entity, roundComponent);
-        //IRoundManager._currentTime = roundComponent.ValueRW.timer;
+        InitGame(ref state, entity, component);
     }
 
     [BurstCompile]
@@ -62,11 +54,15 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
     {
         if (!_running) return;
 
-        RefRW<RoundComponent> roundComponent = _query.GetSingletonRW<RoundComponent>();
+        //Check if the singleton exists to avoid crashes
+        if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
+        {
+            throw new System.Exception("Couldn't find RoundComponent Singleton, please check that there is a single RoundManager in the world.");
+        }
 
         //Check if the bomb was planted
         Entity entity = _query.GetSingletonEntity();
-        if (roundComponent.ValueRW.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
+        if (roundComponent.ValueRO.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
             CollectorPlanted(ref state, entity, roundComponent);
         }
@@ -74,13 +70,16 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         {
             //Update the timer and change to next phase in case the timer runs out
             roundComponent.ValueRW.timer -= Time.deltaTime;
-            if (roundComponent.ValueRW.timer < 0)
+            if (roundComponent.ValueRO.timer < 0)
             {
                 TimeOutPhase(ref state, entity, roundComponent);
             }
         }
 
-        //IRoundManager._currentTime = roundComponent.ValueRW.timer;
+        //if (Keyboard.current[Key.Space].wasPressedThisFrame)
+        //{
+        //    state.EntityManager.AddComponent<RoundCollectorPlantedComponent>(entity);
+        //}
     }
 
     private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TimoteeTeam team)
@@ -104,15 +103,16 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
 
         VictoryRpcCommand rpc = new() { team = team };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
-        EntityManager entityManager = state.WorldUnmanaged.EntityManager;
+
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
-            Entity rpcEntity = entityManager.CreateEntity();
-            entityManager.AddComponentData(rpcEntity, new SendRpcCommandRequest() { TargetConnection = client });
-            entityManager.AddComponentData(rpcEntity, rpc);
+            Entity newEntity = state.EntityManager.CreateEntity();
+            state.EntityManager.AddComponentData(newEntity, rpc);
+            state.EntityManager.AddComponentData(newEntity, new SendRpcCommandRequest()
+            {
+                TargetConnection = client
+            });
         }
-
-        entityManager.AddComponent<ScoreChangedComponent>(entity);
     }
 
     private void TimeOutPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
@@ -159,7 +159,6 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
         component.ValueRW.currentRound++;
 
-        //IRoundManager.OnRoundStart?.Invoke(component.ValueRW.corporationScore, component.ValueRW.nativeScore);
         Vector3 spawnPosition;
         Entity respawnEntity = new EntityQueryBuilder(Allocator.Temp).WithAll<SpawnerComponent>().Build(ref state).ToEntityArray(Allocator.Temp)[0];
         spawnPosition = state.EntityManager.GetComponentData<LocalTransform>(respawnEntity).Position;
@@ -183,21 +182,21 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         state.EntityManager.RemoveComponent<RoundCollectorPlantedComponent>(entity);
 
         SendCurrentPhase(ref state, entity, component);
-
-        state.EntityManager.AddComponent<CollectorPlantedComponent>(entity);
-        //IRoundManager.OnCollectorPlanted?.Invoke();
     }
 
     private void SendCurrentPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
     {
         ChangePhaseRpcCommand rpc = new() { phase = component.ValueRW.currentPhase };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
-        EntityManager entityManager = state.WorldUnmanaged.EntityManager;
+
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
-            Entity rpcEntity = entityManager.CreateEntity();
-            entityManager.AddComponentData(rpcEntity, new SendRpcCommandRequest() { TargetConnection = client });
-            entityManager.AddComponentData(rpcEntity, rpc);
+            Entity newEntity = state.EntityManager.CreateEntity();
+            state.EntityManager.AddComponentData(newEntity, rpc);
+            state.EntityManager.AddComponentData(newEntity, new SendRpcCommandRequest()
+            {
+                TargetConnection = client
+            });
         }
     }
 
