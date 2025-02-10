@@ -44,10 +44,17 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         _query = builder.Build(ref state);
 
         //Get the necessary references to set up the start of the game
-        var entity = _query.GetSingletonEntity();
-        RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
 
-        InitGame(ref state, entity, component);
+        //var entity = _query.GetSingletonEntity();
+        if (_query.TryGetSingletonEntity<Entity>(out var entity))
+        {
+            if (state.EntityManager.Exists(entity))
+            {
+                RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
+
+                InitGame(ref state, entity, component);
+            }
+        }
     }
 
     [BurstCompile]
@@ -123,7 +130,7 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         if (component.ValueRW.currentPhase == RoundPhase.ActionPhase)
         {
             Victory(ref state, entity, component, TimoteeTeam.Natives);
-            component.ValueRW.currentPhase = RoundPhase.PostRoundPhase; 
+            component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
         }
         else
         {
@@ -206,5 +213,5 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
     {
     }
 
-    
+
 }

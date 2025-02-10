@@ -42,7 +42,6 @@ public partial class ServerSystem : SystemBase
         {
             commandBuffer.AddComponent<InitializedClient>(entity);
 
-            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
             InstantiatePlayer(entity, commandBuffer);
         }
 
@@ -54,28 +53,31 @@ public partial class ServerSystem : SystemBase
 
     public void InstantiatePlayer(Entity ownerEntity, EntityCommandBuffer ecb)
     {
-        PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
-        if (prefabManager.player == null)
+        if (SystemAPI.TryGetSingleton<PrefabsData>(out PrefabsData prefabManager))
         {
-            return;
+            prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+
+            if (prefabManager.player == null)
+            {
+                return;
+            }
+
+            NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
+            FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
+
+            Entity player = ecb.Instantiate(prefabManager.player);
+            ecb.SetComponent(player, new GhostOwner() //Set owner of player to connection
+            {
+                NetworkId = networkId.Value
+            });
+            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
+            {
+                Value = player
+            });
+
+            ServerConsole.Log(ServerConsole.LogType.Info, $"New Player connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
-
-        NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
-        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
-
-        Entity player = ecb.Instantiate(prefabManager.player);
-        ecb.SetComponent(player, new GhostOwner() //Set owner of player to connection
-        {
-            NetworkId = networkId.Value
-        });
-        ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
-        {
-            Value = player
-        });
-
-        ServerConsole.Log(ServerConsole.LogType.Info, $"New Player connected with NetworkId {networkId.Value}, in the world {worldName}");
     }
-
     #endregion
 
     //Broadcast message to a target/client or to all clients if no target

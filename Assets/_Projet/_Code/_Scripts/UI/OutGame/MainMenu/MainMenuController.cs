@@ -27,35 +27,38 @@ public class MainMenuController : MonoBehaviour
 
     private void Awake()
     {
-        // Get the root visual elements
-        _mainMenu = _mainMenuDocument.rootVisualElement;
-        _settingsMenu = _settingsMenuDocument.rootVisualElement;
+        if (_mainMenuDocument != null && _settingsMenuDocument != null)
+        {
+            // Get the root visual elements
+            _mainMenu = _mainMenuDocument.rootVisualElement;
+            _settingsMenu = _settingsMenuDocument.rootVisualElement;
 
-        // Disable the settings menu
-        _settingsMenu.style.opacity = 0;
-        _settingsMenu.SetEnabled(false);
-        _settingsMenuDocument.sortingOrder = -1;
+            // Disable the settings menu
+            _settingsMenu.style.opacity = 0;
+            _settingsMenu.SetEnabled(false);
+            _settingsMenuDocument.sortingOrder = -1;
 
-        // Get the main menu elements
-        _playButton = _mainMenu.Q<Button>("PlayButton");
-        _playButton.clicked += OnPlayButton_Click;
+            // Get the main menu elements
+            _playButton = _mainMenu.Q<Button>("PlayButton");
+            _playButton.clicked += OnPlayButton_Click;
 
-        _settingsButton = _mainMenu.Q<Button>("SettingsButton");
-        _settingsButton.clicked += OnSettingsButton_Click;
+            _settingsButton = _mainMenu.Q<Button>("SettingsButton");
+            _settingsButton.clicked += OnSettingsButton_Click;
 
-        _quitButton = _mainMenu.Q<Button>("QuitButton");
-        _quitButton.clicked += OnQuitButton_Click;
+            _quitButton = _mainMenu.Q<Button>("QuitButton");
+            _quitButton.clicked += OnQuitButton_Click;
 
 
-        // Get the settings menu elements
-        _exitButton = _settingsMenu.Q<Button>("ExitButton");
-        _exitButton.clicked += OnExitButton_Click;
+            // Get the settings menu elements
+            _exitButton = _settingsMenu.Q<Button>("ExitButton");
+            _exitButton.clicked += OnExitButton_Click;
 
-        _sensitivitySlider = _settingsMenu.Q<Slider>("SensitivitySlider");
-        _sensitivitySlider.RegisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
+            _sensitivitySlider = _settingsMenu.Q<Slider>("SensitivitySlider");
+            _sensitivitySlider.RegisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
 
-        _sensitivityField = _settingsMenu.Q<FloatField>("SensitivityField");
-        _sensitivityField.RegisterValueChangedCallback(OnSensitivityField_ValueChanged);
+            _sensitivityField = _settingsMenu.Q<FloatField>("SensitivityField");
+            _sensitivityField.RegisterValueChangedCallback(OnSensitivityField_ValueChanged);
+        }
     }
 
     private void OnPlayButton_Click()
