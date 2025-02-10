@@ -26,6 +26,7 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
     };
 
     private bool _running; //TODO: Add a server and/or client component to switch to RequireForUpdate
+    private bool _initGame;
 
     //[BurstCompile]
     public void OnStartRunning(ref SystemState state)
@@ -37,23 +38,32 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         //    return;
         //}
 
+        _initGame = false;
         _running = true;
 
         //Create the query and store it for future use
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
-        _query = builder.Build(ref state);
+        //EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
+        //_query = builder.Build(ref state);
 
-        //Get the necessary references to set up the start of the game
-        var entity = _query.GetSingletonEntity();
-        RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
-
-        InitGame(ref state, entity, component);
+        ////Get the necessary references to set up the start of the game
+        //NativeArray<Entity> entities = _query.ToEntityArray(Allocator.Temp);
+        //var entity;
+        //if (entities.Length == 0)
+        //{
+        //    entity = state.EntityManager.CreateEntity();
+        //    state.EntityManager.AddComponent<RoundComponent>(entity);
+        //}
+        //else
+        //{
+        //    entity = _query.GetSingletonEntity();
+        //}
+        //RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        if (!_running) return;
+        //if (!_running) return;
 
         //Check if the singleton exists to avoid crashes
         if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
@@ -62,8 +72,17 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
             return;
         }
 
-        //Check if the bomb was planted
         Entity entity = _query.GetSingletonEntity();
+
+        if (!_initGame)
+        {
+            _initGame = true;
+
+            InitGame(ref state, entity, roundComponent);
+        }
+
+        //Check if the bomb was planted
+        
         if (roundComponent.ValueRO.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
             CollectorPlanted(ref state, entity, roundComponent);
