@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RoundSystemServer : ISystem, ISystemStartStop
 {
     public struct VictoryRpcCommand : IRpcCommand
@@ -30,11 +31,11 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
     public void OnStartRunning(ref SystemState state)
     {
         //TODO: Switch to a RequireForUpdate to avoid performance drops
-        if (state.World != ConnectionManager.Instance.Server)
-        {
-            _running = false;
-            return;
-        }
+        //if (state.World != ConnectionManager.Instance.Server)
+        //{
+        //    _running = false;
+        //    return;
+        //}
 
         _running = true;
 
@@ -57,7 +58,8 @@ public partial struct RoundSystemServer : ISystem, ISystemStartStop
         //Check if the singleton exists to avoid crashes
         if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
         {
-            throw new System.Exception("Couldn't find RoundComponent Singleton, please check that there is a single RoundManager in the world.");
+            //throw new System.Exception("Couldn't find RoundComponent Singleton, please check that there is a single RoundManager in the world.");
+            return;
         }
 
         //Check if the bomb was planted
