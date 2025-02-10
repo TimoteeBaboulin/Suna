@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UIElements;
 
 public class HUDController : MonoBehaviour
 {
+    // Main Features
     private UIDocument _HUDDocument;
 
     private VisualElement _HUD;
@@ -28,6 +30,14 @@ public class HUDController : MonoBehaviour
 
     private StyleColor _crosshairBaseColor;
 
+    // Weapon Slot
+    private VisualElement _weaponContainer;
+    [SerializeField] private VisualTreeAsset _weaponAsset;
+    [SerializeField] List<WeaponMap> _weaponMap;
+    [SerializeField] List<WeaponSlot> _weaponSlot;
+    private int selectedSlot = 0;
+
+
     private void Awake()
     {
         _HUDDocument = GetComponent<UIDocument>();
@@ -44,6 +54,22 @@ public class HUDController : MonoBehaviour
 
         _corpoScore = _HUD.Q<Label>("CorpoScore");
         _natifScore = _HUD.Q<Label>("NatifScore");
+
+        _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
+
+        for (int i = 0; i < _weaponSlot.Count; i++)
+        {
+            _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
+            _weaponContainer.Children().Last().Q<Label>("Slot").text = _weaponSlot[i].SlotNumber.ToString();
+            _weaponContainer.Children().Last().style.backgroundImage = new()
+            {
+                value = new()
+                {
+                    texture = _weaponMap.Find(wm => wm.Weapon == _weaponSlot[i].Weapon).Tex
+                }
+            };
+            _weaponContainer.Children().Last().style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, i == selectedSlot ? 1f : .125f);
+        }
     }
 
     private void Update()
@@ -59,6 +85,20 @@ public class HUDController : MonoBehaviour
         {
             _hitRegistered = false;
             StartCoroutine(HitRegistered());
+        }
+
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) // backward
+        {
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
+            selectedSlot = (selectedSlot + 1) % _weaponSlot.Count;
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
+        }
+        else if (Input.GetAxis("Mouse ScrollWheel") > 0) // forward
+        {
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
+            if (selectedSlot == 0) selectedSlot = _weaponSlot.Count - 1;
+            else selectedSlot = (selectedSlot - 1) % _weaponSlot.Count;
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
         }
     }
 
@@ -91,4 +131,18 @@ public class HUDController : MonoBehaviour
         _hitRegistered = true;
         _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
+}
+
+[Serializable]
+public struct WeaponSlot
+{
+    public int SlotNumber;
+    public string Weapon;
+}
+
+[Serializable]
+public struct WeaponMap
+{
+    public string Weapon;
+    public Texture2D Tex;
 }

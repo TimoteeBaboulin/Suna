@@ -64,3 +64,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37552a61dc3cba047a11b7b5f333cf65, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponAsset: {fileID: 9197481963319205126, guid: 6bd4124618971034296a0ec34e5b3522, type: 3}
+  _weaponMap:
+  - Weapon: Knife
+    Tex: {fileID: 2800000, guid: 743fbec9600556340bf5504eb988d570, type: 3}
+  - Weapon: PistolC
+    Tex: {fileID: 2800000, guid: 55e83f6a90f7e164e869bc625cd999d2, type: 3}
+  - Weapon: PistolN
+    Tex: {fileID: 2800000, guid: e288b126403db6c42a5024b39b75da8a, type: 3}
+  - Weapon: RifleC
+    Tex: {fileID: 2800000, guid: b0d9994389febad43989d138706390be, type: 3}
+  - Weapon: RifleN
+    Tex: {fileID: 2800000, guid: 120eb63a7dcf16f45ace0b0a9c8cafa0, type: 3}
+  - Weapon: Shotgun
+    Tex: {fileID: 2800000, guid: bef0b3d40807d854296bed240d6fbabb, type: 3}
+  _weaponSlot:
+  - SlotNumber: 1
+    Weapon: RifleC
+  - SlotNumber: 2
+    Weapon: PistolC
+  - SlotNumber: 3
+    Weapon: Knife
