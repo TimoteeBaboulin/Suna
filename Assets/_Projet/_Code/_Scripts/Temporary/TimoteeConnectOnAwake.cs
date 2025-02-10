@@ -7,5 +7,5 @@ public class TimoteeConnectOnAwake : MonoBehaviour
 
     private void OnEnable() => IRoundManager.OnRoundStart += (int a, int b) => { Debug.Log("Current score is: " + a + " to  " + b); };
 
-    private void Update() => Debug.Log("Timer is " + IRoundManager.CurrentTime);
+    //private void Update() => Debug.Log("Timer is " + IRoundManager.CurrentTime);
 }
