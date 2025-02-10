@@ -48,7 +48,6 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 jumpRequest = false,
                 isGrounded = false,
                 isWalking = false,
-                sensivity = cca.sensivity,
             });
 
             AddComponent(entity, new FreezeAllRotationTag());

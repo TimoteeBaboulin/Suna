@@ -9,5 +9,7 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public InputEvent jump;
     [GhostField] public InputEvent walkStarted;
     [GhostField] public InputEvent walkCanceled;
+
     [GhostField] public InputEvent shoot;
+    [GhostField] public quaternion shootRotation;
 }

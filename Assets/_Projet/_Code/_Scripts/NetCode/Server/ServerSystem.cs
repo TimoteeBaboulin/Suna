@@ -1,3 +1,4 @@
+
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -78,17 +79,16 @@ public partial class ServerSystem : SystemBase
     #endregion
 
     //Broadcast message to a target/client or to all clients if no target
-    public void SendMessageRpc(string text, World world, Entity target = default)
+    public void SendMessageRpc<T>(string text, World world, ref T command, Entity target = default) where T : unmanaged, IRpcCommand
     {
         if (world == null || !world.IsCreated)
         {
             return;
         }
-        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(ServerMessageRpcCommand));
-        world.EntityManager.SetComponentData(entity, new ServerMessageRpcCommand()
-        {
-            message = text
-        });
+
+        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
+        world.EntityManager.SetComponentData(entity, command);
+
 
         if (target != Entity.Null)
         {

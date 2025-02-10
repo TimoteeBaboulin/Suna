@@ -1,15 +1,13 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class CharacterInputSystem : SystemBase
 {
-    //private ControlsTemp _controls;
-
     private DefaultInputSystem input;
 
     DefaultInputSystem.PlayerActions actions;
@@ -31,7 +29,6 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-
        // InputSystem.Update();
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
@@ -40,13 +37,13 @@ public partial class CharacterInputSystem : SystemBase
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
-        foreach (var (controller, input) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>>()
+        foreach (var (controller, input, viewEntity) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterViewEntityComponent>>()
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;
 
-            input.ValueRW.look = CharacterLook * controller.ValueRO.sensivity;
+            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
 
             //TODO :Make these into a function
             if (isJumpPerfomered)
@@ -79,6 +76,9 @@ public partial class CharacterInputSystem : SystemBase
             if (isShootPressed)
             {
                 input.ValueRW.shoot.Set();
+
+                RefRO<LocalToWorld> viewWorldTransform = SystemAPI.GetComponentRO<LocalToWorld>(viewEntity.ValueRO.Value);
+                input.ValueRW.shootRotation = viewWorldTransform.ValueRO.Rotation;
             }
             else
             {

@@ -1,6 +1,6 @@
 .main-menu-button {
-    width: 50%;
-    height: 20%;
+    width: 40%;
+    height: 15%;
     margin-top: 10px;
     margin-bottom: 10px;
     font-size: 48px;
@@ -50,7 +50,6 @@
     margin-bottom: auto;
     margin-left: 0;
     flex-direction: column;
-    background-position-y: center 0;
     visibility: visible;
     flex-grow: 0;
 }

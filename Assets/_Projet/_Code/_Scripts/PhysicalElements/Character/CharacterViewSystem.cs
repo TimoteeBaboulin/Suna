@@ -4,10 +4,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct CharacterViewSystem : ISystem
 {
     [BurstCompile]
@@ -19,11 +17,6 @@ partial struct CharacterViewSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-
-        if (!networkTime.IsFirstPredictionTick)
-        {
-            return;
-        }
 
         foreach (var (transform, parent, entity) in SystemAPI
             .Query<RefRW<LocalTransform>, RefRO<Parent>>()
@@ -38,7 +31,14 @@ partial struct CharacterViewSystem : ISystem
             float mouseY = SystemAPI.Time.DeltaTime * input.ValueRO.look.y;
 
             characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(math.radians(mouseX)));
-            transform.ValueRW.Rotation = math.mul(transform.ValueRO.Rotation, quaternion.RotateX(math.radians(-mouseY)));
+            characterTransform.ValueRW.Rotation.value.x = 0;
+            characterTransform.ValueRW.Rotation.value.z = 0;
+
+            float newRotationYDeg = math.degrees(transform.ValueRO.Rotation.value.x) - mouseY;
+            newRotationYDeg = math.clamp(newRotationYDeg, -40, 40);
+            transform.ValueRW.Rotation.value.x = math.radians(newRotationYDeg);
+            transform.ValueRW.Rotation.value.y = 0;
+            transform.ValueRW.Rotation.value.z = 0;
 
             Entity rcpEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRcpCommand), typeof(SendRpcCommandRequest));
             state.EntityManager.SetComponentData(rcpEntity, new UpdateViewRotationRcpCommand
@@ -47,13 +47,10 @@ partial struct CharacterViewSystem : ISystem
                 RotationX = characterTransform.ValueRO.Rotation,
                 RotationY = transform.ValueRO.Rotation
             });
-
-            //transform.ValueRW.Rotation.value.x = math.clamp(transform.ValueRO.Rotation.value.x, math.radians(-89f), math.radians(89f));
         }
     }
 }
 
-//TODO: Prediction rotation
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct ReceiveRcpCharacterViewSystem : ISystem
 {
