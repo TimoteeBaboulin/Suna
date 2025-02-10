@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine.Rendering;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -40,8 +41,6 @@ public partial class ServerSystem : SystemBase
 
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
-            commandBuffer.AddComponent<InitializedClient>(entity);
-
             InstantiatePlayer(entity, commandBuffer);
         }
 
@@ -53,7 +52,7 @@ public partial class ServerSystem : SystemBase
 
     public void InstantiatePlayer(Entity ownerEntity, EntityCommandBuffer ecb)
     {
-        if (SystemAPI.TryGetSingleton<PrefabsData>(out PrefabsData prefabManager))
+        if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
         {
             prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
@@ -74,6 +73,8 @@ public partial class ServerSystem : SystemBase
             {
                 Value = player
             });
+
+            ecb.AddComponent<InitializedClient>(ownerEntity);
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Player connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
