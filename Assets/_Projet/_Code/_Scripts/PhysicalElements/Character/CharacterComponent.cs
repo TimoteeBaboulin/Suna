@@ -16,7 +16,8 @@ public struct CharacterComponent : IComponentData
     [GhostField] public float decelerationFactor;
     [GhostField] public float drag;
 
-    [GhostField] public float2 direction;
+    [GhostField] public float3 direction;
+    [GhostField] public float2 horizontalDir;
     [GhostField] public float2 inertia;
 
     [GhostField] public float maxStepHeight;

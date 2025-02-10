@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -44,6 +45,13 @@ public partial struct CharacterMovementJob : IJobEntity
     public NetworkTime networkTime;
     [ReadOnly] public PhysicsWorld physicsWorld;
 
+    const float gravity = -9.81f;
+
+    private static float3 ProjectOnPlan(float3 vec, float3 normal)
+    {
+        return vec - math.project(vec, normal);
+    }
+
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
@@ -52,25 +60,21 @@ public partial struct CharacterMovementJob : IJobEntity
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
 
         float3 feetPosition = characterTransform.Position - new float3(0, 0.95f, 0);
-        float3 checkPosition = feetPosition - new float3(0, 0.15f, 0);
 
-        RaycastInput raycastInput = new RaycastInput()
-        {
-            Start = feetPosition,
-            End = checkPosition,
-            Filter = CollisionFilter.Default
-        };
-
-        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+        NativeList<Unity.Physics.ColliderCastHit> allHits = new NativeList<Unity.Physics.ColliderCastHit>(Allocator.Temp);
         controller.isGrounded = false;
+        float3 slopeDirection = math.forward();
+        float3 groundNormal = math.up();
 
-        if (physicsWorld.CastRay(raycastInput, ref allHits))
+        if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.4f, .01f, .4f), math.down(), .15f, ref allHits, CollisionFilter.Default))
         {
             foreach (var hit in allHits)
             {
                 if (hit.Entity != entity)
                 {
                     controller.isGrounded = true;
+                    slopeDirection = math.cross(math.cross(math.up(), hit.SurfaceNormal), hit.SurfaceNormal);
+                    groundNormal = hit.SurfaceNormal;
                     break;
                 }
             }
@@ -79,19 +83,34 @@ public partial struct CharacterMovementJob : IJobEntity
         float x = input.move.x;
         float z = input.move.y;
 
-        if (math.length(new float2(x, z)) > 0)
+        bool isMoving = math.length(new float2(x, z)) > 0;
+
+        float3 forward = math.rotate(characterTransform.Rotation, math.forward());
+        float3 right = math.cross(math.up(), forward);
+
+        controller.horizontalDir = new float2(x, z);
+
+        if (isMoving)
         {
-            controller.direction = math.normalize(new float2(x, z));
+            controller.direction = math.normalize(ProjectOnPlan(forward, groundNormal) * z + ProjectOnPlan(right, groundNormal) * x);
+            float3 dirFromGround = math.normalize(ProjectOnPlan(controller.direction, math.up()));
+
+            if(dirFromGround.y != 0) UnityEngine.Debug.Log("DIR FROM GROUND: " + dirFromGround);
+
+            controller.horizontalDir = new float2(dirFromGround.x, dirFromGround.z);
+            UnityEngine.Debug.Log("Direction: " + controller.direction);
         }
         else
         {
-            controller.direction = float2.zero;
+            controller.direction = float3.zero;
         }
 
-        float3 dir = math.rotate(characterTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
-        controller.direction = new float2(dir.x, dir.z);
+        controller.horizontalDir = math.normalize(controller.horizontalDir);
 
-        float decelerationFactor = math.dot(controller.direction, controller.inertia) < 0 ? controller.decelerationFactor : 1.0f;
+        /*float3 dir = math.rotate(characterTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
+        controller.direction = new float3(dir.x, 0, dir.z);*/
+
+        float decelerationFactor = math.dot(controller.horizontalDir, controller.inertia) < 0 ? controller.decelerationFactor : 1.0f;
 
         if (math.length(controller.direction) < math.EPSILON)
         {
@@ -109,37 +128,44 @@ public partial struct CharacterMovementJob : IJobEntity
             }
         }
 
-        controller.inertia += controller.direction * (controller.acceleration * dt);
+        controller.inertia += controller.horizontalDir * (controller.acceleration * dt);
+
         if (math.length(controller.inertia) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
         {
             controller.inertia = math.normalize(controller.inertia) * controller.currentSpeed;
         }
 
-        if (math.dot(controller.inertia, controller.direction) <= 0)
+        if (math.dot(controller.inertia, controller.horizontalDir) <= 0)
         {
             controller.inertia *= (1.0f - controller.drag);
         }
 
-        vel.Linear = new float3(controller.inertia.x, vel.Linear.y, controller.inertia.y);
+        vel.Linear.x = controller.inertia.x;
+        vel.Linear.z = controller.inertia.y;
+        vel.Linear.y += gravity * dt;
+        vel.Linear.y += controller.direction.y;
+
+        if (controller.isGrounded && vel.Linear.y <= 0.1f) vel.Linear.y = .0f;
+
+        if (!isMoving) UnityEngine.Debug.Log("Velocity y: " + vel.Linear.y);
 
         // TODO:
         // Easeout la vélocité quand on s'approche de la maxSpeed
-        // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
 
-        if (input.jump.IsSet && controller.isGrounded)
+        if (input.jump.IsSet && controller.isGrounded && vel.Linear.y <= 0.1f)
         {
-            physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
-            characterController.ValueRW.isGrounded = false;
+            vel.Linear.y = characterController.ValueRW.jumpForce;
+            controller.isGrounded = false;
         }
 
         if (input.walkStarted.IsSet)
         {
-            characterController.ValueRW.isWalking = true;
+            controller.isWalking = true;
         }
 
         if (input.walkCanceled.IsSet)
         {
-            characterController.ValueRW.isWalking = false;
+            controller.isWalking = false;
         }
     }
 }
