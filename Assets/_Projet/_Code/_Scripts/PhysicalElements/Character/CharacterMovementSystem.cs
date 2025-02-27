@@ -45,7 +45,7 @@ public partial struct CharacterMovementJob : IJobEntity
     [ReadOnly] public PhysicsWorld physicsWorld;
 
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<CharacterAnimationState> animationState)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -82,10 +82,12 @@ public partial struct CharacterMovementJob : IJobEntity
         if (math.length(new float2(x, z)) > 0)
         {
             controller.direction = math.normalize(new float2(x, z));
+            animationState.ValueRW.IsWalking = true;
         }
         else
         {
             controller.direction = float2.zero;
+            animationState.ValueRW.IsWalking = false;
         }
 
         float3 dir = math.rotate(characterTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));

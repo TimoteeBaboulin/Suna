@@ -656,6 +656,9 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 3
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -886,7 +889,7 @@ GameObject:
   - component: {fileID: 5473284750905884826}
   - component: {fileID: 2095633634323274464}
   m_Layer: 0
-  m_Name: BasicMotions_DummyModel_M
+  m_Name: CharacterModelGameObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -911,7 +914,7 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &2095633634323274464
 Animator:
-  serializedVersion: 5
+  serializedVersion: 7
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -919,12 +922,13 @@ Animator:
   m_GameObject: {fileID: 4665399188383504928}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 0e1e29b35a3700748811d120b13ed8d6, type: 3}
-  m_Controller: {fileID: 9100000, guid: b5d0477bee677d641a4debe11c87d428, type: 2}
+  m_Controller: {fileID: 9100000, guid: 59ce386850d6ddf49af628e0e06dff4b, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
