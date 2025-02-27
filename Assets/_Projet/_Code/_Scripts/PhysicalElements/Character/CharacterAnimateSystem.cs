@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -27,13 +28,21 @@ partial struct CharacterAnimateSystem : ISystem
                 Animator = newGameObject.GetComponent<Animator>(),
                 DeltaPosition = characterGameObjectPrefab.DeltaPosition
             });
+
+            ecb.AddComponent(entity, new CharacterModelBones
+            {
+                HeadBoneTransform = FindBoneByName(newGameObject.transform, "B-head")
+            });
         }
 
-        foreach (var (transform, animatorReference, animationState) in SystemAPI
-            .Query<LocalTransform, CharacterAnimatorReference, RefRO<CharacterAnimationState>>())
+        foreach (var (transform, animatorReference, modelBones, animationState, viewEntity) in SystemAPI
+            .Query<LocalTransform, CharacterAnimatorReference, CharacterModelBones, RefRO<CharacterAnimationState>, RefRO<CharacterViewEntityComponent>>())
         {
             animatorReference.Animator.transform.position = transform.Position + animatorReference.DeltaPosition;
             animatorReference.Animator.transform.rotation = transform.Rotation;
+
+            RefRO<LocalTransform> viewTransform = SystemAPI.GetComponentRO<LocalTransform>(viewEntity.ValueRO.Value);
+            modelBones.HeadBoneTransform.rotation = math.mul(transform.Rotation, viewTransform.ValueRO.Rotation);
 
             animatorReference.Animator.SetBool("IsWalking", animationState.ValueRO.IsWalking);
         }
@@ -49,5 +58,16 @@ partial struct CharacterAnimateSystem : ISystem
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+
+    private Transform FindBoneByName(Transform parent, string boneName)
+    {
+        Transform[] allChildren = parent.GetComponentsInChildren<Transform>();
+        foreach (Transform child in allChildren)
+        {
+            if (child.name == boneName)
+                return child;
+        }
+        return null;
     }
 }
