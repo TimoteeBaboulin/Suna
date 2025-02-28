@@ -51,7 +51,7 @@ partial struct CharacterViewSystem : ISystem
     }
 }
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct ReceiveRcpCharacterViewSystem : ISystem
 {
     [BurstCompile]
@@ -96,7 +96,7 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
     }
 }
 
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
 {
     [BurstCompile]
