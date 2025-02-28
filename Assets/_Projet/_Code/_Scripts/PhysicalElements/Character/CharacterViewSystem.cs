@@ -72,8 +72,8 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
         {
             ecb.DestroyEntity(entity);
 
-            foreach (var (transform, characterViewEntity, ghostOwner) in SystemAPI
-                .Query<RefRW<LocalTransform>, RefRO<CharacterViewEntityComponent>, RefRO<GhostOwner>>()
+            foreach (var (transform, characterViewEntity, characterAndViewRotation, ghostOwner) in SystemAPI
+                .Query<RefRW<LocalTransform>, RefRO<CharacterViewEntityComponent>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
                 .WithAll<CharacterComponent>())
             {
                 if (ghostOwner.ValueRO.NetworkId != viewRotationCommand.ValueRO.NetworkId)
@@ -85,10 +85,37 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
 
                 RefRW<LocalTransform> viewTransform = SystemAPI.GetComponentRW<LocalTransform>(characterViewEntity.ValueRO.Value);
                 viewTransform.ValueRW.Rotation = viewRotationCommand.ValueRO.RotationY;
+
+                characterAndViewRotation.ValueRW.CharacterRotation = transform.ValueRO.Rotation;
+                characterAndViewRotation.ValueRW.ViewRotation = viewTransform.ValueRO.Rotation;
             }
         }
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+}
+
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
+{
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<NetworkTime>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        foreach (var (transform, characterViewEntity, characterAndViewRotation, ghostOwner) in SystemAPI
+                .Query<RefRW<LocalTransform>, RefRO<CharacterViewEntityComponent>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
+                .WithAll<CharacterComponent>()
+                .WithNone<GhostOwnerIsLocal>())
+        {
+            transform.ValueRW.Rotation = characterAndViewRotation.ValueRO.CharacterRotation;
+
+            RefRW<LocalTransform> viewTransform = SystemAPI.GetComponentRW<LocalTransform>(characterViewEntity.ValueRO.Value);
+            viewTransform.ValueRW.Rotation = characterAndViewRotation.ValueRO.ViewRotation;
+        }
     }
 }

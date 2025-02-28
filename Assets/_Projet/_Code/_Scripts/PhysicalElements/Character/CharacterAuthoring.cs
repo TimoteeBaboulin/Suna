@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -59,6 +60,11 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterViewEntityComponent { Value = GetEntity(cca._view, TransformUsageFlags.Dynamic) });
             AddComponent(entity, new CharacterPlayerAttachedComponent { Value = Entity.Null });
+            AddComponent(entity, new CharacterAndViewRotationComponent
+            {
+                CharacterRotation = quaternion.identity,
+                ViewRotation = quaternion.identity,
+            });
         }
     }
 }

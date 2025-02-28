@@ -32,6 +32,13 @@ public struct CharacterComponent : IComponentData
     [GhostField] public Entity teamEntity;
 }
 
+[GhostComponent]
+public struct CharacterAndViewRotationComponent : IComponentData
+{
+    [GhostField] public quaternion CharacterRotation;
+    [GhostField] public quaternion ViewRotation;
+}
+
 public struct CharacterViewEntityComponent : IComponentData
 {
     public Entity Value;
