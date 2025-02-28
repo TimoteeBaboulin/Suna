@@ -8,6 +8,7 @@ public class CharacterGameObjectPrefab : IComponentData
     public GameObject GameObjectPrefab;
     public float3 DeltaPosition;
     public string HeadBoneName;
+    public string ViewBoneName;
 }
 
 public class CharacterAnimatorReference : ICleanupComponentData
@@ -19,6 +20,7 @@ public class CharacterAnimatorReference : ICleanupComponentData
 public class CharacterModelBones : IComponentData
 {
     public Transform HeadBoneTransform;
+    public Transform ViewBoneTransform;
 }
 
 [GhostComponent]
@@ -32,6 +34,7 @@ public class CharacterAnimatorAuthoring : MonoBehaviour
     public GameObject CharacterGameObject;
     public Transform DeltaPosition;
     public string HeadBoneName;
+    public string ViewBoneName;
 
     public class Baker : Baker<CharacterAnimatorAuthoring>
     {
@@ -43,6 +46,7 @@ public class CharacterAnimatorAuthoring : MonoBehaviour
                 GameObjectPrefab = authoring.CharacterGameObject,
                 DeltaPosition = authoring.DeltaPosition.position,
                 HeadBoneName = authoring.HeadBoneName,
+                ViewBoneName = authoring.ViewBoneName,
             });
             AddComponent(entity, new CharacterAnimationState
             {

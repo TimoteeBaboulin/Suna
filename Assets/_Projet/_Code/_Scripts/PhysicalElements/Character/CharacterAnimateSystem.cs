@@ -31,7 +31,8 @@ partial struct CharacterAnimateSystem : ISystem
 
             ecb.AddComponent(entity, new CharacterModelBones
             {
-                HeadBoneTransform = FindBoneByName(newGameObject.transform, "B-head")
+                HeadBoneTransform = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.HeadBoneName),
+                ViewBoneTransform = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ViewBoneName),
             });
         }
 

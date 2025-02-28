@@ -51,17 +51,9 @@ public partial struct ShootSystem : ISystem
 
                 continue;
             }
-
-            RefRO<LocalToWorld> viewTransform = SystemAPI.GetComponentRO<LocalToWorld>(characterViewEntity.ValueRO.Value);
-            LocalTransform shootTransform = new LocalTransform
-            {
-                Position = viewTransform.ValueRO.Position,
-                Rotation = input.ValueRO.shootRotation,
-                Scale = 1,
-            };
-
-            float3 startPosition = shootTransform.Position;
-            float3 endPosition = startPosition + (shootTransform.Forward() * 100);
+            
+            float3 startPosition = MainGameObjectCamera.Instance.transform.position;
+            float3 endPosition = startPosition + new float3(MainGameObjectCamera.Instance.transform.forward * 100);
 
             RaycastInput raycastInput = new RaycastInput()
             {
