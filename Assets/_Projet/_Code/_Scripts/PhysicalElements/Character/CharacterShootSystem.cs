@@ -37,8 +37,8 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (transform, input, hasHit, characterViewEntity, entity) in SystemAPI
-            .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRW<HasHitComponent>, RefRO<CharacterViewEntityComponent>>()
+        foreach (var (transform, input, hasHit, entity) in SystemAPI
+            .Query<RefRO<LocalTransform>, RefRO<CharacterInput>, RefRW<HasHitComponent>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
@@ -52,8 +52,8 @@ public partial struct ShootSystem : ISystem
                 continue;
             }
             
-            float3 startPosition = MainGameObjectCamera.Instance.transform.position;
-            float3 endPosition = startPosition + new float3(MainGameObjectCamera.Instance.transform.forward * 100);
+            float3 startPosition = input.ValueRO.shootTransform.Position;
+            float3 endPosition = startPosition + new float3(input.ValueRO.shootTransform.Forward() * 100);
 
             RaycastInput raycastInput = new RaycastInput()
             {

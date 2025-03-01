@@ -58,13 +58,14 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
 
-            AddComponent(entity, new CharacterViewEntityComponent { Value = GetEntity(cca._view, TransformUsageFlags.Dynamic) });
             AddComponent(entity, new CharacterPlayerAttachedComponent { Value = Entity.Null });
+
             AddComponent(entity, new CharacterAndViewRotationComponent
             {
                 CharacterRotation = quaternion.identity,
                 ViewRotation = quaternion.identity,
             });
+            AddComponent(entity, new CharacterLocalViewRotation { Value = quaternion.identity });
         }
     }
 }

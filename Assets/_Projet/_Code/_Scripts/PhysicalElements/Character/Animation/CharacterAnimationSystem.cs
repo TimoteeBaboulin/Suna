@@ -6,7 +6,7 @@ using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
-partial struct CharacterAnimateSystem : ISystem
+partial struct CharacterAnimationSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
@@ -36,16 +36,15 @@ partial struct CharacterAnimateSystem : ISystem
             });
         }
 
-        foreach (var (transform, animatorReference, modelBones, animationState, viewEntity) in SystemAPI
-            .Query<LocalTransform, CharacterAnimatorReference, CharacterModelBones, RefRO<CharacterAnimationState>, RefRO<CharacterViewEntityComponent>>())
+        foreach (var (transform, animatorReference, modelBones, animationState, localViewRotation) in SystemAPI
+            .Query<RefRO<LocalTransform>, CharacterAnimatorReference, CharacterModelBones, RefRO<CharacterAnimationState>, RefRO<CharacterLocalViewRotation>>())
         {
-            animatorReference.Animator.transform.position = transform.Position + animatorReference.DeltaPosition;
-            animatorReference.Animator.transform.rotation = transform.Rotation;
-
-            RefRO<LocalTransform> viewTransform = SystemAPI.GetComponentRO<LocalTransform>(viewEntity.ValueRO.Value);
-            modelBones.HeadBoneTransform.rotation = math.mul(transform.Rotation, viewTransform.ValueRO.Rotation);
+            animatorReference.Animator.transform.position = transform.ValueRO.Position + animatorReference.DeltaPosition;
+            animatorReference.Animator.transform.rotation = transform.ValueRO.Rotation;
 
             animatorReference.Animator.SetBool("IsWalking", animationState.ValueRO.IsWalking);
+
+            modelBones.HeadBoneTransform.rotation = math.mul(transform.ValueRO.Rotation, localViewRotation.ValueRO.Value);
         }
 
         foreach (var (animatorReference, entity) in SystemAPI

@@ -39,12 +39,19 @@ public struct CharacterAndViewRotationComponent : IComponentData
     [GhostField] public quaternion ViewRotation;
 }
 
-public struct CharacterViewEntityComponent : IComponentData
+public struct CharacterLocalViewRotation : IComponentData
 {
-    public Entity Value;
+    public quaternion Value;
 }
 
 public struct CharacterPlayerAttachedComponent : IComponentData
 {
     [GhostField] public Entity Value;
+}
+
+public struct UpdateViewRotationRcpCommand : IRpcCommand
+{
+    public int NetworkId;
+    public quaternion RotationY;
+    public quaternion RotationX;
 }

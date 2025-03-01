@@ -11,41 +11,39 @@ partial struct CharacterViewSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<MainEntityCameraTag>();
+        state.RequireForUpdate<NetworkTime>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
 
-        foreach (var (transform, parent, entity) in SystemAPI
-            .Query<RefRW<LocalTransform>, RefRO<Parent>>()
-            .WithAll<MainEntityCameraTag>()
+        foreach (var (transform, localViewRotation, input, entity) in SystemAPI
+            .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRO<CharacterInput>>()
+            .WithAll<GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
-            RefRW<LocalTransform> characterTransform = SystemAPI.GetComponentRW<LocalTransform>(parent.ValueRO.Value);
-            RefRO<CharacterInput> input = SystemAPI.GetComponentRO<CharacterInput>(parent.ValueRO.Value);
-            int networkId = SystemAPI.GetComponentRO<GhostOwner>(parent.ValueRO.Value).ValueRO.NetworkId;
+            int networkId = SystemAPI.GetComponentRO<GhostOwner>(entity).ValueRO.NetworkId;
 
             float mouseX = SystemAPI.Time.DeltaTime * input.ValueRO.look.x;
             float mouseY = SystemAPI.Time.DeltaTime * input.ValueRO.look.y;
 
-            characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(math.radians(mouseX)));
-            characterTransform.ValueRW.Rotation.value.x = 0;
-            characterTransform.ValueRW.Rotation.value.z = 0;
-
-            float newRotationYDeg = math.degrees(transform.ValueRO.Rotation.value.x) - mouseY;
-            newRotationYDeg = math.clamp(newRotationYDeg, -40, 40);
-            transform.ValueRW.Rotation.value.x = math.radians(newRotationYDeg);
-            transform.ValueRW.Rotation.value.y = 0;
+            transform.ValueRW.Rotation = math.mul(transform.ValueRO.Rotation, quaternion.RotateY(math.radians(mouseX)));
+            transform.ValueRW.Rotation.value.x = 0;
             transform.ValueRW.Rotation.value.z = 0;
+
+            float newRotationYDeg = math.degrees(localViewRotation.ValueRW.Value.value.x) - mouseY;
+            newRotationYDeg = math.clamp(newRotationYDeg, -40, 40);
+            localViewRotation.ValueRW.Value.value.x = math.radians(newRotationYDeg);
+            localViewRotation.ValueRW.Value.value.y = 0;
+            localViewRotation.ValueRW.Value.value.z = 0;
 
             Entity rcpEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRcpCommand), typeof(SendRpcCommandRequest));
             state.EntityManager.SetComponentData(rcpEntity, new UpdateViewRotationRcpCommand
             {
                 NetworkId = networkId,
-                RotationX = characterTransform.ValueRO.Rotation,
-                RotationY = transform.ValueRO.Rotation
+                RotationX = transform.ValueRO.Rotation,
+                RotationY = localViewRotation.ValueRO.Value
             });
         }
     }
@@ -72,8 +70,8 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
         {
             ecb.DestroyEntity(entity);
 
-            foreach (var (transform, characterViewEntity, characterAndViewRotation, ghostOwner) in SystemAPI
-                .Query<RefRW<LocalTransform>, RefRO<CharacterViewEntityComponent>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
+            foreach (var (transform, localViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
+                .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
                 .WithAll<CharacterComponent>())
             {
                 if (ghostOwner.ValueRO.NetworkId != viewRotationCommand.ValueRO.NetworkId)
@@ -83,11 +81,10 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
 
                 transform.ValueRW.Rotation = viewRotationCommand.ValueRO.RotationX;
 
-                RefRW<LocalTransform> viewTransform = SystemAPI.GetComponentRW<LocalTransform>(characterViewEntity.ValueRO.Value);
-                viewTransform.ValueRW.Rotation = viewRotationCommand.ValueRO.RotationY;
+                localViewRotation.ValueRW.Value = viewRotationCommand.ValueRO.RotationY;
 
                 characterAndViewRotation.ValueRW.CharacterRotation = transform.ValueRO.Rotation;
-                characterAndViewRotation.ValueRW.ViewRotation = viewTransform.ValueRO.Rotation;
+                characterAndViewRotation.ValueRW.ViewRotation = localViewRotation.ValueRO.Value;
             }
         }
 
@@ -107,15 +104,13 @@ partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (transform, characterViewEntity, characterAndViewRotation, ghostOwner) in SystemAPI
-                .Query<RefRW<LocalTransform>, RefRO<CharacterViewEntityComponent>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
+        foreach (var (transform, localViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
+                .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
                 .WithAll<CharacterComponent>()
                 .WithNone<GhostOwnerIsLocal>())
         {
             transform.ValueRW.Rotation = characterAndViewRotation.ValueRO.CharacterRotation;
-
-            RefRW<LocalTransform> viewTransform = SystemAPI.GetComponentRW<LocalTransform>(characterViewEntity.ValueRO.Value);
-            viewTransform.ValueRW.Rotation = characterAndViewRotation.ValueRO.ViewRotation;
+            localViewRotation.ValueRW.Value = characterAndViewRotation.ValueRO.ViewRotation;
         }
     }
 }

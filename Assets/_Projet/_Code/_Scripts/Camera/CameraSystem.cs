@@ -6,7 +6,7 @@ using Unity.Transforms;
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup))]
-partial class MainEntityCameraSystem : SystemBase
+partial class CameraSystem : SystemBase
 {
     [BurstCompile]
     protected override void OnCreate()
@@ -21,13 +21,6 @@ partial class MainEntityCameraSystem : SystemBase
         {
             return;
         }
-
-        //foreach (var (view, localToWorld, entity) in SystemAPI
-        //    .Query<RefRO<MainEntityCameraTag>, RefRO<LocalToWorld>>()
-        //    .WithEntityAccess())
-        //{
-        //    MainGameObjectCamera.Instance.transform.SetPositionAndRotation(localToWorld.ValueRO.Position, localToWorld.ValueRO.Rotation);
-        //}
 
         foreach (var characterModelBones in SystemAPI.Query<CharacterModelBones>().WithAll<GhostOwnerIsLocal>())
         {
