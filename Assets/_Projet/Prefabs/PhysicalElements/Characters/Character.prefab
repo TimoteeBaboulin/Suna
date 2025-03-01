@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 7095689921242147679}
   - component: {fileID: 8152830554212466766}
   - component: {fileID: 1715078069933390235}
-  - component: {fileID: -4092921631287939174}
   - component: {fileID: 2717752743986560582}
   - component: {fileID: -7034213979156375631}
   - component: {fileID: -1226755385133520682}
@@ -178,22 +177,6 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-4092921631287939174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584918407947073280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63a0ca156d83f8a4e9bfcd4cebe19cb5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mainWeapon: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
-  secondaryWeapon: {fileID: 0}
-  melee: {fileID: 0}
-  projectiles: []
 --- !u!114 &2717752743986560582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -216,6 +199,7 @@ MonoBehaviour:
   jumpForce: 5.8
   sensivity: 3
   side: 0
+  defaultWeaponPrefab: {fileID: 4820376613147570663, guid: 3d4d5260590b4034bae3993f95214d4e, type: 3}
   _view: {fileID: 5705571733313933505}
 --- !u!114 &-7034213979156375631
 MonoBehaviour:

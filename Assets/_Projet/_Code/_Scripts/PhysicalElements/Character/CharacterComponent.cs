@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -38,6 +39,16 @@ public struct CharacterViewEntityComponent : IComponentData
 }
 
 public struct CharacterPlayerAttachedComponent : IComponentData
+{
+    [GhostField] public Entity Value;
+}
+
+public struct CharacterDefaultWeaponPrefab : IComponentData
+{
+    public Entity Value;
+}
+
+public struct CharacterDefaultWeapon : IComponentData
 {
     [GhostField] public Entity Value;
 }

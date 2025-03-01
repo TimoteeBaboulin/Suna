@@ -20,7 +20,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
     [Header("Temp(Debug)")]
     public TeamSideType side;
+    public GameObject defaultWeaponPrefab;
 
+    [Header("Visual")]
     [SerializeField] private GameObject _view;
 
     public class Baker : Baker<CharacterAuthoring>
@@ -49,6 +51,13 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isGrounded = false,
                 isWalking = false,
             });
+
+            AddComponent(entity, new CharacterDefaultWeaponPrefab
+            {
+                Value = GetEntity(cca.defaultWeaponPrefab, TransformUsageFlags.Dynamic)
+            });
+
+            AddComponent(entity, new CharacterDefaultWeapon());
 
             AddComponent(entity, new FreezeAllRotationTag());
 
