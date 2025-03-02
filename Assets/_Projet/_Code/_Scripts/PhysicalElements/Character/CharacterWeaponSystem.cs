@@ -1,56 +1,33 @@
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
 
-public struct StuffIsInstanciedTag : IComponentData { }
-
-public struct CharacterWeaponTag : IComponentData { }
+public struct WaitForInstanciateDefaultWeapon : IComponentData { }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CharacterWeaponSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<CharacterDefaultWeaponPrefab, CharacterDefaultWeapon>().WithNone<StuffIsInstanciedTag>();
-        state.RequireForUpdate(state.GetEntityQuery(builder));
+        state.RequireForUpdate<WaitForInstanciateDefaultWeapon>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (prefab, weapon, charaEntity) in SystemAPI
-            .Query<RefRO<CharacterDefaultWeaponPrefab>, RefRW<CharacterDefaultWeapon>>()
+        foreach (var (prefab, charaEntity) in SystemAPI
+            .Query<RefRO<CharacterDefaultWeaponPrefab>>()
             .WithEntityAccess())
         {
             if (prefab.ValueRO.Value != Entity.Null)
             {
-                //weapon.ValueRW.Value = ecb.Instantiate(prefab.ValueRO.Value);
-                Entity entity = ecb.Instantiate(prefab.ValueRO.Value);
-                ecb.AddComponent(entity, new Parent { Value = charaEntity });
-                ecb.AddComponent<CharacterDefaultWeaponPrefab>(entity);
+                ecb.RemoveComponent<WaitForInstanciateDefaultWeapon>(charaEntity);
 
-                //ecb.AddBuffer<Child>(charaEntity);
-                //ecb.AppendToBuffer(charaEntity, new Child { Value = stuffs.ValueRW.mainWeapon });
-                ecb.AddComponent(charaEntity, new StuffIsInstanciedTag());
-            }
-        }
+                Entity weaponEntity = ecb.Instantiate(prefab.ValueRO.Value);
 
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
-
-        foreach (var (parent, entity) in SystemAPI
-            .Query<RefRO<Parent>>()
-            .WithAll<CharacterWeaponTag>()
-            .WithEntityAccess())
-        {
-            RefRW<CharacterDefaultWeapon> weapon = SystemAPI.GetComponentRW<CharacterDefaultWeapon>(parent.ValueRO.Value);
-
-            if (weapon.ValueRW.Value == Entity.Null)
-            {
-                weapon.ValueRW.Value = entity;
+                ecb.SetComponent(weaponEntity, new WeaponOwner { Value = charaEntity });
+                ecb.SetComponent(charaEntity, new CharacterDefaultWeapon { Value = weaponEntity });
             }
         }
     }

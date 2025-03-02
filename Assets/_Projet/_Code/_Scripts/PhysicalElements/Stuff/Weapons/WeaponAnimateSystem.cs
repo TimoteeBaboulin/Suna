@@ -23,8 +23,6 @@ partial struct WeaponAnimateSystem : ISystem
             .WithNone<WeaponAnimatorReference>()
             .WithEntityAccess())
         {
-            Debug.Log("Instanciate the visual prefab of weapon");
-
             GameObject newGameObject = Object.Instantiate(weaponGameObjectPrefab.GameObjectPrefab);
             ecb.AddComponent(entity, new WeaponAnimatorReference
             {
@@ -35,7 +33,7 @@ partial struct WeaponAnimateSystem : ISystem
 
         //Attach to camera
         foreach (var (owner, stuffAnimRef, stuffEntity) in SystemAPI
-           .Query<RefRO<Parent>, WeaponAnimatorReference>()
+           .Query<RefRO<WeaponOwner>, WeaponAnimatorReference>()
            .WithAll<WeaponGameObjectPrefab>()
            .WithEntityAccess())
         {
@@ -46,15 +44,14 @@ partial struct WeaponAnimateSystem : ISystem
                 {
                     if (state.EntityManager.HasComponent<MainEntityCameraTag>(child.Value))
                     {
-                        Debug.Log("Attach to camera");
-
                         LocalToWorld cameraTransform = state.EntityManager.GetComponentData<LocalToWorld>(child.Value);
+                        Vector3 cameraPos = cameraTransform.Position;
+                        Vector3 cameraForward = cameraTransform.Forward;
 
-                        Vector3 temp;
-                        temp.x = cameraTransform.Position.x + 0.6f;
-                        temp.y = cameraTransform.Position.y + 0.4f;
-                        temp.z = cameraTransform.Position.z + 0.3f;
-                        stuffAnimRef.Transform.position = temp;
+                        stuffAnimRef.Transform.position = cameraPos
+                        + cameraForward * 0.6f
+                        + stuffAnimRef.Transform.right * 0.4f
+                        - stuffAnimRef.Transform.up * 0.3f;
 
                         stuffAnimRef.Transform.rotation = cameraTransform.Rotation;
                     }
@@ -68,8 +65,6 @@ partial struct WeaponAnimateSystem : ISystem
             .WithNone<WeaponGameObjectPrefab, LocalTransform>()
             .WithEntityAccess())
         {
-            Debug.Log("Clear Weapon View");
-
             Object.Destroy(animatorReference.Animator.gameObject);
             ecb.RemoveComponent<WeaponAnimatorReference>(entity);
         }
