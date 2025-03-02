@@ -3,7 +3,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 
-public class WeaponGameObjectPrefab : IComponentData
+public class WeaponViewPrefab : IComponentData
 {
     public GameObject GameObjectPrefab;
 }
@@ -37,14 +37,14 @@ public class WeaponAnimatorAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            AddComponentObject(entity, new WeaponGameObjectPrefab
+            AddComponentObject(entity, new WeaponViewPrefab
             {
                 GameObjectPrefab = authoring.WeaponGameObject,
             });
 
             AddComponent(entity, new WeaponAnimationState
             {
-                IsFire = false,
+                IsFire = true,
                 IsReload = false
             });
 

@@ -18,12 +18,12 @@ partial struct WeaponAnimateSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         //Instanciate the visual prefab of weapon and add reference on him
-        foreach (var (weaponGameObjectPrefab, entity) in SystemAPI
-            .Query<WeaponGameObjectPrefab>()
+        foreach (var (weaponViewPrefab, entity) in SystemAPI
+            .Query<WeaponViewPrefab>()
             .WithNone<WeaponAnimatorReference>()
             .WithEntityAccess())
         {
-            GameObject newGameObject = Object.Instantiate(weaponGameObjectPrefab.GameObjectPrefab);
+            GameObject newGameObject = Object.Instantiate(weaponViewPrefab.GameObjectPrefab);
             ecb.AddComponent(entity, new WeaponAnimatorReference
             {
                 Animator = newGameObject.GetComponent<Animator>(),
@@ -32,9 +32,8 @@ partial struct WeaponAnimateSystem : ISystem
         }
 
         //Attach to camera
-        foreach (var (owner, stuffAnimRef, stuffEntity) in SystemAPI
+        foreach (var (owner, animRef, entity) in SystemAPI
            .Query<RefRO<WeaponOwner>, WeaponAnimatorReference>()
-           .WithAll<WeaponGameObjectPrefab>()
            .WithEntityAccess())
         {
             if (state.EntityManager.HasBuffer<Child>(owner.ValueRO.Value))
@@ -48,24 +47,38 @@ partial struct WeaponAnimateSystem : ISystem
                         Vector3 cameraPos = cameraTransform.Position;
                         Vector3 cameraForward = cameraTransform.Forward;
 
-                        stuffAnimRef.Transform.position = cameraPos
+                        animRef.Transform.position = cameraPos
                         + cameraForward * 0.6f
-                        + stuffAnimRef.Transform.right * 0.4f
-                        - stuffAnimRef.Transform.up * 0.3f;
+                        + animRef.Transform.right * 0.4f
+                        - animRef.Transform.up * 0.3f;
 
-                        stuffAnimRef.Transform.rotation = cameraTransform.Rotation;
+                        animRef.Transform.rotation = cameraTransform.Rotation;
                     }
                 }
             }
         }
 
+        //FireAnim
+        foreach (var (animRef, animState) in SystemAPI
+           .Query<WeaponAnimatorReference, RefRO<WeaponAnimationState>>())
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                animRef.Animator.SetTrigger("Fire");
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                animRef.Animator.SetTrigger("Reload");
+            }
+        }
+
         //Clear Weapon View
-        foreach (var (animatorReference, entity) in SystemAPI
+        foreach (var (animatorRef, entity) in SystemAPI
             .Query<WeaponAnimatorReference>()
-            .WithNone<WeaponGameObjectPrefab, LocalTransform>()
+            .WithNone<WeaponViewPrefab, LocalTransform>()
             .WithEntityAccess())
         {
-            Object.Destroy(animatorReference.Animator.gameObject);
+            Object.Destroy(animatorRef.Animator.gameObject);
             ecb.RemoveComponent<WeaponAnimatorReference>(entity);
         }
 
