@@ -44,7 +44,7 @@ public class WeaponAnimatorAuthoring : MonoBehaviour
 
             AddComponent(entity, new WeaponAnimationState
             {
-                IsFire = true,
+                IsFire = false,
                 IsReload = false
             });
 

@@ -11,9 +11,9 @@ public partial struct ReloadWeaponSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         foreach (var (rangedWeaponComponent, localTransform)
-            in SystemAPI.Query<RefRW<RangedWeaponComponent>, RefRO<LocalTransform>>())
+            in SystemAPI.Query<RefRW<RangedWeaponDynamicData>, RefRO<LocalTransform>>())
         {
-            ref RangedWeaponComponent data = ref rangedWeaponComponent.ValueRW;
+            ref RangedWeaponDynamicData data = ref rangedWeaponComponent.ValueRW;
             ref readonly LocalTransform transform = ref localTransform.ValueRO;
 
             //CONTENT

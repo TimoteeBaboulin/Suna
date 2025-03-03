@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2487343738997739642}
   - component: {fileID: 6060639678250334464}
+  - component: {fileID: 2246271342315877419}
   - component: {fileID: 4157099590988494849}
   - component: {fileID: 712995266349948655}
   - component: {fileID: 8627774682565015514}
@@ -49,7 +50,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WeaponGameObject: {fileID: 1063816135455577480, guid: ee7022395bc218e49be546f521caee02, type: 3}
-  DeltaPosition: {fileID: 5552694711755223204}
+--- !u!114 &2246271342315877419
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4820376613147570663}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea3a3e7ba7359644d9ca1110d35c59c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  commonData: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
 --- !u!114 &4157099590988494849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -79,8 +92,8 @@ MonoBehaviour:
   OptimizationMode: 0
   Importance: 1
   MaxSendRate: 0
-  prefabId: 3d4d5260590b4034bae3993f95214d4e
-  HasOwner: 0
+  prefabId: c01c732f17c5abe43beaa2aa2400b7b8
+  HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0
   GhostGroup: 0

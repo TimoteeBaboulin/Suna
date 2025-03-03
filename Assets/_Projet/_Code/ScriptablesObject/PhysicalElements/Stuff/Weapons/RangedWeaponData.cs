@@ -22,10 +22,13 @@ public class RangedWeaponData : ScriptableObject
     public Vector2 recoil;
 
     [Tooltip("in life points")]
-    public float damage;
+    public int damage;
 
     [Tooltip("in meter")]
     public float range;
+
+    [Tooltip("in sec")]
+    public float firerate;
 
     [Tooltip("in minutes of angle")]    
     public float spread;

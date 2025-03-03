@@ -36,32 +36,28 @@ partial struct WeaponAnimateSystem : ISystem
            .Query<RefRO<WeaponOwner>, WeaponAnimatorReference>()
            .WithEntityAccess())
         {
+            if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
+            {
+                CharacterModelBones cameraTransform = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
 
-            CharacterModelBones cameraTransform = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
+                Vector3 cameraPos = cameraTransform.ViewBoneTransform.position;
+                Vector3 cameraForward = cameraTransform.ViewBoneTransform.forward;
 
-            Vector3 cameraPos = cameraTransform.ViewBoneTransform.position;
-            Vector3 cameraForward = cameraTransform.ViewBoneTransform.forward;
+                animRef.Transform.position = cameraPos
+                + cameraForward * 0.6f
+                + animRef.Transform.right * 0.4f
+                - animRef.Transform.up * 0.3f;
 
-            animRef.Transform.position = cameraPos
-            + cameraForward * 0.6f
-            + animRef.Transform.right * 0.4f
-            - animRef.Transform.up * 0.3f;
-
-            animRef.Transform.rotation = cameraTransform.ViewBoneTransform.rotation;
+                animRef.Transform.rotation = cameraTransform.ViewBoneTransform.rotation;
+            }
         }
 
         //FireAnim
         foreach (var (animRef, animState) in SystemAPI
-           .Query<WeaponAnimatorReference, RefRO<WeaponAnimationState>>())
+           .Query<WeaponAnimatorReference, RefRW<WeaponAnimationState>>())
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                animRef.Animator.SetTrigger("Fire");
-            }
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                animRef.Animator.SetTrigger("Reload");
-            }
+            Debug.Log(animState.ValueRO.IsFire);
+            animRef.Animator.SetBool("IsFire", animState.ValueRO.IsFire);
         }
 
         //Clear Weapon View

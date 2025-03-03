@@ -22,7 +22,8 @@ MonoBehaviour:
   storageSpeed: 0
   recoil: {x: 2, y: 3}
   damage: 4
-  range: 5
+  range: 100
+  firerate: 0.2
   spread: 6
   spreadAiming: 7
   coefSpray: 8
