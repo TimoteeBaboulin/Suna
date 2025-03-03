@@ -35,28 +35,19 @@ partial struct WeaponAnimateSystem : ISystem
         foreach (var (owner, animRef, entity) in SystemAPI
            .Query<RefRO<WeaponOwner>, WeaponAnimatorReference>()
            .WithEntityAccess())
-        {//CharacterModelBones
-         //if (state.EntityManager.HasBuffer<Child>(owner.ValueRO.Value))
-         //{
-         //DynamicBuffer<Child> childBuffer = state.EntityManager.GetBuffer<Child>(owner.ValueRO.Value);
-         //foreach (Child child in childBuffer)
-         //{
-         //if (state.EntityManager.HasComponent<MainEntityCameraTag>(child.Value))
-         //{
+        {
+
             CharacterModelBones cameraTransform = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
-            
-                        Vector3 cameraPos = cameraTransform.ViewBoneTransform.position;
-                        Vector3 cameraForward = cameraTransform.ViewBoneTransform.forward;
 
-                        animRef.Transform.position = cameraPos
-                        + cameraForward * 0.6f
-                        + animRef.Transform.right * 0.4f
-                        - animRef.Transform.up * 0.3f;
+            Vector3 cameraPos = cameraTransform.ViewBoneTransform.position;
+            Vector3 cameraForward = cameraTransform.ViewBoneTransform.forward;
 
-                        animRef.Transform.rotation = cameraTransform.ViewBoneTransform.rotation;
-                    //}
-                //}
-            //}
+            animRef.Transform.position = cameraPos
+            + cameraForward * 0.6f
+            + animRef.Transform.right * 0.4f
+            - animRef.Transform.up * 0.3f;
+
+            animRef.Transform.rotation = cameraTransform.ViewBoneTransform.rotation;
         }
 
         //FireAnim
