@@ -162,6 +162,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
                 {
                     world.Update();
+                    yield return null;
                 }
             }
         }
