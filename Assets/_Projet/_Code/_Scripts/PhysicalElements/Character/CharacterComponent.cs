@@ -44,7 +44,7 @@ public struct CharacterLocalViewRotation : IComponentData
     public quaternion Value;
 }
 
-public struct CharacterPlayerAttachedComponent : IComponentData
+public struct CharacterClientAttachedComponent : IComponentData
 {
     [GhostField] public Entity Value;
 }
