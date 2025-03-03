@@ -47,11 +47,11 @@ public partial class ServerSystem : SystemBase
             InstantiateClient(entity, commandBuffer);
         }
 
-        if (Keyboard.current.oKey.wasPressedThisFrame)
-        {
-            ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
-            RpcUtils.SendServerToClientRpc(ref command);
-        }
+        //if (Keyboard.current.oKey.wasPressedThisFrame)
+        //{
+        //    ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
+        //    RpcUtils.SendServerToClientRpc(ref command);
+        //}
 
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
@@ -63,8 +63,6 @@ public partial class ServerSystem : SystemBase
     {
         if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
         {
-            prefabManager = SystemAPI.GetSingleton<PrefabsData>();
-
             if (prefabManager.client == null)
             {
                 return;
@@ -72,7 +70,6 @@ public partial class ServerSystem : SystemBase
 
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
-
             Entity client = ecb.Instantiate(prefabManager.client);
             ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
             {
