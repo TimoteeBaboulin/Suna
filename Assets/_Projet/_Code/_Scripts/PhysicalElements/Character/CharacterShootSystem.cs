@@ -26,7 +26,7 @@ public partial struct ShootSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        //Eviter répétion sur le serveur du a la différence de framerate
+
         if (!networkTime.IsFirstPredictionTick)
         {
             return;
@@ -42,7 +42,6 @@ public partial struct ShootSystem : ISystem
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
-            //Si tu ne tire pas, retour visuel crossair blanche
             if (!input.ValueRO.shoot.IsSet)
             {
                 if (state.World.IsServer())
@@ -52,7 +51,7 @@ public partial struct ShootSystem : ISystem
 
                 continue;
             }
-
+            
             float3 startPosition = input.ValueRO.shootTransform.Position;
             float3 endPosition = startPosition + new float3(input.ValueRO.shootTransform.Forward() * 100);
 
@@ -60,16 +59,14 @@ public partial struct ShootSystem : ISystem
             {
                 Start = startPosition,
                 End = endPosition,
-                //filtre pour partie du corps
                 Filter = CollisionFilter.Default
             };
 
-            //Raycast récupére les hit dans le mauvais ordre, il faut les triers en fonction de la distance
             NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
                 RaycastHit closestHit;
-                //Je me suis touché ou pas ?
+
                 if (allHits[0].Entity == entity
                     && allHits.Length > 1)
                 {
@@ -80,7 +77,6 @@ public partial struct ShootSystem : ISystem
                     closestHit = allHits[0];
                 }
 
-                //Trie des distances
                 float closestDistance = math.distancesq(raycastInput.Start, closestHit.Position);
 
                 foreach (var hit in allHits)
@@ -108,11 +104,7 @@ public partial struct ShootSystem : ISystem
                 }
             }
 
-            if (state.World.IsServer())
-                Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.blue, 0.5f);
-            else
-                Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
-
+            Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
         }
     }
 }
