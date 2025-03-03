@@ -41,7 +41,7 @@ public partial class ServerSystem : SystemBase
 
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
-            InstantiatePlayer(entity, commandBuffer);
+            InstantiateClient(entity, commandBuffer);
         }
 
         commandBuffer.Playback(EntityManager);
@@ -50,13 +50,13 @@ public partial class ServerSystem : SystemBase
 
     #region Public Methods
 
-    public void InstantiatePlayer(Entity ownerEntity, EntityCommandBuffer ecb)
+    public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
     {
         if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
         {
             prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
-            if (prefabManager.player == null)
+            if (prefabManager.client == null)
             {
                 return;
             }
@@ -64,19 +64,19 @@ public partial class ServerSystem : SystemBase
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
 
-            Entity player = ecb.Instantiate(prefabManager.player);
-            ecb.SetComponent(player, new GhostOwner() //Set owner of player to connection
+            Entity client = ecb.Instantiate(prefabManager.client);
+            ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
             {
                 NetworkId = networkId.Value
             });
             ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
             {
-                Value = player
+                Value = client
             });
 
             ecb.AddComponent<InitializedClient>(ownerEntity);
 
-            ServerConsole.Log(ServerConsole.LogType.Info, $"New Player connected with NetworkId {networkId.Value}, in the world {worldName}");
+            ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
     }
     #endregion
@@ -104,7 +104,7 @@ public partial class ServerSystem : SystemBase
 
     #region Private Methods
 
-    private void UpdatePlayer(ref EntityCommandBuffer commandBuffer, ref FixedString128Bytes worldName)
+    private void UpdateClient(ref EntityCommandBuffer commandBuffer, ref FixedString128Bytes worldName)
     {
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
@@ -112,24 +112,24 @@ public partial class ServerSystem : SystemBase
             PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
             //Instantiate player at connection
-            if (prefabManager.player != null)
+            if (prefabManager.client != null)
             {
-                Entity player = commandBuffer.Instantiate(prefabManager.player);
-                LocalTransform playerTransform = prefabManager.transformCompData;
+                Entity client = commandBuffer.Instantiate(prefabManager.client);
+                LocalTransform clientTransform = prefabManager.transformCompData;
 
-                commandBuffer.SetComponent(player, new LocalTransform() //Set position
+                commandBuffer.SetComponent(client, new LocalTransform() //Set position
                 {
-                    Position = playerTransform.Position,
-                    Rotation = playerTransform.Rotation,
+                    Position = clientTransform.Position,
+                    Rotation = clientTransform.Rotation,
                     Scale = 1.0f
                 });
-                commandBuffer.SetComponent(player, new GhostOwner() //Set owner of player to connection
+                commandBuffer.SetComponent(client, new GhostOwner() //Set owner of player to connection
                 {
                     NetworkId = id.ValueRO.Value,
                 });
                 commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
                 {
-                    Value = player
+                    Value = client
                 });
             }
             ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");

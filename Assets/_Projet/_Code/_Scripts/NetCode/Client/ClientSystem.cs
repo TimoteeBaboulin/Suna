@@ -34,8 +34,6 @@ public partial class ClientSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        UpdatePlayerCamera();
-
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
@@ -74,29 +72,5 @@ public partial class ClientSystem : SystemBase
 
     #region PrivateMethods
 
-    private void UpdatePlayerCamera()
-    {
-        //float dt = SystemAPI.Time.DeltaTime;
-        //foreach (RefRO<CameraAttachComponent> cameraAttach in SystemAPI.Query<RefRO<CameraAttachComponent>>().WithAll<GhostOwnerIsLocal>())
-        //{
-        //    //Camera.main.transform.position = cameraAttach.ValueRO.transform.Position;
-        //    //Camera.main.transform.rotation = cameraAttach.ValueRO.transform.Rotation;
-
-        //    float3 targetPosition = cameraAttach.ValueRO.transform.Position;
-        //    quaternion targetRotation = cameraAttach.ValueRO.transform.Rotation;
-
-        //    Camera.main.transform.position = Vector3.Lerp(
-        //        Camera.main.transform.position,
-        //        targetPosition,
-        //       dt * 20f
-        //    );
-
-        //    Camera.main.transform.rotation = Quaternion.Slerp(
-        //        Camera.main.transform.rotation,
-        //        targetRotation,
-        //        dt * 20f
-        //    );
-        //}
-    }
     #endregion
 }

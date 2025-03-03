@@ -53,7 +53,7 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
     [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
 
-    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterPlayerAttachedComponent> CharacterPlayerAttached)
+    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
     {
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
@@ -80,7 +80,7 @@ public partial struct RespawnSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<PlayerComponent, WaitForRespawnTag>();
+        builder.WithAll<ClientComponent, WaitForRespawnTag>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
 
         respawnPtLookupInit = state.GetComponentLookup<LocalTransform>(isReadOnly: true);
@@ -92,7 +92,7 @@ public partial struct RespawnSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<PlayerComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
+        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             SpawnerComponent spawnerComponent;
 
@@ -117,7 +117,7 @@ public partial struct RespawnSystem : ISystem
         //}
     }
 
-    public void SpawnCharacter(Entity player, int networkId, EntityCommandBuffer ecb, float3 position)
+    public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
@@ -139,15 +139,15 @@ public partial struct RespawnSystem : ISystem
         {
             NetworkId = networkId
         });
-        ecb.AppendToBuffer(player, new LinkedEntityGroup() //Link it to connection
+        ecb.AppendToBuffer(client, new LinkedEntityGroup() //Link it to connection
         {
             Value = character
         });
 
-        ecb.SetComponent(player, new PlayerCharacterAttached { Value = character });
-        ecb.SetComponent(character, new CharacterPlayerAttachedComponent { Value = player });
+        ecb.SetComponent(client, new ClientCharacterAttached { Value = character });
+        ecb.SetComponent(character, new CharacterClientAttachedComponent { Value = client });
 
-        ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId}, in the world {worldName}");
+        ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
     }
 }
 

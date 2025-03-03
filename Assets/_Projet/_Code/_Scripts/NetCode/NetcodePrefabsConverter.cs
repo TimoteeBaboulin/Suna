@@ -6,14 +6,14 @@ using UnityEngine.TextCore.Text;
 public class NetcodePrefabsConverter : MonoBehaviour
 {
     //public GameObject unit = null;
-    public GameObject player = null;
+    public GameObject client = null;
     public GameObject character = null;
 }
 
 public struct PrefabsData : IComponentData
 {
     //public Entity unit;
-    public Entity player;
+    public Entity client;
     public Entity character;
     public LocalTransform transformCompData;
 }
@@ -23,14 +23,14 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
     public override void Bake(NetcodePrefabsConverter authoring)
     {
         //Entity unitPrefab = default;
-        Entity playerPrefab = default;
+        Entity clientPrefab = default;
         Entity characterPrefab = default;
 
         LocalTransform transformPrefab = default;
 
-        if (authoring.player != null)
+        if (authoring.client != null)
         {
-            playerPrefab = GetEntity(authoring.player, TransformUsageFlags.Dynamic);
+            clientPrefab = GetEntity(authoring.client, TransformUsageFlags.Dynamic);
         }
         if (authoring.character != null)
         {
@@ -42,7 +42,7 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         AddComponent(entity, new PrefabsData
         {
             // unit = unitPrefab,
-            player = playerPrefab,
+            client = clientPrefab,
             character = characterPrefab,
             transformCompData = transformPrefab
         });
