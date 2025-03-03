@@ -21,7 +21,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
     [Header("Temp(Debug)")]
     public TeamSideType side;
+    public GameObject defaultWeaponPrefab;
 
+    [Header("Visual")]
     [SerializeField] private GameObject _view;
 
     public class Baker : Baker<CharacterAuthoring>
@@ -51,12 +53,19 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
+            AddComponent(entity, new CharacterDefaultWeaponPrefab
+            {
+                Value = GetEntity(cca.defaultWeaponPrefab, TransformUsageFlags.Dynamic)
+            });
+
+            AddComponent(entity, new CharacterDefaultWeapon());
             AddComponent(entity, new FreezeAllRotationTag());
 
             AddComponent(entity, new CharacterTag()); //Multiplayer
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
+            AddComponent(entity, new WaitForInstanciateDefaultWeapon { });
 
             AddComponent(entity, new CharacterPlayerAttachedComponent { Value = Entity.Null });
 

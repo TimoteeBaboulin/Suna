@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -49,9 +50,19 @@ public struct CharacterPlayerAttachedComponent : IComponentData
     [GhostField] public Entity Value;
 }
 
+
 public struct UpdateViewRotationRcpCommand : IRpcCommand
 {
     public int NetworkId;
     public quaternion RotationY;
     public quaternion RotationX;
+
+public struct CharacterDefaultWeaponPrefab : IComponentData
+{
+    public Entity Value;
+}
+
+public struct CharacterDefaultWeapon : IComponentData
+{
+    [GhostField] public Entity Value;
 }
