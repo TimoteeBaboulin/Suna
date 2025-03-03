@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using static RoundSystemClient;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RoundSystemServer : ISystem
@@ -18,6 +19,11 @@ public partial struct RoundSystemServer : ISystem
         public RoundPhase phase;
     }
 
+    public struct UpdateRoundDataRpcCommand : IRpcCommand
+    {
+
+    }
+
     private EntityQuery _query;
 
     public enum TimoteeTeam : byte //TODO: Switch to a normalized enum for the whole project
@@ -29,6 +35,7 @@ public partial struct RoundSystemServer : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
         state.RequireForUpdate<ServerDataComponent>();
 
         //Create the query and store it for future use
@@ -44,7 +51,7 @@ public partial struct RoundSystemServer : ISystem
             {
                 RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
 
-                InitGame(ref state, entity, component);
+                InitGame(ref state, entity, component, ecb);
             }
         }
     }
@@ -75,6 +82,12 @@ public partial struct RoundSystemServer : ISystem
             {
                 TimeOutPhase(ref state, entity, roundComponent, ecb);
             }
+        }
+
+        foreach (var (request, command, rpcEntity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<RequestRoundDataRpcCommand>>().WithEntityAccess())
+        {
+
+            ecb.DestroyEntity(rpcEntity);
         }
 
         //Play the buffer back to remove/add entities as needed
@@ -154,7 +167,7 @@ public partial struct RoundSystemServer : ISystem
         SendCurrentPhase(ref state, entity, component, ecb);
     }
 
-    private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
+    private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Initialize the Round Component with the correct data
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
@@ -164,6 +177,7 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.nativeScore = 0;
         component.ValueRW.corporationScore = 0;
         InitRound(ref state, entity, component);
+        SendCurrentPhase(ref state, entity, component, ecb);
     }
 
     private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
@@ -216,6 +230,8 @@ public partial struct RoundSystemServer : ISystem
         }
     }
 
+    private void UpdateRoundData(ref SystemState state, Entity target, RefRO<RoundComponent> component, EntityCommandBuffer ecb)
+    {
 
-
+    }
 }

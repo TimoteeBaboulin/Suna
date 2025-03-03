@@ -10,6 +10,12 @@ partial struct RoundSystemClient : ISystem
 {
     private bool _running;
 
+    private bool _firstFrame;
+
+    public struct RequestRoundDataRpcCommand : IRpcCommand
+    {
+    }
+
     public void OnCreate(ref SystemState state)
     {
         //Only run if we're in Client world
@@ -20,6 +26,7 @@ partial struct RoundSystemClient : ISystem
         //}
 
         _running = true;
+        _firstFrame = true;
 
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithNone<ServerDataComponent>();
@@ -50,8 +57,13 @@ partial struct RoundSystemClient : ISystem
         if (!query.TryGetSingletonRW(out round))
             return;
 
-        //Prepare the buffer to use at the end of the update to avoid breaking the reference to the component
         EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
+
+        if (_firstFrame)
+            RequestUpdate(ref state, buffer);
+
+        _firstFrame = false;
+        //Prepare the buffer to use at the end of the update to avoid breaking the reference to the component
 
         //Basic timer tick
         round.ValueRW.timer -= Time.deltaTime;
@@ -76,6 +88,17 @@ partial struct RoundSystemClient : ISystem
 
         buffer.Playback(state.EntityManager);
         buffer.Dispose();
+    }
+
+    public void RequestUpdate(ref SystemState state, EntityCommandBuffer ecb)
+    {
+        return;
+
+        RequestRoundDataRpcCommand rpc = new() {};
+
+        Entity newEntity = ecb.CreateEntity();
+        ecb.AddComponent(newEntity, rpc);
+        ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
     public void ChangeScore(ref SystemState state, TimoteeTeam team, RefRW<RoundComponent> component) {
