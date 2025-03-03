@@ -56,7 +56,7 @@ public struct UpdateViewRotationRcpCommand : IRpcCommand
     public int NetworkId;
     public quaternion RotationY;
     public quaternion RotationX;
-
+}
 public struct CharacterDefaultWeaponPrefab : IComponentData
 {
     public Entity Value;
