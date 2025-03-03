@@ -8,6 +8,7 @@ using UnityEngine.UIElements;
 
 public class ShopController : MonoBehaviour
 {
+    private UIDocument document;
     private VisualElement root;
     private VisualElement shop;
     [SerializeField] VisualTreeAsset line;
@@ -16,9 +17,11 @@ public class ShopController : MonoBehaviour
 
     private void Awake()
     {
-        root = GetComponent<UIDocument>().rootVisualElement;
+        document = GetComponent<UIDocument>();
+        root = document.rootVisualElement;
         shop = root.Q<VisualElement>("Shop");
         root.style.opacity = 0;
+        document.sortingOrder = -1;
         root.SetEnabled(false);
     }
 
@@ -82,6 +85,7 @@ public class ShopController : MonoBehaviour
         {
             root.style.opacity = root.style.opacity.value == 1 ? 0 : 1;
             root.SetEnabled(!root.enabledInHierarchy);
+            document.sortingOrder = root.enabledInHierarchy ? 1 : -1;
         }
     }
 

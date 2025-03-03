@@ -41,8 +41,17 @@ public class HUDController : MonoBehaviour
     [SerializeField] List<WeaponSlot> _weaponSlot;
     private int selectedSlot = 0;
 
+    // Message Box
+    private VisualElement _messageBox;
+    private ScrollView _messageBoxScrollView;
+
+    // ErrorWindow
+    [SerializeField] private GameObject _errorWindowPrefab;
+    private GameObject _errorWindowInstance;
+
     private void Awake()
     {
+        // Initialize all HUD elements
         _HUDDocument = GetComponent<UIDocument>();
         _HUD = _HUDDocument.rootVisualElement;
 
@@ -63,6 +72,10 @@ public class HUDController : MonoBehaviour
 
         _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
 
+        _messageBox = _HUD.Q<VisualElement>("MessageBox");
+        _messageBoxScrollView = _messageBox.Q<ScrollView>();
+
+        // Initialize Weapon Container
         for (int i = 0; i < _weaponSlot.Count; i++)
         {
             _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
@@ -76,10 +89,36 @@ public class HUDController : MonoBehaviour
             };
             _weaponContainer.Children().Last().style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, i == selectedSlot ? 1f : .125f);
         }
+
+        // Hide Message Box at start
+        _messageBox.style.opacity = 0;
+        _messageBox.SetEnabled(false);
     }
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            SendMessageToTchat("tchat", Color.white);
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (_errorWindowInstance == null)
+            {
+                _errorWindowInstance = Instantiate(_errorWindowPrefab);
+                _errorWindowInstance.GetComponent<ErrorWindowController>().errorsOnStart.Add("Test Error");
+            }
+            else
+            {
+                _errorWindowInstance.GetComponent<ErrorWindowController>().AddError(name);
+            }
+        }
+
+        // If too much message, delete previous ones
+        if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
+
+        // Initialize InGameHUDSystem in Update because need to be in the right world
         if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
@@ -87,6 +126,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
         }
 
+        // Initialize RoundManagerLinkSystem in Update because need to be in the right world
         if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _roundManagerLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RoundManagerLinkSystem>();
@@ -98,6 +138,7 @@ public class HUDController : MonoBehaviour
             StartCoroutine(HitRegistered());
         }
 
+        // Weapon Selection Scrolling
         if (Input.GetAxis("Mouse ScrollWheel") < 0) // backward
         {
             _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
@@ -112,6 +153,7 @@ public class HUDController : MonoBehaviour
             _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
         }
 
+        // If RoundManager Linked, change values (for now in update and not when needed)
         if (_roundManagerLinkSystem != null)
         {
             if (_roundManagerLinkSystem.TryGetRoundComponent(out RoundComponent roundComponent))
@@ -123,6 +165,13 @@ public class HUDController : MonoBehaviour
                 _second.text = seconds.ToString().PadLeft(2, '0');
                 _minute.text = minutes.ToString().PadLeft(2, '0');
             }
+        }
+
+        // Open and close Message Box
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            _messageBox.style.opacity = _messageBox.style.opacity.value == 1 ? 0 : 1;
+            _messageBox.SetEnabled(_messageBox.enabledInHierarchy);
         }
     }
 
@@ -154,6 +203,15 @@ public class HUDController : MonoBehaviour
     {
         _hitRegistered = true;
         _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
+    }
+
+    public void SendMessageToTchat(string message, Color messageColor)
+    {
+        if (message == null) return;
+        Label label = new(message);
+        label.style.color = messageColor;
+        label.style.fontSize = 20;
+        _messageBoxScrollView.contentContainer.Add(label);
     }
 }
 
