@@ -1,13 +1,15 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using UnityEngine.Rendering.VirtualTexturing;
 using UnityEngine.UIElements;
 
 public class HUDController : MonoBehaviour
 {
+    // Main Features
     private UIDocument _HUDDocument;
 
     private VisualElement _HUD;
@@ -22,11 +24,22 @@ public class HUDController : MonoBehaviour
     private Label _corpoScore;
     private Label _natifScore;
 
+    private Label _minute;
+    private Label _second;
+
     private bool _hitRegistered = false;
 
     private InGameHUDSystem _inGameHUDSystem = null;
+    private RoundManagerLinkSystem _roundManagerLinkSystem = null;
 
     private StyleColor _crosshairBaseColor;
+
+    // Weapon Slot
+    private VisualElement _weaponContainer;
+    [SerializeField] private VisualTreeAsset _weaponAsset;
+    [SerializeField] List<WeaponMap> _weaponMap;
+    [SerializeField] List<WeaponSlot> _weaponSlot;
+    private int selectedSlot = 0;
 
     private void Awake()
     {
@@ -44,6 +57,25 @@ public class HUDController : MonoBehaviour
 
         _corpoScore = _HUD.Q<Label>("CorpoScore");
         _natifScore = _HUD.Q<Label>("NatifScore");
+
+        _minute = _HUD.Q<VisualElement>("Timer").Q<Label>("Minute");
+        _second = _HUD.Q<VisualElement>("Timer").Q<Label>("Second");
+
+        _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
+
+        for (int i = 0; i < _weaponSlot.Count; i++)
+        {
+            _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
+            _weaponContainer.Children().Last().Q<Label>("Slot").text = _weaponSlot[i].SlotNumber.ToString();
+            _weaponContainer.Children().Last().style.backgroundImage = new()
+            {
+                value = new()
+                {
+                    texture = _weaponMap.Find(wm => wm.Weapon == _weaponSlot[i].Weapon).Tex
+                }
+            };
+            _weaponContainer.Children().Last().style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, i == selectedSlot ? 1f : .125f);
+        }
     }
 
     private void Update()
@@ -55,10 +87,42 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
         }
 
+        if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _roundManagerLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RoundManagerLinkSystem>();
+        }
+
         if (_hitRegistered)
         {
             _hitRegistered = false;
             StartCoroutine(HitRegistered());
+        }
+
+        if (Input.GetAxis("Mouse ScrollWheel") < 0) // backward
+        {
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
+            selectedSlot = (selectedSlot + 1) % _weaponSlot.Count;
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
+        }
+        else if (Input.GetAxis("Mouse ScrollWheel") > 0) // forward
+        {
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
+            if (selectedSlot == 0) selectedSlot = _weaponSlot.Count - 1;
+            else selectedSlot = (selectedSlot - 1) % _weaponSlot.Count;
+            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
+        }
+
+        if (_roundManagerLinkSystem != null)
+        {
+            if (_roundManagerLinkSystem.TryGetRoundComponent(out RoundComponent roundComponent))
+            {
+                _corpoScore.text = roundComponent.corporationScore.ToString().PadLeft(2, '0');
+                _natifScore.text = roundComponent.nativeScore.ToString().PadLeft(2, '0');
+                int seconds = Mathf.FloorToInt(roundComponent.timer) % 60;
+                int minutes = Mathf.FloorToInt(roundComponent.timer) / 60;
+                _second.text = seconds.ToString().PadLeft(2, '0');
+                _minute.text = minutes.ToString().PadLeft(2, '0');
+            }
         }
     }
 
@@ -91,4 +155,18 @@ public class HUDController : MonoBehaviour
         _hitRegistered = true;
         _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
+}
+
+[Serializable]
+public struct WeaponSlot
+{
+    public int SlotNumber;
+    public string Weapon;
+}
+
+[Serializable]
+public struct WeaponMap
+{
+    public string Weapon;
+    public Texture2D Tex;
 }
