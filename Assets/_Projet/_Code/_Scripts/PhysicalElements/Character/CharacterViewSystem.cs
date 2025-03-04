@@ -44,7 +44,7 @@ partial struct CharacterViewSystem : ISystem
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-partial struct ClientCharacterAndViewRotationRcpSendSystem : ISystem
+partial struct ClientCharacterAndViewRotationRpcSendSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -58,8 +58,8 @@ partial struct ClientCharacterAndViewRotationRcpSendSystem : ISystem
             .Query<RefRO<LocalTransform>, RefRO<CharacterLocalViewRotation>>()
             .WithAll<GhostOwnerIsLocal>())
         {
-            Entity rcpEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRcpCommand), typeof(SendRpcCommandRequest));
-            state.EntityManager.SetComponentData(rcpEntity, new UpdateViewRotationRcpCommand
+            Entity rpcEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRpcCommand), typeof(SendRpcCommandRequest));
+            state.EntityManager.SetComponentData(rpcEntity, new UpdateViewRotationRpcCommand
             {
                 ViewRotation = characterTransform.ValueRO.Rotation,
                 CharacterRotation = characterLocalView.ValueRO.Value
@@ -70,7 +70,7 @@ partial struct ClientCharacterAndViewRotationRcpSendSystem : ISystem
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
-partial struct ServerCharacterAndViewRotationRcpReceiveSystem : ISystem
+partial struct ServerCharacterAndViewRotationRpcReceiveSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -84,7 +84,7 @@ partial struct ServerCharacterAndViewRotationRcpReceiveSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (request, characterAndViewRotationRpc, entity) in SystemAPI
-            .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateViewRotationRcpCommand>>()
+            .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateViewRotationRpcCommand>>()
             .WithEntityAccess())
         {
             RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);

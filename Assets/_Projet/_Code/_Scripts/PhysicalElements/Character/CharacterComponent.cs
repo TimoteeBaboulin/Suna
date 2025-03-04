@@ -51,7 +51,7 @@ public struct CharacterClientAttachedComponent : IComponentData
 }
 
 
-public struct UpdateViewRotationRcpCommand : IRpcCommand
+public struct UpdateViewRotationRpcCommand : IRpcCommand
 {
     public quaternion CharacterRotation;
     public quaternion ViewRotation;
