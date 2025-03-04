@@ -51,10 +51,10 @@ public struct CharacterClientAttachedComponent : IComponentData
 }
 
 
-public struct UpdateViewRotationRpcCommand : IRpcCommand
+public struct ClientCharacterAndViewRotationRpcCommand : IRpcCommand
 {
-    public quaternion CharacterRotation;
     public quaternion ViewRotation;
+    public quaternion CharacterRotation;
 }
 public struct CharacterDefaultWeaponPrefab : IComponentData
 {

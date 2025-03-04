@@ -4,10 +4,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-partial struct CharacterViewSystem : ISystem
+partial struct CharacterRotationSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -58,12 +57,13 @@ partial struct ClientCharacterAndViewRotationRpcSendSystem : ISystem
             .Query<RefRO<LocalTransform>, RefRO<CharacterLocalViewRotation>>()
             .WithAll<GhostOwnerIsLocal>())
         {
-            Entity rpcEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRpcCommand), typeof(SendRpcCommandRequest));
-            state.EntityManager.SetComponentData(rpcEntity, new UpdateViewRotationRpcCommand
+            ClientCharacterAndViewRotationRpcCommand command = new ClientCharacterAndViewRotationRpcCommand
             {
-                ViewRotation = characterTransform.ValueRO.Rotation,
-                CharacterRotation = characterLocalView.ValueRO.Value
-            });
+                CharacterRotation = characterTransform.ValueRO.Rotation,
+                ViewRotation = characterLocalView.ValueRO.Value,
+            };
+
+            RpcUtils.SendClientToServerRpc(ref command);
         }
     }
 }
@@ -84,7 +84,7 @@ partial struct ServerCharacterAndViewRotationRpcReceiveSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (request, characterAndViewRotationRpc, entity) in SystemAPI
-            .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateViewRotationRpcCommand>>()
+            .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientCharacterAndViewRotationRpcCommand>>()
             .WithEntityAccess())
         {
             RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);
@@ -97,9 +97,9 @@ partial struct ServerCharacterAndViewRotationRpcReceiveSystem : ISystem
                     continue;
                 }
 
-                characterTransform.ValueRW.Rotation = characterAndViewRotationRpc.ValueRO.ViewRotation;
+                characterTransform.ValueRW.Rotation = characterAndViewRotationRpc.ValueRO.CharacterRotation;
 
-                characterLocalViewRotation.ValueRW.Value = characterAndViewRotationRpc.ValueRO.CharacterRotation;
+                characterLocalViewRotation.ValueRW.Value = characterAndViewRotationRpc.ValueRO.ViewRotation;
 
                 characterAndViewRotation.ValueRW.CharacterRotation = characterTransform.ValueRO.Rotation;
                 characterAndViewRotation.ValueRW.ViewRotation = characterLocalViewRotation.ValueRO.Value;
