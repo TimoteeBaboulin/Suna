@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct CharacterViewSystem : ISystem
@@ -37,25 +38,44 @@ partial struct CharacterViewSystem : ISystem
             localViewRotation.ValueRW.Value.value.x = math.radians(newRotationYDeg);
             localViewRotation.ValueRW.Value.value.y = 0;
             localViewRotation.ValueRW.Value.value.z = 0;
+        }
+    }
+}
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+partial struct ClientCharacterAndViewRotationRcpSendSystem : ISystem
+{
+    [BurstCompile]
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<NetworkTime>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        foreach (var (characterTransform, characterLocalView) in SystemAPI
+            .Query<RefRO<LocalTransform>, RefRO<CharacterLocalViewRotation>>()
+            .WithAll<GhostOwnerIsLocal>())
+        {
             Entity rcpEntity = state.EntityManager.CreateEntity(typeof(UpdateViewRotationRcpCommand), typeof(SendRpcCommandRequest));
             state.EntityManager.SetComponentData(rcpEntity, new UpdateViewRotationRcpCommand
             {
-                NetworkId = networkId,
-                RotationX = transform.ValueRO.Rotation,
-                RotationY = localViewRotation.ValueRO.Value
+                ViewRotation = characterTransform.ValueRO.Rotation,
+                CharacterRotation = characterLocalView.ValueRO.Value
             });
         }
     }
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-partial struct ReceiveRcpCharacterViewSystem : ISystem
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
+partial struct ServerCharacterAndViewRotationRcpReceiveSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<UpdateViewRotationRcpCommand>();
+        state.RequireForUpdate<NetworkTime>();
     }
 
     [BurstCompile]
@@ -63,29 +83,29 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (viewRotationCommand, entity) in SystemAPI
-            .Query<RefRO<UpdateViewRotationRcpCommand>>()
-            .WithAll<ReceiveRpcCommandRequest>()
+        foreach (var (request, characterAndViewRotationRpc, entity) in SystemAPI
+            .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateViewRotationRcpCommand>>()
             .WithEntityAccess())
         {
-            ecb.DestroyEntity(entity);
-
-            foreach (var (transform, localViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
-                .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
-                .WithAll<CharacterComponent>())
+            RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);
+           
+            foreach (var (characterTransform, characterLocalViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
+                .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>())
             {
-                if (ghostOwner.ValueRO.NetworkId != viewRotationCommand.ValueRO.NetworkId)
+                if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
                 {
                     continue;
                 }
 
-                transform.ValueRW.Rotation = viewRotationCommand.ValueRO.RotationX;
+                characterTransform.ValueRW.Rotation = characterAndViewRotationRpc.ValueRO.ViewRotation;
 
-                localViewRotation.ValueRW.Value = viewRotationCommand.ValueRO.RotationY;
+                characterLocalViewRotation.ValueRW.Value = characterAndViewRotationRpc.ValueRO.CharacterRotation;
 
-                characterAndViewRotation.ValueRW.CharacterRotation = transform.ValueRO.Rotation;
-                characterAndViewRotation.ValueRW.ViewRotation = localViewRotation.ValueRO.Value;
+                characterAndViewRotation.ValueRW.CharacterRotation = characterTransform.ValueRO.Rotation;
+                characterAndViewRotation.ValueRW.ViewRotation = characterLocalViewRotation.ValueRO.Value;
             }
+
+            ecb.DestroyEntity(entity);
         }
 
         ecb.Playback(state.EntityManager);
@@ -94,6 +114,7 @@ partial struct ReceiveRcpCharacterViewSystem : ISystem
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+[UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
 {
     [BurstCompile]
@@ -102,6 +123,7 @@ partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
         state.RequireForUpdate<NetworkTime>();
     }
 
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         foreach (var (transform, localViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
