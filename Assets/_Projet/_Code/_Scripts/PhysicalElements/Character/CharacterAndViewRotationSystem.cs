@@ -41,11 +41,11 @@ partial struct CharacterAndViewRotationSystem : ISystem
             // Update of the character's view rotation:
             // First, we perform the calculations in degrees to prevent the clamp from returning the opposite value if the mouse movement value is too high.
             // Then, we apply the rotation in radians and set the values of the Y and Z axes to 0.
-            float newRotationYDegree = math.degrees(CharacterLocalViewRotation.ValueRW.Value.value.x) - mouseY;
+            float newRotationYDegree = math.degrees(CharacterLocalViewRotation.ValueRW.ViewRotation.value.x) - mouseY;
             newRotationYDegree = math.clamp(newRotationYDegree, -40, 40);
-            CharacterLocalViewRotation.ValueRW.Value.value.x = math.radians(newRotationYDegree);
-            CharacterLocalViewRotation.ValueRW.Value.value.y = 0;
-            CharacterLocalViewRotation.ValueRW.Value.value.z = 0;
+            CharacterLocalViewRotation.ValueRW.ViewRotation.value.x = math.radians(newRotationYDegree);
+            CharacterLocalViewRotation.ValueRW.ViewRotation.value.y = 0;
+            CharacterLocalViewRotation.ValueRW.ViewRotation.value.z = 0;
         }
     }
 }
@@ -76,7 +76,7 @@ partial struct ClientCharacterAndViewRotationRpcSendSystem : ISystem
             ClientCharacterAndViewRotationRpcCommand command = new ClientCharacterAndViewRotationRpcCommand
             {
                 CharacterRotation = characterTransform.ValueRO.Rotation,
-                ViewRotation = characterLocalView.ValueRO.Value,
+                ViewRotation = characterLocalView.ValueRO.ViewRotation,
             };
 
             // Send the RPC command to the server.
@@ -93,50 +93,63 @@ partial struct ServerCharacterAndViewRotationRpcReceiveSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
+        // Creation of a query builder that prevents the system from executing
+        // if there is not at least one RPC message that matches what is needed in the update function.
         EntityQueryBuilder queryBuilderRcpCommand = new EntityQueryBuilder(Allocator.Temp);
-        queryBuilderRcpCommand.WithAll<LocalTransform, CharacterLocalViewRotation, GhostOwnerIsLocal>();
+        queryBuilderRcpCommand.WithAll<ReceiveRpcCommandRequest, ClientCharacterAndViewRotationRpcCommand>();
         state.RequireForUpdate(state.GetEntityQuery(queryBuilderRcpCommand));
-
-        EntityQueryBuilder queryBuilderCharacter = new EntityQueryBuilder(Allocator.Temp);
-        queryBuilderCharacter.WithAll<LocalTransform, CharacterLocalViewRotation, GhostOwnerIsLocal>();
-        state.RequireForUpdate(state.GetEntityQuery(queryBuilderCharacter));
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        // Creation of a command buffer allocated temporarily.
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        // Search for a received RPC message that contains the component sending the character's rotation and its view.
         foreach (var (request, characterAndViewRotationRpc, entity) in SystemAPI
             .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientCharacterAndViewRotationRpcCommand>>()
             .WithEntityAccess())
         {
+            // Retrieve the client ID that sent this RPC.
             RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);
 
+            // Search for the character that corresponds to the client ID that sent the RPC and assign the values of the character's rotation,
+            // its local view rotation, and the values from the characterAndViewRotation component that synchronize both rotations with all other players.
             foreach (var (characterTransform, characterLocalViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
                 .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>())
             {
+                // Check if the player's ID matches the one that sent the RPC. If the IDs do not match, the foreach loop continues.
                 if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
                 {
                     continue;
                 }
 
+                // Assign the values of the character's rotation and its view rotation.
                 characterTransform.ValueRW.Rotation = characterAndViewRotationRpc.ValueRO.CharacterRotation;
+                characterLocalViewRotation.ValueRW.ViewRotation = characterAndViewRotationRpc.ValueRO.ViewRotation;
 
-                characterLocalViewRotation.ValueRW.Value = characterAndViewRotationRpc.ValueRO.ViewRotation;
-
+                // Assign the values from the characterAndViewRotation component,
+                // which allows synchronizing the character's rotation and its view rotation with all other clients.
                 characterAndViewRotation.ValueRW.CharacterRotation = characterTransform.ValueRO.Rotation;
-                characterAndViewRotation.ValueRW.ViewRotation = characterLocalViewRotation.ValueRO.Value;
+                characterAndViewRotation.ValueRW.ViewRotation = characterLocalViewRotation.ValueRO.ViewRotation;
+
+                // Exit the foreach loop because we have found and updated the values for the concerned client.
+                break;
             }
 
+            // Add to the command buffer the deletion of the entity that contains the RPC message.
             ecb.DestroyEntity(entity);
         }
 
+        // Execute the commands stored in the command buffer and release it.
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }
 }
 
+// This system is updated only on the client and runs at a fixed number of times per second.
+// Allows updating the rotation of the character and its view, which belong to other clients.
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
 partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
@@ -144,19 +157,26 @@ partial struct UpdateOtherCharacterAndViewRotationSystem : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkTime>();
+        // Creation of a query builder that prevents the execution of the update
+        // if there is not at least one entity that has the components needed in the foreach loop.
+        EntityQueryBuilder queryBuilderRcpCommand = new EntityQueryBuilder(Allocator.Temp);
+        queryBuilderRcpCommand.WithAll<LocalTransform, CharacterLocalViewRotation, CharacterAndViewRotationComponent>()
+            .WithNone<GhostOwnerIsLocal>();
+        state.RequireForUpdate(state.GetEntityQuery(queryBuilderRcpCommand));
     }
 
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (transform, localViewRotation, characterAndViewRotation, ghostOwner) in SystemAPI
-                .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>, RefRO<GhostOwner>>()
-                .WithAll<CharacterComponent>()
+        // Search for characters and their views that do not belong to the current client in order to update their rotation.
+        foreach (var (transform, localViewRotation, characterAndViewRotation) in SystemAPI
+                .Query<RefRW<LocalTransform>, RefRW<CharacterLocalViewRotation>, RefRW<CharacterAndViewRotationComponent>>()
                 .WithNone<GhostOwnerIsLocal>())
         {
+            // Assign the values for the character's rotation and its view from the values contained in the CharacterAndViewRotation component,
+            // which is synchronized by the server.
             transform.ValueRW.Rotation = characterAndViewRotation.ValueRO.CharacterRotation;
-            localViewRotation.ValueRW.Value = characterAndViewRotation.ValueRO.ViewRotation;
+            localViewRotation.ValueRW.ViewRotation = characterAndViewRotation.ValueRO.ViewRotation;
         }
     }
 }

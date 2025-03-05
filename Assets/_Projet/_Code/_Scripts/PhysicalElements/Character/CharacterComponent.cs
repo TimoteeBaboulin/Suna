@@ -33,6 +33,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public Entity teamEntity;
 }
 
+// Allows the server to synchronize the character's rotation and its view with all the clients.
 [GhostComponent]
 public struct CharacterAndViewRotationComponent : IComponentData
 {
@@ -40,22 +41,27 @@ public struct CharacterAndViewRotationComponent : IComponentData
     [GhostField] public quaternion ViewRotation;
 }
 
+// Store the local rotation value of the character's view.
+// This value is used for local calculations that require the character's view rotation.
+// This also helps avoid rollbacks and the stuttering that would occur with a value synchronized with the server.
 public struct CharacterLocalViewRotation : IComponentData
 {
-    public quaternion Value;
+    public quaternion ViewRotation;
 }
 
-public struct CharacterClientAttachedComponent : IComponentData
-{
-    [GhostField] public Entity Value;
-}
-
-
+// RPC message that allows the client to send the rotation values of its character and its view,
+// so that the server can update them on its side and synchronize these values with all other clients.
 public struct ClientCharacterAndViewRotationRpcCommand : IRpcCommand
 {
     public quaternion ViewRotation;
     public quaternion CharacterRotation;
 }
+
+public struct CharacterClientAttachedComponent : IComponentData
+{
+    [GhostField] public Entity ClientEntity;
+}
+
 public struct CharacterDefaultWeaponPrefab : IComponentData
 {
     public Entity Value;
