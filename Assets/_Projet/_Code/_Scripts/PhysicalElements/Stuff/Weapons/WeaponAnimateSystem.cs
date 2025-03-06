@@ -56,7 +56,6 @@ partial struct WeaponAnimateSystem : ISystem
         foreach (var (animRef, animState) in SystemAPI
            .Query<WeaponAnimatorReference, RefRW<WeaponAnimationState>>())
         {
-            Debug.Log(animState.ValueRO.IsFire);
             animRef.Animator.SetBool("IsFire", animState.ValueRO.IsFire);
         }
 

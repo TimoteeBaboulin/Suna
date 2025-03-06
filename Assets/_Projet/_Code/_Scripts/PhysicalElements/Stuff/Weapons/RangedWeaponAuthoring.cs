@@ -27,7 +27,7 @@ public class RangedWeaponAuthoring : MonoBehaviour
                 reloadTimer = d.reloadSpeed,
                 fastReloadTimer = d.fastReloadSpeed,
                 firerateTimer = d.firerate,
-                ammo = d.MaxAmmo
+                ammo = d.magazineCapacity + 1 // 1 = bullet in chamber
             });
 
             AddComponentObject(entity, new RangedWeaponDataRef
