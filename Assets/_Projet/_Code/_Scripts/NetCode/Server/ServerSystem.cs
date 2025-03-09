@@ -3,6 +3,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 public struct ServerMessageRpcCommand : IRpcCommand
@@ -36,6 +38,7 @@ public partial class ServerSystem : SystemBase
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
         {
             ServerConsole.Log(ServerConsole.LogType.Info, $"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}, version {request.ValueRO.SourceConnection.Version}");
+            Debug.Log($"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}");
             commandBuffer.DestroyEntity(entity);
         }
 
@@ -43,6 +46,12 @@ public partial class ServerSystem : SystemBase
         {
             InstantiateClient(entity, commandBuffer);
         }
+
+        //if (Keyboard.current.oKey.wasPressedThisFrame)
+        //{
+        //    ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
+        //    RpcUtils.SendServerToClientRpc(ref command);
+        //}
 
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
@@ -54,8 +63,6 @@ public partial class ServerSystem : SystemBase
     {
         if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
         {
-            prefabManager = SystemAPI.GetSingleton<PrefabsData>();
-
             if (prefabManager.client == null)
             {
                 return;
@@ -63,7 +70,6 @@ public partial class ServerSystem : SystemBase
 
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
-
             Entity client = ecb.Instantiate(prefabManager.client);
             ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
             {
@@ -82,7 +88,7 @@ public partial class ServerSystem : SystemBase
     #endregion
 
     //Broadcast message to a target/client or to all clients if no target
-    public void SendMessageRpc<T>(string text, World world, ref T command, Entity target = default) where T : unmanaged, IRpcCommand
+    public void SendMessageRpc<T>(World world, ref T command, Entity target = default) where T : unmanaged, IRpcCommand
     {
         if (world == null || !world.IsCreated)
         {

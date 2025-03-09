@@ -58,7 +58,7 @@ public partial struct OnDieJob : IJobEntity
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
         {
-            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.Value);
+            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
             commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
@@ -145,7 +145,7 @@ public partial struct RespawnSystem : ISystem
         });
 
         ecb.SetComponent(client, new ClientCharacterAttached { Value = character });
-        ecb.SetComponent(character, new CharacterClientAttachedComponent { Value = client });
+        ecb.SetComponent(character, new CharacterClientAttachedComponent { ClientEntity = client });
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
     }

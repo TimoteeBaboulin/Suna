@@ -44,7 +44,7 @@ partial struct CharacterAnimationSystem : ISystem
 
             animatorReference.Animator.SetBool("IsWalking", animationState.ValueRO.IsWalking);
 
-            modelBones.HeadBoneTransform.rotation = math.mul(transform.ValueRO.Rotation, localViewRotation.ValueRO.Value);
+            modelBones.HeadBoneTransform.rotation = math.mul(transform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
         }
 
         foreach (var (animatorReference, entity) in SystemAPI
