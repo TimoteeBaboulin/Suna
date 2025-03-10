@@ -1,10 +1,15 @@
 using Unity.Entities;
+using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 
+[GhostComponent]
 public struct RangedWeaponDynamicData : IComponentData
 {
-    public float reloadTimer;
-    public float fastReloadTimer;
-    public float firerateTimer;
-    public int ammo;
+    [GhostField] public float reloadTimer;
+    [GhostField] public float fastReloadTimer;
+    [GhostField] public float firerateTimer;
+
+    [GhostField] public int currentAmmo;
+    [GhostField] public int remainingAmmo;
 }

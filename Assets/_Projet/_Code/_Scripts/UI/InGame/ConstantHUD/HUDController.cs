@@ -85,6 +85,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
             _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
+            _inGameHUDSystem.AmmoChangeEvent += System_OnAmmoChange;
         }
 
         if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
@@ -135,15 +136,16 @@ public class HUDController : MonoBehaviour
 
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
-        if (args is InGameHUDSystem.HealthArgs arg) _health.text = arg.Health.ToString();
+        _health.text = args.Health.ToString();
     }
     private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs args)
     {
         //if (args is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
     }
-    private void System_OnAmmoChange(object sender, TestPlayerDataSystem.AmmoArgs args)
+    private void System_OnAmmoChange(object sender, InGameHUDSystem.AmmoArgs args)
     {
-        // if (args is TestPlayerDataSystem.AmmoArgs arg) ammo.text = arg.Ammo.ToString();
+        _ammo.text = args.ammo.ToString();
+        _capacity.text = args.remainingAmmo.ToString();
     }
     private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs args)
     {

@@ -3,20 +3,25 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class InGameHUDSystem : SystemBase
 {
     public class HealthArgs : EventArgs { public int Health; }
+    public class AmmoArgs : EventArgs { public int ammo; public int remainingAmmo; }
+
     public event EventHandler<HealthArgs> HealthChangedEvent;
     public event EventHandler HitRegister;
+    public event EventHandler<AmmoArgs> AmmoChangeEvent;
+
 
     [BurstCompile]
     protected override void OnCreate()
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<CurrentHealthComponent, HasHitComponent>();
+        builder.WithAll<CurrentHealthComponent, HasHitComponent, CharacterDefaultWeapon>();
 
         RequireForUpdate(GetEntityQuery(builder));
     }
@@ -24,8 +29,8 @@ partial class InGameHUDSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-        foreach (var (currentHealth, hasHit) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>>()
+        foreach (var (currentHealth, hasHit, weaponRef) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterDefaultWeapon>>()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = currentHealth.ValueRO.Value });
@@ -33,6 +38,12 @@ partial class InGameHUDSystem : SystemBase
             if (hasHit.ValueRO.Value)
             {
                 HitRegister?.Invoke(this, EventArgs.Empty);
+            }
+
+            if (SystemAPI.HasComponent<RangedWeaponDynamicData>(weaponRef.ValueRO.Value))
+            {
+                var weaponData = SystemAPI.GetComponent<RangedWeaponDynamicData>(weaponRef.ValueRO.Value);
+                AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
             }
         }
     }

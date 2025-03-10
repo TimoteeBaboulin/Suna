@@ -24,10 +24,8 @@ public class RangedWeaponAuthoring : MonoBehaviour
 
             AddComponent(entity, new RangedWeaponDynamicData
             {
-                reloadTimer = d.reloadSpeed,
-                fastReloadTimer = d.fastReloadSpeed,
-                firerateTimer = d.firerate,
-                ammo = d.magazineCapacity + 1 // 1 = bullet in chamber
+                currentAmmo = d.magazineCapacity + 1, // 1 = bullet in chamber
+                remainingAmmo = d.magazineCapacity * (d.nbMagazine - 1),
             });
 
             AddComponentObject(entity, new RangedWeaponDataRef
