@@ -2680,9 +2680,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6477355271731077910, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6477355271731077910, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6517527640326558929, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6517527640326558929, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8056860678677534561, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
       propertyPath: m_Name
       value: TeamSpawn
+      objectReference: {fileID: 0}
+    - target: {fileID: 8941492117720928925, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8941492117720928925, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8970854290897648824, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -6
+      objectReference: {fileID: 0}
+    - target: {fileID: 8970854290897648824, guid: ea99a10de9ad6a94e982126bb7744d8a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

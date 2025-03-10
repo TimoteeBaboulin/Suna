@@ -6,6 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 using static RoundSystemServer;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct RoundSystemClient : ISystem
 {
     private bool _running;
@@ -28,11 +29,10 @@ partial struct RoundSystemClient : ISystem
         _running = true;
         _firstFrame = true;
 
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithNone<ServerDataComponent>();
-        state.RequireForUpdate(state.GetEntityQuery(builder));
+        state.RequireForUpdate<NetworkTime>();
+        //state.RequireForUpdate<RoundComponent>();
 
-        EntityQueryBuilder roundBuilder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         EntityQuery query = state.GetEntityQuery(builder);
 
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
@@ -60,7 +60,21 @@ partial struct RoundSystemClient : ISystem
         EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
 
         if (_firstFrame)
-            RequestUpdate(ref state, buffer);
+        {
+            EntityQuery networkQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<NetworkStreamConnection>().Build(ref state);
+            if (networkQuery.TryGetSingleton<NetworkStreamConnection>(out var streamConnection))
+            {
+                if (streamConnection.CurrentState != ConnectionState.State.Connected)
+                    return;
+
+                RequestUpdate(ref state, buffer);
+            }
+            else
+            {
+                return;
+            }
+            
+        }
 
         _firstFrame = false;
         //Prepare the buffer to use at the end of the update to avoid breaking the reference to the component
@@ -70,6 +84,12 @@ partial struct RoundSystemClient : ISystem
         if (round.ValueRW.timer < 0)
         {
             round.ValueRW.timer = 0;
+        }
+
+        foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
+        {
+            round.ValueRW = update.ValueRO.roundData;
+            buffer.DestroyEntity(entity);
         }
 
         //Read score change RPCs
@@ -92,8 +112,6 @@ partial struct RoundSystemClient : ISystem
 
     public void RequestUpdate(ref SystemState state, EntityCommandBuffer ecb)
     {
-        return;
-
         RequestRoundDataRpcCommand rpc = new() {};
 
         Entity newEntity = ecb.CreateEntity();

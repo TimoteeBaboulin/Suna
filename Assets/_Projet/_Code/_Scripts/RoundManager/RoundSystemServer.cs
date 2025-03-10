@@ -20,10 +20,11 @@ public partial struct RoundSystemServer : ISystem
 
     public struct UpdateRoundDataRpcCommand : IRpcCommand
     {
-
+        public RoundComponent roundData;
     }
 
-    private EntityQuery _query;
+    //private EntityQuery _query;
+    private bool _firstFrame;
 
     public enum TimoteeTeam : byte //TODO: Switch to a normalized enum for the whole project
     {
@@ -35,23 +36,23 @@ public partial struct RoundSystemServer : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        state.RequireForUpdate<ServerDataComponent>();
+        //state.RequireForUpdate<ServerDataComponent>();
 
         //Create the query and store it for future use
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
-        _query = builder.Build(ref state);
+        EntityQuery query = builder.Build(ref state);
 
         //Get the necessary references to set up the start of the game
-
-        //var entity = _query.GetSingletonEntity();
-        if (_query.TryGetSingletonEntity<Entity>(out var entity))
+        if (query.TryGetSingletonEntity<RoundComponent>(out var entity))
         {
-            if (state.EntityManager.Exists(entity))
-            {
-                RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
+            RefRW<RoundComponent> component = query.GetSingletonRW<RoundComponent>();
 
-                InitGame(ref state, entity, component, ecb);
-            }
+            InitGame(ref state, entity, component, ecb);
+            _firstFrame = true;
+        }
+        else
+        {
+            _firstFrame = false;
         }
     }
 
@@ -67,8 +68,17 @@ public partial struct RoundSystemServer : ISystem
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        Entity entity = SystemAPI.GetSingletonEntity<RoundComponent>();
+
+        if (!_firstFrame)
+        {
+
+            InitGame(ref state, entity, roundComponent, ecb);
+            _firstFrame = true;
+        }
+
         //Check if the bomb was planted
-        Entity entity = _query.GetSingletonEntity();
+        //Entity entity = _query.GetSingletonEntity();
         if (roundComponent.ValueRO.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
             CollectorPlanted(ref state, entity, roundComponent, ecb);
@@ -83,8 +93,20 @@ public partial struct RoundSystemServer : ISystem
             }
         }
 
+        //If a client need to synchronise round data, this is used to reply with the full data
         foreach (var (request, command, rpcEntity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<RequestRoundDataRpcCommand>>().WithEntityAccess())
         {
+            //Debug.Log("[Server] Received round data update request.");
+
+            Entity responseEntity = ecb.CreateEntity();
+            ecb.AddComponent(responseEntity, new SendRpcCommandRequest
+            {
+                TargetConnection = request.ValueRO.SourceConnection
+            });
+            ecb.AddComponent(responseEntity, new UpdateRoundDataRpcCommand
+            {
+                roundData = roundComponent.ValueRO
+            });
 
             ecb.DestroyEntity(rpcEntity);
         }
