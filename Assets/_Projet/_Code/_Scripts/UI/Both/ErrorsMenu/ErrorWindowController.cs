@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -15,15 +16,15 @@ public class ErrorWindowController : MonoBehaviour
     private ScrollView _content;
     private Button _closeButton;
 
-    bool mouseOverTab = false;
-    Vector2 windowPosition;
-    bool movementEngaged = false;
-    Vector2 mouseToWindowPosition = Vector2.zero;
+    private bool _mouseOverTab = false;
+    private Vector2 _windowPosition;
+    private bool _movementEngaged = false;
+    private Vector2 _mouseToWindowPosition = Vector2.zero;
 
-    bool firstFrame = true;
-    int count = 0;
+    private bool _firstFrame = true;
+    private int _count = 0;
 
-    [HideInInspector] public List<string> errorsOnStart = new();
+    [HideInInspector] public List<string> ErrorsOnStart = new();
 
     private void Start()
     {
@@ -35,63 +36,73 @@ public class ErrorWindowController : MonoBehaviour
         _content = _root.Q<ScrollView>();
         _closeButton = _root.Q<Button>("Close");
 
-        _tab.RegisterCallback<MouseEnterEvent>((x) => { mouseOverTab = true; });
-        _tab.RegisterCallback<MouseLeaveEvent>((x) => { mouseOverTab = false; });
+        _tab.RegisterCallback<MouseEnterEvent>((x) => { _mouseOverTab = true; });
+        _tab.RegisterCallback<MouseLeaveEvent>((x) => { _mouseOverTab = false; });
         _tab.RegisterCallback<MouseDownEvent>((x) =>
         {
-            movementEngaged = true;
-            mouseToWindowPosition = windowPosition - x.mousePosition;
+            _movementEngaged = true;
+            _mouseToWindowPosition = _windowPosition - x.mousePosition;
         });
-        _tab.RegisterCallback<MouseUpEvent>((x) => { DisengageWindowMovement(); });
+        _tab.RegisterCallback<MouseUpEvent>((x) => { OnCloseButtonClick(); });
 
         _closeButton.clicked += () => { Destroy(gameObject); };
 
-        if (errorsOnStart.Count > 0)
+        if (ErrorsOnStart.Count > 0)
         {
-            for (int i = 0; i < errorsOnStart.Count; i++)
+            for (int i = 0; i < ErrorsOnStart.Count; i++)
             {
-                AddError(errorsOnStart[i]);
+                AddError(ErrorsOnStart[i]);
             }
         }
 
-        _root.Q<Button>("Validate").clicked += () => { SceneManager.LoadScene(0); };
+        _root.Q<Button>("Validate").clicked += () => { OnValidateButtonClick(); };
     }
 
     private void Update()
     {
-        if (firstFrame)
+        if (_firstFrame)
         {
-            firstFrame = false;
-            windowPosition = Vector2.zero;
-            _window.transform.position = windowPosition;
+            _firstFrame = false;
+            _windowPosition = Vector2.zero;
+            _window.transform.position = _windowPosition;
         }
 
-        if (movementEngaged)
+        if (_movementEngaged)
         {
             Vector2 mousePosition = Mouse.current.position.ReadValue();
             mousePosition.y *= -1;
             mousePosition.y += Screen.height;
-            windowPosition = mouseToWindowPosition + mousePosition;
-            _window.transform.position = windowPosition;
-            if (!mouseOverTab && Input.GetMouseButtonUp(0))
+            _windowPosition = _mouseToWindowPosition + mousePosition;
+            _window.transform.position = _windowPosition;
+            if (!_mouseOverTab && Input.GetMouseButtonUp(0))
             {
                 DisengageWindowMovement();
             }
         }
     }
 
+    private void OnCloseButtonClick()
+    {
+        Destroy(gameObject);
+    }
+
+    private void OnValidateButtonClick()
+    {
+        SceneManager.LoadScene(0);
+    }
+
     private void DisengageWindowMovement()
     {
-        movementEngaged = false;
-        if (windowPosition.x < -(Screen.width - _window.resolvedStyle.width) / 2)
-            windowPosition.x = -(Screen.width - _window.resolvedStyle.width) / 2;
-        if (windowPosition.y < -(Screen.height - _window.resolvedStyle.height) / 2)
-            windowPosition.y = -(Screen.height - _window.resolvedStyle.height) / 2;
-        if (windowPosition.x > (Screen.width - _window.resolvedStyle.width) / 2)
-            windowPosition.x = (Screen.width - _window.resolvedStyle.width) / 2;
-        if (windowPosition.y > (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2)
-            windowPosition.y = (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2;
-        _window.transform.position = windowPosition;
+        _movementEngaged = false;
+        if (_windowPosition.x < -(Screen.width - _window.resolvedStyle.width) / 2)
+            _windowPosition.x = -(Screen.width - _window.resolvedStyle.width) / 2;
+        if (_windowPosition.y < -(Screen.height - _window.resolvedStyle.height) / 2)
+            _windowPosition.y = -(Screen.height - _window.resolvedStyle.height) / 2;
+        if (_windowPosition.x > (Screen.width - _window.resolvedStyle.width) / 2)
+            _windowPosition.x = (Screen.width - _window.resolvedStyle.width) / 2;
+        if (_windowPosition.y > (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2)
+            _windowPosition.y = (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2;
+        _window.transform.position = _windowPosition;
     }
 
     public void AddError(string error)

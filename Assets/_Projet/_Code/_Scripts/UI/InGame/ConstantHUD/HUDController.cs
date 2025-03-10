@@ -31,6 +31,7 @@ public class HUDController : MonoBehaviour
 
     private InGameHUDSystem _inGameHUDSystem = null;
     private RoundManagerLinkSystem _roundManagerLinkSystem = null;
+    private ErrorWindowCallerSystem _errorWindowCallerSystem = null;
 
     private StyleColor _crosshairBaseColor;
 
@@ -97,24 +98,6 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
-        {
-            SendMessageToTchat("tchat", Color.white);
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            if (_errorWindowInstance == null)
-            {
-                _errorWindowInstance = Instantiate(_errorWindowPrefab);
-                _errorWindowInstance.GetComponent<ErrorWindowController>().errorsOnStart.Add("Test Error");
-            }
-            else
-            {
-                _errorWindowInstance.GetComponent<ErrorWindowController>().AddError(name);
-            }
-        }
-
         // If too much message, delete previous ones
         if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
@@ -130,6 +113,12 @@ public class HUDController : MonoBehaviour
         if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _roundManagerLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RoundManagerLinkSystem>();
+        }
+
+        if (_errorWindowCallerSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _errorWindowCallerSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<ErrorWindowCallerSystem>();
+            _errorWindowCallerSystem.OnErrorMessageSent += OnErrorMessageReceived;
         }
 
         if (_hitRegistered)
@@ -172,6 +161,30 @@ public class HUDController : MonoBehaviour
         {
             _messageBox.style.opacity = _messageBox.style.opacity.value == 1 ? 0 : 1;
             _messageBox.SetEnabled(_messageBox.enabledInHierarchy);
+        }
+    }
+
+    private void OnErrorMessageReceived(object sender, ErrorWindowCallerSystem.ErrorMessage args)
+    {
+        if (args.Messages.Count > 0)
+        {
+            if (_errorWindowInstance == null)
+            {
+                _errorWindowInstance = Instantiate(_errorWindowPrefab);
+                ErrorWindowController errorWindowController = _errorWindowInstance.GetComponent<ErrorWindowController>();
+                foreach (string message in args.Messages)
+                {
+                    errorWindowController.ErrorsOnStart.Add(message);
+                }
+            }
+            else
+            {
+                ErrorWindowController errorWindowController = _errorWindowInstance.GetComponent<ErrorWindowController>();
+                foreach (string message in args.Messages)
+                {
+                    errorWindowController.AddError(message);
+                }
+            }
         }
     }
 
