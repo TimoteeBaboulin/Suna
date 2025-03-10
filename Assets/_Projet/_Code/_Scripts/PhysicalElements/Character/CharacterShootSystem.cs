@@ -43,6 +43,7 @@ public partial struct ShootSystem : ISystem
             ref readonly CharacterInput input = ref inputRO.ValueRO;
             ref readonly Entity weapon = ref weaponRO.ValueRO.Value;
 
+            //Recupere l'etat de l'animation
             RefRW<WeaponAnimationState> animStateRW = default;
             if (state.EntityManager.HasComponent<WeaponAnimationState>(weapon))
             {
@@ -55,6 +56,7 @@ public partial struct ShootSystem : ISystem
             }
             ref WeaponAnimationState animState = ref animStateRW.ValueRW;
 
+            //Récupere les données dynamics de l'arme
             RefRW<RangedWeaponDynamicData> weaponDynDataRW = default;
             if (state.EntityManager.HasComponent<RangedWeaponDynamicData>(weapon))
             {
@@ -70,6 +72,7 @@ public partial struct ShootSystem : ISystem
             }
             ref RangedWeaponDynamicData weaponDynData = ref weaponDynDataRW.ValueRW;
 
+            //Si le joueur tire, que la cadence de tir est valide et qu'il y a encore des balles
             if (input.shoot.IsSet && weaponDynData.firerateTimer <= 0 && weaponDynData.ammo > 0)
             {
                 animState.IsFire = true;
@@ -85,13 +88,14 @@ public partial struct ShootSystem : ISystem
                     {
                         Start = startPosition,
                         End = endPosition,
-                        Filter = CollisionFilter.Default //filtre pour partie du corps
+                        Filter = CollisionFilter.Default
                     };
 
                     NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
                     if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
                     {
-                        if (allHits.Length == 1 && allHits[0].Entity == shooter) break; //Si la seule cible rencontrée est le joeur qui a tiré, on quite
+                        //Si la seule cible rencontrée est le joeur qui a tiré, on quite
+                        if (allHits.Length == 1 && allHits[0].Entity == shooter) break;
 
                         //Raycast récupére les hit dans le mauvais ordre, il faut les triers en fonction de la distance
                         RaycastHit closestHit = allHits[0];
@@ -138,21 +142,21 @@ public partial struct ShootSystem : ISystem
         }
     }
 
-    public bool TryGetComponentRO<T>(EntityManager entityManager, Entity entity, out IComponentData component) where T : unmanaged, IComponentData
-    {
-        if (entityManager.HasComponent<T>(entity))
-        {
-            component = entityManager.GetComponentData<T>(entity);
-            return true;
-        }
-        else
-        {
-            Debug.LogError(typeof(T).Name + " not found");
-        }
+    //public bool TryGetComponentRO<T>(EntityManager entityManager, Entity entity, out IComponentData component) where T : unmanaged, IComponentData
+    //{
+    //    if (entityManager.HasComponent<T>(entity))
+    //    {
+    //        component = entityManager.GetComponentData<T>(entity);
+    //        return true;
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError(typeof(T).Name + " not found");
+    //    }
 
-        component = default;
-        return false;
-    }
+    //    component = default;
+    //    return false;
+    //}
 }
 
 //[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
