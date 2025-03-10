@@ -13,14 +13,14 @@ using UnityEngine.UI;
 public class ConnectionManager : Singleton<ConnectionManager>
 {
     #region Fields
-    [SerializeField] private string _ip = "127.0.0.1";
+    [SerializeField] private string _ip = "141.94.194.103";
     [SerializeField] private ushort _port = 7979;
 
     private string _localIp = "127.0.0.1";
     private ushort _localPort = 7979;
 
     //public event Action Connected;
-
+    SubScene[] subScenes;
     public enum RoleType
     {
         ServerClient = 0,
@@ -70,13 +70,18 @@ public class ConnectionManager : Singleton<ConnectionManager>
             return;
         }
 
+        if (_serverWorld != null)
+        {
+            Debug.Log($"{_serverWorld} already created!");
+            return;
+        }
+
         if (_role == RoleType.ServerClient || _role == RoleType.Client)
         {
             _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-            //Connected?.Invoke();
         }
 
-        if (_role == RoleType.ServerClient && Application.isEditor)
+        if (_role == RoleType.ServerClient)
         {
             _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
         }
@@ -114,7 +119,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
             }
         }
 
-        SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         if (_serverWorld != null)
         {
@@ -157,11 +162,18 @@ public class ConnectionManager : Singleton<ConnectionManager>
         {
             for (int i = 0; i < subScenes.Length; i++)
             {
-                SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters() { Flags = SceneLoadFlags.BlockOnStreamIn };
-                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value), loadParameters);
+                SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
+                #if UNITY_EDITOR
+                flag = SceneLoadFlags.BlockOnImport;
+                #endif
+                SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters() { Flags = flag };
+                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value),
+                    loadParameters);
+
                 while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
                 {
                     world.Update();
+                    yield return null; //Coucou ici, ça attends la fin de la frame pour confirmer et passer à la suivante, bisous :)
                 }
             }
         }

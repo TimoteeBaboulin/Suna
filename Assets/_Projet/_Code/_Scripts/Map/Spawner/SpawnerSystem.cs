@@ -4,7 +4,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -53,12 +52,12 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
     [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
 
-    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterPlayerAttachedComponent> CharacterPlayerAttached)
+    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
     {
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
         {
-            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.Value);
+            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
             commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
@@ -80,7 +79,7 @@ public partial struct RespawnSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<PlayerComponent, WaitForRespawnTag>();
+        builder.WithAll<ClientComponent, WaitForRespawnTag>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
 
         respawnPtLookupInit = state.GetComponentLookup<LocalTransform>(isReadOnly: true);
@@ -92,22 +91,60 @@ public partial struct RespawnSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<PlayerComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
+        //Necessary data for efficient handling of respawns
+        bool[] teamSpawnsValid = { false, false, false };
+        Entity[] teamSpawnsEntities = new Entity[3];
+
+        foreach (var (spawner, entity) in SystemAPI.Query<RefRO<TeamSpawnComponent>>().WithEntityAccess())
         {
-            SpawnerComponent spawnerComponent;
+            teamSpawnsValid[(int)spawner.ValueRO.team] = true;
+            teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
+        }
 
-            if (SystemAPI.TryGetSingleton(out spawnerComponent))
+        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
+        {
+            TeamSideType teamSideType = TeamSideType.Neutre;
+            if (SystemAPI.HasComponent<CorpoTeamTag>(entity))
             {
-
-                Entity spawnerEntity = SystemAPI.GetSingletonEntity<SpawnerComponent>();
-                LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
-
-                int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
-                SpawnCharacter(entity, networkId, ecb, respawnZoneTransform.Position);
-
-
-                ecb.RemoveComponent<WaitForRespawnTag>(entity);
+                teamSideType = TeamSideType.Corpo;
             }
+            else if (SystemAPI.HasComponent<NatifTeamTag>(entity))
+            {
+                teamSideType = TeamSideType.Natif;
+            }
+
+            //TODO: Let the client know its team so we can spawn in the right spawn
+            teamSideType = TeamSideType.Corpo;
+
+            if (!teamSpawnsValid[(int)teamSideType])
+            {
+                continue;
+            }
+
+            Entity spawnerEntity = teamSpawnsEntities[(int) teamSideType];
+
+            var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
+            int random = UnityEngine.Random.Range(0, buffer.Length);
+
+            //LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
+
+            int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
+
+            //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
+            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
+            if (!state.EntityManager.Exists(characterEntity))
+            {
+                SpawnCharacter(entity, networkId, ecb, buffer[random]);
+            }
+            else
+            {
+                RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
+                RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
+                transform.ValueRW.Position = buffer[random];
+                currentHealth.ValueRW.Value = 100;
+            }
+            
+            ecb.RemoveComponent<WaitForRespawnTag>(entity);
         }
 
         //if (resetStuffLookup.HasComponent(spawnerEntity))
@@ -117,7 +154,7 @@ public partial struct RespawnSystem : ISystem
         //}
     }
 
-    public void SpawnCharacter(Entity player, int networkId, EntityCommandBuffer ecb, float3 position)
+    public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
@@ -139,15 +176,15 @@ public partial struct RespawnSystem : ISystem
         {
             NetworkId = networkId
         });
-        ecb.AppendToBuffer(player, new LinkedEntityGroup() //Link it to connection
+        ecb.AppendToBuffer(client, new LinkedEntityGroup() //Link it to connection
         {
             Value = character
         });
 
-        ecb.SetComponent(player, new PlayerCharacterAttached { Value = character });
-        ecb.SetComponent(character, new CharacterPlayerAttachedComponent { Value = player });
+        ecb.SetComponent(client, new ClientCharacterAttached { Value = character });
+        ecb.SetComponent(character, new CharacterClientAttachedComponent { ClientEntity = client });
 
-        ServerConsole.Log(ServerConsole.LogType.Info, $"Player spawned with NetworkId {networkId}, in the world {worldName}");
+        ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
     }
 }
 

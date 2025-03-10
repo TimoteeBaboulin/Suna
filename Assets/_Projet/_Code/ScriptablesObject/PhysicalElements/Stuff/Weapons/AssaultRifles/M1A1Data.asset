@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: M1A1Data
+  m_EditorClassIdentifier: 
+  prefab: {fileID: 4820376613147570663, guid: 3d4d5260590b4034bae3993f95214d4e, type: 3}
+  entityName: M1A1
+  UIImage: {fileID: 0}
+  price: 1
+  type: 0
+  side: 0
+  deploymentSpeed: 0
+  storageSpeed: 0
+  recoil: {x: 2, y: 3}
+  damage: 4
+  range: 100
+  firerate: 0.2
+  spread: 6
+  spreadAiming: 7
+  coefSpray: 8
+  coefSprayAiming: 9
+  ergonomics: 10
+  roundsPerMin: 11
+  dmgFallOff: 12
+  coefModifMoveSpeed: 13
+  coefModifMoveSpeedAiming: 14
+  reloadSpeed: 15
+  fastReloadSpeed: 16
+  knockbackForceOnKill: 17
+  nbMagazine: 3
+  magazineCapacity: 20
+  scope: {fileID: 0}
+  handle: {fileID: 0}
+  cross: {fileID: 0}
+  silencer: {fileID: 0}
+  magazine: {fileID: 0}
+  thorax: 20
+  stomach: 21
+  legs_Arms: 22
+  head: 23
+  ammoType: {fileID: 0}

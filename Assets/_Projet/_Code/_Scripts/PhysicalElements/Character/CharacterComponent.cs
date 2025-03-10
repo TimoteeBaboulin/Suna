@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -33,12 +34,39 @@ public struct CharacterComponent : IComponentData
     [GhostField] public Entity teamEntity;
 }
 
-public struct CharacterViewEntityComponent : IComponentData
+// Do not use the values of this component for calculations.
+// It is only meant to synchronize these values between the server and clients.
+[GhostComponent]
+public struct CharacterAndViewRotationComponent : IComponentData
+{
+    [GhostField] public quaternion CharacterRotation;
+    [GhostField] public quaternion ViewRotation;
+}
+
+// This value is used for calculations that require the character's view rotation.
+public struct CharacterLocalViewRotation : IComponentData
+{
+    public quaternion ViewRotation;
+}
+
+// To be used for updating the character's rotation and its view from the client to the server.
+public struct ClientCharacterAndViewRotationRpcCommand : IRpcCommand
+{
+    public quaternion ViewRotation;
+    public quaternion CharacterRotation;
+}
+
+public struct CharacterClientAttachedComponent : IComponentData
+{
+    [GhostField] public Entity ClientEntity;
+}
+
+public struct CharacterDefaultWeaponPrefab : IComponentData
 {
     public Entity Value;
 }
 
-public struct CharacterPlayerAttachedComponent : IComponentData
+public struct CharacterDefaultWeapon : IComponentData
 {
     [GhostField] public Entity Value;
 }

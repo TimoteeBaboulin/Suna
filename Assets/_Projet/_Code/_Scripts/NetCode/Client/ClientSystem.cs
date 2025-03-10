@@ -12,17 +12,13 @@ public struct ClientMessageRpcCommand : IRpcCommand
     public FixedString64Bytes message;
 }
 
-public struct SpawnUnitRpcCommand : IRpcCommand
-{
-
-}
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class ClientSystem : SystemBase
 {
     protected override void OnCreate()
     {
-        RequireForUpdate<NetworkId>(); //Only update if there's a client with a network ID
+        RequireForUpdate<NetworkId>();
     }
     protected override void OnUpdate()
     {
@@ -34,69 +30,15 @@ public partial class ClientSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        UpdatePlayerCamera();
-
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current.vKey.wasPressedThisFrame)
         {
-            SendMessageRpc("Hello world", ConnectionManager.Instance.Client);
-        }
-
-        if ((Keyboard.current.vKey.wasPressedThisFrame))
-        {
-            SpawnUnitRpc(ConnectionManager.Instance.Client);
-            Debug.Log("W pressed");
+            ClientMessageRpcCommand command = new ClientMessageRpcCommand() { message = "Client message to server BOUMBOUMBOUBm" };
+            RpcUtils.SendClientToServerRpc(ref command);
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
-
-    public void SendMessageRpc(string text, World world)
-    {
-        if (world == null || !world.IsCreated)
-        {
-            return;
-        }
-        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(ClientMessageRpcCommand));
-        world.EntityManager.SetComponentData(entity, new ClientMessageRpcCommand()
-        {
-            message = text
-        });
-    }
-
-    public void SpawnUnitRpc(World world)
-    {
-        if (world == null || !world.IsCreated)
-        {
-            return;
-        }
-        world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(SpawnUnitRpcCommand));
-    }
-
     #region PrivateMethods
 
-    private void UpdatePlayerCamera()
-    {
-        //float dt = SystemAPI.Time.DeltaTime;
-        //foreach (RefRO<CameraAttachComponent> cameraAttach in SystemAPI.Query<RefRO<CameraAttachComponent>>().WithAll<GhostOwnerIsLocal>())
-        //{
-        //    //Camera.main.transform.position = cameraAttach.ValueRO.transform.Position;
-        //    //Camera.main.transform.rotation = cameraAttach.ValueRO.transform.Rotation;
-
-        //    float3 targetPosition = cameraAttach.ValueRO.transform.Position;
-        //    quaternion targetRotation = cameraAttach.ValueRO.transform.Rotation;
-
-        //    Camera.main.transform.position = Vector3.Lerp(
-        //        Camera.main.transform.position,
-        //        targetPosition,
-        //       dt * 20f
-        //    );
-
-        //    Camera.main.transform.rotation = Quaternion.Slerp(
-        //        Camera.main.transform.rotation,
-        //        targetRotation,
-        //        dt * 20f
-        //    );
-        //}
-    }
     #endregion
 }

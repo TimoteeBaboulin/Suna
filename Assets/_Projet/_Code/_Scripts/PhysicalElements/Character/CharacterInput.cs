@@ -1,5 +1,6 @@
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted,OwnerSendType = SendToOwnerType.SendToNonOwner)]
 public struct CharacterInput :IInputComponentData
@@ -11,5 +12,5 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public InputEvent walkCanceled;
 
     [GhostField] public InputEvent shoot;
-    [GhostField] public quaternion shootRotation;
+    [GhostField] public LocalTransform shootTransform;
 }

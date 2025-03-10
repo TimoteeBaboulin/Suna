@@ -37,8 +37,8 @@ public partial class CharacterInputSystem : SystemBase
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
-        foreach (var (controller, input, viewEntity) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterViewEntityComponent>>()
+        foreach (var (controller, input) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>>()
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;
@@ -77,8 +77,12 @@ public partial class CharacterInputSystem : SystemBase
             {
                 input.ValueRW.shoot.Set();
 
-                RefRO<LocalToWorld> viewWorldTransform = SystemAPI.GetComponentRO<LocalToWorld>(viewEntity.ValueRO.Value);
-                input.ValueRW.shootRotation = viewWorldTransform.ValueRO.Rotation;
+                input.ValueRW.shootTransform = new LocalTransform
+                {
+                    Position = MainGameObjectCamera.Instance.transform.position,
+                    Rotation = MainGameObjectCamera.Instance.transform.rotation,
+                    Scale = 1f,
+                };
             }
             else
             {
