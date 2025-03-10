@@ -1,7 +1,6 @@
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 

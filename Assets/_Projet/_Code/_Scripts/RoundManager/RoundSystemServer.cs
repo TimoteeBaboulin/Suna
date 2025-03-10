@@ -1,6 +1,7 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
@@ -156,7 +157,7 @@ public partial struct RoundSystemServer : ISystem
         //If the round ended, get to next one
         if (component.ValueRW.currentPhase > RoundPhase.PostRoundPhase)
         {
-            InitRound(ref state, entity, component);
+            InitRound(ref state, entity, component, ecb);
         }
 
         //Sets the timer for the new phase
@@ -176,25 +177,20 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.currentRound = 0;
         component.ValueRW.nativeScore = 0;
         component.ValueRW.corporationScore = 0;
-        InitRound(ref state, entity, component);
+        InitRound(ref state, entity, component, ecb);
         SendCurrentPhase(ref state, entity, component, ecb);
     }
 
-    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
+    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Reset the phase and increase the round number
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
         component.ValueRW.currentRound++;
 
-        //Respawn every player at the start of a new round
-        Vector3 spawnPosition;
-        Entity respawnEntity = new EntityQueryBuilder(Allocator.Temp).WithAll<SpawnerComponent>().Build(ref state).ToEntityArray(Allocator.Temp)[0];
-        spawnPosition = state.EntityManager.GetComponentData<LocalTransform>(respawnEntity).Position;
-
-        foreach (var (health, transform) in SystemAPI.Query<RefRW<CurrentHealthComponent>, RefRW<LocalTransform>>())
+        //Mark every client to await a respawn
+        foreach (var (client, respawnEntity) in SystemAPI.Query<RefRO<CharacterClientAttachedComponent>>().WithEntityAccess())
         {
-            transform.ValueRW.Position = spawnPosition;
-            health.ValueRW.Value = 100;
+            ecb.AddComponent<WaitForRespawnTag>(client.ValueRO.ClientEntity);
         }
     }
 

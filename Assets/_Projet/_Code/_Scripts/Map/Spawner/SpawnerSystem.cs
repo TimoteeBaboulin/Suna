@@ -4,7 +4,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -92,22 +91,60 @@ public partial struct RespawnSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
+        //Necessary data for efficient handling of respawns
+        bool[] teamSpawnsValid = { false, false, false };
+        Entity[] teamSpawnsEntities = new Entity[3];
+
+        foreach (var (spawner, entity) in SystemAPI.Query<RefRO<TeamSpawnComponent>>().WithEntityAccess())
+        {
+            teamSpawnsValid[(int)spawner.ValueRO.team] = true;
+            teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
+        }
+
         foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
-            SpawnerComponent spawnerComponent;
-
-            if (SystemAPI.TryGetSingleton(out spawnerComponent))
+            TeamSideType teamSideType = TeamSideType.Neutre;
+            if (SystemAPI.HasComponent<CorpoTeamTag>(entity))
             {
-
-                Entity spawnerEntity = SystemAPI.GetSingletonEntity<SpawnerComponent>();
-                LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
-
-                int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
-                SpawnCharacter(entity, networkId, ecb, respawnZoneTransform.Position);
-
-
-                ecb.RemoveComponent<WaitForRespawnTag>(entity);
+                teamSideType = TeamSideType.Corpo;
             }
+            else if (SystemAPI.HasComponent<NatifTeamTag>(entity))
+            {
+                teamSideType = TeamSideType.Natif;
+            }
+
+            //TODO: Let the client know its team so we can spawn in the right spawn
+            teamSideType = TeamSideType.Corpo;
+
+            if (!teamSpawnsValid[(int)teamSideType])
+            {
+                continue;
+            }
+
+            Entity spawnerEntity = teamSpawnsEntities[(int) teamSideType];
+
+            var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
+            int random = UnityEngine.Random.Range(0, buffer.Length);
+
+            //LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
+
+            int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
+
+            //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
+            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
+            if (!state.EntityManager.Exists(characterEntity))
+            {
+                SpawnCharacter(entity, networkId, ecb, buffer[random]);
+            }
+            else
+            {
+                RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
+                RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
+                transform.ValueRW.Position = buffer[random];
+                currentHealth.ValueRW.Value = 100;
+            }
+            
+            ecb.RemoveComponent<WaitForRespawnTag>(entity);
         }
 
         //if (resetStuffLookup.HasComponent(spawnerEntity))
