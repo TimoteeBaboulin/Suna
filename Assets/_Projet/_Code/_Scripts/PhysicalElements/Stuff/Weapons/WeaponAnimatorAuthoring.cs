@@ -8,7 +8,7 @@ public class WeaponViewPrefab : IComponentData
     public GameObject GameObjectPrefab;
 }
 
-public class WeaponAnimatorReference : ICleanupComponentData
+public class WeaponAnimatorRef : ICleanupComponentData
 {
     public Animator Animator;
     public Transform Transform;

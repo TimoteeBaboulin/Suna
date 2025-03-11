@@ -20,11 +20,11 @@ partial struct WeaponAnimateSystem : ISystem
         //Instanciate the visual prefab of weapon and add reference on him
         foreach (var (weaponViewPrefab, entity) in SystemAPI
             .Query<WeaponViewPrefab>()
-            .WithNone<WeaponAnimatorReference>()
+            .WithNone<WeaponAnimatorRef>()
             .WithEntityAccess())
         {
             GameObject newGameObject = Object.Instantiate(weaponViewPrefab.GameObjectPrefab);
-            ecb.AddComponent(entity, new WeaponAnimatorReference
+            ecb.AddComponent(entity, new WeaponAnimatorRef
             {
                 Animator = newGameObject.GetComponent<Animator>(),
                 Transform = newGameObject.transform
@@ -33,7 +33,7 @@ partial struct WeaponAnimateSystem : ISystem
 
         //Attach to camera
         foreach (var (owner, animRef, entity) in SystemAPI
-           .Query<RefRO<WeaponOwner>, WeaponAnimatorReference>()
+           .Query<RefRO<WeaponOwner>, WeaponAnimatorRef>()
            .WithEntityAccess())
         {
             if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
@@ -53,20 +53,27 @@ partial struct WeaponAnimateSystem : ISystem
         }
 
         //FireAnim
-        foreach (var (animRef, animState) in SystemAPI
-           .Query<WeaponAnimatorReference, RefRW<WeaponAnimationState>>())
+        foreach (var (animatorRef, animStateRef) in SystemAPI
+           .Query<WeaponAnimatorRef, RefRW<WeaponAnimationState>>())
         {
-            animRef.Animator.SetBool("IsFire", animState.ValueRO.IsFire);
+            ref WeaponAnimationState animState = ref animStateRef.ValueRW;
+            if (animState.IsFire)
+            {
+                Debug.Log("Calme toi !");
+                animatorRef.Animator.SetTrigger("Fire");
+                //TODO :Je ne peux pas false la variable IsFire ici car c'est un GhostComponent
+                // Si je retire le ghost, je ne peux plus la déclenché dans le shoot system car il est managé par le serveur
+            }
         }
 
         //Clear Weapon View
         foreach (var (animatorRef, entity) in SystemAPI
-            .Query<WeaponAnimatorReference>()
+            .Query<WeaponAnimatorRef>()
             .WithNone<WeaponViewPrefab, LocalTransform>()
             .WithEntityAccess())
         {
             Object.Destroy(animatorRef.Animator.gameObject);
-            ecb.RemoveComponent<WeaponAnimatorReference>(entity);
+            ecb.RemoveComponent<WeaponAnimatorRef>(entity);
         }
 
         ecb.Playback(state.EntityManager);
