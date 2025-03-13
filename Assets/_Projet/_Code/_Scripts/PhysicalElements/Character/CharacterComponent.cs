@@ -1,7 +1,9 @@
 using Unity.Cinemachine;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine;
 
 public struct CharacterTag : IComponentData { }
 
@@ -60,12 +62,30 @@ public struct CharacterClientAttachedComponent : IComponentData
     [GhostField] public Entity ClientEntity;
 }
 
-public struct CharacterDefaultWeaponPrefab : IComponentData
+public struct CharacterWeaponPrefab : IComponentData
 {
-    public Entity Value;
+    public Entity MainWeaponPrefab;
+    public Entity SecondWeaponPrefab;
+    public Entity MeleeWeaponPrefab;
 }
 
-public struct CharacterDefaultWeapon : IComponentData
+//public struct CharacterWeapon : IComponentData
+//{
+//    [GhostField] public Entity MainWeapon;
+//    [GhostField] public Entity SecondWeapon;
+//    [GhostField] public Entity MeleeWeapon;
+//}
+
+
+public struct CharacterWeaponsList : IComponentData
+{
+    [GhostField] public FixedList128Bytes<Entity> List;
+}
+
+public struct CharacterActiveWeapon : IComponentData 
 {
     [GhostField] public Entity Value;
 }
+
+public struct ActiveWeaponTag : IComponentData { }
+

@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public enum UsableEquipmentType
+public enum StuffType
 {
     MainWeapon,
     SecondaryWeapon,
     Melee,
-    Bomb,
+    Harvester,
     SpecialStuff
 }

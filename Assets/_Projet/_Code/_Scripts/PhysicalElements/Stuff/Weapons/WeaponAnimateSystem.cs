@@ -21,6 +21,7 @@ partial struct WeaponAnimateSystem : ISystem
         foreach (var (weaponViewPrefab, entity) in SystemAPI
             .Query<WeaponViewPrefab>()
             .WithNone<WeaponAnimatorRef>()
+            .WithAll<ActiveWeaponTag>()
             .WithEntityAccess())
         {
             GameObject newGameObject = Object.Instantiate(weaponViewPrefab.GameObjectPrefab);
@@ -34,6 +35,7 @@ partial struct WeaponAnimateSystem : ISystem
         //Attach to camera
         foreach (var (owner, animRef, entity) in SystemAPI
            .Query<RefRO<WeaponOwner>, WeaponAnimatorRef>()
+           .WithAll<ActiveWeaponTag>()
            .WithEntityAccess())
         {
             if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
@@ -54,7 +56,8 @@ partial struct WeaponAnimateSystem : ISystem
 
         //FireAnim
         foreach (var (animatorRef, animStateRef) in SystemAPI
-           .Query<WeaponAnimatorRef, RefRW<WeaponAnimationState>>())
+           .Query<WeaponAnimatorRef, RefRW<WeaponAnimationState>>()
+           .WithAll<ActiveWeaponTag>())
         {
             ref WeaponAnimationState animState = ref animStateRef.ValueRW;
             if (animState.IsFire)

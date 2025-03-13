@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Entities.Serialization;
+using Unity.NetCode;
 using UnityEngine;
 
 public class RangedWeaponDataRef : IComponentData
@@ -7,6 +8,11 @@ public class RangedWeaponDataRef : IComponentData
     public RangedWeaponData Value;
 }
 
+[GhostComponent]
+public struct WeaponOwner : IComponentData
+{
+    [GhostField] public Entity Value;
+}
 
 public class RangedWeaponAuthoring : MonoBehaviour
 {
@@ -17,21 +23,23 @@ public class RangedWeaponAuthoring : MonoBehaviour
     {
         public override void Bake(RangedWeaponAuthoring authoring)
         {
-            RangedWeaponData d = authoring.commonData;
-            DependsOn(d);
+            RangedWeaponData data = authoring.commonData;
+            DependsOn(data);
 
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
             AddComponent(entity, new RangedWeaponDynamicData
             {
-                currentAmmo = d.magazineCapacity + 1, // 1 = bullet in chamber
-                remainingAmmo = d.magazineCapacity * (d.nbMagazine - 1),
+                currentAmmo = data.magazineCapacity + 1, // 1 = bullet in chamber
+                remainingAmmo = data.magazineCapacity * (data.nbMagazine - 1),
             });
 
             AddComponentObject(entity, new RangedWeaponDataRef
             {
-                Value = d,
+                Value = data,
             });
+
+            AddComponent(entity, new WeaponOwner());
         }
     }
 }

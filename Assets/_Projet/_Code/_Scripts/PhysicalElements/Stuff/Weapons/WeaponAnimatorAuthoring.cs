@@ -21,12 +21,6 @@ public struct WeaponAnimationState : IComponentData
     [GhostField] public bool IsReload;
 }
 
-[GhostComponent]
-public struct WeaponOwner : IComponentData
-{
-    [GhostField] public Entity Value;
-}
-
 public class WeaponAnimatorAuthoring : MonoBehaviour
 {
     public GameObject WeaponGameObject;
@@ -47,8 +41,6 @@ public class WeaponAnimatorAuthoring : MonoBehaviour
                 IsFire = false,
                 IsReload = false
             });
-
-            AddComponent<WeaponOwner>(entity);
         }
     }
 }

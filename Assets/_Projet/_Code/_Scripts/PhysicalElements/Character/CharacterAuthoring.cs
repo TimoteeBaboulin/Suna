@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -21,7 +22,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
     [Header("Temp(Debug)")]
     public TeamSideType side;
-    public GameObject defaultWeaponPrefab;
+    public GameObject mainWeaponPrefab;
+    public GameObject secondWeaponPrefab;
+    public GameObject meleeWeaponPrefab;
 
     [Header("Visual")]
     [SerializeField] private GameObject _view;
@@ -53,19 +56,20 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
-            AddComponent(entity, new CharacterDefaultWeaponPrefab
+            AddComponent(entity, new CharacterWeaponPrefab
             {
-                Value = GetEntity(cca.defaultWeaponPrefab, TransformUsageFlags.Dynamic)
+                MainWeaponPrefab = GetEntity(cca.mainWeaponPrefab, TransformUsageFlags.Dynamic),
+                SecondWeaponPrefab = GetEntity(cca.secondWeaponPrefab, TransformUsageFlags.Dynamic),
+                MeleeWeaponPrefab = GetEntity(cca.meleeWeaponPrefab, TransformUsageFlags.Dynamic)
             });
 
-            AddComponent(entity, new CharacterDefaultWeapon());
             AddComponent(entity, new FreezeAllRotationTag());
 
             AddComponent(entity, new CharacterTag()); //Multiplayer
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
-            AddComponent(entity, new WaitForInstanciateDefaultWeapon { });
+            AddComponent(entity, new WaitForInstanciateWeaponsTag { });
 
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
 
@@ -75,6 +79,13 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 ViewRotation = quaternion.identity,
             });
             AddComponent(entity, new CharacterLocalViewRotation { ViewRotation = quaternion.identity });
+
+            CharacterWeaponsList weapons = new CharacterWeaponsList();
+            for (int i = 0; i < 3; i++) weapons.List.Add(Entity.Null);
+            AddComponent(entity, weapons);
+
+            AddComponent(entity, new CharacterActiveWeapon());
+
         }
     }
 }

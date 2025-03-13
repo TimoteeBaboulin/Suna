@@ -21,7 +21,7 @@ partial class InGameHUDSystem : SystemBase
     protected override void OnCreate()
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<CurrentHealthComponent, HasHitComponent, CharacterDefaultWeapon>();
+        builder.WithAll<CurrentHealthComponent, HasHitComponent, CharacterWeaponsList>();
 
         RequireForUpdate(GetEntityQuery(builder));
     }
@@ -30,7 +30,7 @@ partial class InGameHUDSystem : SystemBase
     protected override void OnUpdate()
     {
         foreach (var (currentHealth, hasHit, weaponRef) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterDefaultWeapon>>()
+            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterActiveWeapon>>()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = currentHealth.ValueRO.Value });

@@ -11,7 +11,7 @@ public class RangedWeaponData : ScriptableObject
     public string entityName;
     public Image UIImage;
     public int price;
-    public UsableEquipmentType type;
+    public StuffType type;
     public TeamSideType side;
     public float deploymentSpeed;
     public float storageSpeed;
