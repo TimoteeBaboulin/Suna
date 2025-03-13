@@ -25,7 +25,6 @@ public partial struct ShootSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-
         //Eviter répétition sur le serveur du a la différence de framerate avec le client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         if (!networkTime.IsFirstPredictionTick) return;
@@ -128,19 +127,6 @@ public partial struct ShootSystem : ISystem
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

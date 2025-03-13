@@ -59,7 +59,6 @@ partial struct WeaponAnimateSystem : ISystem
             ref WeaponAnimationState animState = ref animStateRef.ValueRW;
             if (animState.IsFire)
             {
-                Debug.Log("Calme toi !");
                 animatorRef.Animator.SetTrigger("Fire");
                 //TODO :Je ne peux pas false la variable IsFire ici car c'est un GhostComponent
                 // Si je retire le ghost, je ne peux plus la déclenché dans le shoot system car il est managé par le serveur
