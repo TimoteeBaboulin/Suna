@@ -38,6 +38,8 @@ public partial class CharacterInputSystem : SystemBase
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.IsPressed();
         bool isReloadPressed = actions.Reload.WasPressedThisFrame();
+        bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
+        bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
 
         foreach (var (controller, input) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>>()
@@ -98,6 +100,24 @@ public partial class CharacterInputSystem : SystemBase
             else
             {
                 input.ValueRW.reload = default;
+            }
+
+            if (isSelectNext)
+            {
+                input.ValueRW.selectNext.Set();
+            }
+            else
+            {
+                input.ValueRW.selectNext = default;
+            }
+
+            if (isSelectPrevious)
+            {
+                input.ValueRW.selectPrevious.Set();
+            }
+            else
+            {
+                input.ValueRW.selectPrevious = default;
             }
         }
     }
