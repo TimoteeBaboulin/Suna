@@ -61,7 +61,7 @@ partial struct CharacterWeaponSystem : ISystem
     }
 }
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CharacterSetActiveWeapon : ISystem
 {
     public void OnCreate(ref SystemState state)
