@@ -61,7 +61,7 @@ partial struct CharacterWeaponSystem : ISystem
     }
 }
 
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct CharacterSetActiveWeapon : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -80,7 +80,6 @@ partial struct CharacterSetActiveWeapon : ISystem
             .WithAbsent<ActiveWeaponTag>()
             .WithEntityAccess())
         {
-                    Debug.Log(weapon);
             if (ownerRef.ValueRO.Value != Entity.Null)
             {
                 CharacterActiveWeapon charaActiveWeapon = state.EntityManager.GetComponentData<CharacterActiveWeapon>(ownerRef.ValueRO.Value);
