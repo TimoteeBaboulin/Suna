@@ -87,6 +87,6 @@ public struct CharacterActiveWeapon : IComponentData
     [GhostField] public Entity Value;
 }
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct ActiveWeaponTag : IComponentData { }
+//[GhostComponent]
+//public struct ActiveWeaponTag : IComponentData { }
 

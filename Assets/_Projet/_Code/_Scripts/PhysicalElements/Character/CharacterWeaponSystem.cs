@@ -5,6 +5,7 @@ using Unity.NetCode;
 using UnityEngine;
 
 public struct WaitForInstanciateWeaponsTag : IComponentData { }
+public struct ActiveWeaponTag : IComponentData { }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CharacterWeaponSystem : ISystem
@@ -32,6 +33,8 @@ partial struct CharacterWeaponSystem : ISystem
             InstanciateWeapon(ecb, prefabs.SecondWeaponPrefab, chara, ref state, ref weaponsList, StuffType.SecondaryWeapon, ref activeWeapon);
             InstanciateWeapon(ecb, prefabs.MainWeaponPrefab, chara, ref state, ref weaponsList, StuffType.MainWeapon, ref activeWeapon);
 
+            ecb.AddComponent(activeWeapon.Value, new ActiveWeaponTag());
+
             ecb.RemoveComponent<WaitForInstanciateWeaponsTag>(chara);
         }
     }
@@ -40,58 +43,57 @@ partial struct CharacterWeaponSystem : ISystem
     {
         if (prefab != Entity.Null)
         {
-            Entity weapon = ecb.Instantiate(prefab);
+            activeWeapon.Value = ecb.Instantiate(prefab);
 
-            ecb.SetComponent(weapon, new WeaponOwner { Value = chara });
-            ecb.SetComponent(chara, new CharacterActiveWeapon { Value = weapon });
+            ecb.SetComponent(activeWeapon.Value, new WeaponOwner { Value = chara });
 
-            weapons.List[(int)type] = weapon;
+            weapons.List[(int)type] = activeWeapon.Value;
 
             int networkId = state.EntityManager.GetComponentData<GhostOwner>(chara).NetworkId;
 
-            ecb.SetComponent(weapon, new GhostOwner() //Set owner of player to connection
+            ecb.SetComponent(activeWeapon.Value, new GhostOwner() //Set owner of player to connection
             {
                 NetworkId = networkId
             });
             ecb.AppendToBuffer(chara, new LinkedEntityGroup() //Link it to connection
             {
-                Value = weapon
+                Value = activeWeapon.Value
             });
         }
     }
 }
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-partial struct CharacterSetActiveWeapon : ISystem
-{
-    public void OnCreate(ref SystemState state)
-    {
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<WeaponOwner>();
-        state.RequireForUpdate(state.GetEntityQuery(builder));
-    }
+//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+//partial struct CharacterSetActiveWeapon : ISystem
+//{
+//    public void OnCreate(ref SystemState state)
+//    {
+//        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
+//        builder.WithAll<WeaponOwner>();
+//        state.RequireForUpdate(state.GetEntityQuery(builder));
+//    }
 
-    public void OnUpdate(ref SystemState state)
-    {
-        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+//    public void OnUpdate(ref SystemState state)
+//    {
+//        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (ownerRef, weapon) in SystemAPI
-            .Query<RefRO<WeaponOwner>>()
-            .WithAbsent<ActiveWeaponTag>()
-            .WithEntityAccess())
-        {
-            if (ownerRef.ValueRO.Value != Entity.Null)
-            {
-                CharacterActiveWeapon charaActiveWeapon = state.EntityManager.GetComponentData<CharacterActiveWeapon>(ownerRef.ValueRO.Value);
+//        foreach (var (ownerRef, weapon) in SystemAPI
+//            .Query<RefRO<WeaponOwner>>()
+//            .WithAbsent<ActiveWeaponTag>()
+//            .WithEntityAccess())
+//        {
+//            if (ownerRef.ValueRO.Value != Entity.Null)
+//            {
+//                CharacterActiveWeapon charaActiveWeapon = state.EntityManager.GetComponentData<CharacterActiveWeapon>(ownerRef.ValueRO.Value);
 
-                if (weapon == charaActiveWeapon.Value)
-                {
-                    ecb.AddComponent(weapon, new ActiveWeaponTag());
-                }
-            }
-        }
+//                if (weapon == charaActiveWeapon.Value)
+//                {
+//                    ecb.AddComponent(weapon, new ActiveWeaponTag());
+//                }
+//            }
+//        }
 
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
-    }
-}
+//        ecb.Playback(state.EntityManager);
+//        ecb.Dispose();
+//    }
+//}
