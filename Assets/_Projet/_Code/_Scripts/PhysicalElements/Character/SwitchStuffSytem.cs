@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -25,30 +26,40 @@ public partial struct SwitchStuffSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (weaponsListRef, activeWeaponRef, inputRef, chara) in SystemAPI
-        .Query< RefRO<CharacterWeaponsList>, RefRW<CharacterActiveWeapon>, RefRO<CharacterInput>>()
+        foreach (var (stuffListRef, activeStuffRef, inputRef, chara) in SystemAPI
+        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandType>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
             //Simplification des components de l'arme
-            ref readonly CharacterWeaponsList weaponsList = ref weaponsListRef.ValueRO;
-            ref CharacterActiveWeapon activeWeapon = ref activeWeaponRef.ValueRW;
             ref readonly CharacterInput input = ref inputRef.ValueRO;
-            if (activeWeapon.Value == Entity.Null) continue;;
+            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
+            ref CharacterStuffInHandType activeStuff = ref activeStuffRef.ValueRW;
+
+            if (stuffList.List[0] == Entity.Null) continue; //TEMP
 
             if (input.selectNext.IsSet)
             {
                 Debug.Log("Switch to Weapon up");
-                ecb.SetComponent(chara, new CharacterActiveWeapon { Value = weaponsList.List.ElementAt(1) });
-                ecb.AddComponent(weaponsList.List.ElementAt(0), new ActiveWeaponTag());
-                ecb.RemoveComponent<ActiveWeaponTag>(weaponsList.List.ElementAt(1));
+                Entity previousStuff = stuffList.List[(int)activeStuff.Value];
+                ecb.RemoveComponent<StuffInHandTag>(previousStuff);
+                ecb.RemoveComponent<WeaponViewPrefab>(previousStuff);
+                StuffAnimatorRef stuffAnimator = state.EntityManager.GetComponentData<StuffAnimatorRef>(previousStuff);
+                stuffAnimator.Animator.gameObject.SetActive(false);
+
+                activeStuff.Value++;
+
+                Entity nextStuff = stuffList.List[(int)activeStuff.Value];
+                ecb.AddComponent(nextStuff, new StuffInHandTag());
+                stuffAnimator = state.EntityManager.GetComponentData<StuffAnimatorRef>(nextStuff);
+                stuffAnimator.Animator.gameObject.SetActive(true);
             }
 
             if (input.selectPrevious.IsSet)
             {
-                Debug.Log("Switch to Weapon down");
-                ecb.SetComponent(chara, new CharacterActiveWeapon { Value = weaponsList.List.ElementAt(0) });
-                ecb.AddComponent(weaponsList.List.ElementAt(1), new ActiveWeaponTag());
-                ecb.RemoveComponent<ActiveWeaponTag>(weaponsList.List.ElementAt(0));
+                //Debug.Log("Switch to Weapon down");
+                //ecb.SetComponent(chara, new CharacterStuffInHandType { Value = stuffList.List.ElementAt(0) });
+                //ecb.AddComponent(stuffList.List.ElementAt(0), new ActiveWeaponTag());
+                //ecb.RemoveComponent<ActiveWeaponTag>(stuffList.List.ElementAt(1));
             }
         }
     }

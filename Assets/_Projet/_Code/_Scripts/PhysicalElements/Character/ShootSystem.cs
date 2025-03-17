@@ -36,7 +36,7 @@ public partial struct ShootSystem : ISystem
 
         foreach (var (dynamicDataRef, commonDataRef, ownerRef, animStateRef, weapon) in SystemAPI
         .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponDataRef, RefRO<WeaponOwner>, RefRW<WeaponAnimationState>>()
-        .WithAll<Simulate>()
+        .WithAll<StuffInHandTag>()
         .WithEntityAccess())
         {
             //Simplification des components de l'arme

@@ -8,10 +8,6 @@ using UnityEngine;
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
 partial struct WeaponAnimateSystem : ISystem
 {
-    public void OnCreate(ref SystemState state)
-    {
-        //state.RequireForUpdate<WeaponGameObjectPrefab>();
-    }
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -19,14 +15,12 @@ partial struct WeaponAnimateSystem : ISystem
         //Instanciate the visual prefab of weapon and add reference on him
         foreach (var (weaponViewPrefab, entity) in SystemAPI
             .Query<WeaponViewPrefab>()
-            .WithNone<WeaponAnimatorRef>()
-            .WithAll<ActiveWeaponTag>()
+            .WithNone<StuffAnimatorRef>()
+            .WithAll<StuffInHandTag>()
             .WithEntityAccess())
         {
-            Debug.Log("HEHO !");
-
             GameObject newGameObject = Object.Instantiate(weaponViewPrefab.GameObjectPrefab);
-            ecb.AddComponent(entity, new WeaponAnimatorRef
+            ecb.AddComponent(entity, new StuffAnimatorRef
             {
                 Animator = newGameObject.GetComponent<Animator>(),
                 Transform = newGameObject.transform
@@ -35,8 +29,8 @@ partial struct WeaponAnimateSystem : ISystem
 
         //Attach to camera
         foreach (var (owner, animRef, entity) in SystemAPI
-           .Query<RefRO<WeaponOwner>, WeaponAnimatorRef>()
-           .WithAll<ActiveWeaponTag>()
+           .Query<RefRO<WeaponOwner>, StuffAnimatorRef>()
+           .WithAll<StuffInHandTag>()
            .WithEntityAccess())
         {
             if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
@@ -57,8 +51,8 @@ partial struct WeaponAnimateSystem : ISystem
 
         //FireAnim
         foreach (var (animatorRef, animStateRef) in SystemAPI
-           .Query<WeaponAnimatorRef, RefRW<WeaponAnimationState>>()
-           .WithAll<ActiveWeaponTag>())
+           .Query<StuffAnimatorRef, RefRW<WeaponAnimationState>>()
+           .WithAll<StuffInHandTag>())
         {
             ref WeaponAnimationState animState = ref animStateRef.ValueRW;
             if (animState.IsFire)
@@ -71,12 +65,12 @@ partial struct WeaponAnimateSystem : ISystem
 
         //Clear Weapon View
         foreach (var (animatorRef, entity) in SystemAPI
-            .Query<WeaponAnimatorRef>()
+            .Query<StuffAnimatorRef>()
             .WithNone<WeaponViewPrefab, LocalTransform>()
             .WithEntityAccess())
         {
             Object.Destroy(animatorRef.Animator.gameObject);
-            ecb.RemoveComponent<WeaponAnimatorRef>(entity);
+            ecb.RemoveComponent<StuffAnimatorRef>(entity);
         }
 
         ecb.Playback(state.EntityManager);

@@ -21,7 +21,7 @@ partial class InGameHUDSystem : SystemBase
     protected override void OnCreate()
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<CurrentHealthComponent, HasHitComponent, CharacterWeaponsList>();
+        builder.WithAll<CurrentHealthComponent, HasHitComponent, CharacterStuffList>();
 
         RequireForUpdate(GetEntityQuery(builder));
     }
@@ -29,8 +29,8 @@ partial class InGameHUDSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-        foreach (var (currentHealth, hasHit, weaponRef) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterActiveWeapon>>()
+        foreach (var (currentHealth, hasHit, stuffInHandRef, stuffLListRef) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandType>, RefRO<CharacterStuffList>> ()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = currentHealth.ValueRO.Value });
@@ -40,9 +40,9 @@ partial class InGameHUDSystem : SystemBase
                 HitRegister?.Invoke(this, EventArgs.Empty);
             }
 
-            if (SystemAPI.HasComponent<RangedWeaponDynamicData>(weaponRef.ValueRO.Value))
+            if (SystemAPI.HasComponent<RangedWeaponDynamicData>(stuffLListRef.ValueRO.List[(int)stuffInHandRef.ValueRO.Value]))
             {
-                var weaponData = SystemAPI.GetComponent<RangedWeaponDynamicData>(weaponRef.ValueRO.Value);
+                var weaponData = SystemAPI.GetComponent<RangedWeaponDynamicData>(stuffLListRef.ValueRO.List[(int)stuffInHandRef.ValueRO.Value]);
                 AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
             }
         }

@@ -70,16 +70,16 @@ public struct CharacterWeaponPrefab : IComponentData
 }
 
 [GhostComponent]
-public struct CharacterWeaponsList : IComponentData
+public struct CharacterStuffList : IComponentData
 {
     [GhostField] public FixedList128Bytes<Entity> List;
 }
 
 [GhostComponent]
 
-public struct CharacterActiveWeapon : IComponentData 
+public struct CharacterStuffInHandType : IComponentData 
 {
-    [GhostField] public Entity Value;
+    [GhostField] public StuffType Value;
 }
 
 //[GhostEnabledBit]

@@ -1,4 +1,3 @@
-using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -7,7 +6,7 @@ using UnityEngine;
 public struct WaitForInstanciateWeaponsTag : IComponentData { }
 
 [GhostComponent]
-public struct ActiveWeaponTag : IComponentData { [GhostField] public bool Value; }
+public struct StuffInHandTag : IComponentData { }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CharacterWeaponSystem : ISystem
@@ -25,96 +24,86 @@ partial struct CharacterWeaponSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (prefabsRef, weaponsListRef, activeWeaponRef, chara) in SystemAPI
-            .Query<RefRO<CharacterWeaponPrefab>, RefRW<CharacterWeaponsList>, RefRW<CharacterActiveWeapon>>()
+            .Query<RefRO<CharacterWeaponPrefab>, RefRW<CharacterStuffList>, RefRW<CharacterStuffInHandType>>()
             .WithAll<WaitForInstanciateWeaponsTag>()
             .WithEntityAccess())
         {
             ref readonly CharacterWeaponPrefab prefabs = ref prefabsRef.ValueRO;
-            ref CharacterWeaponsList weaponsList = ref weaponsListRef.ValueRW;
+            ref CharacterStuffList weaponsList = ref weaponsListRef.ValueRW;
             //ref CharacterActiveWeapon activeWeapon = ref activeWeaponRef.ValueRW;
 
-            if (prefabs.MainWeaponPrefab != Entity.Null)
-            {
-                Entity weapon = ecb.Instantiate(prefabs.MainWeaponPrefab);
-                ecb.SetComponent(chara, new CharacterActiveWeapon { Value = weapon });
-                ecb.SetComponent(weapon, new WeaponOwner { Value = chara });
+            InstanciateWeapon(ecb, prefabs.MeleeWeaponPrefab, chara, ref state, ref weaponsList, StuffType.Melee);
+            InstanciateWeapon(ecb, prefabs.SecondWeaponPrefab, chara, ref state, ref weaponsList, StuffType.SecondaryWeapon);
+            InstanciateWeapon(ecb, prefabs.MainWeaponPrefab, chara, ref state, ref weaponsList, StuffType.MainWeapon);
 
-                //ecb.AddComponent(weapon, new ActiveWeaponTag { Value = true });
+            //if (prefabs.MainWeaponPrefab != Entity.Null)
+            //{
+            //    Entity weapon = ecb.Instantiate(prefabs.MainWeaponPrefab);
+            //    ecb.SetComponent(chara, new CharacterActiveWeapon { Value = weapon });
+            //    ecb.SetComponent(weapon, new WeaponOwner { Value = chara });
 
-                weaponsList.List[(int)StuffType.MainWeapon] = weapon;
+            //    //ecb.AddComponent(weapon, new ActiveWeaponTag { Value = true });
 
-                int networkId = state.EntityManager.GetComponentData<GhostOwner>(chara).NetworkId;
-                ecb.SetComponent(weapon, new GhostOwner() //Set owner of player to connection
-                {
-                    NetworkId = networkId
-                });
-                ecb.AppendToBuffer(chara, new LinkedEntityGroup() //Link it to connection
-                {
-                    Value = weapon
-                });
-            }
+            //    weaponsList.List[(int)StuffType.MainWeapon] = weapon;
+
+            //    int networkId = state.EntityManager.GetComponentData<GhostOwner>(chara).NetworkId;
+            //    ecb.SetComponent(weapon, new GhostOwner() //Set owner of player to connection
+            //    {
+            //        NetworkId = networkId
+            //    });
+            //    ecb.AppendToBuffer(chara, new LinkedEntityGroup() //Link it to connection
+            //    {
+            //        Value = weapon
+            //    });
+            //}
             ecb.RemoveComponent<WaitForInstanciateWeaponsTag>(chara);
         }
     }
 
-    //ecb.SetComponent(activeWeapon.Value, new CharacterActiveWeapon { Value = ecb.Instantiate(prefabs.MainWeaponPrefab) });
+    void InstanciateWeapon(EntityCommandBuffer ecb, Entity prefab, Entity chara, ref SystemState state, ref CharacterStuffList weaponsList, StuffType type)
+    {
+        if (prefab != Entity.Null)
+        {
+            Entity weapon = ecb.Instantiate(prefab);
+            ecb.SetComponent(chara, new CharacterStuffInHandType { Value = type });
+            ecb.SetComponent(weapon, new WeaponOwner { Value = chara });
 
-    //InstanciateWeapon(ecb, prefabs.MeleeWeaponPrefab, chara, ref state, ref weaponsList, StuffType.Melee, ref activeWeapon);
-    //InstanciateWeapon(ecb, prefabs.SecondWeaponPrefab, chara, ref state, ref weaponsList, StuffType.SecondaryWeapon, ref activeWeapon);
-    //InstanciateWeapon(ecb, prefabs.MainWeaponPrefab, chara, ref state, ref weaponsList, StuffType.MainWeapon, ref activeWeapon);
+            weaponsList.List[(int)type] = weapon;
 
-    //void InstanciateWeapon(EntityCommandBuffer ecb, Entity prefab, Entity chara, ref SystemState state, ref CharacterWeaponsList weapons, StuffType type, ref CharacterActiveWeapon activeWeapon)
-    //{
-    //    if (prefab != Entity.Null)
-    //    {
-    //        //activeWeapon.Value = ecb.Instantiate(prefab);
+            int networkId = state.EntityManager.GetComponentData<GhostOwner>(chara).NetworkId;
 
-    //        ecb.SetComponent(activeWeapon.Value, new CharacterActiveWeapon { Value = ecb.Instantiate(prefab) });
-    //        ecb.SetComponent(activeWeapon.Value, new WeaponOwner { Value = chara });
-
-    //        weapons.List[(int)type] = activeWeapon.Value;
-
-    //        int networkId = state.EntityManager.GetComponentData<GhostOwner>(chara).NetworkId;
-
-    //        ecb.SetComponent(activeWeapon.Value, new GhostOwner() //Set owner of player to connection
-    //        {
-    //            NetworkId = networkId
-    //        });
-    //        ecb.AppendToBuffer(chara, new LinkedEntityGroup() //Link it to connection
-    //        {
-    //            Value = activeWeapon.Value
-    //        });
-    //    }
-    //}
+            ecb.SetComponent(weapon, new GhostOwner() //Set owner of player to connection
+            {
+                NetworkId = networkId
+            });
+            ecb.AppendToBuffer(chara, new LinkedEntityGroup() //Link it to connection
+            {
+                Value = weapon
+            });
+        }
+    }
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 //Probleme de tick
-partial struct CharacterSetActiveWeapon : ISystem
+partial struct CharacterSetActiveStuff : ISystem
 {
-    public void OnCreate(ref SystemState state)
-    {
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithAll<WeaponOwner>();
-        state.RequireForUpdate(state.GetEntityQuery(builder));
-    }
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (ownerRef, weapon) in SystemAPI
-            .Query<RefRO<WeaponOwner>>()
-            //.WithAbsent<ActiveWeaponTag>()
+        foreach (var (ownerRef, rangedWeaponDataRef, weapon) in SystemAPI
+            .Query<RefRO<WeaponOwner>, RangedWeaponDataRef>()
+            .WithAbsent<StuffInHandTag>()
             .WithEntityAccess())
         {
             if (ownerRef.ValueRO.Value != Entity.Null)
             {
-                CharacterActiveWeapon charaActiveWeapon = state.EntityManager.GetComponentData<CharacterActiveWeapon>(ownerRef.ValueRO.Value);
+                CharacterStuffInHandType stuffInHandType = state.EntityManager.GetComponentData<CharacterStuffInHandType>(ownerRef.ValueRO.Value);
 
-                if (weapon == charaActiveWeapon.Value)
+                if (rangedWeaponDataRef.Value.type == stuffInHandType.Value)
                 {
-                    ecb.AddComponent(weapon, new ActiveWeaponTag());
+                    ecb.AddComponent(weapon, new StuffInHandTag());
                 }
             }
         }
