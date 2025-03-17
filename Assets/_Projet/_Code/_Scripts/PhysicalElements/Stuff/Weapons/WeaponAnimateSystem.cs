@@ -12,7 +12,6 @@ partial struct WeaponAnimateSystem : ISystem
     {
         //state.RequireForUpdate<WeaponGameObjectPrefab>();
     }
-
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -24,6 +23,8 @@ partial struct WeaponAnimateSystem : ISystem
             .WithAll<ActiveWeaponTag>()
             .WithEntityAccess())
         {
+            Debug.Log("HEHO !");
+
             GameObject newGameObject = Object.Instantiate(weaponViewPrefab.GameObjectPrefab);
             ecb.AddComponent(entity, new WeaponAnimatorRef
             {

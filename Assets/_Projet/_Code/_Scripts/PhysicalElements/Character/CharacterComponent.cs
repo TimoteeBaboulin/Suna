@@ -69,24 +69,19 @@ public struct CharacterWeaponPrefab : IComponentData
     public Entity MeleeWeaponPrefab;
 }
 
-//public struct CharacterWeapon : IComponentData
-//{
-//    [GhostField] public Entity MainWeapon;
-//    [GhostField] public Entity SecondWeapon;
-//    [GhostField] public Entity MeleeWeapon;
-//}
-
-
+[GhostComponent]
 public struct CharacterWeaponsList : IComponentData
 {
     [GhostField] public FixedList128Bytes<Entity> List;
 }
+
+[GhostComponent]
 
 public struct CharacterActiveWeapon : IComponentData 
 {
     [GhostField] public Entity Value;
 }
 
-//[GhostComponent]
-//public struct ActiveWeaponTag : IComponentData { }
+//[GhostEnabledBit]
+//public struct IsActiveWeapon : IEnableableComponent { }
 

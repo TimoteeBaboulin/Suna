@@ -40,6 +40,7 @@ public class RangedWeaponAuthoring : MonoBehaviour
             });
 
             AddComponent(entity, new WeaponOwner());
+            //AddComponent<IsActiveWeapon>(entity);
         }
     }
 }
