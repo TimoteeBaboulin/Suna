@@ -103,7 +103,11 @@ public partial struct RespawnSystem : ISystem
             teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
         }
 
+<<<<<<< Updated upstream
         NativeList<Entity> corpoPlayers = new NativeList<Entity>();
+=======
+        NativeList<int> corpoNetworkId = new NativeList<int>();
+>>>>>>> Stashed changes
         foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             TeamSideType teamSideType = TeamSideType.Neutre;
@@ -147,7 +151,11 @@ public partial struct RespawnSystem : ISystem
                 currentHealth.ValueRW.Value = 100;
             }
 
+<<<<<<< Updated upstream
             corpoPlayers.Add(SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value);
+=======
+            corpoNetworkId.Add(networkId);
+>>>>>>> Stashed changes
 
             ecb.RemoveComponent<WaitForRespawnTag>(entity);
         }
@@ -162,6 +170,7 @@ public partial struct RespawnSystem : ISystem
         }
 
         //Try to give each harvester to a corpoPlayer
+<<<<<<< Updated upstream
         if (newRound && !corpoPlayers.IsEmpty)
         {
             foreach (var Harvester in SystemAPI.Query<RefRW<HarvesterComponent>>())
@@ -175,6 +184,14 @@ public partial struct RespawnSystem : ISystem
                 if (corpoPlayers.IsEmpty)
                     break;
             }
+=======
+        if (newRound && !corpoNetworkId.IsEmpty)
+        {
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAllRW<HarvesterComponent>().Build(ref state);
+            if (query.entity)
+            Entity harvesterEntity = query.ToEntityArray(Allocator.Temp)[0];
+
+>>>>>>> Stashed changes
         }
 
         //if (resetStuffLookup.HasComponent(spawnerEntity))

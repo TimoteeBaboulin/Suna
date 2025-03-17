@@ -226,6 +226,7 @@ public partial struct RoundSystemServer : ISystem
         //Make sure to delete the tag so it doesn't get detected twice
         state.EntityManager.RemoveComponent<RoundCollectorPlantedComponent>(entity);
 
+
         //Update the clients with the correct phase
         SendCurrentPhase(ref state, entity, component, ecb);
     }
