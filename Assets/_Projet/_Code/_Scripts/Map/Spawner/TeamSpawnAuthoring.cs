@@ -10,7 +10,7 @@ public class TeamSpawnAuthoring : MonoBehaviour
     {
         public override void Bake(TeamSpawnAuthoring authoring)
         {
-            if (authoring.spawnPoints is null || authoring.spawnPoints.Length < 5)
+            if (authoring.spawnPoints is null || authoring.spawnPoints.Length <= 0)
                 return;
 
             Entity entity = GetEntity(TransformUsageFlags.None);
@@ -21,7 +21,7 @@ public class TeamSpawnAuthoring : MonoBehaviour
             });
 
             var Buffer = AddBuffer<SpawnPointBufferComponent>(entity);
-            for(int i = 0; i < 5; i++)
+            for(int i = 0; i < authoring.spawnPoints.Length; i++)
             {
                 Transform point = authoring.spawnPoints[i];
                 Vector3 position;

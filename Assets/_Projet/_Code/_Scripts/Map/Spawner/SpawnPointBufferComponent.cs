@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-[InternalBufferCapacity(5)]
+[InternalBufferCapacity(10)]
 public struct SpawnPointBufferComponent : IBufferElementData
 {
     public static implicit operator float3 (SpawnPointBufferComponent instance) { return instance.Value; }

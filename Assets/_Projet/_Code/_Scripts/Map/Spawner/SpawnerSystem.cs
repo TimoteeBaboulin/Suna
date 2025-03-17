@@ -114,7 +114,7 @@ public partial struct RespawnSystem : ISystem
             }
 
             //TODO: Let the client know its team so we can spawn in the right spawn
-            teamSideType = TeamSideType.Corpo;
+            teamSideType = (TeamSideType) UnityEngine.Random.Range(0,2);
 
             if (!teamSpawnsValid[(int)teamSideType])
             {
