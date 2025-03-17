@@ -4,6 +4,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEditor.Search;
+using static RoundSystemServer;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -101,6 +103,7 @@ public partial struct RespawnSystem : ISystem
             teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
         }
 
+        NativeList<Entity> corpoPlayers = new NativeList<Entity>();
         foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             TeamSideType teamSideType = TeamSideType.Neutre;
@@ -143,8 +146,35 @@ public partial struct RespawnSystem : ISystem
                 transform.ValueRW.Position = buffer[random];
                 currentHealth.ValueRW.Value = 100;
             }
-            
+
+            corpoPlayers.Add(SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value);
+
             ecb.RemoveComponent<WaitForRespawnTag>(entity);
+        }
+
+        //Check if it is a new round and make sure to remove the tag to avoid keeping the loop active
+        bool newRound = false;
+
+        foreach (var (newRoundTag, entity) in SystemAPI.Query<NewRoundTag>().WithEntityAccess())
+        {
+            ecb.RemoveComponent<NewRoundTag>(entity);
+            newRound = true;
+        }
+
+        //Try to give each harvester to a corpoPlayer
+        if (newRound && !corpoPlayers.IsEmpty)
+        {
+            foreach (var Harvester in SystemAPI.Query<RefRW<HarvesterComponent>>())
+            {
+                int random = UnityEngine.Random.Range(0, corpoPlayers.Length);
+                Harvester.ValueRW.owner = corpoPlayers[random];
+
+                corpoPlayers.RemoveAt(random);
+
+                //break the loop for performance issues
+                if (corpoPlayers.IsEmpty)
+                    break;
+            }
         }
 
         //if (resetStuffLookup.HasComponent(spawnerEntity))

@@ -8,6 +8,11 @@ using static RoundSystemClient;
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RoundSystemServer : ISystem
 {
+    public struct NewRoundTag : IComponentData
+    {
+
+    }
+
     public struct VictoryRpcCommand : IRpcCommand
     {
         public TeamSideType team;
@@ -201,6 +206,8 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
         component.ValueRW.currentRound++;
 
+        ecb.AddComponent<NewRoundTag>(entity);
+
         //Mark every client to await a respawn
         foreach (var (client, respawnEntity) in SystemAPI.Query<RefRO<CharacterClientAttachedComponent>>().WithEntityAccess())
         {
@@ -240,8 +247,8 @@ public partial struct RoundSystemServer : ISystem
         }
     }
 
-    private void UpdateRoundData(ref SystemState state, Entity target, RefRO<RoundComponent> component, EntityCommandBuffer ecb)
-    {
+    //private void UpdateRoundData(ref SystemState state, Entity target, RefRO<RoundComponent> component, EntityCommandBuffer ecb)
+    //{
 
-    }
+    //}
 }
