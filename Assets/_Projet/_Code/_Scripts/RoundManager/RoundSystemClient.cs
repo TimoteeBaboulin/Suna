@@ -19,18 +19,10 @@ partial struct RoundSystemClient : ISystem
 
     public void OnCreate(ref SystemState state)
     {
-        //Only run if we're in Client world
-        //if (state.World != ConnectionManager.Instance.Client)
-        //{
-        //    _running = false;
-        //    return;
-        //}
-
         _running = true;
         _firstFrame = true;
 
         state.RequireForUpdate<NetworkTime>();
-        //state.RequireForUpdate<RoundComponent>();
 
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         EntityQuery query = state.GetEntityQuery(builder);
@@ -119,18 +111,18 @@ partial struct RoundSystemClient : ISystem
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
-    public void ChangeScore(ref SystemState state, TimoteeTeam team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component) {
         //Update the score and loss streak of the corresponding teams
         switch (team)
         {
-            case TimoteeTeam.Corporation:
+            case TeamSideType.Corpo:
                 component.ValueRW.corporationScore++;
                 component.ValueRW.nativeLossStreak = Math.Min(component.ValueRW.nativeLossStreak + 1, component.ValueRW.maxStreakCount);
                 component.ValueRW.corporationLossStreak = 0;
 
                 break;
 
-            case TimoteeTeam.Natives:
+            case TeamSideType.Natif:
                 component.ValueRW.nativeScore++;
                 component.ValueRW.corporationLossStreak = Math.Min(component.ValueRW.corporationLossStreak + 1, component.ValueRW.maxStreakCount);
                 component.ValueRW.nativeLossStreak = 0;

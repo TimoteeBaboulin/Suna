@@ -10,7 +10,7 @@ public partial struct RoundSystemServer : ISystem
 {
     public struct VictoryRpcCommand : IRpcCommand
     {
-        public TimoteeTeam team;
+        public TeamSideType team;
     }
 
     public struct ChangePhaseRpcCommand : IRpcCommand
@@ -25,12 +25,6 @@ public partial struct RoundSystemServer : ISystem
 
     //private EntityQuery _query;
     private bool _firstFrame;
-
-    public enum TimoteeTeam : byte //TODO: Switch to a normalized enum for the whole project
-    {
-        Corporation,
-        Natives
-    };
 
     [BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -122,10 +116,10 @@ public partial struct RoundSystemServer : ISystem
         //}
     }
 
-    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TimoteeTeam team, EntityCommandBuffer ecb)
+    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
     {
         //Update the score and lossstreak of the correct teams
-        if (team == TimoteeTeam.Corporation)
+        if (team == TeamSideType.Corpo)
         {
             component.ValueRW.corporationScore++;
             component.ValueRW.corporationLossStreak = 0;
@@ -133,7 +127,7 @@ public partial struct RoundSystemServer : ISystem
             if (component.ValueRW.nativeLossStreak < component.ValueRW.maxStreakCount)
                 component.ValueRW.nativeLossStreak++;
         }
-        else
+        else if (team == TeamSideType.Natif)
         {
             component.ValueRW.nativeScore++;
             component.ValueRW.nativeLossStreak = 0;
@@ -164,13 +158,13 @@ public partial struct RoundSystemServer : ISystem
         //Update the score accordingly
         if (component.ValueRW.currentPhase == RoundPhase.ActionPhase)
         {
-            Victory(ref state, entity, component, TimoteeTeam.Natives, ecb);
+            Victory(ref state, entity, component, TeamSideType.Natif, ecb);
             component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
         }
         else
         {
             if (component.ValueRW.currentPhase == RoundPhase.PostPlantPhase)
-                Victory(ref state, entity, component, TimoteeTeam.Corporation, ecb);
+                Victory(ref state, entity, component, TeamSideType.Corpo, ecb);
             component.ValueRW.currentPhase++;
         }
 
