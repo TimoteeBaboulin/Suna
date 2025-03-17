@@ -21,6 +21,8 @@ public struct CharacterComponent : IComponentData
     [GhostField] public float2 horizontalDir;
     [GhostField] public float2 inertia;
 
+    [GhostField] public float linearDampingXZ;
+
     [GhostField] public float maxStepHeight;
 
     [GhostField] public float jumpForce;
