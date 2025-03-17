@@ -2,77 +2,161 @@ using UnityEngine;
 
 public class TestShootRecoil : MonoBehaviour
 {
-    public TestPlayerViewRotation tpvr;
-    public GameObject impactGo;
+    public TestCameraPivotRecoil patternAffectRotationScript;
+    public GameObject impactPrefab;
 
-    [Range(0, 7f)] public float recoilAmountY;
-    [Range(0, 3f)] public float recoilAmountX;
+    public int roundsPerMinutes = 1;
 
-    public int roundPerSeconds = 1;
-
-    public float waitTillNextFire;
+    public float timeTillNextFire;
+    [Range(.01f, 2f)] public float timeSinceLastFireMax = .7f;
+    public float timeSinceLastFire = 0f;
     public float currentRecoilXPos;
     public float currentRecoilYPos;
 
-    [Range(0, 10f)] public float maxRecoilTime = 4;
+    public float accuracy = .5f;
 
-    public float timePressed;
+    public int bulletIndex = 0;
+
+    public float timePressed = 0f;
 
     private void Update()
     {
-        firing();
+        Firing();
     }
 
-    public void RecoilMath()
+    public void RecoilMath(float targetDistance = 0f)
     {
-        //float amplifier = 10;
-        //currentRecoilXPos = ((Random.value - .5f) / 2) * recoilAmountX;
-        //currentRecoilYPos = ((Random.value - .5f) / 2) * (timePressed >= maxRecoilTime ? recoilAmountY / 4 : recoilAmountY);
-        //tpvr.wantedCameraXRotation -= Mathf.Abs(currentRecoilYPos) * amplifier * Time.deltaTime;
-        //tpvr.wantedYRotation -= currentRecoilXPos * amplifier * Time.deltaTime;
+        Vector2 pattern = TPattern(bulletIndex, accuracy, targetDistance);
 
-
-
-        //float speed = 8;
-        //float amplifier = 100;
-
-        //float sine = Mathf.Sin(speed * timePressed);
-        //float cosine = Mathf.Cos(speed * timePressed);
-
-        //currentRecoilXPos = amplifier * speed * .125f * sine * sine * sine + amplifier * Mathf.Sin(speed * timePressed);
-        //currentRecoilYPos = amplifier * speed * .125f * cosine * cosine * cosine + amplifier * Mathf.Sin(speed * speed * timePressed);
-        //tpvr.wantedCameraXRotation -= currentRecoilYPos * Time.deltaTime;
-        //tpvr.wantedYRotation -= currentRecoilXPos * Time.deltaTime;
-
+        patternAffectRotationScript.patternAffectedCameraXRotation -= pattern.y;
+        patternAffectRotationScript.patternAffectedYRotation -= pattern.x;
     }
 
-    private void firing()
+    public Vector2 TPattern(int bulletIndex, float accuracy = 0f, float targetDistance = 0f)
     {
-        if (Input.GetMouseButton(0))
+        float currentRecoilXPos = 0f;
+        float currentRecoilYPos = 0f;
+
+        float amplifier = 10f;
+        int bulletCutPattern = 17;
+        if (bulletIndex < bulletCutPattern)
         {
-            fire();
-            timePressed += Time.deltaTime;
-            timePressed = timePressed >= maxRecoilTime ? maxRecoilTime : timePressed;
+            currentRecoilXPos = 0;
+            currentRecoilYPos = 10 / (float)bulletCutPattern;
         }
         else
         {
-            timePressed = 0;
+            currentRecoilXPos = 2.5f * Mathf.Cos(bulletIndex - bulletCutPattern);
+            currentRecoilYPos = 10 / (float)bulletCutPattern;
         }
-        waitTillNextFire -= roundPerSeconds * Time.deltaTime;
-        if (waitTillNextFire < 0) waitTillNextFire = -1f;
+
+        currentRecoilXPos *= 4f;
+        currentRecoilYPos *= 4f;
+
+        float randomTheta = Random.Range(0, 2f) * Mathf.PI;
+        float radius = Random.Range(0, accuracy * targetDistance * 3f / 100f);
+        currentRecoilXPos += Mathf.Cos(randomTheta) * radius;
+        currentRecoilYPos += Mathf.Sin(randomTheta) * radius;
+
+        currentRecoilYPos *= amplifier * Time.deltaTime;
+        currentRecoilXPos *= amplifier * Time.deltaTime;
+
+        return new(currentRecoilXPos, currentRecoilYPos);
+    }
+    public Vector2 InfinityPattern(int bulletIndex, float accuracy = 0f, float targetDistance = 0f)
+    {
+        float currentRecoilXPos = 0f;
+        float currentRecoilYPos = 0f;
+
+        float amplifier = 10f;
+        currentRecoilXPos = 8f * Mathf.Cos(2 * bulletIndex);
+        currentRecoilYPos = 8f * Mathf.Sin(bulletIndex);
+
+        currentRecoilXPos *= 4f;
+        currentRecoilYPos *= 4f;
+
+        float randomTheta = Random.Range(0, 2f) * Mathf.PI;
+        float radius = Random.Range(0, accuracy * targetDistance * 3f / 100f);
+        currentRecoilXPos += Mathf.Cos(randomTheta) * radius;
+        currentRecoilYPos += Mathf.Sin(randomTheta) * radius;
+
+        currentRecoilYPos *= amplifier * Time.deltaTime;
+        currentRecoilXPos *= amplifier * Time.deltaTime;
+
+        return new(currentRecoilXPos, currentRecoilYPos);
+    }
+    public Vector2 CirclePattern(int bulletIndex, float accuracy = 0f, float targetDistance = 0f)
+    {
+        float currentRecoilXPos = 0f;
+        float currentRecoilYPos = 0f;
+
+        float amplifier = 10f;
+        currentRecoilXPos = 8f * Mathf.Cos(bulletIndex);
+        currentRecoilYPos = 8f * Mathf.Sin(bulletIndex);
+
+        currentRecoilXPos *= 4f;
+        currentRecoilYPos *= 4f;
+
+        float randomTheta = Random.Range(0, 2f) * Mathf.PI;
+        float radius = Random.Range(0, accuracy * targetDistance * 3f / 100f);
+        currentRecoilXPos += Mathf.Cos(randomTheta) * radius;
+        currentRecoilYPos += Mathf.Sin(randomTheta) * radius;
+
+        currentRecoilYPos *= amplifier * Time.deltaTime;
+        currentRecoilXPos *= amplifier * Time.deltaTime;
+
+        return new(currentRecoilXPos, currentRecoilYPos);
     }
 
-    private void fire()
+    private void Firing()
     {
-        if (waitTillNextFire <= 0)
+        if (Input.GetMouseButton(0))
         {
-            RecoilMath();
+            Fire();
+            timePressed += Time.deltaTime;
+            patternAffectRotationScript.isFiring = true;
+        }
+        else
+        {
+            currentRecoilXPos = 0f;
+            currentRecoilYPos = 0f;
+            timePressed = 0f;
+            patternAffectRotationScript.isFiring = false;
+        }
+        timeSinceLastFire += Time.deltaTime;
+        timeTillNextFire -= roundsPerMinutes / 60f * Time.deltaTime;
 
-            waitTillNextFire = 1;
+        if (timeTillNextFire < 0)
+        {
+            timeTillNextFire = -1f;
+        }
 
-            if (Physics.Raycast(transform.position, tpvr.theCamera.forward, out RaycastHit hit, 10f))
+        if (timeSinceLastFire > timeSinceLastFireMax)
+        {
+            bulletIndex = 0;
+        }
+    }
+
+    private void Fire()
+    {
+        if (timeTillNextFire <= 0)
+        {
+
+            timeTillNextFire = 1;
+
+            timeSinceLastFire = 0f;
+
+            bulletIndex++;
+
+            if (Physics.Raycast(transform.position, patternAffectRotationScript.camTransform.forward, out RaycastHit hit, 100f))
             {
-                Instantiate(impactGo, hit.point, Quaternion.identity);
+                Instantiate(impactPrefab, hit.point, Quaternion.identity);
+                RecoilMath(hit.distance);
+            }
+            else
+            {
+
+                RecoilMath();
             }
         }
     }

@@ -12,8 +12,8 @@ public class TestPlayerViewRotation : MonoBehaviour
     public float yRotationSpeed = 0f;
     public float xCameraSpeed = 0;
 
-    [HideInInspector] public float wantedYRotation = 0f;
     [HideInInspector] public float currentYRotation = 0f;
+    [HideInInspector] public float wantedYRotation = 0f;
 
     [HideInInspector] public float currentCameraXRotation = 0f;
     [HideInInspector] public float wantedCameraXRotation = 0f;
@@ -26,10 +26,10 @@ public class TestPlayerViewRotation : MonoBehaviour
 
     private void Update()
     {
-        mouseControl();
+        MouseControl();
     }
 
-    private void mouseControl()
+    private void MouseControl()
     {
         wantedYRotation += Input.GetAxis("Mouse X") * mouseSensitivity;
         wantedCameraXRotation -= Input.GetAxis("Mouse Y") * mouseSensitivity;
