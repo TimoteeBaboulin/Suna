@@ -20,7 +20,7 @@ public partial struct ShootSystem : ISystem
     {
         state.RequireForUpdate<PhysicsWorldSingleton>();
         state.RequireForUpdate<NetworkTime>();
-        state.RequireForUpdate<WeaponOwner>();
+        state.RequireForUpdate<StuffOwner>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -34,8 +34,8 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (dynamicDataRef, commonDataRef, ownerRef, animStateRef, weapon) in SystemAPI
-        .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponDataRef, RefRO<WeaponOwner>, RefRW<WeaponAnimationState>>()
+        foreach (var (dynamicDataRef, commonData, ownerRef, animStateRef, weapon) in SystemAPI
+        .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponCommonData, RefRO<StuffOwner>, RefRW<WeaponAnimationState>>()
         .WithAll<StuffInHandTag>()
         .WithEntityAccess())
         {
@@ -43,7 +43,6 @@ public partial struct ShootSystem : ISystem
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref WeaponAnimationState animState = ref animStateRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
-            RangedWeaponData commonData = commonDataRef.Value;
 
             //Recuperation Input joueur
             if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;

@@ -1,15 +1,77 @@
+using System;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Entities.Serialization;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 
-public class RangedWeaponDataRef : IComponentData
+[GhostComponent]
+public struct StuffInfos : ISharedComponentData, IEquatable<StuffInfos>
 {
-    public RangedWeaponData Value;
+    [GhostField] public FixedString64Bytes name;
+    //[GhostField] public Image UIImage;
+    [GhostField] public StuffType type;
+    [GhostField] public TeamSideType side;
+    [GhostField] public float deploymentSpeed;
+    [GhostField] public float storageSpeed;
+    [GhostField] public int price;
+    public bool Equals(StuffInfos other)
+    {
+        return name.Equals(other.name);
+    }
+
+    public override int GetHashCode()
+    {
+        return name.GetHashCode();
+    }
 }
 
 [GhostComponent]
-public struct WeaponOwner : IComponentData
+public struct RangedWeaponCommonData : ISharedComponentData
+{
+    [GhostField] public float2 recoil;
+
+    [GhostField] public float range;
+    [GhostField] public float firerate;
+    [GhostField] public float spread;
+    [GhostField] public float spreadAiming;
+    [GhostField] public float coefSpray;
+    [GhostField] public float coefSprayAiming;
+    [GhostField] public float ergonomics;
+    [GhostField] public float roundsPerMin;
+    [GhostField] public float dmgFallOff;
+    [GhostField] public float coefModifMoveSpeed;
+    [GhostField] public float coefModifMoveSpeedAiming;
+    [GhostField] public float reloadSpeed;
+    [GhostField] public float fastReloadSpeed;
+    [GhostField] public float knockbackForceOnKill;
+
+    [GhostField] public int damage;
+    [GhostField] public int nbMagazine;
+    [GhostField] public int magazineCapacity;
+
+    //public ScopeData scope;
+    //public HandleData handle;
+    //public CrossData cross;
+    //public SilencerData silencer;
+    //public MagazineData magazine;
+
+    //public float thorax;
+    //public float stomach;
+    //public float legs_Arms;
+    //public float head;
+
+    //public GameObject ammoType;
+}
+
+//public class RangedWeaponDataRef : IComponentData
+//{
+//    public RangedWeaponData Value;
+//}
+
+[GhostComponent]
+public struct StuffOwner : IComponentData
 {
     [GhostField] public Entity Value;
 }
@@ -28,18 +90,49 @@ public class RangedWeaponAuthoring : MonoBehaviour
 
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
+            AddSharedComponent(entity, new StuffInfos
+            {
+                name = new FixedString64Bytes(data.entityName),
+                price = data.price,
+                type = data.type,
+                side = data.side,
+                deploymentSpeed = data.deploymentSpeed,
+                storageSpeed = data.storageSpeed
+            });
+
+            AddSharedComponent(entity, new RangedWeaponCommonData
+            {
+                recoil = data.recoil,
+                damage = data.damage,
+                range = data.range,
+                spread = data.spread,
+                spreadAiming = data.spreadAiming,
+                coefSpray = data.coefSpray,
+                coefSprayAiming = data.coefSprayAiming,
+                ergonomics = data.ergonomics,
+                roundsPerMin = data.roundsPerMin,
+                dmgFallOff = data.dmgFallOff,
+                coefModifMoveSpeed = data.coefModifMoveSpeed,
+                coefModifMoveSpeedAiming = data.coefModifMoveSpeedAiming,
+                reloadSpeed = data.reloadSpeed,
+                fastReloadSpeed = data.fastReloadSpeed,
+                knockbackForceOnKill = data.knockbackForceOnKill,
+                nbMagazine = data.nbMagazine,
+                magazineCapacity = data.magazineCapacity,
+            });
+
             AddComponent(entity, new RangedWeaponDynamicData
             {
                 currentAmmo = data.magazineCapacity + 1, // 1 = bullet in chamber
                 remainingAmmo = data.magazineCapacity * (data.nbMagazine - 1),
             });
 
-            AddComponentObject(entity, new RangedWeaponDataRef
-            {
-                Value = data,
-            });
+            //AddComponentObject(entity, new RangedWeaponDataRef
+            //{
+            //    Value = data,
+            //});
 
-            AddComponent(entity, new WeaponOwner());
+            AddComponent(entity, new StuffOwner());
             //AddComponent<IsActiveWeapon>(entity);
         }
     }

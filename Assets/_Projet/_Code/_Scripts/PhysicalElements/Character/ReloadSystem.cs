@@ -11,7 +11,7 @@ public partial struct ReloadSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkTime>();
-        state.RequireForUpdate<WeaponOwner>();
+        state.RequireForUpdate<StuffOwner>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -25,8 +25,8 @@ public partial struct ReloadSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (dynamicDataRef, commonDataRef, ownerRef, weapon) in SystemAPI
-        .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponDataRef, RefRO<WeaponOwner>>()
+        foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
+        .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponCommonData, RefRO<StuffOwner>>()
         .WithAll<StuffInHandTag>()
         .WithAll<Simulate>()
         .WithEntityAccess())
@@ -34,11 +34,12 @@ public partial struct ReloadSystem : ISystem
             //Simplification des components de l'arme
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
-            RangedWeaponData commonData = commonDataRef.Value;
 
             //Recuperation Input joueur
             if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
             ref CharacterInput input = ref inputRef.ValueRW;
+
+            //state.EntityManager.GetSharedComponent<RangedWeaponCommonData>(weapon);
 
             //Calcul du reloadTimer
             if (dynamicData.reloadTimer > 0)

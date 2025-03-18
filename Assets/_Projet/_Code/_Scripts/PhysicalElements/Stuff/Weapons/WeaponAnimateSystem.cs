@@ -29,7 +29,7 @@ partial struct WeaponAnimateSystem : ISystem
 
         //Attach to camera
         foreach (var (owner, animRef, entity) in SystemAPI
-           .Query<RefRO<WeaponOwner>, StuffAnimatorRef>()
+           .Query<RefRO<StuffOwner>, StuffAnimatorRef>()
            .WithAll<StuffInHandTag>()
            .WithEntityAccess())
         {

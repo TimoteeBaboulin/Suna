@@ -12,7 +12,7 @@ public partial struct SwitchStuffSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkTime>();
-        state.RequireForUpdate<WeaponOwner>();
+        state.RequireForUpdate<StuffOwner>();
     }
 
     public void OnUpdate(ref SystemState state)

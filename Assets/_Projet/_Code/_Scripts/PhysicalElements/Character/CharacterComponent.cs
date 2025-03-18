@@ -62,7 +62,7 @@ public struct CharacterClientAttachedComponent : IComponentData
     [GhostField] public Entity ClientEntity;
 }
 
-public struct CharacterWeaponPrefab : IComponentData
+public struct CharacterStuffPrefab : IComponentData
 {
     public Entity MainWeaponPrefab;
     public Entity SecondWeaponPrefab;

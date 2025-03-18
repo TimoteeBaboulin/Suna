@@ -56,7 +56,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
-            AddComponent(entity, new CharacterWeaponPrefab
+            AddComponent(entity, new CharacterStuffPrefab
             {
                 MainWeaponPrefab = GetEntity(cca.mainWeaponPrefab, TransformUsageFlags.Dynamic),
                 SecondWeaponPrefab = GetEntity(cca.secondWeaponPrefab, TransformUsageFlags.Dynamic),
