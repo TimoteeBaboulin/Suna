@@ -16,7 +16,7 @@ partial struct WeaponAnimateSystem : ISystem
         foreach (var (weaponViewPrefab, entity) in SystemAPI
             .Query<WeaponViewPrefab>()
             .WithNone<StuffAnimatorRef>()
-            .WithAll<StuffInHandTag>()
+            .WithPresent<IsStuffInHand>()
             .WithEntityAccess())
         {
             GameObject newGameObject = Object.Instantiate(weaponViewPrefab.GameObjectPrefab);
@@ -30,7 +30,7 @@ partial struct WeaponAnimateSystem : ISystem
         //Attach to camera
         foreach (var (owner, animRef, entity) in SystemAPI
            .Query<RefRO<StuffOwner>, StuffAnimatorRef>()
-           .WithAll<StuffInHandTag>()
+           .WithPresent<IsStuffInHand>()
            .WithEntityAccess())
         {
             if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
@@ -52,7 +52,7 @@ partial struct WeaponAnimateSystem : ISystem
         //FireAnim
         foreach (var (animatorRef, animStateRef) in SystemAPI
            .Query<StuffAnimatorRef, RefRW<WeaponAnimationState>>()
-           .WithAll<StuffInHandTag>())
+           .WithPresent<IsStuffInHand>())
         {
             ref WeaponAnimationState animState = ref animStateRef.ValueRW;
             if (animState.IsFire)
@@ -61,6 +61,12 @@ partial struct WeaponAnimateSystem : ISystem
                 //TODO :Je ne peux pas false la variable IsFire ici car c'est un GhostComponent
                 // Si je retire le ghost, je ne peux plus la déclenché dans le shoot system car il est managé par le serveur
             }
+        }
+
+        foreach (var (animatorRef, stuff) in SystemAPI
+            .Query<StuffAnimatorRef>().WithEntityAccess())
+        {
+            animatorRef.Animator.gameObject.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(stuff));
         }
 
         //Clear Weapon View

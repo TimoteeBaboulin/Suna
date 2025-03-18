@@ -76,6 +76,9 @@ public struct StuffOwner : IComponentData
     [GhostField] public Entity Value;
 }
 
+[GhostEnabledBit]
+public struct IsStuffInHand : IComponentData, IEnableableComponent { }
+
 public class RangedWeaponAuthoring : MonoBehaviour
 {
     [Header("Weapon Data")]
@@ -127,13 +130,10 @@ public class RangedWeaponAuthoring : MonoBehaviour
                 remainingAmmo = data.magazineCapacity * (data.nbMagazine - 1),
             });
 
-            //AddComponentObject(entity, new RangedWeaponDataRef
-            //{
-            //    Value = data,
-            //});
-
             AddComponent(entity, new StuffOwner());
-            //AddComponent<IsActiveWeapon>(entity);
+
+            AddComponent<IsStuffInHand>(entity);
+            SetComponentEnabled<IsStuffInHand>(entity, false);
         }
     }
 }

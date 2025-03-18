@@ -2,11 +2,10 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public struct WaitForInstanciateWeaponsTag : IComponentData { }
 
-[GhostComponent]
-public struct StuffInHandTag : IComponentData { }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CharacterWeaponSystem : ISystem
@@ -31,8 +30,8 @@ partial struct CharacterWeaponSystem : ISystem
             ref readonly CharacterStuffPrefab prefabs = ref prefabsRef.ValueRO;
             ref CharacterStuffList weaponsList = ref stuffListRef.ValueRW;
 
-            //InstanciateStuff(ecb, prefabs.MeleeWeaponPrefab, chara, ref state, ref weaponsList, StuffType.Melee);
-            //InstanciateStuff(ecb, prefabs.SecondWeaponPrefab, chara, ref state, ref weaponsList, StuffType.SecondaryWeapon);
+            InstanciateStuff(ecb, prefabs.MeleeWeaponPrefab, chara, ref state, ref weaponsList, StuffType.Melee);
+            InstanciateStuff(ecb, prefabs.SecondWeaponPrefab, chara, ref state, ref weaponsList, StuffType.SecondaryWeapon);
             InstanciateStuff(ecb, prefabs.MainWeaponPrefab, chara, ref state, ref weaponsList, StuffType.MainWeapon);
 
             ecb.RemoveComponent<WaitForInstanciateWeaponsTag>(chara);
@@ -86,15 +85,30 @@ partial struct ProcessPendingStuffSystem : ISystem
             weaponsList.ValueRW.List[(int)stuffInfos.type] = stuff;
 
             StuffType stuffInHandType = SystemAPI.GetComponent<CharacterStuffInHandType>(owner.ValueRO.Value).Value;
-            ecb.AddComponent(weaponsList.ValueRW.List[(int)stuffInHandType], new StuffInHandTag()); //TODO : Duplicate
 
+        }
+
+        foreach (var (ownerRef, stuffInfos, stuff) in SystemAPI
+            .Query<RefRO<StuffOwner>, StuffInfos>()
+            .WithDisabled<IsStuffInHand>()
+            .WithEntityAccess())
+        {
+            if (ownerRef.ValueRO.Value != Entity.Null)
+            {
+                CharacterStuffInHandType stuffInHandType = state.EntityManager.GetComponentData<CharacterStuffInHandType>(ownerRef.ValueRO.Value);
+                var weaponsList = SystemAPI.GetComponentRW<CharacterStuffList>(ownerRef.ValueRO.Value);
+
+                if (stuffInfos.type == stuffInHandType.Value)
+                {
+                    ecb.SetComponentEnabled<IsStuffInHand>(weaponsList.ValueRW.List[(int)stuffInHandType.Value], true);
+                }
+            }
             ecb.RemoveComponent<PendingStuffTag>(stuff);
         }
     }
 }
 
 //[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-////TODO : Probleme de tick @Leonnel
 //partial struct CharacterSetActiveStuff : ISystem
 //{
 //    public void OnUpdate(ref SystemState state)

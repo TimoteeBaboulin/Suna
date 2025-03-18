@@ -33,33 +33,28 @@ public partial struct SwitchStuffSystem : ISystem
             //Simplification des components de l'arme
             ref readonly CharacterInput input = ref inputRef.ValueRO;
             ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
-            ref CharacterStuffInHandType activeStuff = ref activeStuffRef.ValueRW;
-
-            if (stuffList.List[0] == Entity.Null) continue; //TEMP
+            ref CharacterStuffInHandType stuffInHandType = ref activeStuffRef.ValueRW;
 
             if (input.selectNext.IsSet)
             {
-                Debug.Log("Switch to Weapon up");
-                Entity previousStuff = stuffList.List[(int)activeStuff.Value];
-                ecb.RemoveComponent<StuffInHandTag>(previousStuff);
-                ecb.RemoveComponent<WeaponViewPrefab>(previousStuff);
-                StuffAnimatorRef stuffAnimator = state.EntityManager.GetComponentData<StuffAnimatorRef>(previousStuff);
-                stuffAnimator.Animator.gameObject.SetActive(false);
+                Entity previousStuff = stuffList.List[(int)stuffInHandType.Value];
+                ecb.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
-                activeStuff.Value++;
+                stuffInHandType.Value++;
 
-                Entity nextStuff = stuffList.List[(int)activeStuff.Value];
-                ecb.AddComponent(nextStuff, new StuffInHandTag());
-                stuffAnimator = state.EntityManager.GetComponentData<StuffAnimatorRef>(nextStuff);
-                stuffAnimator.Animator.gameObject.SetActive(true);
+                Entity nextStuff = stuffList.List[(int)stuffInHandType.Value];
+                ecb.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
 
             if (input.selectPrevious.IsSet)
             {
-                //Debug.Log("Switch to Weapon down");
-                //ecb.SetComponent(chara, new CharacterStuffInHandType { Value = stuffList.List.ElementAt(0) });
-                //ecb.AddComponent(stuffList.List.ElementAt(0), new ActiveWeaponTag());
-                //ecb.RemoveComponent<ActiveWeaponTag>(stuffList.List.ElementAt(1));
+                Entity previousStuff = stuffList.List[(int)stuffInHandType.Value];
+                ecb.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+
+                stuffInHandType.Value--;
+
+                Entity nextStuff = stuffList.List[(int)stuffInHandType.Value];
+                ecb.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
         }
     }
