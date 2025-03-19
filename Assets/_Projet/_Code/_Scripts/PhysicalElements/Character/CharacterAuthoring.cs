@@ -80,10 +80,10 @@ public sealed class CharacterAuthoring : MonoBehaviour
             });
             AddComponent(entity, new CharacterLocalViewRotation { ViewRotation = quaternion.identity });
 
-            CharacterStuffList weapons = new CharacterStuffList();
-            for (int i = 0; i < 3; i++) weapons.List.Add(Entity.Null);
-            AddComponent(entity, weapons);
-
+            CharacterStuffList stuff = new CharacterStuffList();
+            for (int i = 0; i < 8; i++) stuff.List.Add(Entity.Null);
+            AddComponent(entity, stuff);
+            
             AddComponent(entity, new CharacterStuffInHandType());
 
         }

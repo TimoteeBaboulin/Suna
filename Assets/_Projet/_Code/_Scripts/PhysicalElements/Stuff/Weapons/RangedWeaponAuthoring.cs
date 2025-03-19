@@ -16,6 +16,7 @@ public struct StuffInfos : ISharedComponentData, IEquatable<StuffInfos>
     [GhostField] public float deploymentSpeed;
     [GhostField] public float storageSpeed;
     [GhostField] public int price;
+
     public bool Equals(StuffInfos other)
     {
         return name.Equals(other.name);
@@ -64,11 +65,6 @@ public struct RangedWeaponCommonData : ISharedComponentData
 
     //public GameObject ammoType;
 }
-
-//public class RangedWeaponDataRef : IComponentData
-//{
-//    public RangedWeaponData Value;
-//}
 
 [GhostComponent]
 public struct StuffOwner : IComponentData
@@ -154,40 +150,4 @@ public class RangedWeaponAuthoring : MonoBehaviour
 //    cross = d.cross != null ? GetEntity(d.cross.prefab, TransformUsageFlags.Dynamic) : default,
 //    silencer = d.silencer != null ? GetEntity(d.silencer.prefab, TransformUsageFlags.Dynamic) : default,
 //    magazine = d.magazine != null ? GetEntity(d.magazine.prefab, TransformUsageFlags.Dynamic) : default,
-//});
-
-//AddComponent(entity, new StuffInfosComponent
-//{
-//    entityName = d.entityName,
-//    price = d.price,
-//    type = d.type,
-//    side = d.side,
-//    deploymentSpeed = d.deploymentSpeed,
-//    storageSpeed = d.storageSpeed
-//});
-
-//AddComponent(entity, new RangedWeaponComponent
-//{
-//    recoil = d.recoil,
-//    damage = d.damage,
-//    range = d.range,
-//    spread = d.spread,
-//    spreadAiming = d.spreadAiming,
-//    coefSpray = d.coefSpray,
-//    coefSprayAiming = d.coefSprayAiming,
-//    ergonomics = d.ergonomics,
-//    roundsPerMin = d.roundsPerMin,
-//    dmgFallOff = d.dmgFallOff,
-//    coefModifMoveSpeed = d.coefModifMoveSpeed,
-//    coefModifMoveSpeedAiming = d.coefModifMoveSpeedAiming,
-//    reloadSpeed = d.reloadSpeed,
-//    fastReloadSpeed = d.fastReloadSpeed,
-//    knockbackForceOnKill = d.knockbackForceOnKill,
-//    nbMagazine = d.nbMagazine,
-//    magazineCapacity = d.magazineCapacity,
-
-//    thorax = d.thorax,
-//    stomach = d.stomach,
-//    legs_Arms = d.stomach,
-//    head = d.head
 //});

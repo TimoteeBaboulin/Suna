@@ -73,8 +73,8 @@ partial struct ProcessPendingStuffSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecbEnd = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (owner, stuffInfos, stuff) in SystemAPI
             .Query<RefRO<StuffOwner>, StuffInfos>()
@@ -85,7 +85,6 @@ partial struct ProcessPendingStuffSystem : ISystem
             weaponsList.ValueRW.List[(int)stuffInfos.type] = stuff;
 
             StuffType stuffInHandType = SystemAPI.GetComponent<CharacterStuffInHandType>(owner.ValueRO.Value).Value;
-
         }
 
         foreach (var (ownerRef, stuffInfos, stuff) in SystemAPI
@@ -100,38 +99,10 @@ partial struct ProcessPendingStuffSystem : ISystem
 
                 if (stuffInfos.type == stuffInHandType.Value)
                 {
-                    ecb.SetComponentEnabled<IsStuffInHand>(weaponsList.ValueRW.List[(int)stuffInHandType.Value], true);
+                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(weaponsList.ValueRW.List[(int)stuffInHandType.Value], true);
                 }
             }
-            ecb.RemoveComponent<PendingStuffTag>(stuff);
+            ecbEnd.RemoveComponent<PendingStuffTag>(stuff);
         }
     }
 }
-
-//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-//partial struct CharacterSetActiveStuff : ISystem
-//{
-//    public void OnUpdate(ref SystemState state)
-//    {
-//        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-
-//        foreach (var (ownerRef, rangedWeaponDataRef, weapon) in SystemAPI
-//            .Query<RefRO<WeaponOwner>, RangedWeaponDataRef>()
-//            .WithAbsent<StuffInHandTag>()
-//            .WithEntityAccess())
-//        {
-//            if (ownerRef.ValueRO.Value != Entity.Null)
-//            {
-//                CharacterStuffInHandType stuffInHandType = state.EntityManager.GetComponentData<CharacterStuffInHandType>(ownerRef.ValueRO.Value);
-
-//                if (rangedWeaponDataRef.Value.type == stuffInHandType.Value)
-//                {
-//                    ecb.AddComponent(weapon, new StuffInHandTag());
-//                }
-//            }
-//        }
-
-//        ecb.Playback(state.EntityManager);
-//        ecb.Dispose();
-//    }
-//}

@@ -23,8 +23,6 @@ public partial struct SwitchStuffSystem : ISystem
 
         float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (stuffListRef, activeStuffRef, inputRef, chara) in SystemAPI
         .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandType>, RefRO<CharacterInput>>()
@@ -38,24 +36,57 @@ public partial struct SwitchStuffSystem : ISystem
             if (input.selectNext.IsSet)
             {
                 Entity previousStuff = stuffList.List[(int)stuffInHandType.Value];
-                ecb.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+                Debug.Log(stuffList.List[(int)stuffInHandType.Value] + "  " + stuffInHandType.Value); //TODO : Fixe Rare error
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
-                stuffInHandType.Value++;
+                int whileLimit = 0;
+                Entity nextStuff;
 
-                Entity nextStuff = stuffList.List[(int)stuffInHandType.Value];
-                ecb.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                do
+                {
+                    stuffInHandType.Value++;
+
+                    if ((int)stuffInHandType.Value >= stuffList.List.Length)
+                    {
+                        stuffInHandType.Value = 0;
+                    }
+
+                    nextStuff = stuffList.List[(int)stuffInHandType.Value];
+
+                    whileLimit++;
+
+                } while (nextStuff == Entity.Null && whileLimit < stuffList.List.Length);
+
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
 
-            if (input.selectPrevious.IsSet)
+            else if (input.selectPrevious.IsSet)
             {
                 Entity previousStuff = stuffList.List[(int)stuffInHandType.Value];
-                ecb.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
-                stuffInHandType.Value--;
+                int whileLimit = 0;
+                Entity nextStuff;
 
-                Entity nextStuff = stuffList.List[(int)stuffInHandType.Value];
-                ecb.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                do
+                {
+                    stuffInHandType.Value--;
+
+                    if ((int)stuffInHandType.Value < 0)
+                    {
+                        stuffInHandType.Value = (StuffType)(stuffList.List.Length - 1);
+                    }
+
+                    nextStuff = stuffList.List[(int)stuffInHandType.Value];
+
+                    whileLimit++;
+
+                } while (nextStuff == Entity.Null && whileLimit < stuffList.List.Length);
+
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
+
+
         }
     }
 }
