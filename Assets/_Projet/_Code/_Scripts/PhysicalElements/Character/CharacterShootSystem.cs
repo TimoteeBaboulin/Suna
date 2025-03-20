@@ -1,32 +1,57 @@
+using NUnit.Framework;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Transforms;
 using UnityEngine;
 
 using RaycastHit = Unity.Physics.RaycastHit;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct HasHitComponent : IComponentData
+public struct HasServerConfirmation : IComponentData
 {
     [GhostField] public bool Value;
 }
 
+public struct ClosestHitComponent : IComponentData
+{
+    [GhostField] public Entity Entity;
+}
+
+public struct FireShot : IComponentData { }
+
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-public partial struct ShootSystem : ISystem
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
+public partial class WeaponPredictionUpdateGroup : ComponentSystemGroup
+{
+}
+
+[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateBefore(typeof(TransformSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+public partial class WeaponVisualsUpdateGroup : ComponentSystemGroup
+{
+}
+
+
+[UpdateInGroup(typeof(WeaponPredictionUpdateGroup), OrderFirst = true)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
+public partial struct CharacterShootCommonSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<PhysicsWorldSingleton>();
         state.RequireForUpdate<NetworkTime>();
+        state.RequireForUpdate<PhysicsWorldSingleton>();
+        state.RequireForUpdate<PhysicsWorldHistorySingleton>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
         //Eviter répétition sur le serveur du a la différence de framerate avec le client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        if (!networkTime.IsFirstPredictionTick) return;
+        if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
         float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
@@ -89,37 +114,47 @@ public partial struct ShootSystem : ISystem
                     };
 
                     NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+
                     if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
                     {
-                        if (allHits.Length == 1 && allHits[0].Entity == shooter) break; //Si la seule cible rencontrée est le joeur qui a tiré, on quite
+                        //TODO: Faire un layer de colision pour le joueur
+                        //Si la seule cible rencontrée est le joeur qui a tiré, on quite
+                        if (allHits.Length == 1 && allHits[0].Entity == shooter) break;
 
+                        RaycastHit closestHit = WeaponUtilities.GetClosestHit(allHits, shooter, raycastInput.Start);
+                        ecb.AddComponent(shooter, new ClosestHitComponent { Entity = closestHit.Entity });
+                        Debug.Log("add");
+                        #region Temp
                         //Raycast récupére les hit dans le mauvais ordre, il faut les triers en fonction de la distance
-                        RaycastHit closestHit = allHits[0];
-                        float closestDist = weaponData.range;
-                        foreach (RaycastHit hit in allHits)
-                        {
-                            if (hit.Entity == shooter) continue;
+                        //RaycastHit closestHit = allHits[0];
+                        //float closestDist = weaponData.range;
+                        //foreach (RaycastHit hit in allHits)
+                        //{
+                        //    if (hit.Entity == shooter) continue;
 
-                            float currentDist = math.distancesq(raycastInput.Start, hit.Position);
+                        //    float currentDist = math.distancesq(raycastInput.Start, hit.Position);
 
-                            if (currentDist < closestDist)
-                            {
-                                closestHit = hit;
-                                closestDist = currentDist;
-                            }
-                        }
+                        //    if (currentDist < closestDist)
+                        //    {
+                        //        closestHit = hit;
+                        //        closestDist = currentDist;
+                        //    }
+                        //}
 
                         //Applique les degats au joueur cible
-                        if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
-                        {
-                            ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = weaponData.damage });
-                            ecb.SetComponent(shooter, new HasHitComponent { Value = true });
-                        }
+                        //if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
+                        //{
+                        //    ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = weaponData.damage });
+                        //    ecb.SetComponent(shooter, new HasHitComponent { Value = true });
+                        //    Debug.LogError("pop");
+                        //}
+                        #endregion
                     }
-
-                    weaponDynData.firerateTimer += weaponData.firerate;
-                    weaponDynData.ammo--;
-                    Debug.Log("Ammo " + weaponDynData.ammo);
+                    //Debug.Log("add fire shot ");
+                    //ecb.AddComponent(shooter, new FireShot());
+                    //weaponDynData.firerateTimer += weaponData.firerate;
+                    //weaponDynData.ammo--;
+                    //Debug.Log("Ammo " + weaponDynData.ammo);
 
                     Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
                 }
@@ -132,8 +167,25 @@ public partial struct ShootSystem : ISystem
             else
             {
                 animState.IsFire = false;
+            }
+        }
 
-                ecb.SetComponent(shooter, new HasHitComponent { Value = false });
+        foreach (var (serverConfirmation, weaponRO) in SystemAPI.Query<HasServerConfirmation, RefRO<CharacterDefaultWeapon>>())
+        {
+            ref readonly Entity weapon = ref weaponRO.ValueRO.Value;
+            if (state.EntityManager.HasComponent<RangedWeaponDynamicData>(weapon) &&
+                state.EntityManager.HasComponent<RangedWeaponDataRef>(weapon))
+            {
+                RefRW<RangedWeaponDynamicData> weaponDynDataRW = SystemAPI.GetComponentRW<RangedWeaponDynamicData>(weapon);
+                ref RangedWeaponDynamicData weaponDynData = ref weaponDynDataRW.ValueRW;
+                RangedWeaponData weaponData = state.EntityManager.GetComponentData<RangedWeaponDataRef>(weapon).Value;
+
+                if (serverConfirmation.Value == true)
+                {
+                    weaponDynData.firerateTimer += weaponData.firerate;
+                    weaponDynData.ammo--;
+                    Debug.Log("Ammo " + weaponDynData.ammo);
+                }
             }
         }
     }
@@ -154,6 +206,65 @@ public partial struct ShootSystem : ISystem
         return false;
     }
 }
+
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+public partial struct CharacterShootClientSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<PhysicsWorldSingleton>();
+        state.RequireForUpdate<NetworkTime>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        //if ()
+        //{
+
+        //}
+    }
+}
+
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct CharacterShootServerSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<PhysicsWorldSingleton>();
+        state.RequireForUpdate<NetworkTime>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+
+        foreach (var (weapon, hasHit, shooterEntity) in SystemAPI
+            .Query<RefRO<CharacterDefaultWeapon>, RefRW<HasServerConfirmation>>()
+            .WithEntityAccess())
+        {
+            hasHit.ValueRW.Value = false;
+
+            if (state.EntityManager.HasComponent<ClosestHitComponent>(shooterEntity))
+            {
+                Entity closestHit = SystemAPI.GetComponent<ClosestHitComponent>(shooterEntity).Entity;
+                if (state.EntityManager.HasComponent<DamageBufferElement>(closestHit)
+                        && state.EntityManager.HasComponent<RangedWeaponDataRef>(weapon.ValueRO.Value))
+                {
+                    RangedWeaponData weaponData = state.EntityManager.GetComponentData<RangedWeaponDataRef>(weapon.ValueRO.Value).Value;
+                    ecb.AppendToBuffer(closestHit, new DamageBufferElement { Value = weaponData.damage });
+                    hasHit.ValueRW.Value = true;
+                }
+
+                ecb.RemoveComponent<ClosestHitComponent>(shooterEntity);
+            }
+        }
+    }
+}
+
 
 //[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 //public partial struct ShootSystem : ISystem

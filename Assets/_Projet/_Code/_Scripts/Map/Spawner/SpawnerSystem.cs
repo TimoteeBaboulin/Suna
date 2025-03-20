@@ -11,7 +11,7 @@ public struct ResetStuffTag : IComponentData { }
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct OnDieSystem : ISystem
 {
-    [BurstCompile]
+    //[BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
@@ -19,7 +19,7 @@ public partial struct OnDieSystem : ISystem
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         ComponentLookup<HasNoHealthTag> hasNoHealthTagLookup = SystemAPI.GetComponentLookup<HasNoHealthTag>();
@@ -41,7 +41,7 @@ public partial struct OnDieSystem : ISystem
     }
 }
 
-[BurstCompile]
+//[BurstCompile]
 [WithAll(typeof(CurrentHealthComponent), typeof(Simulate))]
 public partial struct OnDieJob : IJobEntity
 {
@@ -75,7 +75,7 @@ public partial struct RespawnSystem : ISystem
     ComponentLookup<LocalTransform> respawnPtLookupInit;
     ComponentLookup<ResetStuffTag> resetStuffLookupInit;
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
@@ -129,7 +129,6 @@ public partial struct RespawnSystem : ISystem
             //LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
 
             int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
-
             //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
             if (!state.EntityManager.Exists(characterEntity))

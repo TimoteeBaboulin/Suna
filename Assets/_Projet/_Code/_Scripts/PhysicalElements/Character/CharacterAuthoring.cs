@@ -63,7 +63,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterTag()); //Multiplayer
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
-            AddComponent(entity, new HasHitComponent { Value = false });
+            AddComponent(entity, new HasServerConfirmation { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
             AddComponent(entity, new WaitForInstanciateDefaultWeapon { });
 
