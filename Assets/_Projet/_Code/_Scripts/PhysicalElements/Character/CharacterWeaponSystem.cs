@@ -76,31 +76,18 @@ partial struct ProcessPendingStuffSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecbEnd = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (owner, stuffInfos, stuff) in SystemAPI
+        foreach (var (ownerRef, stuffInfos, stuff) in SystemAPI
             .Query<RefRO<StuffOwner>, StuffInfos>()
             .WithAll<PendingStuffTag>()
             .WithEntityAccess())
         {
-            var weaponsList = SystemAPI.GetComponentRW<CharacterStuffList>(owner.ValueRO.Value);
-            weaponsList.ValueRW.List[(int)stuffInfos.type] = stuff;
+            var weaponsList = SystemAPI.GetComponentRW<CharacterStuffList>(ownerRef.ValueRO.Value);
+            weaponsList.ValueRW.Value[(int)stuffInfos.type] = stuff;
 
-            StuffType stuffInHandType = SystemAPI.GetComponent<CharacterStuffInHandType>(owner.ValueRO.Value).Value;
-        }
-
-        foreach (var (ownerRef, stuffInfos, stuff) in SystemAPI
-            .Query<RefRO<StuffOwner>, StuffInfos>()
-            .WithDisabled<IsStuffInHand>()
-            .WithEntityAccess())
-        {
-            if (ownerRef.ValueRO.Value != Entity.Null)
+            StuffType stuffInHandType = state.EntityManager.GetComponentData<CharacterStuffInHandType>(ownerRef.ValueRO.Value).Value;
+            if (stuffInfos.type == stuffInHandType)
             {
-                CharacterStuffInHandType stuffInHandType = state.EntityManager.GetComponentData<CharacterStuffInHandType>(ownerRef.ValueRO.Value);
-                var weaponsList = SystemAPI.GetComponentRW<CharacterStuffList>(ownerRef.ValueRO.Value);
-
-                if (stuffInfos.type == stuffInHandType.Value)
-                {
-                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(weaponsList.ValueRW.List[(int)stuffInHandType.Value], true);
-                }
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(weaponsList.ValueRW.Value[(int)stuffInHandType], true);
             }
             ecbEnd.RemoveComponent<PendingStuffTag>(stuff);
         }

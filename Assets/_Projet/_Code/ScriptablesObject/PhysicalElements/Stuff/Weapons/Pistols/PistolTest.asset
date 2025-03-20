@@ -21,9 +21,9 @@ MonoBehaviour:
   deploymentSpeed: 0
   storageSpeed: 0
   recoil: {x: 0, y: 0}
-  damage: 0
-  range: 0
-  firerate: 0
+  damage: 12
+  range: 20
+  firerate: 0.5
   spread: 0
   spreadAiming: 0
   coefSpray: 0
@@ -33,11 +33,11 @@ MonoBehaviour:
   dmgFallOff: 0
   coefModifMoveSpeed: 0
   coefModifMoveSpeedAiming: 0
-  reloadSpeed: 0
-  fastReloadSpeed: 0
+  reloadSpeed: 1
+  fastReloadSpeed: 0.5
   knockbackForceOnKill: 0
-  nbMagazine: 0
-  magazineCapacity: 0
+  nbMagazine: 6
+  magazineCapacity: 12
   scope: {fileID: 0}
   handle: {fileID: 0}
   cross: {fileID: 0}

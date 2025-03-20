@@ -27,8 +27,7 @@ public partial struct ReloadSystem : ISystem
 
         foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
         .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponCommonData, RefRO<StuffOwner>>()
-        .WithAll<Simulate>()
-        .WithPresent<IsStuffInHand>()
+        .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
             //Simplification des components de l'arme

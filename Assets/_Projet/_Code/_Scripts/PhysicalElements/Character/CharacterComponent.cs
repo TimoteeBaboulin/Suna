@@ -72,7 +72,7 @@ public struct CharacterStuffPrefab : IComponentData
 [GhostComponent]
 public struct CharacterStuffList : IComponentData
 {
-    [GhostField] public FixedList128Bytes<Entity> List;
+    [GhostField] public FixedList128Bytes<Entity> Value;
 }
 
 [GhostComponent]

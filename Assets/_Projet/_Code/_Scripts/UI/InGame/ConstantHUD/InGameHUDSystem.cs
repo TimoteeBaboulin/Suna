@@ -29,8 +29,8 @@ partial class InGameHUDSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-        foreach (var (currentHealth, hasHit, stuffInHandRef, stuffLListRef) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandType>, RefRO<CharacterStuffList>> ()
+        foreach (var (currentHealth, hasHit, stuffInHandTypeRef, stuffListRef) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandType>, RefRO<CharacterStuffList>>()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = currentHealth.ValueRO.Value });
@@ -39,12 +39,15 @@ partial class InGameHUDSystem : SystemBase
             {
                 HitRegister?.Invoke(this, EventArgs.Empty);
             }
+        }
 
-            if (SystemAPI.HasComponent<RangedWeaponDynamicData>(stuffLListRef.ValueRO.List[(int)stuffInHandRef.ValueRO.Value]))
-            {
-                var weaponData = SystemAPI.GetComponent<RangedWeaponDynamicData>(stuffLListRef.ValueRO.List[(int)stuffInHandRef.ValueRO.Value]);
-                AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
-            }
+        foreach (var (weaponDataRef, stuff) in SystemAPI
+            .Query<RefRO<RangedWeaponDynamicData>>()
+            .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
+            .WithEntityAccess())
+        {
+            ref readonly RangedWeaponDynamicData weaponData = ref weaponDataRef.ValueRO;
+            AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
         }
     }
 }

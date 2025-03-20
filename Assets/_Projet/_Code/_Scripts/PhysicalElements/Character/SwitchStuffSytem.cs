@@ -33,10 +33,10 @@ public partial struct SwitchStuffSystem : ISystem
             ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
             ref CharacterStuffInHandType stuffInHandType = ref activeStuffRef.ValueRW;
 
-            if (input.selectNext.IsSet)
+            if (input.selectNext.IsSet && state.World.IsServer())
             {
-                Entity previousStuff = stuffList.List[(int)stuffInHandType.Value];
-                Debug.Log(stuffList.List[(int)stuffInHandType.Value] + "  " + stuffInHandType.Value); //TODO : Fixe Rare error
+                Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
+
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
                 int whileLimit = 0;
@@ -46,23 +46,23 @@ public partial struct SwitchStuffSystem : ISystem
                 {
                     stuffInHandType.Value++;
 
-                    if ((int)stuffInHandType.Value >= stuffList.List.Length)
+                    if ((int)stuffInHandType.Value >= stuffList.Value.Length)
                     {
                         stuffInHandType.Value = 0;
                     }
 
-                    nextStuff = stuffList.List[(int)stuffInHandType.Value];
+                    nextStuff = stuffList.Value[(int)stuffInHandType.Value];
 
                     whileLimit++;
 
-                } while (nextStuff == Entity.Null && whileLimit < stuffList.List.Length);
+                } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
 
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
 
-            else if (input.selectPrevious.IsSet)
+            else if (input.selectPrevious.IsSet && state.World.IsServer())
             {
-                Entity previousStuff = stuffList.List[(int)stuffInHandType.Value];
+                Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
                 int whileLimit = 0;
@@ -74,19 +74,17 @@ public partial struct SwitchStuffSystem : ISystem
 
                     if ((int)stuffInHandType.Value < 0)
                     {
-                        stuffInHandType.Value = (StuffType)(stuffList.List.Length - 1);
+                        stuffInHandType.Value = (StuffType)(stuffList.Value.Length - 1);
                     }
 
-                    nextStuff = stuffList.List[(int)stuffInHandType.Value];
+                    nextStuff = stuffList.Value[(int)stuffInHandType.Value];
 
                     whileLimit++;
 
-                } while (nextStuff == Entity.Null && whileLimit < stuffList.List.Length);
+                } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
 
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
-
-
         }
     }
 }
