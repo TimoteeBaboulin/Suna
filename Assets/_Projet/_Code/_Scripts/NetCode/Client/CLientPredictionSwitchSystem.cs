@@ -21,7 +21,6 @@ public partial class CLientPredictionSwitchSystem : SystemBase
         RequireForUpdate<BombData>();
         entitiesToPredicted = new NativeList<Entity>(initialCapacity: 10, Allocator.Persistent); //Here replace 10 by NbOfPlayers in session once created
         entitiesToInterporlated = new NativeList<Entity>(initialCapacity: 10, Allocator.Persistent); //Here replace 10 by NbOfPlayers in session once created
-
     }
 
     protected override void OnDestroy()
@@ -98,7 +97,7 @@ public partial class CLientPredictionSwitchSystem : SystemBase
             //Ici example de passage de proprietaire
             Entities.WithAll<BombData>().ForEach((Entity bomb, ref BombData bombData, in LocalTransform bombTransform) =>
             {
-                if (math.distance(playerPosition, bombTransform.Position) < radius)
+                if (math.distance(playerPosition, bombTransform.Position) < radius) //Actuellement changement fait via la position dans un rayon
                 {
                     if (bombData.owner == Entity.Null || bombData.owner != playerEntity)
                     {
