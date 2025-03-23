@@ -12,5 +12,5 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public InputEvent walkCanceled;
 
     [GhostField] public InputEvent shoot;
-    [GhostField] public LocalTransform shootTransform;
+    [GhostField] public quaternion shootRotation;
 }

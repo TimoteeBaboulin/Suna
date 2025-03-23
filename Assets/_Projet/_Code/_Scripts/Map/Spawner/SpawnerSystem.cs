@@ -158,14 +158,14 @@ public partial struct RespawnSystem : ISystem
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
-        if (prefabManager.character == null)
+        if (prefabManager.Character == null)
         {
             return;
         }
 
         FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
 
-        Entity character = ecb.Instantiate(prefabManager.character);
+        Entity character = ecb.Instantiate(prefabManager.Character);
         ecb.SetComponent(character, new LocalTransform() //Set position
         {
             Position = position,

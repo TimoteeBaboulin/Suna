@@ -28,7 +28,7 @@ partial class InGameHUDSystem : SystemBase
             .Query<RefRO<CurrentHealthComponent>, RefRO<HasHitComponent>>()
             .WithAll<GhostOwnerIsLocal>())
         {
-            HealthChangedEvent?.Invoke(this, new HealthArgs { Health = currentHealth.ValueRO.Value });
+            HealthChangedEvent?.Invoke(this, new HealthArgs { Health = (int)currentHealth.ValueRO.Value });
 
             if (hasHit.ValueRO.Value)
             {

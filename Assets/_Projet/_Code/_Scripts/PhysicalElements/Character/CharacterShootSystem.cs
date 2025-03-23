@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Transforms;
 using UnityEngine;
 
 using RaycastHit = Unity.Physics.RaycastHit;
@@ -33,8 +34,8 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (inputRO, weaponRO, shooter) in SystemAPI
-            .Query<RefRO<CharacterInput>, RefRO<CharacterDefaultWeapon>>()
+        foreach (var (inputRO, weaponRO, modelBones, shooter) in SystemAPI
+            .Query<RefRO<CharacterInput>, RefRO<CharacterDefaultWeapon>, CharacterModelBones>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
@@ -78,27 +79,43 @@ public partial struct ShootSystem : ISystem
                 {
                     RangedWeaponData weaponData = state.EntityManager.GetComponentData<RangedWeaponDataRef>(weapon).Value;
 
-                    float3 startPosition = input.shootTransform.Position;
-                    float3 endPosition = startPosition + new float3(input.shootTransform.Forward() * weaponData.range);
+                    LocalTransform startTransform = new LocalTransform
+                    {
+                        Position = modelBones.ViewBoneTransform.position,
+                        Rotation = input.shootRotation,
+                        Scale = 1,
+                    };
+
+                    float3 startPosition = startTransform.Position;
+                    float3 endPosition = startPosition + new float3(startTransform.Forward() * weaponData.range);
+
+                    CollisionFilter filter = new CollisionFilter
+                    {
+                        BelongsTo = ~0u,
+                        CollidesWith = ~(1u << 6)
+                    };
 
                     RaycastInput raycastInput = new RaycastInput()
                     {
                         Start = startPosition,
                         End = endPosition,
-                        Filter = CollisionFilter.Default //filtre pour partie du corps
+                        Filter = filter //filtre pour partie du corps
                     };
 
                     NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
                     if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
                     {
-                        if (allHits.Length == 1 && allHits[0].Entity == shooter) break; //Si la seule cible rencontrée est le joeur qui a tiré, on quite
-
                         //Raycast récupére les hit dans le mauvais ordre, il faut les triers en fonction de la distance
                         RaycastHit closestHit = allHits[0];
                         float closestDist = weaponData.range;
                         foreach (RaycastHit hit in allHits)
                         {
-                            if (hit.Entity == shooter) continue;
+                            if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                            {
+                                Entity characterHitEntity = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity).ValueRO.CharacterEntity;
+
+                                if (characterHitEntity == shooter) continue;
+                            }
 
                             float currentDist = math.distancesq(raycastInput.Start, hit.Position);
 
@@ -110,11 +127,27 @@ public partial struct ShootSystem : ISystem
                         }
 
                         //Applique les degats au joueur cible
-                        if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
+                        if (state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(closestHit.Entity))
                         {
-                            ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = weaponData.damage });
-                            ecb.SetComponent(shooter, new HasHitComponent { Value = true });
+                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData 
+                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(closestHit.Entity);
+
+                            if (CharacterBodyPartData.ValueRO.CharacterEntity != shooter 
+                                && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                            {
+                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement 
+                                { 
+                                    Value = weaponData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                });
+                                ecb.SetComponent(shooter, new HasHitComponent { Value = true });
+                            }
                         }
+
+                        //if (state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
+                        //{
+                        //    ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = weaponData.damage });
+                        //    ecb.SetComponent(shooter, new HasHitComponent { Value = true });
+                        //}
                     }
 
                     weaponDynData.firerateTimer += weaponData.firerate;

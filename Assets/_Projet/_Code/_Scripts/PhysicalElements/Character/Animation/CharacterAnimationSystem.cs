@@ -1,11 +1,10 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-[UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
 partial struct CharacterAnimationSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -23,9 +22,16 @@ partial struct CharacterAnimationSystem : ISystem
             .WithEntityAccess())
         {
             GameObject newGameObject = Object.Instantiate(characterGameObjectPrefab.GameObjectPrefab);
+
+            if (state.World.IsServer() && newGameObject.TryGetComponent(out CharacterModelScript characterModelScript))
+            {
+                characterModelScript.MeshRenderer.enabled = false;
+            }
+
             ecb.AddComponent(entity, new CharacterAnimatorReference
             {
                 Animator = newGameObject.GetComponent<Animator>(),
+                CharacterModel = newGameObject.GetComponent<CharacterModelScript>(),
                 DeltaPosition = characterGameObjectPrefab.DeltaPosition
             });
 
@@ -33,6 +39,21 @@ partial struct CharacterAnimationSystem : ISystem
             {
                 HeadBoneTransform = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.HeadBoneName),
                 ViewBoneTransform = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ViewBoneName),
+                ArmLeftBoneTransform0 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ArmLeftBoneName0),
+                ArmLeftBoneTransform1 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ArmLeftBoneName1),
+                ArmLeftBoneTransform2 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ArmLeftBoneName2),
+                ArmRightBoneTransform0 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ArmRightBoneName0),
+                ArmRightBoneTransform1 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ArmRightBoneName1),
+                ArmRightBoneTransform2 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ArmRightBoneName2),
+                ThoraxBoneTransform = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.ThoraxBoneName),
+                StomachBoneTransform0 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.StomachBoneName0),
+                StomachBoneTransform1 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.StomachBoneName1),
+                LegLeftBoneTransform0 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.LegLeftBoneName0),
+                LegLeftBoneTransform1 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.LegLeftBoneName1),
+                LegLeftBoneTransform2 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.LegLeftBoneName2),
+                LegRightBoneTransform0 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.LegRightBoneName0),
+                LegRightBoneTransform1 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.LegRightBoneName1),
+                LegRightBoneTransform2 = FindBoneByName(newGameObject.transform, characterGameObjectPrefab.LegRightBoneName2),
             });
         }
 
@@ -44,7 +65,7 @@ partial struct CharacterAnimationSystem : ISystem
 
             animatorReference.Animator.SetBool("IsWalking", animationState.ValueRO.IsWalking);
 
-            modelBones.HeadBoneTransform.rotation = math.mul(transform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
+            animatorReference.CharacterModel.NewHeadRotation = math.mul(transform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
         }
 
         foreach (var (animatorReference, entity) in SystemAPI
