@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -24,9 +25,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
     [Header("Temp(Debug)")]
     public TeamSideType side;
-    public GameObject mainWeaponPrefab;
-    public GameObject secondWeaponPrefab;
-    public GameObject meleeWeaponPrefab;
+    public RangedWeaponData mainWeapon;
+    public RangedWeaponData secondWeapon;
+    //public MeleeWeaponData meleeWeapon;
 
     [Header("Visual")]
     [SerializeField] private GameObject _view;
@@ -60,9 +61,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterStuffPrefab
             {
-                MainWeaponPrefab = GetEntity(cca.mainWeaponPrefab, TransformUsageFlags.Dynamic),
-                SecondWeaponPrefab = GetEntity(cca.secondWeaponPrefab, TransformUsageFlags.Dynamic),
-                MeleeWeaponPrefab = GetEntity(cca.meleeWeaponPrefab, TransformUsageFlags.Dynamic)
+                MainWeaponPrefab = GetEntity(cca.mainWeapon.prefab, TransformUsageFlags.Dynamic),
+                SecondWeaponPrefab = GetEntity(cca.secondWeapon.prefab, TransformUsageFlags.Dynamic),
+                //MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.clientPrefab, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new FreezeAllRotationTag());

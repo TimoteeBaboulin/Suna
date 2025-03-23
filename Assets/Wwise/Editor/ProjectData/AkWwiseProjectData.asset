@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584605309238826068
+    m_lastTime: -8584589652415389950
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -94,7 +94,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584605309273788615
+    m_lastTime: -8584589652415489816
     List:
     - name: Music_Play
       guid: 8c5cba3e53452c4890e4a03692da77ae
@@ -130,6 +130,23 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
+    - name: Sound_Play
+      guid: ed26a06d7f0c4549830cda3bdff95ce3
+      id: 3479778571
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Sound_Play
+        ObjectType: 3
+        guid: ed26a06d7f0c4549830cda3bdff95ce3
+      Path: Events\Default Work Unit\Sound_Play
+      maxAttenuation: 0
+      maxDuration: 49.367916
+      minDuration: 49.367916
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:

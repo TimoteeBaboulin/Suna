@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
@@ -11,8 +12,12 @@ public partial struct SwitchStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<StuffOwner>();
+
+        state.RequireForUpdate<NetworkTime>();
+        state.RequireForUpdate<PhysicsWorldSingleton>();
+        state.RequireForUpdate<PhysicsWorldHistorySingleton>();
+        state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -28,28 +33,25 @@ public partial struct SwitchStuffSystem : ISystem
         .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandType>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
-            //Simplification des components de l'arme
             ref readonly CharacterInput input = ref inputRef.ValueRO;
             ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
             ref CharacterStuffInHandType stuffInHandType = ref activeStuffRef.ValueRW;
 
-            if (input.selectNext.IsSet && state.World.IsServer())
+            if (state.World.IsServer())
             {
                 Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
+                Entity nextStuff;
+
+                int whileLimit = 0;
+                int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
 
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
-                int whileLimit = 0;
-                Entity nextStuff;
-
                 do
                 {
-                    stuffInHandType.Value++;
+                    stuffInHandType.Value += dir;
 
-                    if ((int)stuffInHandType.Value >= stuffList.Value.Length)
-                    {
-                        stuffInHandType.Value = 0;
-                    }
+                    stuffInHandType.Value = (StuffType)((stuffList.Value.Length + (int)stuffInHandType.Value) % stuffList.Value.Length);
 
                     nextStuff = stuffList.Value[(int)stuffInHandType.Value];
 
@@ -60,31 +62,57 @@ public partial struct SwitchStuffSystem : ISystem
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
             }
 
-            else if (input.selectPrevious.IsSet && state.World.IsServer())
-            {
-                Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
-                state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+            //if (input.selectNext.IsSet && state.World.IsServer())
+            //{
+            //    Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
+            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
-                int whileLimit = 0;
-                Entity nextStuff;
+            //    int whileLimit = 0;
+            //    Entity nextStuff;
 
-                do
-                {
-                    stuffInHandType.Value--;
+            //    do
+            //    {
+            //        stuffInHandType.Value++;
 
-                    if ((int)stuffInHandType.Value < 0)
-                    {
-                        stuffInHandType.Value = (StuffType)(stuffList.Value.Length - 1);
-                    }
+            //        if ((int)stuffInHandType.Value >= stuffList.Value.Length)
+            //        {
+            //            stuffInHandType.Value = 0;
+            //        }
 
-                    nextStuff = stuffList.Value[(int)stuffInHandType.Value];
+            //        nextStuff = stuffList.Value[(int)stuffInHandType.Value];
 
-                    whileLimit++;
+            //        whileLimit++;
 
-                } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
+            //    } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
 
-                state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
-            }
+            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+            //}
+
+            //else if (input.selectPrevious.IsSet && state.World.IsServer())
+            //{
+            //    Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
+            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+
+            //    int whileLimit = 0;
+            //    Entity nextStuff;
+
+            //    do
+            //    {
+            //        stuffInHandType.Value--;
+
+            //        if ((int)stuffInHandType.Value < 0)
+            //        {
+            //            stuffInHandType.Value = (StuffType)(stuffList.Value.Length - 1);
+            //        }
+
+            //        nextStuff = stuffList.Value[(int)stuffInHandType.Value];
+
+            //        whileLimit++;
+
+            //    } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
+
+            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+            //}
         }
     }
 }

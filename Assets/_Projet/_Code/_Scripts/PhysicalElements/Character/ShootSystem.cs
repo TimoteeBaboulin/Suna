@@ -4,8 +4,9 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using UnityEngine;
-
 using RaycastHit = Unity.Physics.RaycastHit;
+
+using RangedWeapon;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct HasHitComponent : IComponentData
@@ -25,7 +26,7 @@ public partial struct ShootSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        //Eviter répétition sur le serveur du a la différence de framerate avec le client
+        // Avoid repetition on the server due to the difference in framerate with the client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         if (!networkTime.IsFirstPredictionTick) return;
 
@@ -34,32 +35,30 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (dynamicDataRef, commonData, ownerRef, animStateRef, weapon) in SystemAPI
-        .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponCommonData, RefRO<StuffOwner>, RefRW<WeaponAnimationState>>()
+        foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
+        .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
         .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
-            //Simplification des components de l'arme
-            ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
-            ref WeaponAnimationState animState = ref animStateRef.ValueRW;
+            ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
-            //Recuperation Input joueur
+            // Retrieve player input
             if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
             ref CharacterInput input = ref inputRef.ValueRW;
 
-            //Calcul du firerate
+            // Calculate fire rate
             if (dynamicData.firerateTimer > 0)
                 dynamicData.firerateTimer -= dt;
 
-            animState.IsFire = false;
+            dynamicData.state = _State.Idle;
 
-            //Si le joueur tire, que la cadence de tir est valide et qu'il y a encore des balles
+            // If the player shoots, the fire rate is valid, and there are still bullets left
             if (input.shoot.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
             {
                 dynamicData.firerateTimer = commonData.firerate;
                 dynamicData.currentAmmo--;
-                animState.IsFire = true;
+                dynamicData.state = _State.Shoot;
 
                 float3 startPosition = input.shootTransform.Position;
                 float3 endPosition = startPosition + new float3(input.shootTransform.Forward() * commonData.range);
@@ -75,15 +74,15 @@ public partial struct ShootSystem : ISystem
                 NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
                 if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
                 {
-                    //Si la seule cible rencontrée est le joeur qui a tiré, on skip
+                    // If the only target hit is the player who fired, skip
                     if (!(allHits.Length == 1 && allHits[0].Entity == owner))
                     {
-                        //Raycast récupére les hits dans le mauvais ordre, il faut les triers en fonction de la distance
+                        // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
                         RaycastHit closestHit = allHits[0];
                         float closestDist = commonData.range;
                         foreach (RaycastHit hit in allHits)
                         {
-                            //si l'entité rencontré est le tireur, on skip
+                            // If the entity hit is the shooter, skip
                             if (hit.Entity == owner) continue;
 
                             float currentDist = math.distancesq(raycastInput.Start, hit.Position);
@@ -96,7 +95,7 @@ public partial struct ShootSystem : ISystem
                             }
                         }
 
-                        //Applique les degats au joueur cible
+                        // Apply damage to the target player
                         if (isHitSomething && state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(closestHit.Entity))
                         {
                             ecb.AppendToBuffer(closestHit.Entity, new DamageBufferElement { Value = commonData.damage });

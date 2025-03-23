@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: PistolTest
   m_EditorClassIdentifier: 
   prefab: {fileID: 0}
-  entityName: gun
   UIImage: {fileID: 0}
-  price: 0
   type: 1
   side: 0
+  entityName: gun
   deploymentSpeed: 0
   storageSpeed: 0
+  price: 0
   recoil: {x: 0, y: 0}
   damage: 12
   range: 20

@@ -5,6 +5,8 @@ using Unity.NetCode;
 using Unity.Physics;
 using UnityEngine;
 
+using RangedWeapon;
+
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 public partial struct ReloadSystem : ISystem
 {
@@ -26,12 +28,12 @@ public partial struct ReloadSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
-        .Query<RefRW<RangedWeaponDynamicData>, RangedWeaponCommonData, RefRO<StuffOwner>>()
+        .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
         .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
             //Simplification des components de l'arme
-            ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
+            ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
             //Recuperation Input joueur

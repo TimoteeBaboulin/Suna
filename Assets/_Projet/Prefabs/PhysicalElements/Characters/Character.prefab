@@ -113,9 +113,9 @@ MonoBehaviour:
   jumpForce: 5.8
   sensivity: 3
   side: 0
-  mainWeaponPrefab: {fileID: 4820376613147570663, guid: c01c732f17c5abe43beaa2aa2400b7b8, type: 3}
-  secondWeaponPrefab: {fileID: 4820376613147570663, guid: 7f28f63808f575940abb49aa3eb23df7, type: 3}
-  meleeWeaponPrefab: {fileID: 0}
+  mainWeapon: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
+  secondWeapon: {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
+  meleeWeapon: {fileID: 0}
   _view: {fileID: 0}
 --- !u!114 &-6395674489095318445
 MonoBehaviour:

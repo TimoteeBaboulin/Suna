@@ -38,6 +38,7 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             transformPrefab.Position = authoring.character.transform.position;
             transformPrefab.Rotation = authoring.character.transform.rotation;
         }
+
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new PrefabsData
         {

@@ -77,7 +77,7 @@ partial struct ProcessPendingStuffSystem : ISystem
         EntityCommandBuffer ecbEnd = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         foreach (var (ownerRef, stuffInfos, stuff) in SystemAPI
-            .Query<RefRO<StuffOwner>, StuffInfos>()
+            .Query<RefRO<StuffOwner>, StuffCommonData>()
             .WithAll<PendingStuffTag>()
             .WithEntityAccess())
         {

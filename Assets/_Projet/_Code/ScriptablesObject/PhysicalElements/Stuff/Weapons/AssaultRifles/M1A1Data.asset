@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
   m_Name: M1A1Data
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4820376613147570663, guid: 3d4d5260590b4034bae3993f95214d4e, type: 3}
-  entityName: M1A1
+  clientPrefab: {fileID: 1063816135455577480, guid: ee7022395bc218e49be546f521caee02, type: 3}
   UIImage: {fileID: 0}
-  price: 1
   type: 0
   side: 0
+  entityName: M1A1
   deploymentSpeed: 0
   storageSpeed: 0
+  price: 1
   recoil: {x: 2, y: 3}
   damage: 4
   range: 100

@@ -42,11 +42,11 @@ partial class InGameHUDSystem : SystemBase
         }
 
         foreach (var (weaponDataRef, stuff) in SystemAPI
-            .Query<RefRO<RangedWeaponDynamicData>>()
+            .Query<RefRO<RangedWeapon.DynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
             .WithEntityAccess())
         {
-            ref readonly RangedWeaponDynamicData weaponData = ref weaponDataRef.ValueRO;
+            ref readonly RangedWeapon.DynamicData weaponData = ref weaponDataRef.ValueRO;
             AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
         }
     }
