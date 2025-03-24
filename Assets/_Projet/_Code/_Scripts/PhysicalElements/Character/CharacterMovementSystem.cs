@@ -33,6 +33,7 @@ public partial struct CharacterMovementSystem : ISystem
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
+            ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -45,6 +46,7 @@ public partial struct CharacterMovementJob : IJobEntity
     public float dt;
     public NetworkTime networkTime;
     [ReadOnly] public PhysicsWorld physicsWorld;
+    [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
 
     const float gravity = -9.81f;
 
@@ -122,16 +124,25 @@ public partial struct CharacterMovementJob : IJobEntity
         {
             foreach (var hit in allHits)
             {
-                if (hit.Entity != entity)
-                {
-                    controller.isGrounded = true;
-                    groundNormal = hit.SurfaceNormal;
-                    break;
-                }
+                if (hit.Entity == entity)
+                    continue;
+
+                if (ccLookup.TryGetComponent(hit.Entity, out CharacterColliderDataComponent ccdc))
+                    if (ccdc.CharacterEntity == entity)
+                        continue;
+
+                controller.isGrounded = true;
+                groundNormal = hit.SurfaceNormal;
+                break;
             }
         }
 
         bool onSlope = OnSlope(groundNormal) && controller.isGrounded;
+
+        if(controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
+        {
+            controller.isGrounded = false;
+        }
 
         if (isMoving && Angle(math.up(), groundNormal) < 50)
         {
