@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 
 using RaycastHit = Unity.Physics.RaycastHit;
@@ -34,8 +35,8 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        foreach (var (inputRO, weaponRO, modelBones, shooter) in SystemAPI
-            .Query<RefRO<CharacterInput>, RefRO<CharacterDefaultWeapon>, CharacterModelBones>()
+        foreach (var (inputRO, weaponRO, modelBones, localView, localTransform, shooter) in SystemAPI
+            .Query<RefRO<CharacterInput>, RefRO<CharacterDefaultWeapon>, CharacterModelBones, RefRW<CharacterLocalViewRotation>, RefRW<LocalTransform>>()
             .WithAll<Simulate>()
             .WithEntityAccess())
         {
@@ -102,6 +103,21 @@ public partial struct ShootSystem : ISystem
                         Filter = filter //filtre pour partie du corps
                     };
 
+
+                    //// Apply spread on raycast
+                    //float3 direction = startTransform.Forward();
+                    //float2 recoil = CharacterShootUtils.TSprayPattern(weaponData.magazineCapacity - weaponDynData.ammo, weaponData.spread, weaponData.coefSpray, weaponData.range) * dt;
+                    //quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                    //float3 newDirection = math.normalize(math.rotate(recoilRotation, direction));
+
+                    //endPosition = startPosition + new float3(newDirection * weaponData.range);
+
+                    //raycastInput.End = endPosition;
+
+                    // Apply Recoil on camera
+                    //float vel = 0;
+                    //localView.ValueRW.ViewRotation.value.x = Mathf.SmoothDamp(localView.ValueRO.ViewRotation.value.x, localView.ValueRO.ViewRotation.value.x - 2f * dt, ref vel, .01f);
+
                     NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
                     if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
                     {
@@ -132,14 +148,14 @@ public partial struct ShootSystem : ISystem
                         //Applique les degats au joueur cible
                         if (state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(closestHit.Entity))
                         {
-                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData 
+                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData
                                 = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(closestHit.Entity);
 
-                            if (CharacterBodyPartData.ValueRO.CharacterEntity != shooter 
+                            if (CharacterBodyPartData.ValueRO.CharacterEntity != shooter
                                 && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
                             {
-                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement 
-                                { 
+                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                {
                                     Value = weaponData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
                                 });
                                 ecb.SetComponent(shooter, new HasHitComponent { Value = true });
