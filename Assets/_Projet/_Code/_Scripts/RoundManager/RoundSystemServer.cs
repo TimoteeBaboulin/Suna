@@ -2,7 +2,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Transforms;
 using UnityEngine;
 using static RoundSystemClient;
 
@@ -11,7 +10,7 @@ public partial struct RoundSystemServer : ISystem
 {
     public struct VictoryRpcCommand : IRpcCommand
     {
-        public TimoteeTeam team;
+        public TeamSideType team;
     }
 
     public struct ChangePhaseRpcCommand : IRpcCommand
@@ -21,38 +20,33 @@ public partial struct RoundSystemServer : ISystem
 
     public struct UpdateRoundDataRpcCommand : IRpcCommand
     {
-
+        public RoundComponent roundData;
     }
 
-    private EntityQuery _query;
-
-    public enum TimoteeTeam : byte //TODO: Switch to a normalized enum for the whole project
-    {
-        Corporation,
-        Natives
-    };
+    //private EntityQuery _query;
+    private bool _firstFrame;
 
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        state.RequireForUpdate<ServerDataComponent>();
+        //state.RequireForUpdate<ServerDataComponent>();
 
         //Create the query and store it for future use
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
-        _query = builder.Build(ref state);
+        EntityQuery query = builder.Build(ref state);
 
         //Get the necessary references to set up the start of the game
-
-        //var entity = _query.GetSingletonEntity();
-        if (_query.TryGetSingletonEntity<Entity>(out var entity))
+        if (query.TryGetSingletonEntity<RoundComponent>(out var entity))
         {
-            if (state.EntityManager.Exists(entity))
-            {
-                RefRW<RoundComponent> component = _query.GetSingletonRW<RoundComponent>();
+            RefRW<RoundComponent> component = query.GetSingletonRW<RoundComponent>();
 
-                InitGame(ref state, entity, component, ecb);
-            }
+            InitGame(ref state, entity, component, ecb);
+            _firstFrame = true;
+        }
+        else
+        {
+            _firstFrame = false;
         }
     }
 
@@ -68,8 +62,17 @@ public partial struct RoundSystemServer : ISystem
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        Entity entity = SystemAPI.GetSingletonEntity<RoundComponent>();
+
+        if (!_firstFrame)
+        {
+
+            InitGame(ref state, entity, roundComponent, ecb);
+            _firstFrame = true;
+        }
+
         //Check if the bomb was planted
-        Entity entity = _query.GetSingletonEntity();
+        //Entity entity = _query.GetSingletonEntity();
         if (roundComponent.ValueRO.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
         {
             CollectorPlanted(ref state, entity, roundComponent, ecb);
@@ -84,8 +87,20 @@ public partial struct RoundSystemServer : ISystem
             }
         }
 
+        //If a client need to synchronise round data, this is used to reply with the full data
         foreach (var (request, command, rpcEntity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<RequestRoundDataRpcCommand>>().WithEntityAccess())
         {
+            //Debug.Log("[Server] Received round data update request.");
+
+            Entity responseEntity = ecb.CreateEntity();
+            ecb.AddComponent(responseEntity, new SendRpcCommandRequest
+            {
+                TargetConnection = request.ValueRO.SourceConnection
+            });
+            ecb.AddComponent(responseEntity, new UpdateRoundDataRpcCommand
+            {
+                roundData = roundComponent.ValueRO
+            });
 
             ecb.DestroyEntity(rpcEntity);
         }
@@ -101,10 +116,10 @@ public partial struct RoundSystemServer : ISystem
         //}
     }
 
-    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TimoteeTeam team, EntityCommandBuffer ecb)
+    private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
     {
         //Update the score and lossstreak of the correct teams
-        if (team == TimoteeTeam.Corporation)
+        if (team == TeamSideType.Corpo)
         {
             component.ValueRW.corporationScore++;
             component.ValueRW.corporationLossStreak = 0;
@@ -112,7 +127,7 @@ public partial struct RoundSystemServer : ISystem
             if (component.ValueRW.nativeLossStreak < component.ValueRW.maxStreakCount)
                 component.ValueRW.nativeLossStreak++;
         }
-        else
+        else if (team == TeamSideType.Natif)
         {
             component.ValueRW.nativeScore++;
             component.ValueRW.nativeLossStreak = 0;
@@ -143,20 +158,20 @@ public partial struct RoundSystemServer : ISystem
         //Update the score accordingly
         if (component.ValueRW.currentPhase == RoundPhase.ActionPhase)
         {
-            Victory(ref state, entity, component, TimoteeTeam.Natives, ecb);
+            Victory(ref state, entity, component, TeamSideType.Natif, ecb);
             component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
         }
         else
         {
             if (component.ValueRW.currentPhase == RoundPhase.PostPlantPhase)
-                Victory(ref state, entity, component, TimoteeTeam.Corporation, ecb);
+                Victory(ref state, entity, component, TeamSideType.Corpo, ecb);
             component.ValueRW.currentPhase++;
         }
 
         //If the round ended, get to next one
         if (component.ValueRW.currentPhase > RoundPhase.PostRoundPhase)
         {
-            InitRound(ref state, entity, component);
+            InitRound(ref state, entity, component, ecb);
         }
 
         //Sets the timer for the new phase
@@ -176,25 +191,20 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.currentRound = 0;
         component.ValueRW.nativeScore = 0;
         component.ValueRW.corporationScore = 0;
-        InitRound(ref state, entity, component);
+        InitRound(ref state, entity, component, ecb);
         SendCurrentPhase(ref state, entity, component, ecb);
     }
 
-    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component)
+    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Reset the phase and increase the round number
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
         component.ValueRW.currentRound++;
 
-        //Respawn every player at the start of a new round
-        Vector3 spawnPosition;
-        Entity respawnEntity = new EntityQueryBuilder(Allocator.Temp).WithAll<SpawnerComponent>().Build(ref state).ToEntityArray(Allocator.Temp)[0];
-        spawnPosition = state.EntityManager.GetComponentData<LocalTransform>(respawnEntity).Position;
-
-        foreach (var (health, transform) in SystemAPI.Query<RefRW<CurrentHealthComponent>, RefRW<LocalTransform>>())
+        //Mark every client to await a respawn
+        foreach (var (client, respawnEntity) in SystemAPI.Query<RefRO<CharacterClientAttachedComponent>>().WithEntityAccess())
         {
-            transform.ValueRW.Position = spawnPosition;
-            health.ValueRW.Value = 100;
+            ecb.AddComponent<WaitForRespawnTag>(client.ValueRO.ClientEntity);
         }
     }
 

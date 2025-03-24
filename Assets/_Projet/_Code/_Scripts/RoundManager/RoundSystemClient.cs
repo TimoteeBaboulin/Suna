@@ -6,6 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 using static RoundSystemServer;
 
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct RoundSystemClient : ISystem
 {
     private bool _running;
@@ -18,21 +19,12 @@ partial struct RoundSystemClient : ISystem
 
     public void OnCreate(ref SystemState state)
     {
-        //Only run if we're in Client world
-        //if (state.World != ConnectionManager.Instance.Client)
-        //{
-        //    _running = false;
-        //    return;
-        //}
-
         _running = true;
         _firstFrame = true;
 
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
-        builder.WithNone<ServerDataComponent>();
-        state.RequireForUpdate(state.GetEntityQuery(builder));
+        state.RequireForUpdate<NetworkTime>();
 
-        EntityQueryBuilder roundBuilder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
         EntityQuery query = state.GetEntityQuery(builder);
 
         NativeArray<Entity> entityArray = query.ToEntityArray(Allocator.Temp);
@@ -60,7 +52,21 @@ partial struct RoundSystemClient : ISystem
         EntityCommandBuffer buffer = new EntityCommandBuffer(Allocator.Temp);
 
         if (_firstFrame)
-            RequestUpdate(ref state, buffer);
+        {
+            EntityQuery networkQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<NetworkStreamConnection>().Build(ref state);
+            if (networkQuery.TryGetSingleton<NetworkStreamConnection>(out var streamConnection))
+            {
+                if (streamConnection.CurrentState != ConnectionState.State.Connected)
+                    return;
+
+                RequestUpdate(ref state, buffer);
+            }
+            else
+            {
+                return;
+            }
+            
+        }
 
         _firstFrame = false;
         //Prepare the buffer to use at the end of the update to avoid breaking the reference to the component
@@ -70,6 +76,12 @@ partial struct RoundSystemClient : ISystem
         if (round.ValueRW.timer < 0)
         {
             round.ValueRW.timer = 0;
+        }
+
+        foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
+        {
+            round.ValueRW = update.ValueRO.roundData;
+            buffer.DestroyEntity(entity);
         }
 
         //Read score change RPCs
@@ -92,8 +104,6 @@ partial struct RoundSystemClient : ISystem
 
     public void RequestUpdate(ref SystemState state, EntityCommandBuffer ecb)
     {
-        return;
-
         RequestRoundDataRpcCommand rpc = new() {};
 
         Entity newEntity = ecb.CreateEntity();
@@ -101,18 +111,18 @@ partial struct RoundSystemClient : ISystem
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
-    public void ChangeScore(ref SystemState state, TimoteeTeam team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component) {
         //Update the score and loss streak of the corresponding teams
         switch (team)
         {
-            case TimoteeTeam.Corporation:
+            case TeamSideType.Corpo:
                 component.ValueRW.corporationScore++;
                 component.ValueRW.nativeLossStreak = Math.Min(component.ValueRW.nativeLossStreak + 1, component.ValueRW.maxStreakCount);
                 component.ValueRW.corporationLossStreak = 0;
 
                 break;
 
-            case TimoteeTeam.Natives:
+            case TeamSideType.Natif:
                 component.ValueRW.nativeScore++;
                 component.ValueRW.corporationLossStreak = Math.Min(component.ValueRW.corporationLossStreak + 1, component.ValueRW.maxStreakCount);
                 component.ValueRW.nativeLossStreak = 0;

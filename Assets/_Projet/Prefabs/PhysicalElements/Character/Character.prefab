@@ -13,12 +13,13 @@ GameObject:
   - component: {fileID: 1715078069933390235}
   - component: {fileID: 2717752743986560582}
   - component: {fileID: -6395674489095318445}
+  - component: {fileID: 219538545545060558}
   - component: {fileID: -7034213979156375631}
   - component: {fileID: -1226755385133520682}
   - component: {fileID: 2657201299575732514}
   - component: {fileID: 4763154914594263826}
   - component: {fileID: 5081496929180248068}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,6 +134,43 @@ MonoBehaviour:
   DeltaPosition: {fileID: 6774830378860753411}
   HeadBoneName: B-head
   ViewBoneName: B-view
+  ArmLeftBoneName0: B-upperArm.L
+  ArmLeftBoneName1: B-forearm.L
+  ArmLeftBoneName2: B-hand.L
+  ArmRightBoneName0: B-upperArm.R
+  ArmRightBoneName1: B-forearm.R
+  ArmRightBoneName2: B-hand.R
+  ThoraxBoneName: B-chest
+  StomachBoneName0: B-spine
+  StomachBoneName1: B-hips
+  LegLeftBoneName0: B-thigh.L
+  LegLeftBoneName1: B-shin.L
+  LegLeftBoneName2: B-foot.L
+  LegRightBoneName0: B-thigh.R
+  LegRightBoneName1: B-shin.R
+  LegRightBoneName2: B-foot.R
+--- !u!114 &219538545545060558
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584918407947073280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df42e9e4ba170384fa47c8e40a719c09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HeadPrefab: {fileID: 7412152404001876113, guid: 97b847aca013df44495092b0ce5cee75, type: 3}
+  ArmPrefab0: {fileID: 7412152404001876113, guid: d4f3d4cf7fd678345968e36eea321d6a, type: 3}
+  ArmPrefab1: {fileID: 7412152404001876113, guid: 608e518e0f7ebdb4097c026b09eea8ad, type: 3}
+  ArmPrefab2: {fileID: 7412152404001876113, guid: 41a603db882fae94fa98f582e5dcf444, type: 3}
+  ThoraxPrefab: {fileID: 7412152404001876113, guid: 1ec1552322834524190b32b84e959561, type: 3}
+  StomachPrefab0: {fileID: 7412152404001876113, guid: e318ad3df5fdd7f47b6e648c8810227d, type: 3}
+  StomachPrefab1: {fileID: 7412152404001876113, guid: f1791ca2be987d24d93f388ae474ea1e, type: 3}
+  LegPrefab0: {fileID: 7412152404001876113, guid: 0c51bcdc5bf8806429c2aec5f0ed6195, type: 3}
+  LegPrefab1: {fileID: 7412152404001876113, guid: b5b1aa861c0ecc54fb9411dc65c66bb7, type: 3}
+  LegPrefab2: {fileID: 7412152404001876113, guid: 9c86b15e37c05504993de09b3c7f5687, type: 3}
 --- !u!114 &-7034213979156375631
 MonoBehaviour:
   m_ObjectHideFlags: 0

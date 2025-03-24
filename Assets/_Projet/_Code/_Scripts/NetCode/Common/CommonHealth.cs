@@ -2,29 +2,28 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
 
 public struct MaxHealthComponent : IComponentData
 {
-    public int Value;
+    public float Value;
 }
 
 public struct CurrentHealthComponent : IComponentData
 {
-    [GhostField] public int Value;
+    [GhostField] public float Value;
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
 public struct DamageBufferElement : IBufferElementData
 {
-    public int Value;
+    public float Value;
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted, OwnerSendType = SendToOwnerType.SendToNonOwner)]
 public struct DamageThisTickCommand : ICommandData
 {
     public NetworkTick Tick { get; set; }
-    public int Value;
+    public float Value;
 }
 
 public struct HasNoHealthTag : IComponentData { }
@@ -76,7 +75,7 @@ public partial struct CalculateFrameDamageJob : IJobEntity
         }
         else
         {
-            int totalDamage = 0;
+            float totalDamage = 0;
 
             if (damageThisTickBuffer.GetDataAtTick(CurrentTick, out var damageThisTick))
             {
