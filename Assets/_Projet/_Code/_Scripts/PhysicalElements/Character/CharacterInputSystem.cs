@@ -37,6 +37,7 @@ public partial class CharacterInputSystem : SystemBase
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
         bool isShootPressed = actions.Attack.WasPressedThisFrame();
+        bool isReloadPerformered = actions.Reload.WasPressedThisFrame();
         foreach (var (controller, input, modelBones) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, CharacterModelBones>()
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
@@ -81,6 +82,15 @@ public partial class CharacterInputSystem : SystemBase
             else
             {
                 input.ValueRW.shoot = default;
+            }
+
+            if (isReloadPerformered)
+            {
+                input.ValueRW.reload.Set();
+            }
+            else
+            {
+                input.ValueRW.reload = default; //Important to unset or we will have issues down the line
             }
         }
     }

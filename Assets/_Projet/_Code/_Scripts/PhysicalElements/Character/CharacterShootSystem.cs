@@ -155,9 +155,12 @@ public partial struct ShootSystem : ISystem
 
                     weaponDynData.firerateTimer += weaponData.firerate;
                     weaponDynData.ammo--;
+
+                    #if !UNITY_SERVER
                     Debug.Log("Ammo " + weaponDynData.ammo);
 
                     Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
+                    #endif
                 }
                 else
                 {
@@ -170,6 +173,13 @@ public partial struct ShootSystem : ISystem
                 animState.IsFire = false;
 
                 ecb.SetComponent(shooter, new HasHitComponent { Value = false });
+            }
+
+
+            //temp reload for seb
+            if (input.reload.IsSet && weaponDynData.ammo <= 0)
+            {
+                weaponDynData.ammo += 20;
             }
         }
     }
