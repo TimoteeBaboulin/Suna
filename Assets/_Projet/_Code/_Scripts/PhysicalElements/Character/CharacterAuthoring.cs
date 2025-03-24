@@ -59,11 +59,12 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
+
             AddComponent(entity, new CharacterStuffPrefab
             {
-                MainWeaponPrefab = GetEntity(cca.mainWeapon.prefab, TransformUsageFlags.Dynamic),
-                SecondWeaponPrefab = GetEntity(cca.secondWeapon.prefab, TransformUsageFlags.Dynamic),
-                //MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.clientPrefab, TransformUsageFlags.Dynamic)
+                MainWeaponPrefab = GetEntity(cca.mainWeapon.entityPrefab, TransformUsageFlags.Dynamic),
+                SecondWeaponPrefab = GetEntity(cca.secondWeapon.entityPrefab, TransformUsageFlags.Dynamic),
+                //MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.entityPrefab, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new FreezeAllRotationTag());
@@ -72,7 +73,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
-            AddComponent(entity, new WaitForInstanciateWeaponsTag { });
+            AddComponent(entity, new WaitForInstanciateStuffTag { });
 
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
 

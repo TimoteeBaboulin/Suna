@@ -24,6 +24,8 @@ public struct StuffCommonData : ISharedComponentData, IEquatable<StuffCommonData
     [GhostField] public float storageSpeed;
     [GhostField] public int price;
 
+    public Vector3 _stuffLocalOffsetView; //temp
+
     public bool Equals(StuffCommonData other)
     {
         return name.Equals(other.name);
@@ -46,14 +48,14 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 { 
 }
 
-public class StuffPrefab : IComponentData
+public class StuffGameObjectPrefab : IComponentData
 {
     public GameObject Value;
 }
 
-public class StuffAnimatorRef : ICleanupComponentData
+public class StuffGameObjectRef : ICleanupComponentData
 {
-    public Animator Animator;
+    public GameObject Value;
 }
 
 public class StuffUiImage : ICleanupComponentData

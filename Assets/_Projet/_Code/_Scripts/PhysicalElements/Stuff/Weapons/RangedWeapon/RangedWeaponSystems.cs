@@ -1,8 +1,5 @@
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -10,68 +7,60 @@ using RangedWeapon;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
-partial struct RangedWeaponClientSystem : ISystem
+partial struct RangedWeaponViewSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        //Attach to camera
-        foreach (var (owner, transformRef, entity) in SystemAPI
-           .Query<RefRO<StuffOwner>, RefRW<LocalTransform>>()
-           .WithAll<IsStuffInHand>()
-           .WithEntityAccess())
+        //Instanciate GameObject and Attach to camera
+        foreach (var (owner, prefabRef, stuffData, entity) in SystemAPI
+            .Query<RefRO<StuffOwner>, StuffGameObjectPrefab, StuffCommonData> ()
+            .WithNone<StuffGameObjectRef>()
+            .WithEntityAccess())
         {
             if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
             {
-                CharacterModelBones cameraTransform = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
+                CharacterModelBones charaBones = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
+                Transform viewTransform = charaBones.ViewBoneTransform;
 
-                Vector3 cameraPosBase = cameraTransform.ViewBoneTransform.position;
-                Vector3 cameraForwardBase = cameraTransform.ViewBoneTransform.forward;
+                StuffGameObjectRef goRef = new StuffGameObjectRef{ Value = Object.Instantiate(prefabRef.Value, viewTransform) };
+                goRef.Value.transform.localPosition = stuffData._stuffLocalOffsetView;
 
-                float3 cameraPos = new(cameraPosBase);
-                float3 cameraForward = new(cameraForwardBase);
+                //goRef.Value.GetComponent<Animator>().contr;
 
-                ref LocalTransform transform = ref transformRef.ValueRW;
 
-                transform.Position = cameraPos
-                + cameraForward * 0.6f
-                + transform.Right() * 0.4f
-                - transform.Up() * 0.3f;
-
-                transform.Rotation = cameraTransform.ViewBoneTransform.rotation;
+                ecb.AddComponent(entity, goRef);
             }
         }
 
         //Active GameObject in hand
-        foreach (var (animatorRef, entity) in SystemAPI
-            .Query<StuffAnimatorRef>()
+        foreach (var (goRef, entity) in SystemAPI
+            .Query<StuffGameObjectRef>()
             .WithEntityAccess())
         {
-            animatorRef.Animator.gameObject.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));
+            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));
         }
 
         //FireAnim
-        foreach (var (animatorRef, dataRef) in SystemAPI
-           .Query<StuffAnimatorRef, RefRO<DynamicData>>()
+        foreach (var (goRef, dataRef) in SystemAPI
+           .Query<StuffGameObjectRef, RefRO<DynamicData>>()
            .WithAll<IsStuffInHand>())
         {
             if (dataRef.ValueRO.state == _State.Shoot)
             {
-                animatorRef.Animator.SetTrigger("Fire");
-                //TODO :Je ne peux pas false la variable IsFire ici car c'est un GhostComponent
-                // Si je retire le ghost, je ne peux plus la déclenché dans le shoot system car il est managé par le serveur
+                goRef.Value.GetComponent<Animator>().SetTrigger("Fire");
             }
         }
 
         //Clear Weapon View
-        foreach (var (animatorRef, entity) in SystemAPI
-            .Query<StuffAnimatorRef>()
-            .WithNone<StuffPrefab, LocalTransform>()
+        foreach (var (goRef, entity) in SystemAPI
+            .Query<StuffGameObjectRef>()
+            .WithNone<LocalTransform>()
             .WithEntityAccess())
         {
-            Object.Destroy(animatorRef.Animator.gameObject);
-            ecb.RemoveComponent<StuffAnimatorRef>(entity);
+            Object.Destroy(goRef.Value);
+            ecb.RemoveComponent<StuffGameObjectRef>(entity);
         }
 
         ecb.Playback(state.EntityManager);

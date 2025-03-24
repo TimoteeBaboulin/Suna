@@ -5,79 +5,85 @@ using Unity.NetCode;
 using Unity.Physics;
 using UnityEngine;
 
-using RangedWeapon;
-
-[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-public partial struct ReloadSystem : ISystem
+namespace RangedWeapon
 {
-    public void OnCreate(ref SystemState state)
+    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
+    public partial struct ReloadSystem : ISystem
     {
-        state.RequireForUpdate<NetworkTime>();
-        state.RequireForUpdate<StuffOwner>();
-    }
-
-    public void OnUpdate(ref SystemState state)
-    {
-        //Eviter répétition sur le serveur du a la différence de framerate avec le client
-        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        if (!networkTime.IsFirstPredictionTick) return;
-
-        float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-
-        foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
-        .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
-        .WithAll<IsStuffInHand>()
-        .WithEntityAccess())
+        public void OnCreate(ref SystemState state)
         {
-            //Simplification des components de l'arme
-            ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
-            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+            state.RequireForUpdate<StuffOwner>();
 
-            //Recuperation Input joueur
-            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
-            ref CharacterInput input = ref inputRef.ValueRW;
+            state.RequireForUpdate<NetworkTime>();
+            state.RequireForUpdate<PhysicsWorldSingleton>();
+            state.RequireForUpdate<PhysicsWorldHistorySingleton>();
+            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        }
 
-            //state.EntityManager.GetSharedComponent<RangedWeaponCommonData>(weapon);
+        public void OnUpdate(ref SystemState state)
+        {
+            //Eviter répétition sur le serveur du a la différence de framerate avec le client
+            NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            if (!networkTime.IsFirstPredictionTick) return;
 
-            //Calcul du reloadTimer
-            if (dynamicData.reloadTimer > 0)
-                dynamicData.reloadTimer -= dt;
+            float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
+            PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+            var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+            EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-            if (input.reload.IsSet && dynamicData.reloadTimer <= 0 && dynamicData.currentAmmo < commonData.magazineCapacity + 1 && dynamicData.remainingAmmo != 0)
+            foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
+            .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
+            .WithAll<IsStuffInHand>()
+            .WithEntityAccess())
             {
-                dynamicData.reloadTimer = commonData.reloadSpeed;
+                //Simplification des components de l'arme
+                ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
+                ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
-                bool bulletInChamber = dynamicData.currentAmmo > 0;
+                //Recuperation Input joueur
+                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+                ref CharacterInput input = ref inputRef.ValueRW;
 
-                int ammoToAdd = Mathf.Min(commonData.magazineCapacity, dynamicData.remainingAmmo) - dynamicData.currentAmmo;
-                dynamicData.currentAmmo += ammoToAdd;
-                dynamicData.remainingAmmo -= ammoToAdd;
+                //state.EntityManager.GetSharedComponent<RangedWeaponCommonData>(weapon);
 
-                Debug.Log("Reload Finish !");
+                //Calcul du reloadTimer
+                if (dynamicData.reloadTimer > 0)
+                    dynamicData.reloadTimer -= dt;
 
-                if (!bulletInChamber)
+                if (input.reload.IsSet && dynamicData.reloadTimer <= 0 && dynamicData.currentAmmo < commonData.magazineCapacity + 1 && dynamicData.remainingAmmo != 0)
                 {
-                    Debug.Log("Load Chamber !");
+                    dynamicData.reloadTimer = commonData.reloadSpeed;
+
+                    bool bulletInChamber = dynamicData.currentAmmo > 0;
+
+                    int ammoToAdd = Mathf.Min(commonData.magazineCapacity, dynamicData.remainingAmmo) - dynamicData.currentAmmo;
+                    dynamicData.currentAmmo += ammoToAdd;
+                    dynamicData.remainingAmmo -= ammoToAdd;
+
+                    Debug.Log("Reload Finish !");
+
+                    if (!bulletInChamber)
+                    {
+                        Debug.Log("Load Chamber !");
+                    }
                 }
             }
         }
-    }
 
-    bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)
-    {
-        if (state.EntityManager.HasComponent<CharacterInput>(owner))
+        bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)
         {
-            Input = SystemAPI.GetComponentRW<CharacterInput>(owner);
-            return true;
-        }
-        else
-        {
-            Debug.LogError("CharacterInput not found");
-            Input = default;
-            return false;
+            if (state.EntityManager.HasComponent<CharacterInput>(owner))
+            {
+                Input = SystemAPI.GetComponentRW<CharacterInput>(owner);
+                return true;
+            }
+            else
+            {
+                Debug.LogError("CharacterInput not found");
+                Input = default;
+                return false;
+            }
         }
     }
 }

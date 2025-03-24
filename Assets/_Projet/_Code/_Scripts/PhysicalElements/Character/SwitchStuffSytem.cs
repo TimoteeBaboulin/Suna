@@ -8,6 +8,7 @@ using Unity.Physics;
 using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct SwitchStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -45,74 +46,26 @@ public partial struct SwitchStuffSystem : ISystem
                 int whileLimit = 0;
                 int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
 
-                state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
-
-                do
+                if (dir != 0)
                 {
-                    stuffInHandType.Value += dir;
 
-                    stuffInHandType.Value = (StuffType)((stuffList.Value.Length + (int)stuffInHandType.Value) % stuffList.Value.Length);
+                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
-                    nextStuff = stuffList.Value[(int)stuffInHandType.Value];
+                    do
+                    {
+                        stuffInHandType.Value += dir;
 
-                    whileLimit++;
+                        stuffInHandType.Value = (StuffType)((stuffList.Value.Length + (int)stuffInHandType.Value) % stuffList.Value.Length);
 
-                } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
+                        nextStuff = stuffList.Value[(int)stuffInHandType.Value];
 
-                state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                        whileLimit++;
+
+                    } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
+
+                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                }
             }
-
-            //if (input.selectNext.IsSet && state.World.IsServer())
-            //{
-            //    Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
-            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
-
-            //    int whileLimit = 0;
-            //    Entity nextStuff;
-
-            //    do
-            //    {
-            //        stuffInHandType.Value++;
-
-            //        if ((int)stuffInHandType.Value >= stuffList.Value.Length)
-            //        {
-            //            stuffInHandType.Value = 0;
-            //        }
-
-            //        nextStuff = stuffList.Value[(int)stuffInHandType.Value];
-
-            //        whileLimit++;
-
-            //    } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
-
-            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
-            //}
-
-            //else if (input.selectPrevious.IsSet && state.World.IsServer())
-            //{
-            //    Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
-            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
-
-            //    int whileLimit = 0;
-            //    Entity nextStuff;
-
-            //    do
-            //    {
-            //        stuffInHandType.Value--;
-
-            //        if ((int)stuffInHandType.Value < 0)
-            //        {
-            //            stuffInHandType.Value = (StuffType)(stuffList.Value.Length - 1);
-            //        }
-
-            //        nextStuff = stuffList.Value[(int)stuffInHandType.Value];
-
-            //        whileLimit++;
-
-            //    } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
-
-            //    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
-            //}
         }
     }
 }

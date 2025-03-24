@@ -6,7 +6,6 @@ using RangedWeapon;
 
 public class RangedWeaponAuthoring : MonoBehaviour
 {
-    [Header("Weapon Data")]
     public RangedWeaponData commonData;
 
     public class Baker : Baker<RangedWeaponAuthoring>
@@ -25,7 +24,9 @@ public class RangedWeaponAuthoring : MonoBehaviour
                 type = data.type,
                 side = data.side,
                 deploymentSpeed = data.deploymentSpeed,
-                storageSpeed = data.storageSpeed
+                storageSpeed = data.storageSpeed,
+                _stuffLocalOffsetView = data._stuffLocalOffsetView //temp
+
             });
 
             AddSharedComponent(entity, new CommonData
@@ -33,6 +34,7 @@ public class RangedWeaponAuthoring : MonoBehaviour
                 recoil = data.recoil,
                 damage = data.damage,
                 range = data.range,
+                firerate = data.firerate,
                 spread = data.spread,
                 spreadAiming = data.spreadAiming,
                 coefSpray = data.coefSpray,
@@ -60,14 +62,9 @@ public class RangedWeaponAuthoring : MonoBehaviour
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);
 
-            AddComponentObject(entity, new StuffPrefab
+            AddComponentObject(entity, new StuffGameObjectPrefab
             {
-                Value = data.prefab,
-            });
-
-            AddComponentObject(entity, new StuffAnimatorRef
-            {
-                Animator = GetComponent<Animator>(),
+                Value = data.gameobjectPrefab,
             });
 
             AddComponentObject(entity, new StuffUiImage

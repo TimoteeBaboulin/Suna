@@ -1,18 +1,15 @@
-using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
-public struct WaitForInstanciateWeaponsTag : IComponentData { }
+public struct WaitForInstanciateStuffTag : IComponentData { }
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-partial struct CharacterWeaponSystem : ISystem
+partial struct InstanciateStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<WaitForInstanciateWeaponsTag>();
+        state.RequireForUpdate<WaitForInstanciateStuffTag>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -24,7 +21,7 @@ partial struct CharacterWeaponSystem : ISystem
 
         foreach (var (prefabsRef, stuffListRef, stuffInHandTypeRef, chara) in SystemAPI
             .Query<RefRO<CharacterStuffPrefab>, RefRW<CharacterStuffList>, RefRW<CharacterStuffInHandType>>()
-            .WithAll<WaitForInstanciateWeaponsTag>()
+            .WithAll<WaitForInstanciateStuffTag>()
             .WithEntityAccess())
         {
             ref readonly CharacterStuffPrefab prefabs = ref prefabsRef.ValueRO;
@@ -34,7 +31,7 @@ partial struct CharacterWeaponSystem : ISystem
             InstanciateStuff(ecb, prefabs.SecondWeaponPrefab, chara, ref state, ref weaponsList, StuffType.SecondaryWeapon);
             InstanciateStuff(ecb, prefabs.MainWeaponPrefab, chara, ref state, ref weaponsList, StuffType.MainWeapon);
 
-            ecb.RemoveComponent<WaitForInstanciateWeaponsTag>(chara);
+            ecb.RemoveComponent<WaitForInstanciateStuffTag>(chara);
         }
     }
 

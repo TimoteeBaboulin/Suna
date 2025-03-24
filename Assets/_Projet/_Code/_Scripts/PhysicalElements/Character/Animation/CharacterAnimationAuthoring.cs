@@ -7,6 +7,7 @@ public class CharacterAnimationAuthoring : MonoBehaviour
     public Transform DeltaPosition;
     public string HeadBoneName;
     public string ViewBoneName;
+    public Vector3 StuffOffset; //temp
 
     public class Baker : Baker<CharacterAnimationAuthoring>
     {
@@ -20,6 +21,7 @@ public class CharacterAnimationAuthoring : MonoBehaviour
                 HeadBoneName = authoring.HeadBoneName,
                 ViewBoneName = authoring.ViewBoneName,
             });
+
             AddComponent(entity, new CharacterAnimationState
             {
                 IsWalking = false,
