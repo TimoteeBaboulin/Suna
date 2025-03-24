@@ -12,7 +12,6 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public InputEvent walkStarted;
     [GhostField] public InputEvent walkCanceled;
     [GhostField] public InputEvent shoot;
-    [GhostField] public InputEvent reload;
     [GhostField] public InputEvent selectNext;
     [GhostField] public InputEvent selectPrevious;
 

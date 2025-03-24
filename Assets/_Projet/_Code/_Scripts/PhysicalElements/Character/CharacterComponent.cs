@@ -1,4 +1,5 @@
 
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -88,6 +89,4 @@ public struct CharacterStuffInHandType : IComponentData
     [GhostField] public StuffType Value;
 }
 
-//[GhostEnabledBit]
-//public struct IsActiveWeapon : IEnableableComponent { }
 

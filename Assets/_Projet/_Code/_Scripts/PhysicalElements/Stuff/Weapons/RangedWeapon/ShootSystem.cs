@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
 using static ak.wwise;
@@ -35,12 +36,13 @@ namespace RangedWeapon
         {
             // Avoid repetition on the server due to the difference in framerate with the client
             NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-            if (!networkTime.IsFirstPredictionTick) return;
+            if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
-            float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
+            //Get ECB
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
+            //Query
             foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
             .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
             .WithAll<IsStuffInHand, Simulate>()
@@ -61,9 +63,10 @@ namespace RangedWeapon
                 if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
                 float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
+
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
-                    dynamicData.firerateTimer -= dt;
+                    dynamicData.firerateTimer -= SystemAPI.Time.DeltaTime;
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
                 if (input.shoot.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
@@ -171,8 +174,9 @@ namespace RangedWeapon
                     }
                 }
             }
-
+#if !UNITY_SERVER
             Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
+#endif
             return closestHit;
         }
     }
