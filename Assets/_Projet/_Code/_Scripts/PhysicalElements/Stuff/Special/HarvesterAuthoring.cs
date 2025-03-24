@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Transforms;
 using UnityEngine;
 
 public class HarvesterAuthoring : MonoBehaviour
@@ -9,9 +10,9 @@ public class HarvesterAuthoring : MonoBehaviour
         {
             HarvesterComponent harvester = new HarvesterComponent
             {
-                ownerNetworkId = -1
+                Owner = Entity.Null
             };
-            Entity entity = GetEntity(TransformUsageFlags.WorldSpace);
+            Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, harvester);
         }
     }

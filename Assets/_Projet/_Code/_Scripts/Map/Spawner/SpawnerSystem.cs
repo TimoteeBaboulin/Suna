@@ -1,10 +1,13 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Scenes;
 using Unity.Transforms;
 using UnityEditor.Search;
+using UnityEngine;
 using static RoundSystemServer;
 
 public struct WaitForRespawnTag : IComponentData { }
@@ -68,8 +71,6 @@ public partial struct OnDieJob : IJobEntity
 }
 
 
-// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RespawnSystem : ISystem
@@ -103,45 +104,42 @@ public partial struct RespawnSystem : ISystem
             teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
         }
 
-<<<<<<< Updated upstream
-        NativeList<Entity> corpoPlayers = new NativeList<Entity>();
-=======
-        NativeList<int> corpoNetworkId = new NativeList<int>();
->>>>>>> Stashed changes
-        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
+        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
+
+            //This is set up to allow easy team dispatching once it's implemented
             TeamSideType teamSideType = TeamSideType.Neutre;
-            if (SystemAPI.HasComponent<CorpoTeamTag>(entity))
+            if (SystemAPI.HasComponent<CorpoTeamTag>(clientEntity))
             {
                 teamSideType = TeamSideType.Corpo;
             }
-            else if (SystemAPI.HasComponent<NatifTeamTag>(entity))
+            else if (SystemAPI.HasComponent<NatifTeamTag>(clientEntity))
             {
                 teamSideType = TeamSideType.Natif;
             }
 
             //TODO: Let the client know its team so we can spawn in the right spawn
-            teamSideType = (TeamSideType) UnityEngine.Random.Range(0,2);
+            teamSideType = (TeamSideType)UnityEngine.Random.Range(0, 2);
 
             if (!teamSpawnsValid[(int)teamSideType])
             {
                 continue;
             }
 
-            Entity spawnerEntity = teamSpawnsEntities[(int) teamSideType];
+            //Spawns are currently random but we might need to dispatch them in order with a counter getting incremented
+            //Or a special procedure for new rounds
+            Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
 
             var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
             int random = UnityEngine.Random.Range(0, buffer.Length);
 
-            //LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
-
-            int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
+            int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
 
             //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
-            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
+            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
-                SpawnCharacter(entity, networkId, ecb, buffer[random]);
+                characterEntity = SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
             }
             else
             {
@@ -151,63 +149,17 @@ public partial struct RespawnSystem : ISystem
                 currentHealth.ValueRW.Value = 100;
             }
 
-<<<<<<< Updated upstream
-            corpoPlayers.Add(SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value);
-=======
-            corpoNetworkId.Add(networkId);
->>>>>>> Stashed changes
-
-            ecb.RemoveComponent<WaitForRespawnTag>(entity);
+            ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
         }
-
-        //Check if it is a new round and make sure to remove the tag to avoid keeping the loop active
-        bool newRound = false;
-
-        foreach (var (newRoundTag, entity) in SystemAPI.Query<NewRoundTag>().WithEntityAccess())
-        {
-            ecb.RemoveComponent<NewRoundTag>(entity);
-            newRound = true;
-        }
-
-        //Try to give each harvester to a corpoPlayer
-<<<<<<< Updated upstream
-        if (newRound && !corpoPlayers.IsEmpty)
-        {
-            foreach (var Harvester in SystemAPI.Query<RefRW<HarvesterComponent>>())
-            {
-                int random = UnityEngine.Random.Range(0, corpoPlayers.Length);
-                Harvester.ValueRW.owner = corpoPlayers[random];
-
-                corpoPlayers.RemoveAt(random);
-
-                //break the loop for performance issues
-                if (corpoPlayers.IsEmpty)
-                    break;
-            }
-=======
-        if (newRound && !corpoNetworkId.IsEmpty)
-        {
-            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAllRW<HarvesterComponent>().Build(ref state);
-            if (query.entity)
-            Entity harvesterEntity = query.ToEntityArray(Allocator.Temp)[0];
-
->>>>>>> Stashed changes
-        }
-
-        //if (resetStuffLookup.HasComponent(spawnerEntity))
-        //{
-        //    //TODO : Vider l'inventaire
-        //    commandBuffer.RemoveComponent<ResetStuffTag>(playerEntity.Index, playerEntity);
-        //}
     }
 
-    public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
+    public Entity SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
         if (prefabManager.character == null)
         {
-            return;
+            return Entity.Null;
         }
 
         FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
@@ -232,6 +184,7 @@ public partial struct RespawnSystem : ISystem
         ecb.SetComponent(character, new CharacterClientAttachedComponent { ClientEntity = client });
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
+        return character;
     }
 }
 

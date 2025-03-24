@@ -1,8 +1,8 @@
 ﻿using Unity.Entities;
 using Unity.NetCode;
 
+[GhostComponent]
 partial struct HarvesterComponent : IComponentData
 {
-    public NetworkTime time;
-    public int ownerNetworkId;
+    [GhostField] public Entity Owner;
 }

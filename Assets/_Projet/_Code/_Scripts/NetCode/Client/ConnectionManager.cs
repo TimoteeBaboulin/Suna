@@ -19,6 +19,10 @@ public class ConnectionManager : Singleton<ConnectionManager>
     private string _localIp = "127.0.0.1";
     private ushort _localPort = 7979;
 
+    private bool isSubSceneLoaded = false;
+
+    public bool SubSceneLoaded => isSubSceneLoaded;
+
     //public event Action Connected;
     SubScene[] subScenes;
     public enum RoleType
@@ -163,9 +167,9 @@ public class ConnectionManager : Singleton<ConnectionManager>
             for (int i = 0; i < subScenes.Length; i++)
             {
                 SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 flag = SceneLoadFlags.BlockOnImport;
-                #endif
+#endif
                 SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters() { Flags = flag };
                 Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value),
                     loadParameters);
@@ -173,6 +177,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
                 {
                     world.Update();
+                    isSubSceneLoaded = true;
                     yield return null; //Coucou ici, ça attends la fin de la frame pour confirmer et passer à la suivante, bisous :)
                 }
             }
