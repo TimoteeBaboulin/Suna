@@ -8,11 +8,11 @@
 
 //using RaycastHit = Unity.Physics.RaycastHit;
 
-//[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-//public struct HasHitComponent : IComponentData
-//{
-//    [GhostField] public bool Value;
-//}
+////[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
+////public struct HasHitComponent : IComponentData
+////{
+////    [GhostField] public bool Value;
+////}
 
 //[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 //public partial struct ShootSystem : ISystem
@@ -129,14 +129,14 @@
 //                        //Applique les degats au joueur cible
 //                        if (state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(closestHit.Entity))
 //                        {
-//                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData 
+//                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData
 //                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(closestHit.Entity);
 
-//                            if (CharacterBodyPartData.ValueRO.CharacterEntity != shooter 
+//                            if (CharacterBodyPartData.ValueRO.CharacterEntity != shooter
 //                                && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
 //                            {
-//                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement 
-//                                { 
+//                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+//                                {
 //                                    Value = weaponData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
 //                                });
 //                                ecb.SetComponent(shooter, new HasHitComponent { Value = true });

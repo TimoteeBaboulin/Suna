@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using static ak.wwise;
 using static UnityEngine.UI.GridLayoutGroup;
 using RaycastHit = Unity.Physics.RaycastHit;
 
@@ -42,21 +43,27 @@ namespace RangedWeapon
 
             foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
             .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
-            .WithAll<IsStuffInHand>()
+            .WithAll<IsStuffInHand, Simulate>()
             .WithEntityAccess())
             {
                 ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
                 ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
+                //Check valid state
+                if (!(dynamicData.state == _State.Idle || dynamicData.state == _State.Shoot)) return;
+                dynamicData.state = _State.Idle;
+
                 // Retrieve player input
                 if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
                 ref CharacterInput input = ref inputRef.ValueRW;
 
+                // Retrieve player bones
+                if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
+                float3 viewPos = modelBonesRef.ViewBoneTransform.position;
+
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
                     dynamicData.firerateTimer -= dt;
-
-                dynamicData.state = _State.Idle;
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
                 if (input.shoot.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
@@ -65,26 +72,26 @@ namespace RangedWeapon
                     dynamicData.state = _State.Shoot;
                     dynamicData.currentAmmo--;
 
-                    RaycastHit hit = ClosestRayCast(input.shootTransform, commonData.range, owner);
+                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner);
 
                     // Apply damage to the target player
                     if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        var CharacterBodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                        var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                        if (state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                        if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
                         {
-                            ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
                             {
-                                Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
                             });
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
                         }
                     }
+
                 }
             }
         }
-
 
         bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)
         {
@@ -95,18 +102,40 @@ namespace RangedWeapon
             }
             else
             {
-                Debug.LogError("CharacterInput not found");
+                //Debug.LogError("CharacterInput not found");
                 Input = default;
                 return false;
             }
         }
 
-
-        RaycastHit ClosestRayCast(LocalTransform shootTransform, float range, Entity owner)
+        bool TryGetOwnerBones(Entity owner, ref SystemState state, out CharacterModelBones modelBones)
         {
+            if (state.EntityManager.HasComponent<CharacterModelBones>(owner))
+            {
+                modelBones = state.EntityManager.GetComponentData<CharacterModelBones>(owner);
+                return true;
+            }
+            else
+            {
+                //Debug.LogError("CharacterModelBones not found");
+                modelBones = default;
+                return false;
+            }
+        }
+
+
+        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner)
+        {
+            LocalTransform startTransform = new LocalTransform
+            {
+                Position = viewPos,
+                Rotation = shootRotation,
+                Scale = 1,
+            };
+
             PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-            float3 startPosition = shootTransform.Position;
-            float3 endPosition = startPosition + new float3(shootTransform.Forward() * range);
+            float3 startPosition = startTransform.Position;
+            float3 endPosition = startPosition + new float3(startTransform.Forward() * range);
             RaycastHit closestHit = default;
 
             CollisionFilter filter = new CollisionFilter
@@ -125,27 +154,24 @@ namespace RangedWeapon
             NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
-                // If the only target hit is the player who fired, skip
-                if (!(allHits.Length == 1 && allHits[0].Entity == owner))
+                // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
+                closestHit = allHits[0];
+                float closestDist = range;
+                foreach (RaycastHit hit in allHits)
                 {
-                    // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
-                    closestHit = allHits[0];
-                    float closestDist = range;
-                    foreach (RaycastHit hit in allHits)
+                    // If the entity hit is the shooter, skip
+                    if (hit.Entity == owner) continue;
+
+                    float currentDist = math.distancesq(raycastInput.Start, hit.Position);
+
+                    if (currentDist < closestDist)
                     {
-                        // If the entity hit is the shooter, skip
-                        if (hit.Entity == owner) continue;
-
-                        float currentDist = math.distancesq(raycastInput.Start, hit.Position);
-
-                        if (currentDist < closestDist)
-                        {
-                            closestHit = hit;
-                            closestDist = currentDist;
-                        }
+                        closestHit = hit;
+                        closestDist = currentDist;
                     }
                 }
             }
+
             Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
             return closestHit;
         }

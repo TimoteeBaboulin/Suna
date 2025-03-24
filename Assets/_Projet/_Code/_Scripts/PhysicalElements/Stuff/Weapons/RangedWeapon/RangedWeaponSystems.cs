@@ -15,7 +15,7 @@ partial struct RangedWeaponViewSystem : ISystem
 
         //Instanciate GameObject and Attach to camera
         foreach (var (owner, prefabRef, stuffData, entity) in SystemAPI
-            .Query<RefRO<StuffOwner>, StuffGameObjectPrefab, StuffCommonData> ()
+            .Query<RefRO<StuffOwner>, StuffGameObjectPrefab, StuffCommonData>()
             .WithNone<StuffGameObjectRef>()
             .WithEntityAccess())
         {
@@ -37,19 +37,32 @@ partial struct RangedWeaponViewSystem : ISystem
         //Active GameObject in hand
         foreach (var (goRef, entity) in SystemAPI
             .Query<StuffGameObjectRef>()
+            .WithPresent<IsStuffInHand>()
             .WithEntityAccess())
         {
             goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));
         }
 
-        //FireAnim
-        foreach (var (goRef, dataRef) in SystemAPI
-           .Query<StuffGameObjectRef, RefRO<DynamicData>>()
-           .WithAll<IsStuffInHand>())
+        //Active GameObject in hand
+        foreach (var (goRef, data, entity) in SystemAPI
+            .Query<StuffGameObjectRef, RefRW<DynamicData>>()
+            .WithPresent<IsStuffInHand>()
+            .WithEntityAccess())
         {
-            if (dataRef.ValueRO.state == _State.Shoot)
+            switch (data.ValueRO.state)
             {
-                goRef.Value.GetComponent<Animator>().SetTrigger("Fire");
+                case _State.Idle:
+                    break;
+                case _State.Shoot:
+                    goRef.Value.GetComponent<Animator>().SetTrigger("Fire");
+                    data.ValueRW.state = _State.Idle;
+                    break;
+                case _State.Reload:
+                    break;
+                case _State.Droped:
+                    break;
+                default:
+                    break;
             }
         }
 
