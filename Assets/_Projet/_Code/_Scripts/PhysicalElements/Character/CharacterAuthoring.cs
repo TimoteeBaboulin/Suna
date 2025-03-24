@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -61,7 +62,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new CharacterDefaultWeapon());
             AddComponent(entity, new FreezeAllRotationTag());
 
-            AddComponent(entity, new CharacterTag()); //Multiplayer
+            AddComponent<CharacterTag>(entity); //Multiplayer
+            AddComponent<CharacterEnableTag>(entity);
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
