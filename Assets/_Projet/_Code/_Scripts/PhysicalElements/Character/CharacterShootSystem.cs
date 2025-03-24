@@ -107,7 +107,7 @@ public partial struct ShootSystem : ISystem
                     {
                         //Raycast récupére les hit dans le mauvais ordre, il faut les triers en fonction de la distance
                         RaycastHit closestHit = allHits[0];
-                        float closestDist = weaponData.range;
+                        float closestDist = math.distancesq(raycastInput.Start, allHits[0].Position);
                         foreach (RaycastHit hit in allHits)
                         {
                             if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
