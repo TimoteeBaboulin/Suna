@@ -89,6 +89,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.shoot = default;
             }
 
+
             if (isReloadPressed)
             {
                 input.ValueRW.reload.Set();

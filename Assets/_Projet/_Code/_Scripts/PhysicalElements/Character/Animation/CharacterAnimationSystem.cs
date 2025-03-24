@@ -68,6 +68,7 @@ partial struct CharacterAnimationSystem : ISystem
             animatorReference.CharacterModel.NewHeadRotation = math.mul(transform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
         }
 
+
         foreach (var (animatorReference, entity) in SystemAPI
             .Query<CharacterAnimatorReference>()
             .WithNone<CharacterGameObjectPrefab, LocalTransform>()

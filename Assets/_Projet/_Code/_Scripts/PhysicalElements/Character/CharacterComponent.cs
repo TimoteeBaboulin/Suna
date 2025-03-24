@@ -1,11 +1,13 @@
-using Unity.Cinemachine;
-using Unity.Collections;
+
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 
 public struct CharacterTag : IComponentData { }
+
+[GhostEnabledBit]
+public struct CharacterEnableTag : IComponentData, IEnableableComponent { }
 
 [GhostComponent]
 public struct CharacterComponent : IComponentData
@@ -19,12 +21,16 @@ public struct CharacterComponent : IComponentData
     [GhostField] public float decelerationFactor;
     [GhostField] public float drag;
 
-    [GhostField] public float2 direction;
+    [GhostField] public float3 direction;
+    [GhostField] public float2 horizontalDir;
     [GhostField] public float2 inertia;
+
+    [GhostField] public float linearDampingXZ;
 
     [GhostField] public float maxStepHeight;
 
     [GhostField] public float jumpForce;
+    [GhostField] public bool isJumping;
 
     [GhostField] public bool jumpRequest;
     [GhostField] public bool isGrounded;

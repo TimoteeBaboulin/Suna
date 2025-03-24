@@ -26,7 +26,7 @@
     </engine:VisualElement>
     <engine:VisualElement name="WeaponContainer" style="flex-grow: 1; position: absolute; right: 40px; bottom: 150px; flex-direction: column;" />
     <engine:VisualElement name="MessageBox" style="flex-grow: 1; position: absolute; background-color: rgba(0, 0, 0, 0.25); width: 700px; height: 500px; top: auto; left: 10px; bottom: 100px;">
-        <engine:Label text="Tchat" name="Title" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 20px; text-overflow: clip;" />
+        <engine:Label text="Chat" name="Title" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 20px; text-overflow: clip;" />
         <engine:ScrollView enabled="true" />
     </engine:VisualElement>
 </engine:UXML>

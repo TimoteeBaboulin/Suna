@@ -1,3 +1,4 @@
+using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -5,6 +6,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
@@ -31,6 +33,7 @@ public partial struct CharacterMovementSystem : ISystem
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
+            ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
     }
@@ -43,59 +46,116 @@ public partial struct CharacterMovementJob : IJobEntity
     public float dt;
     public NetworkTime networkTime;
     [ReadOnly] public PhysicsWorld physicsWorld;
+    [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
+
+    const float gravity = -9.81f;
+
+    private static float3 ProjectOnPlan(float3 vec, float3 normal)
+    {
+        return vec - math.project(vec, normal);
+    }
+
+    private static float Angle(float3 u, float3 v)
+    {
+        return math.acos(math.dot(u, v) / (math.length(u) * math.length(v)));
+    }
+
+    private static float3 SlopeMovementDirection(float3 moveDir, float3 groundNormal)
+    {
+        return math.normalize(ProjectOnPlan(moveDir, groundNormal));
+    }
+
+    private bool OnSlope(float3 groundNormal)
+    {
+        float maxAngle = 50; //TODO: Avoid Magic Numbers lul
+        float angle = Angle(groundNormal, math.up());
+        return angle != 0f && angle <= maxAngle;
+    }
+
+    private float3 float3Lerp(float3 a, float3 b, float x)
+    {
+        return a + (b - a) * x;
+    }
 
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<CharacterAnimationState> animationState)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
 
         float3 feetPosition = characterTransform.Position - new float3(0, 0.95f, 0);
-        float3 checkPosition = feetPosition - new float3(0, 0.15f, 0);
+        float3 moveDir = math.normalize(math.rotate(characterTransform.Rotation, new float3(input.move.x, 0, input.move.y)));
+        bool isMoving = math.lengthsq(moveDir) > 0;
+        float3 viewForward = math.normalize(math.rotate(characterTransform.Rotation, math.forward()));
 
-        RaycastInput raycastInput = new RaycastInput()
-        {
-            Start = feetPosition,
-            End = checkPosition,
-            Filter = CollisionFilter.Default
-        };
-
-        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+        NativeList<Unity.Physics.ColliderCastHit> allHits = new NativeList<Unity.Physics.ColliderCastHit>(Allocator.Temp);
+        NativeList<Unity.Physics.RaycastHit> allHitsFront = new NativeList<Unity.Physics.RaycastHit>(Allocator.Temp);
         controller.isGrounded = false;
+        float3 groundNormal = math.up();
 
-        if (physicsWorld.CastRay(raycastInput, ref allHits))
+        bool forwardHit = false;
+
+        if (isMoving)
         {
-            foreach (var hit in allHits)
+            float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
+
+            RaycastInput raycastInput = new RaycastInput()
             {
-                if (hit.Entity != entity)
+                Start = feetPosition,
+                End = forwardHitEnd,
+                Filter = CollisionFilter.Default
+            };
+
+            if (physicsWorld.CastRay(raycastInput, ref allHitsFront))
+            {
+                foreach (var hit in allHitsFront)
                 {
-                    controller.isGrounded = true;
-                    break;
+                    if (hit.Entity != entity)
+                    {
+                        forwardHit = true;
+                        break;
+                    }
                 }
             }
         }
 
-        float x = input.move.x;
-        float z = input.move.y;
-
-        if (math.length(new float2(x, z)) > 0)
+        if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
         {
-            controller.direction = math.normalize(new float2(x, z));
-            animationState.ValueRW.IsWalking = true;
+            foreach (var hit in allHits)
+            {
+                if (hit.Entity == entity)
+                    continue;
+
+                if (ccLookup.TryGetComponent(hit.Entity, out CharacterColliderDataComponent ccdc))
+                    if (ccdc.CharacterEntity == entity)
+                        continue;
+
+                controller.isGrounded = true;
+                groundNormal = hit.SurfaceNormal;
+                break;
+            }
+        }
+
+        bool onSlope = OnSlope(groundNormal) && controller.isGrounded;
+
+        if(controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
+        {
+            controller.isGrounded = false;
+        }
+
+        if (isMoving && Angle(math.up(), groundNormal) < 50)
+        {
+            controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
         }
         else
         {
-            controller.direction = float2.zero;
-            animationState.ValueRW.IsWalking = false;
+            controller.direction = float3.zero;
         }
 
-        float3 dir = math.rotate(characterTransform.Rotation, new float3(controller.direction.x, 0, controller.direction.y));
-        controller.direction = new float2(dir.x, dir.z);
+        float decelerationFactor = math.dot(controller.direction, vel.Linear) < 0 ? controller.decelerationFactor : 1.0f;
 
-        float decelerationFactor = math.dot(controller.direction, controller.inertia) < 0 ? controller.decelerationFactor : 1.0f;
-
-        if (math.length(controller.direction) < math.EPSILON)
+        if (!isMoving)
         {
             controller.currentSpeed = math.max(0, controller.currentSpeed - controller.deceleration * dt);
         }
@@ -111,37 +171,64 @@ public partial struct CharacterMovementJob : IJobEntity
             }
         }
 
-        controller.inertia += controller.direction * (controller.acceleration * dt);
-        if (math.length(controller.inertia) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
+        vel.Linear += controller.direction * (controller.acceleration * dt);
+
+        if(!isMoving)
         {
-            controller.inertia = math.normalize(controller.inertia) * controller.currentSpeed;
+            vel.Linear.x *= (1.0f - controller.linearDampingXZ);
+            vel.Linear.z *= (1.0f - controller.linearDampingXZ);
         }
 
-        if (math.dot(controller.inertia, controller.direction) <= 0)
+        if(onSlope && !controller.isJumping)
         {
-            controller.inertia *= (1.0f - controller.drag);
+            if(math.length(vel.Linear) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
+            {
+                vel.Linear = math.normalize(vel.Linear) * controller.currentSpeed;
+            }
+        }
+        else
+        {
+            float2 velXZ = new float2(vel.Linear.x, vel.Linear.z);
+
+            if (math.length(velXZ) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
+            {
+                float3 normVel = math.normalize(vel.Linear);
+                vel.Linear.x = normVel.x * controller.currentSpeed;
+                vel.Linear.z = normVel.z * controller.currentSpeed;
+            }
         }
 
-        vel.Linear = new float3(controller.inertia.x, vel.Linear.y, controller.inertia.y);
+        if (math.dot(vel.Linear, controller.direction) < 0)
+        {
+            vel.Linear.x *= (1.0f - controller.drag);
+            vel.Linear.z *= (1.0f - controller.drag);
+        }
 
-        // TODO:
-        // Easeout la vélocité quand on s'approche de la maxSpeed
-        // Fix le problème de friction avec les autres collider (lors du saut en appuyant sur Z)
+        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * gravity * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+
+        if (onSlope && !isMoving && !controller.isJumping) //Prevents jumping when stopping on a slope
+            vel.Linear.y = 0;
+
+        if (controller.isGrounded)
+        {
+            controller.isJumping = false;
+        }
 
         if (input.jump.IsSet && controller.isGrounded)
         {
-            physicsVelocity.ValueRW.Linear.y = characterController.ValueRW.jumpForce;
-            characterController.ValueRW.isGrounded = false;
+            vel.Linear.y = characterController.ValueRW.jumpForce;
+            controller.isGrounded = false;
+            controller.isJumping = true;
         }
 
         if (input.walkStarted.IsSet)
         {
-            characterController.ValueRW.isWalking = true;
+            controller.isWalking = true;
         }
 
         if (input.walkCanceled.IsSet)
         {
-            characterController.ValueRW.isWalking = false;
+            controller.isWalking = false;
         }
     }
 }

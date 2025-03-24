@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -12,6 +13,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public float decelerationFactor = 1.4f;
     public float drag = 0.1f;
     public float maxStepHeight = 0.5f;
+    public float linearDampingXZ = 0.5f;
 
     [Header("Vertical Movement Parameters")]
     public float jumpForce = 3f;
@@ -47,6 +49,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 acceleration = cca.acceleration,
                 deceleration = cca.deceleration,
                 decelerationFactor = cca.decelerationFactor,
+                linearDampingXZ = cca.linearDampingXZ,
                 drag = cca.drag,
                 maxStepHeight = cca.maxStepHeight,
                 jumpForce = cca.jumpForce,
@@ -65,7 +68,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent(entity, new FreezeAllRotationTag());
 
-            AddComponent(entity, new CharacterTag()); //Multiplayer
+            AddComponent<CharacterTag>(entity); //Multiplayer
+            AddComponent<CharacterEnableTag>(entity);
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
