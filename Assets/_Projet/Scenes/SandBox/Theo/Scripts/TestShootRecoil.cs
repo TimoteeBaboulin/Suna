@@ -26,7 +26,7 @@ public class TestShootRecoil : MonoBehaviour
 
     public void RecoilMath(float targetDistance = 0f)
     {
-        Vector2 pattern = TPattern(bulletIndex, accuracy, targetDistance);
+        Vector2 pattern = InfinityPattern(bulletIndex, accuracy, targetDistance);
 
         patternAffectRotationScript.patternAffectedCameraXRotation -= pattern.y;
         patternAffectRotationScript.patternAffectedYRotation -= pattern.x;
@@ -148,14 +148,28 @@ public class TestShootRecoil : MonoBehaviour
 
             bulletIndex++;
 
+            float distance = 100f;
             if (Physics.Raycast(transform.position, patternAffectRotationScript.camTransform.forward, out RaycastHit hit, 100f))
+            {
+                distance = hit.distance;
+            }
+            Vector3 direction = patternAffectRotationScript.camTransform.forward;
+            Vector2 recoil = CirclePattern(bulletIndex, accuracy, distance);
+            Quaternion recoilRotation = Quaternion.Euler(recoil.y, recoil.x, 0);
+            Quaternion conjugateRecoilRotation = recoilRotation;
+            conjugateRecoilRotation.x *= -1;
+            conjugateRecoilRotation.y *= -1;
+            conjugateRecoilRotation.z *= -1;
+            Vector3 newDirection = recoilRotation * direction;
+            newDirection = Quaternion.Inverse(conjugateRecoilRotation) * newDirection;
+
+            if (Physics.Raycast(transform.position, newDirection, out hit, 100f))
             {
                 Instantiate(impactPrefab, hit.point, Quaternion.identity);
                 RecoilMath(hit.distance);
             }
             else
             {
-
                 RecoilMath();
             }
         }
