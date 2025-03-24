@@ -106,10 +106,16 @@ public partial struct ShootSystem : ISystem
                     if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
                     {
                         //Raycast récupére les hit dans le mauvais ordre, il faut les triers en fonction de la distance
-                        RaycastHit closestHit = allHits[0];
-                        float closestDist = math.distancesq(raycastInput.Start, allHits[0].Position);
+                        RaycastHit closestHit = new RaycastHit();
+                        float closestDist = float.MaxValue;
                         foreach (RaycastHit hit in allHits)
                         {
+                            if (state.World.IsClient())
+                            {
+                                Debug.Log(hit.Entity);
+                            }
+                            
+
                             if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                             {
                                 Entity characterHitEntity = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity).ValueRO.CharacterEntity;
@@ -129,8 +135,12 @@ public partial struct ShootSystem : ISystem
                             }
                         }
 
+                        Debug.Log(closestHit);
+
                         //Applique les degats au joueur cible
-                        if (state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(closestHit.Entity))
+                        if (state.World.IsServer() 
+                            && closestDist < float.MaxValue
+                            && state.EntityManager.HasComponent<CharacterColliderDataComponent>(closestHit.Entity))
                         {
                             RefRO<CharacterColliderDataComponent> CharacterBodyPartData 
                                 = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(closestHit.Entity);
@@ -138,6 +148,7 @@ public partial struct ShootSystem : ISystem
                             if (CharacterBodyPartData.ValueRO.CharacterEntity != shooter 
                                 && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
                             {
+                                
                                 ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement 
                                 { 
                                     Value = weaponData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
