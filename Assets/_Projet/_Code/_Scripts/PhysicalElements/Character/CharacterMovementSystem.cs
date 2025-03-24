@@ -70,6 +70,11 @@ public partial struct CharacterMovementJob : IJobEntity
         return angle != 0f && angle <= maxAngle;
     }
 
+    private float3 float3Lerp(float3 a, float3 b, float x)
+    {
+        return a + (b - a) * x;
+    }
+
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
         RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
@@ -78,33 +83,42 @@ public partial struct CharacterMovementJob : IJobEntity
         ref PhysicsVelocity vel = ref physicsVelocity.ValueRW;
 
         float3 feetPosition = characterTransform.Position - new float3(0, 0.95f, 0);
+        float3 moveDir = math.normalize(math.rotate(characterTransform.Rotation, new float3(input.move.x, 0, input.move.y)));
+        bool isMoving = math.lengthsq(moveDir) > 0;
+        float3 viewForward = math.normalize(math.rotate(characterTransform.Rotation, math.forward()));
 
         NativeList<Unity.Physics.ColliderCastHit> allHits = new NativeList<Unity.Physics.ColliderCastHit>(Allocator.Temp);
-        //NativeList<Unity.Physics.RaycastHit> allHits = new NativeList<Unity.Physics.RaycastHit>(Allocator.Temp);
+        NativeList<Unity.Physics.RaycastHit> allHitsFront = new NativeList<Unity.Physics.RaycastHit>(Allocator.Temp);
         controller.isGrounded = false;
         float3 groundNormal = math.up();
 
-        RaycastInput raycastInput = new RaycastInput()
-        {
-            Start = feetPosition,
-            End = feetPosition + math.down() * 0.15f,
-            Filter = CollisionFilter.Default
-        };
+        bool forwardHit = false;
 
-        /*if (physicsWorld.CastRay(raycastInput, ref allHits))
+        if (isMoving)
         {
-            foreach (var hit in allHits)
+            float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
+
+            RaycastInput raycastInput = new RaycastInput()
             {
-                if (hit.Entity != entity)
+                Start = feetPosition,
+                End = forwardHitEnd,
+                Filter = CollisionFilter.Default
+            };
+
+            if (physicsWorld.CastRay(raycastInput, ref allHitsFront))
+            {
+                foreach (var hit in allHitsFront)
                 {
-                    controller.isGrounded = true;
-                    groundNormal = hit.SurfaceNormal;
-                    break;
+                    if (hit.Entity != entity)
+                    {
+                        forwardHit = true;
+                        break;
+                    }
                 }
             }
-        }*/
+        }
 
-        if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.4f, .01f, .4f), math.down(), .15f, ref allHits, CollisionFilter.Default))
+        if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
         {
             foreach (var hit in allHits)
             {
@@ -119,13 +133,9 @@ public partial struct CharacterMovementJob : IJobEntity
 
         bool onSlope = OnSlope(groundNormal) && controller.isGrounded;
 
-        float3 moveDir = math.normalize(math.rotate(characterTransform.Rotation, new float3(input.move.x, 0, input.move.y)));
-
-        bool isMoving = math.lengthsq(moveDir) > 0;
-
-        if (isMoving)
+        if (isMoving && Angle(math.up(), groundNormal) < 50)
         {
-            controller.direction = SlopeMovementDirection(moveDir, groundNormal);
+            controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
         }
         else
         {
@@ -158,7 +168,7 @@ public partial struct CharacterMovementJob : IJobEntity
             vel.Linear.z *= (1.0f - controller.linearDampingXZ);
         }
 
-        if(onSlope)
+        if(onSlope && !controller.isJumping)
         {
             if(math.length(vel.Linear) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
             {
@@ -183,33 +193,21 @@ public partial struct CharacterMovementJob : IJobEntity
             vel.Linear.z *= (1.0f - controller.drag);
         }
 
-        //if(!onSlope)
-            vel.Linear.y += gravity * dt; //m.s^-2 * s = m.s^-1 (Force)
+        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * gravity * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
-        if (onSlope && !isMoving) //Prevents jumping when stopping on a slope
+        if (onSlope && !isMoving && !controller.isJumping) //Prevents jumping when stopping on a slope
             vel.Linear.y = 0;
 
-        //if (controller.isGrounded && vel.Linear.y <= 0.1f) vel.Linear.y = .0f;
-
-        double x = System.Math.Round(vel.Linear.x, 2);
-        double y = System.Math.Round(vel.Linear.y, 2);
-        double z = System.Math.Round(vel.Linear.z, 2);
-
-        Debug.Log($"Final Velocity: [{x}, {y}, {z}]");
-
-        x = System.Math.Round(groundNormal.x, 2);
-        y = System.Math.Round(groundNormal.y, 2);
-        z = System.Math.Round(groundNormal.z, 2);
-
-        Debug.Log($"Ground Normal: [{x}, {y}, {z}]");
-
-        // TODO:
-        // Easeout la vélocité quand on s'approche de la maxSpeed
+        if (controller.isGrounded)
+        {
+            controller.isJumping = false;
+        }
 
         if (input.jump.IsSet && controller.isGrounded)
         {
             vel.Linear.y = characterController.ValueRW.jumpForce;
             controller.isGrounded = false;
+            controller.isJumping = true;
         }
 
         if (input.walkStarted.IsSet)

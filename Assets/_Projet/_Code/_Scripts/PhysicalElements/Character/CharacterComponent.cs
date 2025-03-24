@@ -26,6 +26,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public float maxStepHeight;
 
     [GhostField] public float jumpForce;
+    [GhostField] public bool isJumping;
 
     [GhostField] public bool jumpRequest;
     [GhostField] public bool isGrounded;
