@@ -1,9 +1,11 @@
+using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine.Rendering;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -57,8 +59,10 @@ public partial struct OnDieJob : IJobEntity
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
         {
+            commandBuffer.SetComponentEnabled<CharacterEnableTag>(sortKey, entity, false);
             commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
-            commandBuffer.DestroyEntity(sortKey, entity);
+            commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
+            //commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
         }
@@ -114,14 +118,14 @@ public partial struct RespawnSystem : ISystem
             }
 
             //TODO: Let the client know its team so we can spawn in the right spawn
-            teamSideType = (TeamSideType) UnityEngine.Random.Range(0,2);
+            teamSideType = (TeamSideType)UnityEngine.Random.Range(0, 2);
 
             if (!teamSpawnsValid[(int)teamSideType])
             {
                 continue;
             }
 
-            Entity spawnerEntity = teamSpawnsEntities[(int) teamSideType];
+            Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
 
             var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
             int random = UnityEngine.Random.Range(0, buffer.Length);
@@ -135,6 +139,7 @@ public partial struct RespawnSystem : ISystem
             if (!state.EntityManager.Exists(characterEntity))
             {
                 SpawnCharacter(entity, networkId, ecb, buffer[random]);
+                ecb.RemoveComponent<WaitForRespawnTag>(entity);
             }
             else
             {
@@ -142,16 +147,12 @@ public partial struct RespawnSystem : ISystem
                 RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
                 transform.ValueRW.Position = buffer[random];
                 currentHealth.ValueRW.Value = 100;
+
+                ecb.SetComponentEnabled<CharacterEnableTag>(characterEntity, true);
             }
-            
+
             ecb.RemoveComponent<WaitForRespawnTag>(entity);
         }
-
-        //if (resetStuffLookup.HasComponent(spawnerEntity))
-        //{
-        //    //TODO : Vider l'inventaire
-        //    commandBuffer.RemoveComponent<ResetStuffTag>(playerEntity.Index, playerEntity);
-        //}
     }
 
     public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)

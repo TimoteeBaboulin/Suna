@@ -114,7 +114,10 @@ public partial struct ShootSystem : ISystem
                             {
                                 Entity characterHitEntity = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity).ValueRO.CharacterEntity;
 
-                                if (characterHitEntity == shooter) continue;
+                                if (characterHitEntity == shooter)
+                                {
+                                    continue;
+                                }
                             }
 
                             float currentDist = math.distancesq(raycastInput.Start, hit.Position);
