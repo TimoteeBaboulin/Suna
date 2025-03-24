@@ -68,10 +68,18 @@ namespace RangedWeapon
                     RaycastHit hit = ClosestRayCast(input.shootTransform, commonData.range, owner);
 
                     // Apply damage to the target player
-                    if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<DamageBufferElement>(hit.Entity))
+                    if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        ecb.AppendToBuffer(hit.Entity, new DamageBufferElement { Value = commonData.damage });
-                        ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                        var CharacterBodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+
+                        if (state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                        {
+                            ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            {
+                                Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                            });
+                            ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                        }
                     }
                 }
             }
@@ -101,11 +109,17 @@ namespace RangedWeapon
             float3 endPosition = startPosition + new float3(shootTransform.Forward() * range);
             RaycastHit closestHit = default;
 
+            CollisionFilter filter = new CollisionFilter
+            {
+                BelongsTo = ~0u,
+                CollidesWith = ~(1u << 6)
+            };
+
             RaycastInput raycastInput = new RaycastInput()
             {
                 Start = startPosition,
                 End = endPosition,
-                Filter = CollisionFilter.Default
+                Filter = filter //filtre pour partie du corps
             };
 
             NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);

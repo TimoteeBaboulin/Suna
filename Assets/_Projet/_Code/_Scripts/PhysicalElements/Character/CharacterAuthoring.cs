@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.NetCode;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
