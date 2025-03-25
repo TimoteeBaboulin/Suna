@@ -75,7 +75,7 @@ namespace RangedWeapon
                     dynamicData.state = _State.Shoot;
                     dynamicData.currentAmmo--;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager);
+                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager, state.World.IsServer());
 
                     // Apply damage to the target player
                     if (state.World.IsServer()
@@ -94,22 +94,6 @@ namespace RangedWeapon
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
                         }
                     }
-
-
-                    //if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                    //{
-                    //    var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
-
-                    //    if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
-                    //    {
-                    //        ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
-                    //        {
-                    //            Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
-                    //        });
-                    //        ecb.SetComponent(owner, new HasHitComponent { Value = true });
-                    //    }
-                    //}
-
                 }
                 else
                 {
@@ -149,7 +133,7 @@ namespace RangedWeapon
         }
 
 
-        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager)
+        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager, bool isServer)
         {
             LocalTransform startTransform = new LocalTransform
             {
@@ -180,9 +164,7 @@ namespace RangedWeapon
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
                 // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
-
-                closestHit = allHits[0];
-                float closestDist = range;
+                float closestDist = float.MaxValue;
                 foreach (RaycastHit hit in allHits)
                 {
                     // If the entity hit is the shooter, skip
