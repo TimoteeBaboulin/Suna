@@ -1,20 +1,22 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-[CreateAssetMenu(fileName = "Pro", menuName = "Scriptable Objects/RangedWeaponData")]
-public class RangedWeaponData : ScriptableObject
+public interface IStuff { };
+[CreateAssetMenu(fileName = "Stuff Data", menuName = "Stuff Data/Ranged Weapon Data")]
+public class RangedWeaponData : ScriptableObject, IStuff
 {
-    [Header("Prefab")]
-    public GameObject prefab;
-
     [Header("Stuff infos")]
-    public string entityName;
+    public GameObject entityPrefab;
+    public GameObject gameobjectPrefab;
     public Image UIImage;
-    public int price;
-    public UsableEquipmentType type;
+    public StuffType type;
     public TeamSideType side;
+    public string entityName;
     public float deploymentSpeed;
     public float storageSpeed;
+    public int price;
+    public Vector3 _stuffLocalOffsetView; //temp
+
 
     [Header("Ranged Weapon Data")]
 

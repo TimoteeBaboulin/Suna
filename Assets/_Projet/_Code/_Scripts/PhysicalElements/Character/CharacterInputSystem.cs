@@ -36,10 +36,15 @@ public partial class CharacterInputSystem : SystemBase
         bool isJumpPerfomered = actions.Jump.WasPressedThisFrame();
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
-        bool isShootPressed = actions.Attack.WasPressedThisFrame();
-        bool isReloadPerformered = actions.Reload.WasPressedThisFrame();
+
+        bool isShootPressed = actions.Attack.IsPressed();
+        bool isReloadPressed = actions.Reload.WasPressedThisFrame();
+        bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
+        bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
+
         foreach (var (controller, input, modelBones) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, CharacterModelBones>()
+
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;
@@ -84,13 +89,32 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.shoot = default;
             }
 
-            if (isReloadPerformered)
+
+            if (isReloadPressed)
             {
                 input.ValueRW.reload.Set();
             }
             else
             {
-                input.ValueRW.reload = default; //Important to unset or we will have issues down the line
+                input.ValueRW.reload = default;
+            }
+
+            if (isSelectNext)
+            {
+                input.ValueRW.selectNext.Set();
+            }
+            else
+            {
+                input.ValueRW.selectNext = default;
+            }
+
+            if (isSelectPrevious)
+            {
+                input.ValueRW.selectPrevious.Set();
+            }
+            else
+            {
+                input.ValueRW.selectPrevious = default;
             }
         }
     }

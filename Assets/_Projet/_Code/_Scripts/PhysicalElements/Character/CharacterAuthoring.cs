@@ -23,7 +23,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
     [Header("Temp(Debug)")]
     public TeamSideType side;
-    public GameObject defaultWeaponPrefab;
+    public RangedWeaponData mainWeapon;
+    public RangedWeaponData secondWeapon;
+    //public MeleeWeaponData meleeWeapon;
 
     [Header("Visual")]
     [SerializeField] private GameObject _view;
@@ -56,12 +58,14 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
-            AddComponent(entity, new CharacterDefaultWeaponPrefab
+
+            AddComponent(entity, new CharacterStuffPrefab
             {
-                Value = GetEntity(cca.defaultWeaponPrefab, TransformUsageFlags.Dynamic)
+                MainWeaponPrefab = GetEntity(cca.mainWeapon.entityPrefab, TransformUsageFlags.Dynamic),
+                SecondWeaponPrefab = GetEntity(cca.secondWeapon.entityPrefab, TransformUsageFlags.Dynamic),
+                //MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.entityPrefab, TransformUsageFlags.Dynamic)
             });
 
-            AddComponent(entity, new CharacterDefaultWeapon());
             AddComponent(entity, new FreezeAllRotationTag());
 
             AddComponent<CharacterTag>(entity); //Multiplayer
@@ -69,7 +73,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
-            AddComponent(entity, new WaitForInstanciateDefaultWeapon { });
+            AddComponent(entity, new WaitForInstanciateStuffTag { });
 
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
 
@@ -79,6 +83,13 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 ViewRotation = quaternion.identity,
             });
             AddComponent(entity, new CharacterLocalViewRotation { ViewRotation = quaternion.identity });
+
+            CharacterStuffList stuff = new CharacterStuffList();
+            for (int i = 0; i < 8; i++) stuff.Value.Add(Entity.Null);
+            AddComponent(entity, stuff);
+            
+            AddComponent(entity, new CharacterStuffInHandType());
+
         }
     }
 }

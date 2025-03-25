@@ -10,7 +10,7 @@ public class MeleeWeaponData : ScriptableObject
     [Header("Stuff infos")]
     public string entityName;
     public Image UIImage;
-    public UsableEquipmentType type;
+    public StuffType type;
     public TeamSideType side;
     public float deploymentSpeed;
     public float storageSpeed;

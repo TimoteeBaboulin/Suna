@@ -25,6 +25,31 @@
 						<ActiveSource Name="That Person's Name Is   Bravely Default OST" ID="{A04EAE6C-6017-4004-98AB-3A828AD3E27C}" Platform="Linked"/>
 					</ActiveSourceList>
 				</Sound>
+				<Sound Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{B217BC1E-EF9B-47ED-91A3-61895CB2FF72}" ShortID="724668585">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{5F61AD2F-E939-467B-A658-2C49C4000F04}">
+							<PropertyList>
+								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
+							</PropertyList>
+							<Language>SFX</Language>
+							<AudioFile>GUNShotg_Saiga 12 Cal.12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="66276190"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{5F61AD2F-E939-467B-A658-2C49C4000F04}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
 			</ChildrenList>
 		</WorkUnit>
 	</AudioObjects>

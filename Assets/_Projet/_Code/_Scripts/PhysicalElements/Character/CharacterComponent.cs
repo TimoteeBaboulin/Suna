@@ -1,6 +1,9 @@
+
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine;
 
 public struct CharacterTag : IComponentData { }
 
@@ -66,12 +69,24 @@ public struct CharacterClientAttachedComponent : IComponentData
     [GhostField] public Entity ClientEntity;
 }
 
-public struct CharacterDefaultWeaponPrefab : IComponentData
+public struct CharacterStuffPrefab : IComponentData
 {
-    public Entity Value;
+    public Entity MainWeaponPrefab;
+    public Entity SecondWeaponPrefab;
+    public Entity MeleeWeaponPrefab;
 }
 
-public struct CharacterDefaultWeapon : IComponentData
+[GhostComponent]
+public struct CharacterStuffList : IComponentData
 {
-    [GhostField] public Entity Value;
+    [GhostField] public FixedList128Bytes<Entity> Value;
 }
+
+[GhostComponent]
+
+public struct CharacterStuffInHandType : IComponentData 
+{
+    [GhostField] public StuffType Value;
+}
+
+

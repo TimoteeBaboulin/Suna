@@ -15,6 +15,7 @@ namespace AK
     {
         static const AkUniqueID MUSIC_PLAY = 202194903U;
         static const AkUniqueID MUSIC_STOP = 3227181061U;
+        static const AkUniqueID SOUND_PLAY = 3479778571U;
     } // namespace EVENTS
 
     namespace BANKS
