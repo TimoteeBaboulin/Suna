@@ -75,7 +75,7 @@ namespace RangedWeapon
                     dynamicData.state = _State.Shoot;
                     dynamicData.currentAmmo--;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager, state.World.IsServer());
+                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager);
 
                     // Apply damage to the target player
                     if (state.World.IsServer()
@@ -133,7 +133,7 @@ namespace RangedWeapon
         }
 
 
-        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager, bool isServer)
+        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager)
         {
             LocalTransform startTransform = new LocalTransform
             {
