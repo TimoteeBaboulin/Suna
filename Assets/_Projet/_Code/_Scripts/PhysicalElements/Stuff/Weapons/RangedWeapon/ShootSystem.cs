@@ -42,12 +42,12 @@ namespace RangedWeapon
 
             //Query
             foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
-            .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
+            .Query<RefRW<DynamicData>, CommonData, RefRW<StuffOwner>>()
             .WithAll<IsStuffInHand, Simulate>()
             .WithEntityAccess())
             {
                 ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
-                ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+                ref Entity owner = ref ownerRef.ValueRW.Value;
 
                 //Check valid state
                 if (!(dynamicData.state == _State.Idle || dynamicData.state == _State.Shoot)) return;
@@ -73,7 +73,19 @@ namespace RangedWeapon
                     dynamicData.state = _State.Shoot;
                     dynamicData.currentAmmo--;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager);
+                    // Apply spread on raycast
+                    float2 recoil = CharacterShootUtils.TSprayPattern(commonData.magazineCapacity - dynamicData.currentAmmo, commonData.spread, commonData.coefSpray, commonData.range) * SystemAPI.Time.DeltaTime;
+                    quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                    recoilRotation = math.mul(input.shootRotation, recoilRotation);
+
+                    RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
+
+                    //Apply Recoil on camera
+                    if (state.EntityManager.HasComponent<CharacterLocalViewRotation>(owner))
+                    {
+                        RefRW<CharacterLocalViewRotation> localView = SystemAPI.GetComponentRW<CharacterLocalViewRotation>(owner);
+                        localView.ValueRW.ViewRotation.value.x -= 200f * SystemAPI.Time.DeltaTime;
+                    }
 
                     // Apply damage to the target player
                     if (state.World.IsServer()

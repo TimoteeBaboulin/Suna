@@ -10,21 +10,21 @@ public class CharacterShootUtils
         float currentRecoilYPos = 0f;
 
         // Pattern differentiater
-        int bulletCutPattern = 5;
-        if (bulletIndex < bulletCutPattern)
+        int bulletCutPattern = 14;
+        if (bulletIndex % bulletCutPattern < bulletCutPattern / 2)
         {
             currentRecoilXPos = 0;
-            currentRecoilYPos = 10 / (float)bulletCutPattern;
+            currentRecoilYPos = 3f / 4f * (1 - bulletIndex % bulletCutPattern);
         }
         else
         {
             currentRecoilXPos = 2.5f * Mathf.Cos(bulletIndex - bulletCutPattern);
-            currentRecoilYPos = 10 / (float)bulletCutPattern;
+            currentRecoilYPos = 3f / 4f * (1 - bulletCutPattern / 2);
         }
 
         // Amplifying the effect
-        currentRecoilXPos *= 2f;
-        currentRecoilYPos *= 2f;
+        currentRecoilXPos *= 8f;
+        currentRecoilYPos *= 8f;
 
         // Random on the impact
         float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
