@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class SoundEventEmitter : MonoBehaviour
 {
-    public AK.Wwise.Event myEvent;
+   // public AK.Wwise.Event myEvent;
 
     void Awake()
     {
