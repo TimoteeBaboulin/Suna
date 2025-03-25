@@ -1,9 +1,14 @@
-using Unity.Cinemachine;
+
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine;
 
 public struct CharacterTag : IComponentData { }
+
+[GhostEnabledBit]
+public struct CharacterEnableTag : IComponentData, IEnableableComponent { }
 
 [GhostComponent]
 public struct CharacterComponent : IComponentData
@@ -17,12 +22,16 @@ public struct CharacterComponent : IComponentData
     [GhostField] public float decelerationFactor;
     [GhostField] public float drag;
 
-    [GhostField] public float2 direction;
+    [GhostField] public float3 direction;
+    [GhostField] public float2 horizontalDir;
     [GhostField] public float2 inertia;
+
+    [GhostField] public float linearDampingXZ;
 
     [GhostField] public float maxStepHeight;
 
     [GhostField] public float jumpForce;
+    [GhostField] public bool isJumping;
 
     [GhostField] public bool jumpRequest;
     [GhostField] public bool isGrounded;
@@ -60,12 +69,24 @@ public struct CharacterClientAttachedComponent : IComponentData
     [GhostField] public Entity ClientEntity;
 }
 
-public struct CharacterDefaultWeaponPrefab : IComponentData
+public struct CharacterStuffPrefab : IComponentData
 {
-    public Entity Value;
+    public Entity MainWeaponPrefab;
+    public Entity SecondWeaponPrefab;
+    public Entity MeleeWeaponPrefab;
 }
 
-public struct CharacterDefaultWeapon : IComponentData
+[GhostComponent]
+public struct CharacterStuffList : IComponentData
 {
-    [GhostField] public Entity Value;
+    [GhostField] public FixedList128Bytes<Entity> Value;
 }
+
+[GhostComponent]
+
+public struct CharacterStuffInHandType : IComponentData 
+{
+    [GhostField] public StuffType Value;
+}
+
+

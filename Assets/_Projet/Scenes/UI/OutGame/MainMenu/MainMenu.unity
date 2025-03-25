@@ -248,6 +248,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _mainMenuDocument: {fileID: 775320874}
   _settingsMenuDocument: {fileID: 1530217827}
+  connectionManager: {fileID: 1335549615}
   _sceneLoadOnPlay: 1
 --- !u!4 &1032681953
 Transform:
@@ -522,7 +523,7 @@ MonoBehaviour:
   m_listeners:
     initialListenerList: []
     useDefaultListeners: 1
-  isEnvironmentAware: 0
+  isEnvironmentAware: 1
   isStaticObject: 0
   usePositionOffsetData: 0
   m_positionOffsetData:
@@ -588,6 +589,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1335549615 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 449767617614211302, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+  m_PrefabInstance: {fileID: 4080076755927854685}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d42a77fee517b14bbd2a3fc9ef45eb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1530217825
 GameObject:
   m_ObjectHideFlags: 0
@@ -889,7 +901,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 449767617614211302, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: _ip
-      value: 82.65.198.80
+      value: 127.0.0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 449767617614211302, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+      propertyPath: destroyOnLoad
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_Name

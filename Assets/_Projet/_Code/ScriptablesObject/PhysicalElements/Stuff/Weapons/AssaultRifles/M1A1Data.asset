@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
   m_Name: M1A1Data
   m_EditorClassIdentifier: 
-  prefab: {fileID: 4820376613147570663, guid: 3d4d5260590b4034bae3993f95214d4e, type: 3}
-  entityName: M1A1
+  entityPrefab: {fileID: 1063816135455577480, guid: d9b5e5c85a42a5443a2712c1442912a0, type: 3}
+  gameobjectPrefab: {fileID: 1063816135455577480, guid: ee7022395bc218e49be546f521caee02, type: 3}
   UIImage: {fileID: 0}
-  price: 1
   type: 0
   side: 0
+  entityName: M1A1
   deploymentSpeed: 0
   storageSpeed: 0
+  price: 1
+  _stuffLocalOffsetView: {x: 0.4, y: -0.35, z: 0.7}
   recoil: {x: 2, y: 3}
   damage: 4
   range: 100
@@ -33,11 +35,11 @@ MonoBehaviour:
   dmgFallOff: 12
   coefModifMoveSpeed: 13
   coefModifMoveSpeedAiming: 14
-  reloadSpeed: 15
-  fastReloadSpeed: 16
+  reloadSpeed: 2
+  fastReloadSpeed: 1
   knockbackForceOnKill: 17
-  nbMagazine: 3
-  magazineCapacity: 20
+  nbMagazine: 4
+  magazineCapacity: 60
   scope: {fileID: 0}
   handle: {fileID: 0}
   cross: {fileID: 0}

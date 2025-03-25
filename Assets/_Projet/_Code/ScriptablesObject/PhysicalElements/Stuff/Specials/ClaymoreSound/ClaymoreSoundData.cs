@@ -11,7 +11,7 @@ public class ClaymoreSoundData : ScriptableObject
     public string entityName;
     public Image UIImage;
     public int price;
-    public UsableEquipmentType type;
+    public StuffType type;
     public TeamSideType side;
 
     [Header("Health")]

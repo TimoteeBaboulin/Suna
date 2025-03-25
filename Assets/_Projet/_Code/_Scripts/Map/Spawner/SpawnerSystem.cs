@@ -1,4 +1,4 @@
-using System;
+using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,9 +6,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Scenes;
 using Unity.Transforms;
-using UnityEditor.Search;
-using UnityEngine;
-using static RoundSystemServer;
+using UnityEngine.Rendering;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -62,8 +60,10 @@ public partial struct OnDieJob : IJobEntity
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
         {
+            commandBuffer.SetComponentEnabled<CharacterEnableTag>(sortKey, entity, false);
             commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
-            commandBuffer.DestroyEntity(sortKey, entity);
+            commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
+            //commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
         }
@@ -147,6 +147,8 @@ public partial struct RespawnSystem : ISystem
                 RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
                 transform.ValueRW.Position = buffer[random];
                 currentHealth.ValueRW.Value = 100;
+
+                ecb.SetComponentEnabled<CharacterEnableTag>(characterEntity, true);
             }
 
             ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
@@ -157,14 +159,14 @@ public partial struct RespawnSystem : ISystem
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
-        if (prefabManager.character == null)
+        if (prefabManager.Character == null)
         {
             return Entity.Null;
         }
 
-        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
+        FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
 
-        Entity character = ecb.Instantiate(prefabManager.character);
+        Entity character = ecb.Instantiate(prefabManager.Character);
         ecb.SetComponent(character, new LocalTransform() //Set position
         {
             Position = position,

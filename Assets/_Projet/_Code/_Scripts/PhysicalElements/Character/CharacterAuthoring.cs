@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -12,6 +13,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public float decelerationFactor = 1.4f;
     public float drag = 0.1f;
     public float maxStepHeight = 0.5f;
+    public float linearDampingXZ = 0.5f;
 
     [Header("Vertical Movement Parameters")]
     public float jumpForce = 3f;
@@ -21,7 +23,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
     [Header("Temp(Debug)")]
     public TeamSideType side;
-    public GameObject defaultWeaponPrefab;
+    public RangedWeaponData mainWeapon;
+    public RangedWeaponData secondWeapon;
+    public MeleeWeaponData meleeWeapon;
 
     [Header("Visual")]
     [SerializeField] private GameObject _view;
@@ -45,6 +49,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 acceleration = cca.acceleration,
                 deceleration = cca.deceleration,
                 decelerationFactor = cca.decelerationFactor,
+                linearDampingXZ = cca.linearDampingXZ,
                 drag = cca.drag,
                 maxStepHeight = cca.maxStepHeight,
                 jumpForce = cca.jumpForce,
@@ -53,19 +58,22 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
-            AddComponent(entity, new CharacterDefaultWeaponPrefab
+
+            AddComponent(entity, new CharacterStuffPrefab
             {
-                Value = GetEntity(cca.defaultWeaponPrefab, TransformUsageFlags.Dynamic)
+                MainWeaponPrefab = GetEntity(cca.mainWeapon.entityPrefab, TransformUsageFlags.Dynamic),
+                SecondWeaponPrefab = GetEntity(cca.secondWeapon.entityPrefab, TransformUsageFlags.Dynamic),
+                MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.entityPrefab, TransformUsageFlags.Dynamic)
             });
 
-            AddComponent(entity, new CharacterDefaultWeapon());
             AddComponent(entity, new FreezeAllRotationTag());
 
-            AddComponent(entity, new CharacterTag()); //Multiplayer
+            AddComponent<CharacterTag>(entity); //Multiplayer
+            AddComponent<CharacterEnableTag>(entity);
             AddComponent(entity, new CharacterInput()); //Inputs for multiplayer
             AddComponent(entity, new HasHitComponent { Value = false });
             AddComponent(entity, new WaitForRespawnTag { });
-            AddComponent(entity, new WaitForInstanciateDefaultWeapon { });
+            AddComponent(entity, new WaitForInstanciateStuffTag { });
 
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
 
@@ -75,6 +83,13 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 ViewRotation = quaternion.identity,
             });
             AddComponent(entity, new CharacterLocalViewRotation { ViewRotation = quaternion.identity });
+
+            CharacterStuffList stuff = new CharacterStuffList();
+            for (int i = 0; i < 8; i++) stuff.Value.Add(Entity.Null);
+            AddComponent(entity, stuff);
+            
+            AddComponent(entity, new CharacterStuffInHandType());
+
         }
     }
 }

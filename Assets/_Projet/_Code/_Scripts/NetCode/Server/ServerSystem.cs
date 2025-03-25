@@ -31,7 +31,6 @@ public partial class ServerSystem : SystemBase
     {
         _clients.Update(this);
 
-        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
         //Message from all clients to server
@@ -63,14 +62,14 @@ public partial class ServerSystem : SystemBase
     {
         if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
         {
-            if (prefabManager.client == null)
+            if (prefabManager.Client == null)
             {
                 return;
             }
 
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
-            FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
-            Entity client = ecb.Instantiate(prefabManager.client);
+            FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
+            Entity client = ecb.Instantiate(prefabManager.Client);
             ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
             {
                 NetworkId = networkId.Value
@@ -118,10 +117,10 @@ public partial class ServerSystem : SystemBase
             PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
             //Instantiate player at connection
-            if (prefabManager.client != null)
+            if (prefabManager.Client != null)
             {
-                Entity client = commandBuffer.Instantiate(prefabManager.client);
-                LocalTransform clientTransform = prefabManager.transformCompData;
+                Entity client = commandBuffer.Instantiate(prefabManager.Client);
+                LocalTransform clientTransform = prefabManager.TransformCompData;
 
                 commandBuffer.SetComponent(client, new LocalTransform() //Set position
                 {

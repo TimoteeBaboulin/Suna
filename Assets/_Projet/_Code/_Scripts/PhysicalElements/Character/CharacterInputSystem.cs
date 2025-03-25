@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -36,10 +37,21 @@ public partial class CharacterInputSystem : SystemBase
         bool isJumpPerfomered = actions.Jump.WasPressedThisFrame();
         bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
         bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
-        bool isShootPressed = actions.Attack.WasPressedThisFrame();
-        foreach (var (controller, input) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>>()
-            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
+
+        bool isShootPressed = actions.Attack.IsPressed();
+        bool isReloadPressed = actions.Reload.WasPressedThisFrame();
+        bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
+        bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
+
+        int selectedId = -1;
+        selectedId = actions.SelectMainWeapon.WasPressedThisFrame() ? 0 : selectedId;
+        selectedId = actions.SelectSecondWeapon.WasPressedThisFrame() ? 1 : selectedId;
+        selectedId = actions.SelectMelee.WasPressedThisFrame() ? 2 : selectedId;
+
+        foreach (var (controller, input, modelBones) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, CharacterModelBones>()
+
+            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;
 
@@ -75,19 +87,43 @@ public partial class CharacterInputSystem : SystemBase
 
             if (isShootPressed)
             {
-                input.ValueRW.shoot.Set();
-
-                input.ValueRW.shootTransform = new LocalTransform
-                {
-                    Position = MainGameObjectCamera.Instance.transform.position,
-                    Rotation = MainGameObjectCamera.Instance.transform.rotation,
-                    Scale = 1f,
-                };
+                input.ValueRW.attack.Set();
+                input.ValueRW.shootRotation = modelBones.ViewBoneTransform.rotation;
             }
             else
             {
-                input.ValueRW.shoot = default;
+                input.ValueRW.attack = default;
             }
+
+
+            if (isReloadPressed)
+            {
+                input.ValueRW.reload.Set();
+            }
+            else
+            {
+                input.ValueRW.reload = default;
+            }
+
+            if (isSelectNext)
+            {
+                input.ValueRW.selectNext.Set();
+            }
+            else
+            {
+                input.ValueRW.selectNext = default;
+            }
+
+            if (isSelectPrevious)
+            {
+                input.ValueRW.selectPrevious.Set();
+            }
+            else
+            {
+                input.ValueRW.selectPrevious = default;
+            }
+
+            input.ValueRW.selectStuffId = selectedId;
         }
     }
 }

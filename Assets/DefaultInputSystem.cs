@@ -180,6 +180,60 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Reload"",
+                    ""type"": ""Button"",
+                    ""id"": ""0a606c31-f104-4d32-aae9-697b5fdfa43a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectNext"",
+                    ""type"": ""Value"",
+                    ""id"": ""75ed6660-b89e-43ca-856a-2385dbde4130"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SelectPrevious"",
+                    ""type"": ""Value"",
+                    ""id"": ""93ffa35b-6a6a-4d02-8ed0-da45143d510d"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""SelectMainWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""9e6afd59-e2bc-45b5-ad0c-81ca29be3308"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectSecondWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""6fb0810b-0a75-4a3f-a06e-88710a734383"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectMelee"",
+                    ""type"": ""Button"",
+                    ""id"": ""9b909faa-77e1-4108-9919-eec1c26400ee"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -576,6 +630,72 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""Walk"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""98f1e4e0-3100-4e53-a4e7-b1d85db0861f"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Reload"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""836388b8-36fa-4db4-96c4-38c90172c8d5"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectNext"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""dfcdb6f3-a643-437b-a6bd-2a0b4243059f"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectPrevious"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""04d3ca50-91e4-41cb-8540-2a20ad13491a"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectMainWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a90be0b0-5ad7-4983-ba82-fe7a85128d36"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectSecondWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ae4539a1-4408-415b-a889-65ebda40eaac"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectMelee"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1173,6 +1293,12 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         m_Player_Next = m_Player.FindAction("Next", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_Walk = m_Player.FindAction("Walk", throwIfNotFound: true);
+        m_Player_Reload = m_Player.FindAction("Reload", throwIfNotFound: true);
+        m_Player_SelectNext = m_Player.FindAction("SelectNext", throwIfNotFound: true);
+        m_Player_SelectPrevious = m_Player.FindAction("SelectPrevious", throwIfNotFound: true);
+        m_Player_SelectMainWeapon = m_Player.FindAction("SelectMainWeapon", throwIfNotFound: true);
+        m_Player_SelectSecondWeapon = m_Player.FindAction("SelectSecondWeapon", throwIfNotFound: true);
+        m_Player_SelectMelee = m_Player.FindAction("SelectMelee", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1276,6 +1402,12 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Next;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_Walk;
+    private readonly InputAction m_Player_Reload;
+    private readonly InputAction m_Player_SelectNext;
+    private readonly InputAction m_Player_SelectPrevious;
+    private readonly InputAction m_Player_SelectMainWeapon;
+    private readonly InputAction m_Player_SelectSecondWeapon;
+    private readonly InputAction m_Player_SelectMelee;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1327,6 +1459,30 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Walk".
         /// </summary>
         public InputAction @Walk => m_Wrapper.m_Player_Walk;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Reload".
+        /// </summary>
+        public InputAction @Reload => m_Wrapper.m_Player_Reload;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SelectNext".
+        /// </summary>
+        public InputAction @SelectNext => m_Wrapper.m_Player_SelectNext;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SelectPrevious".
+        /// </summary>
+        public InputAction @SelectPrevious => m_Wrapper.m_Player_SelectPrevious;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SelectMainWeapon".
+        /// </summary>
+        public InputAction @SelectMainWeapon => m_Wrapper.m_Player_SelectMainWeapon;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SelectSecondWeapon".
+        /// </summary>
+        public InputAction @SelectSecondWeapon => m_Wrapper.m_Player_SelectSecondWeapon;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SelectMelee".
+        /// </summary>
+        public InputAction @SelectMelee => m_Wrapper.m_Player_SelectMelee;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1383,6 +1539,24 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
             @Walk.started += instance.OnWalk;
             @Walk.performed += instance.OnWalk;
             @Walk.canceled += instance.OnWalk;
+            @Reload.started += instance.OnReload;
+            @Reload.performed += instance.OnReload;
+            @Reload.canceled += instance.OnReload;
+            @SelectNext.started += instance.OnSelectNext;
+            @SelectNext.performed += instance.OnSelectNext;
+            @SelectNext.canceled += instance.OnSelectNext;
+            @SelectPrevious.started += instance.OnSelectPrevious;
+            @SelectPrevious.performed += instance.OnSelectPrevious;
+            @SelectPrevious.canceled += instance.OnSelectPrevious;
+            @SelectMainWeapon.started += instance.OnSelectMainWeapon;
+            @SelectMainWeapon.performed += instance.OnSelectMainWeapon;
+            @SelectMainWeapon.canceled += instance.OnSelectMainWeapon;
+            @SelectSecondWeapon.started += instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.performed += instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.canceled += instance.OnSelectSecondWeapon;
+            @SelectMelee.started += instance.OnSelectMelee;
+            @SelectMelee.performed += instance.OnSelectMelee;
+            @SelectMelee.canceled += instance.OnSelectMelee;
         }
 
         /// <summary>
@@ -1424,6 +1598,24 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
             @Walk.started -= instance.OnWalk;
             @Walk.performed -= instance.OnWalk;
             @Walk.canceled -= instance.OnWalk;
+            @Reload.started -= instance.OnReload;
+            @Reload.performed -= instance.OnReload;
+            @Reload.canceled -= instance.OnReload;
+            @SelectNext.started -= instance.OnSelectNext;
+            @SelectNext.performed -= instance.OnSelectNext;
+            @SelectNext.canceled -= instance.OnSelectNext;
+            @SelectPrevious.started -= instance.OnSelectPrevious;
+            @SelectPrevious.performed -= instance.OnSelectPrevious;
+            @SelectPrevious.canceled -= instance.OnSelectPrevious;
+            @SelectMainWeapon.started -= instance.OnSelectMainWeapon;
+            @SelectMainWeapon.performed -= instance.OnSelectMainWeapon;
+            @SelectMainWeapon.canceled -= instance.OnSelectMainWeapon;
+            @SelectSecondWeapon.started -= instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.performed -= instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.canceled -= instance.OnSelectSecondWeapon;
+            @SelectMelee.started -= instance.OnSelectMelee;
+            @SelectMelee.performed -= instance.OnSelectMelee;
+            @SelectMelee.canceled -= instance.OnSelectMelee;
         }
 
         /// <summary>
@@ -1794,6 +1986,48 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnWalk(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Reload" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnReload(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectNext" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectNext(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectPrevious" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectPrevious(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectMainWeapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectMainWeapon(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectSecondWeapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectSecondWeapon(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectMelee" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectMelee(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
