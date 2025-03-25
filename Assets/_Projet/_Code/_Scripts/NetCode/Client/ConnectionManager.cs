@@ -10,25 +10,26 @@ using Unity.Scenes;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ConnectionManager : Singleton<ConnectionManager>
+public class ConnectionManager : MonoBehaviour
 {
     #region Fields
-    [SerializeField] private string _ip = "141.94.194.103";
+    [Header("Connection Settings")]
+    [Tooltip("No need to replace if lauching with clientServer Setting, NO NEED TO CHANGE THE IP")]
+    [SerializeField] private string _ip = "51.210.222.138";
     [SerializeField] private ushort _port = 7979;
 
     private string _localIp = "127.0.0.1";
     private ushort _localPort = 7979;
 
-    //public event Action Connected;
     SubScene[] subScenes;
     public enum RoleType
     {
-        ServerClient = 0,
-        Server = 1,
-        Client = 2
+        ClientServer,
+        Server,
+        Client
     }
 
-    private RoleType _role = RoleType.ServerClient;
+    private RoleType _role = RoleType.ClientServer;
 
     private World _serverWorld = null;
     private World _clientWorld = null;
@@ -44,7 +45,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
     {
         if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         {
-            _role = RoleType.ServerClient;
+            _role = RoleType.ClientServer;
         }
         else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
         {
@@ -76,14 +77,21 @@ public class ConnectionManager : Singleton<ConnectionManager>
             return;
         }
 
-        if (_role == RoleType.ServerClient || _role == RoleType.Client)
+        switch (_role)
         {
-            _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-        }
-
-        if (_role == RoleType.ServerClient)
-        {
-            _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+            case RoleType.ClientServer:
+                _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+                _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+                break;
+            case RoleType.Server:
+                _serverWorld = ClientServerBootstrap.ServerWorld;
+                break;
+            case RoleType.Client:
+                _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+                break;
+            default:
+                Debug.LogError($"No world created client value{_clientWorld}, serverValue {_serverWorld}");
+                break;
         }
 
         DestroySimulationWorld();
@@ -106,7 +114,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
             string ip = _ip;
             ushort port = _port;
 
-            if (_role == RoleType.ServerClient)
+            if (_role == RoleType.ClientServer)
             {
                 ip = _localIp;
                 port = _localPort;
@@ -117,6 +125,10 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 using EntityQuery networkDriverQuery = _clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_clientWorld.EntityManager, connectionEndpoint);
             }
+
+            #if UNITY_EDITOR
+            Debug.Log($"Started Client with roleType {_role}, IP : {ip}, port {port}");
+            #endif
         }
 
         subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
@@ -130,6 +142,8 @@ public class ConnectionManager : Singleton<ConnectionManager>
         {
             StartCoroutine(LoadSubScenes(subScenes, _clientWorld));
         }
+
+
     }
 
     public void CreateServer()
@@ -173,7 +187,7 @@ public class ConnectionManager : Singleton<ConnectionManager>
                 while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
                 {
                     world.Update();
-                    yield return null; //Coucou ici, ça attends la fin de la frame pour confirmer et passer à la suivante, bisous :)
+                    yield return null; 
                 }
             }
         }

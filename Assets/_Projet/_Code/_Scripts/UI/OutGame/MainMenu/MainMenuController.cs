@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,8 +8,12 @@ using UnityEngine.UIElements;
 
 public class MainMenuController : MonoBehaviour
 {
+    [Header("HUD default Document")]
     [SerializeField] private UIDocument _mainMenuDocument;
     [SerializeField] private UIDocument _settingsMenuDocument;
+
+    [Header("Connection Helper")]
+    [SerializeField] private ConnectionManager connectionManager;
 
     private VisualElement _mainMenu;
     private VisualElement _settingsMenu;
@@ -63,9 +68,12 @@ public class MainMenuController : MonoBehaviour
 
     private void OnPlayButton_Click()
     {
-        ConnectionManager.Instance.Connect();
-        SceneManager.LoadScene((int)_sceneLoadOnPlay);
-        
+        if (connectionManager != null)
+        {
+            connectionManager.Connect();
+            SceneManager.LoadScene((int)_sceneLoadOnPlay);
+        }
+
     }
 
     private void OnSettingsButton_Click()
@@ -77,8 +85,8 @@ public class MainMenuController : MonoBehaviour
         _settingsMenu.style.opacity = 1;
         _settingsMenu.SetEnabled(true);
         _settingsMenuDocument.sortingOrder = 0;
-        
-        if (ConnectionManager.Instance.Server == null)
+
+        if (ClientServerBootstrap.ServerWorld == null)
         {
             MainMenuLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<MainMenuLinkSystem>();
             if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
@@ -98,7 +106,7 @@ public class MainMenuController : MonoBehaviour
 
     private void OnExitButton_Click()
     {
-        if (ConnectionManager.Instance.Server == null)
+        if (ClientServerBootstrap.ServerWorld == null)
         {
             MainMenuLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<MainMenuLinkSystem>();
             if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
@@ -111,7 +119,7 @@ public class MainMenuController : MonoBehaviour
         _settingsMenu.style.opacity = 0;
         _settingsMenu.SetEnabled(false);
         _settingsMenuDocument.sortingOrder = -1;
-        
+
         _mainMenu.style.opacity = 1;
         _mainMenu.SetEnabled(true);
         _mainMenuDocument.sortingOrder = 0;

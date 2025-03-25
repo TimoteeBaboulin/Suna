@@ -13,7 +13,7 @@ public class CommonAutoConnect : ClientServerBootstrap
         else if (Application.platform == RuntimePlatform.WindowsServer)
         {
             AutoConnectPort = 7979;
-            ConnectionManager.Instance.CreateServer();
+            CreateServerWorld("ServerWorld");
             DefaultListenAddress = NetworkEndpoint.AnyIpv4.WithPort(AutoConnectPort);
 
             return true;

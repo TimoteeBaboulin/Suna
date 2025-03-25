@@ -164,7 +164,7 @@ public partial struct RespawnSystem : ISystem
             return;
         }
 
-        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
+        FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
 
         Entity character = ecb.Instantiate(prefabManager.Character);
         ecb.SetComponent(character, new LocalTransform() //Set position

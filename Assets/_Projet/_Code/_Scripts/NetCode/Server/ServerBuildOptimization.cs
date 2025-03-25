@@ -30,14 +30,23 @@ public class ServerBuildOptimization : IPreprocessComputeShaders, IPreprocessSha
             EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64 &&
             EditorUserBuildSettings.standaloneBuildSubtarget == StandaloneBuildSubtarget.Server)
         {
-            LightmapSettings.lightmaps = null;
-            LightmapSettings.lightProbes = null;
-            var lights = GameObject.Find("Lighting");
-            if (lights != null)
+            // Disable all Camera components
+            foreach (var cam in Object.FindObjectsByType<Camera>(FindObjectsSortMode.None))
             {
-                Object.DestroyImmediate(lights);
+                Object.DestroyImmediate(cam.gameObject);
             }
-            Debug.Log("in light");
+
+            // Disable all light sources
+            foreach (var light in Object.FindObjectsByType<Light>(FindObjectsSortMode.None))
+            {
+                Object.DestroyImmediate(light.gameObject);
+            }
+
+            // Disable all SkinnedMeshRenderers and MeshRenderers
+            foreach (var renderer in Object.FindObjectsByType<Renderer>(FindObjectsSortMode.None))
+            {
+                Object.DestroyImmediate(renderer.gameObject);
+            }
         }
     }
 
@@ -48,11 +57,15 @@ public class ServerBuildOptimization : IPreprocessComputeShaders, IPreprocessSha
             EditorUserBuildSettings.standaloneBuildSubtarget == StandaloneBuildSubtarget.Server)
         {
 
-            if (shader == null)
+            // Allow HDRP and required shaders for UI elements or text rendering
+            if (shader.name.Contains("HDRP") || shader.name.Contains("ProBuilder") || shader.name.Contains("Shader Graphs"))
             {
-                Debug.Log("in process shader");
+                Debug.Log($"Keeping shader: {shader.name}");
                 return;
             }
+
+            // Strip unnecessary graphical shaders
+            Debug.Log($"Stripping shader: {shader.name}");
             data.Clear();
         }
     }
@@ -62,11 +75,15 @@ public class ServerBuildOptimization : IPreprocessComputeShaders, IPreprocessSha
             EditorUserBuildSettings.activeBuildTarget == BuildTarget.StandaloneWindows64 &&
             EditorUserBuildSettings.standaloneBuildSubtarget == StandaloneBuildSubtarget.Server)
         {
-            if (shader == null)
+            // Allow HDRP and required shaders for UI elements or text rendering
+            if (shader.name.Contains("HDRP") || shader.name.Contains("ProBuilder") || shader.name.Contains("Shader Graphs"))
             {
-                Debug.Log("in process compute shader");
+                Debug.Log($"Keeping shader: {shader.name}");
                 return;
             }
+
+            // Strip unnecessary graphical shaders
+            Debug.Log($"Stripping shader: {shader.name}");
             data.Clear();
         }
     }
