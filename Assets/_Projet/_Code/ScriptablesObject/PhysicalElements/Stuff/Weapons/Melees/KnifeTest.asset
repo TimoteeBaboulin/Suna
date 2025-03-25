@@ -12,3 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a93a526a0c3a50d46a4e220681031974, type: 3}
   m_Name: KnifeTest
   m_EditorClassIdentifier: 
+  entityPrefab: {fileID: 1063816135455577480, guid: 07a30b937a3764d4a8f704c9f7563029, type: 3}
+  gameobjectPrefab: {fileID: 6440599648175510709, guid: 32c00f5343a458840b54cab77e4e5428, type: 3}
+  UIImage: {fileID: 0}
+  type: 2
+  side: 0
+  entityName: Le couteau
+  deploymentSpeed: 1
+  storageSpeed: 1
+  price: 0
+  _stuffLocalOffsetView: {x: 0.4, y: -0.14, z: 0.4}
+  damage: 5
+  strongBlowDmg: 10
+  backStabDmg: 300
+  range: 1
+  strikeRate: 0.5
+  strongStrikeRate: 1

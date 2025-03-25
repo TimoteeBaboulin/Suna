@@ -1,13 +1,7 @@
 using Unity.Entities;
 using Unity.NetCode;
 
-using Unity.Transforms;
-using UnityEngine;
-using UnityEngine.TextCore.Text;
-
-
 public struct WaitForInstanciateStuffTag : IComponentData { }
-
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct InstanciateStuffSystem : ISystem

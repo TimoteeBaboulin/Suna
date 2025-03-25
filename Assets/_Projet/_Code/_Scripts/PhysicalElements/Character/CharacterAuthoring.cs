@@ -25,7 +25,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public TeamSideType side;
     public RangedWeaponData mainWeapon;
     public RangedWeaponData secondWeapon;
-    //public MeleeWeaponData meleeWeapon;
+    public MeleeWeaponData meleeWeapon;
 
     [Header("Visual")]
     [SerializeField] private GameObject _view;
@@ -63,7 +63,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
             {
                 MainWeaponPrefab = GetEntity(cca.mainWeapon.entityPrefab, TransformUsageFlags.Dynamic),
                 SecondWeaponPrefab = GetEntity(cca.secondWeapon.entityPrefab, TransformUsageFlags.Dynamic),
-                //MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.entityPrefab, TransformUsageFlags.Dynamic)
+                MeleeWeaponPrefab = GetEntity(cca.meleeWeapon.entityPrefab, TransformUsageFlags.Dynamic)
             });
 
             AddComponent(entity, new FreezeAllRotationTag());

@@ -5,20 +5,13 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
-
 using RaycastHit = Unity.Physics.RaycastHit;
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct HasHitComponent : IComponentData
-{
-    [GhostField] public bool Value;
-}
-
-namespace RangedWeapon
+namespace MeleeWeapon
 {
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
-    public partial struct ShootSystem : ISystem
+    public partial struct StrikeSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
@@ -49,10 +42,6 @@ namespace RangedWeapon
                 ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
                 ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
-                //Check valid state
-                if (!(dynamicData.state == _State.Idle || dynamicData.state == _State.Shoot)) return;
-                dynamicData.state = _State.Idle;
-
                 // Retrieve player input
                 if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
                 ref CharacterInput input = ref inputRef.ValueRW;
@@ -62,40 +51,32 @@ namespace RangedWeapon
                 float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
 
-                // Calculate fire rate
-                if (dynamicData.firerateTimer > 0)
-                    dynamicData.firerateTimer -= SystemAPI.Time.DeltaTime;
+                // Calculate strike rate
+                if (dynamicData.strikeTimer > 0)
+                    dynamicData.strikeTimer -= SystemAPI.Time.DeltaTime;
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+                if (input.attack.IsSet && dynamicData.strikeTimer <= 0)
                 {
-                    dynamicData.firerateTimer += commonData.firerate;
-                    dynamicData.state = _State.Shoot;
-                    dynamicData.currentAmmo--;
+                    dynamicData.strikeTimer += commonData.strikeRate;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager);
+                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner);
 
                     // Apply damage to the target player
-                    if (state.World.IsServer()
-                            && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                            = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                        var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                        if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                        if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
                         {
-                            ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
                             {
-                                Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
                             });
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
                         }
                     }
-                }
-                else
-                {
-                    ecb.SetComponent(owner, new HasHitComponent { Value = false });
+
                 }
             }
         }
@@ -131,7 +112,7 @@ namespace RangedWeapon
         }
 
 
-        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager)
+        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner)
         {
             LocalTransform startTransform = new LocalTransform
             {
@@ -162,20 +143,12 @@ namespace RangedWeapon
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
                 // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
-                float closestDist = float.MaxValue;
+                closestHit = allHits[0];
+                float closestDist = range;
                 foreach (RaycastHit hit in allHits)
                 {
                     // If the entity hit is the shooter, skip
                     if (hit.Entity == owner) continue;
-
-                    if (entityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                    {
-                        Entity characterHitEntity = entityManager.GetComponentData<CharacterColliderDataComponent>(hit.Entity).CharacterEntity;
-                        if (characterHitEntity == owner)
-                        {
-                            continue;
-                        }
-                    }
 
                     float currentDist = math.distancesq(raycastInput.Start, hit.Position);
 
@@ -186,7 +159,6 @@ namespace RangedWeapon
                     }
                 }
             }
-
 #if !UNITY_SERVER
             Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
 #endif
