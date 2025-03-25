@@ -1,6 +1,5 @@
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Transforms;
 using UnityEngine;
 
 using RangedWeapon;
@@ -9,41 +8,16 @@ using RangedWeapon;
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
 partial struct RangedWeaponViewSystem : ISystem
 {
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<StuffGameObjectRef>();
+    }
+
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        //Instanciate GameObject and Attach to camera
-        foreach (var (owner, prefabRef, stuffData, entity) in SystemAPI
-            .Query<RefRO<StuffOwner>, StuffGameObjectPrefab, StuffCommonData>()
-            .WithNone<StuffGameObjectRef>()
-            .WithEntityAccess())
-        {
-            if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
-            {
-                CharacterModelBones charaBones = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
-                Transform viewTransform = charaBones.ViewBoneTransform;
-
-                StuffGameObjectRef goRef = new StuffGameObjectRef{ Value = Object.Instantiate(prefabRef.Value, viewTransform) };
-                goRef.Value.transform.localPosition = stuffData._stuffLocalOffsetView;
-
-                //goRef.Value.GetComponent<Animator>().contr;
-
-
-                ecb.AddComponent(entity, goRef);
-            }
-        }
-
-        //Active GameObject in hand
-        foreach (var (goRef, entity) in SystemAPI
-            .Query<StuffGameObjectRef>()
-            .WithPresent<IsStuffInHand>()
-            .WithEntityAccess())
-        {
-            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));
-        }
-
-        //Active GameObject in hand
+        //Play Anim (Temp)
         foreach (var (goRef, data, entity) in SystemAPI
             .Query<StuffGameObjectRef, RefRW<DynamicData>>()
             .WithPresent<IsStuffInHand>()
@@ -64,16 +38,6 @@ partial struct RangedWeaponViewSystem : ISystem
                 default:
                     break;
             }
-        }
-
-        //Clear Weapon View
-        foreach (var (goRef, entity) in SystemAPI
-            .Query<StuffGameObjectRef>()
-            .WithNone<LocalTransform>()
-            .WithEntityAccess())
-        {
-            Object.Destroy(goRef.Value);
-            ecb.RemoveComponent<StuffGameObjectRef>(entity);
         }
 
         ecb.Playback(state.EntityManager);

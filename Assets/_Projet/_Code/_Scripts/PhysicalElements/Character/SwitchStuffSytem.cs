@@ -1,11 +1,6 @@
-using System;
-using System.Linq;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
-using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
@@ -48,7 +43,6 @@ public partial struct SwitchStuffSystem : ISystem
 
                 if (dir != 0)
                 {
-
                     state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
 
                     do
@@ -64,6 +58,29 @@ public partial struct SwitchStuffSystem : ISystem
                     } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
 
                     state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                }
+            }
+        }
+
+        foreach (var (stuffListRef, activeStuffRef, inputRef, chara) in SystemAPI
+        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandType>, RefRO<CharacterInput>>()
+        .WithEntityAccess())
+        {
+            ref readonly CharacterInput input = ref inputRef.ValueRO;
+            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
+            ref CharacterStuffInHandType stuffInHandType = ref activeStuffRef.ValueRW;
+
+            if (state.World.IsServer() && input.selectStuffId != -1)
+            {
+                Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
+                Entity nextStuff = stuffList.Value[input.selectStuffId];
+
+                if (nextStuff != Entity.Null)
+                {
+                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+
+                    stuffInHandType.Value = (StuffType)input.selectStuffId;
                 }
             }
         }

@@ -7,17 +7,11 @@ using Unity.Transforms;
 using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
-[GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
-public struct HasHitComponent : IComponentData
-{
-    [GhostField] public bool Value;
-}
-
-namespace RangedWeapon
+namespace MeleeWeapon
 {
     [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
     [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
-    public partial struct ShootSystem : ISystem
+    public partial struct StrikeSystem : ISystem
     {
         public void OnCreate(ref SystemState state)
         {
@@ -48,10 +42,6 @@ namespace RangedWeapon
                 ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
                 ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
-                //Check valid state
-                if (!(dynamicData.state == _State.Idle || dynamicData.state == _State.Shoot)) return;
-                dynamicData.state = _State.Idle;
-
                 // Retrieve player input
                 if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
                 ref CharacterInput input = ref inputRef.ValueRW;
@@ -61,16 +51,14 @@ namespace RangedWeapon
                 float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
 
-                // Calculate fire rate
-                if (dynamicData.firerateTimer > 0)
-                    dynamicData.firerateTimer -= SystemAPI.Time.DeltaTime;
+                // Calculate strike rate
+                if (dynamicData.strikeTimer > 0)
+                    dynamicData.strikeTimer -= SystemAPI.Time.DeltaTime;
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+                if (input.attack.IsSet && dynamicData.strikeTimer <= 0)
                 {
-                    dynamicData.firerateTimer += commonData.firerate;
-                    dynamicData.state = _State.Shoot;
-                    dynamicData.currentAmmo--;
+                    dynamicData.strikeTimer += commonData.strikeRate;
 
                     RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner);
 

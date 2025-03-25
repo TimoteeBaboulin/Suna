@@ -125,7 +125,25 @@
                 {
                     "name": "SelectMainWeapon",
                     "type": "Button",
-                    "id": "d90a9569-a943-4ab3-8069-ed992005ee9c",
+                    "id": "9e6afd59-e2bc-45b5-ad0c-81ca29be3308",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SelectSecondWeapon",
+                    "type": "Button",
+                    "id": "6fb0810b-0a75-4a3f-a06e-88710a734383",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SelectMelee",
+                    "type": "Button",
+                    "id": "9b909faa-77e1-4108-9919-eec1c26400ee",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -564,12 +582,34 @@
                 },
                 {
                     "name": "",
-                    "id": "6d7a82a0-6fff-47ff-83cc-b2271b47861a",
+                    "id": "04d3ca50-91e4-41cb-8540-2a20ad13491a",
                     "path": "<Keyboard>/1",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "SelectMainWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "a90be0b0-5ad7-4983-ba82-fe7a85128d36",
+                    "path": "<Keyboard>/2",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectSecondWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "ae4539a1-4408-415b-a889-65ebda40eaac",
+                    "path": "<Keyboard>/3",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SelectMelee",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
