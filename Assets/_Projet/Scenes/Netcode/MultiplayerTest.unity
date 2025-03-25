@@ -1345,9 +1345,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4189884339f7f3b49aa74c61c3840393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  akGameObjectID: 18446744073709551615
-  EmittersToStartListeningTo: []
-  EmittersToStopListeningTo: []
   isDefaultListener: 1
   bOverrideScalingFactor: 0
   scalingFactor: -1
@@ -1369,13 +1366,11 @@ MonoBehaviour:
     useDefaultListeners: 1
   isEnvironmentAware: 1
   isStaticObject: 0
-  m_Collider: {fileID: 0}
   usePositionOffsetData: 0
   m_positionOffsetData:
     KeepMe: 0
     positionOffset: {x: 0, y: 0, z: 0}
   scalingFactor: 1
-  isRegistered: 0
   m_posOffsetData: {fileID: 0}
   listenerMask: 1
 --- !u!114 &2021676140
