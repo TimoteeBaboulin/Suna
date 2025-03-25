@@ -75,23 +75,45 @@ namespace RangedWeapon
                     dynamicData.state = _State.Shoot;
                     dynamicData.currentAmmo--;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner);
+                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager);
 
                     // Apply damage to the target player
-                    if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    if (state.World.IsServer()
+                            && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                        RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                            = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                        if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
+                        if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
                         {
-                            ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
                             {
-                                Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
+                                Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
                             });
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
                         }
                     }
 
+
+                    //if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    //{
+                    //    var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+
+                    //    if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
+                    //    {
+                    //        ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                    //        {
+                    //            Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
+                    //        });
+                    //        ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                    //    }
+                    //}
+
+                }
+                else
+                {
+                    ecb.SetComponent(owner, new HasHitComponent { Value = false });
                 }
             }
         }
@@ -127,7 +149,7 @@ namespace RangedWeapon
         }
 
 
-        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner)
+        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager)
         {
             LocalTransform startTransform = new LocalTransform
             {
@@ -158,12 +180,22 @@ namespace RangedWeapon
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
                 // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
+
                 closestHit = allHits[0];
                 float closestDist = range;
                 foreach (RaycastHit hit in allHits)
                 {
                     // If the entity hit is the shooter, skip
                     if (hit.Entity == owner) continue;
+
+                    if (entityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    {
+                        Entity characterHitEntity = entityManager.GetComponentData<CharacterColliderDataComponent>(hit.Entity).CharacterEntity;
+                        if (characterHitEntity == owner)
+                        {
+                            continue;
+                        }
+                    }
 
                     float currentDist = math.distancesq(raycastInput.Start, hit.Position);
 
@@ -174,6 +206,7 @@ namespace RangedWeapon
                     }
                 }
             }
+
 #if !UNITY_SERVER
             Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
 #endif
