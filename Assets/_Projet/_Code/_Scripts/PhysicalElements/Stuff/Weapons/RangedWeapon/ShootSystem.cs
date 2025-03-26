@@ -40,16 +40,7 @@ namespace RangedWeapon
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-            foreach (var (input, localView, chara) in SystemAPI //TODO : TEMP RECOIL
-              .Query<RefRO<CharacterInput>, RefRW<CharacterLocalViewRotation>>()
-              .WithAll<Simulate>()
-              .WithEntityAccess())
-            {
-                if (input.ValueRO.attack.IsSet)
-                {
-                    localView.ValueRW.ViewRotation.value.x -= 200f * SystemAPI.Time.DeltaTime;
-                }
-            }
+            float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
 
             //Query
             foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
@@ -72,10 +63,9 @@ namespace RangedWeapon
                 if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
                 float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
-
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
-                    dynamicData.firerateTimer -= SystemAPI.Time.DeltaTime;
+                    dynamicData.firerateTimer -= dt;
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
                 if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
@@ -85,18 +75,11 @@ namespace RangedWeapon
                     dynamicData.currentAmmo--;
 
                     // Apply spread on raycast
-                    float2 recoil = CharacterShootUtils.TSprayPattern(commonData.magazineCapacity - dynamicData.currentAmmo, commonData.spread, commonData.coefSpray, commonData.range) * SystemAPI.Time.DeltaTime;
+                    float2 recoil = CharacterShootUtils.TSprayPattern(commonData.magazineCapacity - dynamicData.currentAmmo, commonData.spread, commonData.coefSpray, commonData.range) * dt;
                     quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                     recoilRotation = math.mul(input.shootRotation, recoilRotation);
 
                     RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
-
-                    ////Apply Recoil on camera
-                    //if (state.EntityManager.HasComponent<CharacterLocalViewRotation>(owner))
-                    //{
-                    //    RefRW<CharacterLocalViewRotation> localView = SystemAPI.GetComponentRW<CharacterLocalViewRotation>(owner);
-                    //    localView.ValueRW.ViewRotation.value.x -= 200f * SystemAPI.Time.DeltaTime;
-                    //}
 
                     // Apply damage to the target player
                     if (state.World.IsServer()
