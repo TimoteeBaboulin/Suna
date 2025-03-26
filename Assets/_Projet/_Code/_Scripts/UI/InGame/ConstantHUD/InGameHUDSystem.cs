@@ -31,12 +31,13 @@ partial class InGameHUDSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-        foreach (var (currentHealth, money, hasHit, stuffInHandTypeRef, stuffListRef) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterMoney>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandType>, RefRO<CharacterStuffList>>()
+        foreach (var (currentHealth, client, hasHit, stuffInHandTypeRef, stuffListRef) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterClientAttachedComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandType>, RefRO<CharacterStuffList>>()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = (int)currentHealth.ValueRO.Value });
-            MoneyChangedEvent?.Invoke(this, new MoneyArgs { money = money.ValueRO.money });
+            uint money = SystemAPI.GetComponent<CharacterMoney>(client.ValueRO.ClientEntity).money;
+            MoneyChangedEvent?.Invoke(this, new MoneyArgs { money = money });
 
             if (hasHit.ValueRO.Value)
             {

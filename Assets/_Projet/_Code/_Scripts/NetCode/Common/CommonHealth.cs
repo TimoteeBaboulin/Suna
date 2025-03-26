@@ -1,9 +1,11 @@
+using RangedWeapon;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public struct MaxHealthComponent : IComponentData
 {
@@ -115,21 +117,40 @@ public partial struct ApplyDamageSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
-        ComponentLookup<CharacterMoney> moneyLU = state.GetComponentLookup<CharacterMoney>();
+        ComponentLookup<CharacterMoney> moneyLookup = state.GetComponentLookup<CharacterMoney>();
+        ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
+        ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
+        ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
+
+        EntityQuery query = state.GetEntityQuery(typeof(CommonData));
+        NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
+        NativeHashMap<Entity, CommonData> commonDataMap = new NativeHashMap<Entity, CommonData>(entities.Length, Allocator.TempJob);
+
+        foreach(var entity in entities)
+        {
+            var data = state.EntityManager.GetSharedComponent<CommonData>(entity);
+            commonDataMap.Add(entity, data);
+        }
+
+        entities.Dispose();
 
         ApplyDamageJob job = new ApplyDamageJob
         {
             CurrentTick = currentTick,
-            MoneyLookup = moneyLU,
+            MoneyLookup = moneyLookup,
+            ClientAttachedComponents = ccacLookup,
+            StuffListLookup = stuffListLookup,
+            InHandLookup = inHandLookup,
+            CommonDataMap = commonDataMap,
             ECB = ecb.AsParallelWriter()
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
 
         state.Dependency.Complete();
 
+        commonDataMap.Dispose();
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -142,6 +163,10 @@ public partial struct ApplyDamageJob : IJobEntity
 {
     [ReadOnly] public NetworkTick CurrentTick;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
+    [ReadOnly] public ComponentLookup<ClientCharacterAttached> ClientAttachedComponents;
+    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
+    [ReadOnly] public NativeHashMap<Entity, CommonData> CommonDataMap;
     public EntityCommandBuffer.ParallelWriter ECB;
 
     public void Execute(Entity entity, [EntityIndexInQuery] int sortKey,
@@ -169,10 +194,24 @@ public partial struct ApplyDamageJob : IJobEntity
 
             if (currentHealth.ValueRO.lastDamager != Entity.Null)
             {
-                if (MoneyLookup.TryGetComponent(currentHealth.ValueRO.lastDamager, out var cm))
+                Entity client = currentHealth.ValueRO.lastDamager;
+
+                if (MoneyLookup.TryGetComponent(client, out var cm) && ClientAttachedComponents.TryGetComponent(client, out var chara))
                 {
-                    cm.money += 300; //TMP : Link money gained with weapon used
-                    ECB.SetComponent(sortKey, currentHealth.ValueRO.lastDamager, cm);
+                    if(StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
+                    {
+                        foreach(var element in stuffList.Value)
+                        {
+                            if (element == Entity.Null) continue;
+
+                            if (InHandLookup.TryGetComponent(element, out var inHand) && InHandLookup.IsComponentEnabled(element))
+                            {
+                                cm.money += CommonDataMap[element].killGain;
+                                ECB.SetComponent(sortKey, client, cm);
+                                break;
+                            }
+                        }
+                    }
                 }
             }
         }
