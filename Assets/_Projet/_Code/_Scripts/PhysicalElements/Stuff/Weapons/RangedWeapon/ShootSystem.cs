@@ -87,6 +87,8 @@ namespace RangedWeapon
                         if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
                             && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
                         {
+                            SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager = owner;
+
                             ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
                             {
                                 Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier

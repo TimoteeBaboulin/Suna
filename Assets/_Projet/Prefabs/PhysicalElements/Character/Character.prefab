@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 219538545545060558}
   - component: {fileID: -7034213979156375631}
   - component: {fileID: -1226755385133520682}
+  - component: {fileID: -564328558431355398}
   - component: {fileID: 2657201299575732514}
   - component: {fileID: 4763154914594263826}
   - component: {fileID: 5081496929180248068}
@@ -139,7 +140,6 @@ MonoBehaviour:
   side: 0
   mainWeapon: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
   secondWeapon: {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
-  meleeWeapon: {fileID: 0}
   _view: {fileID: 0}
 --- !u!114 &-6395674489095318445
 MonoBehaviour:
@@ -184,16 +184,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df42e9e4ba170384fa47c8e40a719c09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  HeadPrefab: {fileID: 7412152404001876113, guid: 97b847aca013df44495092b0ce5cee75, type: 3}
-  ArmPrefab0: {fileID: 7412152404001876113, guid: d4f3d4cf7fd678345968e36eea321d6a, type: 3}
-  ArmPrefab1: {fileID: 7412152404001876113, guid: 608e518e0f7ebdb4097c026b09eea8ad, type: 3}
-  ArmPrefab2: {fileID: 7412152404001876113, guid: 41a603db882fae94fa98f582e5dcf444, type: 3}
-  ThoraxPrefab: {fileID: 7412152404001876113, guid: 1ec1552322834524190b32b84e959561, type: 3}
-  StomachPrefab0: {fileID: 7412152404001876113, guid: e318ad3df5fdd7f47b6e648c8810227d, type: 3}
-  StomachPrefab1: {fileID: 7412152404001876113, guid: f1791ca2be987d24d93f388ae474ea1e, type: 3}
-  LegPrefab0: {fileID: 7412152404001876113, guid: 0c51bcdc5bf8806429c2aec5f0ed6195, type: 3}
-  LegPrefab1: {fileID: 7412152404001876113, guid: b5b1aa861c0ecc54fb9411dc65c66bb7, type: 3}
-  LegPrefab2: {fileID: 7412152404001876113, guid: 9c86b15e37c05504993de09b3c7f5687, type: 3}
 --- !u!114 &-7034213979156375631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +208,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25baa7b3c5c84594381fe0b957c0f71a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 100
+  _maxHealth: 1
+--- !u!114 &-564328558431355398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584918407947073280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c4ef6e0c7e666504f99bffa51e864d02, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  money: 500
+  maxMoney: 9000
 --- !u!114 &2657201299575732514
 MonoBehaviour:
   m_ObjectHideFlags: 0

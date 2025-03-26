@@ -2,15 +2,19 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Services.Multiplayer;
+using UnityEngine;
 
 public struct MaxHealthComponent : IComponentData
 {
     public float Value;
 }
 
+[GhostComponent]
 public struct CurrentHealthComponent : IComponentData
 {
     [GhostField] public float Value;
+    [GhostField] public Entity lastDamager;
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
@@ -96,6 +100,7 @@ public partial struct CalculateFrameDamageJob : IJobEntity
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [UpdateAfter(typeof(CalculateFrameDamageSystem))]
+//[WithAll(typeof(Simulate))]
 public partial struct ApplyDamageSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -110,17 +115,21 @@ public partial struct ApplyDamageSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+        ComponentLookup<CharacterMoney> moneyLU = state.GetComponentLookup<CharacterMoney>();
 
         ApplyDamageJob job = new ApplyDamageJob
         {
             CurrentTick = currentTick,
+            MoneyLookup = moneyLU,
             ECB = ecb.AsParallelWriter()
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
 
         state.Dependency.Complete();
+
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -132,9 +141,12 @@ public partial struct ApplyDamageSystem : ISystem
 public partial struct ApplyDamageJob : IJobEntity
 {
     [ReadOnly] public NetworkTick CurrentTick;
+    [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     public EntityCommandBuffer.ParallelWriter ECB;
 
-    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, RefRW<CurrentHealthComponent> currentHealth, DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
+    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey,
+        RefRW<CurrentHealthComponent> currentHealth,
+        DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
     {
         if (!damageThisTickBuffer.GetDataAtTick(CurrentTick, out var damageThisTick))
         {
@@ -152,6 +164,17 @@ public partial struct ApplyDamageJob : IJobEntity
         {
             currentHealth.ValueRW.Value = 0;
             ECB.AddComponent<HasNoHealthTag>(sortKey, entity);
+
+            //Aurelien (when the player dies, we add money to the killer)
+
+            if (currentHealth.ValueRO.lastDamager != Entity.Null)
+            {
+                if (MoneyLookup.TryGetComponent(currentHealth.ValueRO.lastDamager, out var cm))
+                {
+                    cm.money += 300; //TMP : Link money gained with weapon used
+                    ECB.SetComponent(sortKey, currentHealth.ValueRO.lastDamager, cm);
+                }
+            }
         }
     }
 }
