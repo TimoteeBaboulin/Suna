@@ -58,7 +58,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
-
+            //TODO generate the prefabs once instead of once per character
             AddComponent(entity, new CharacterStuffPrefab
             {
                 MainWeaponPrefab = GetEntity(cca.mainWeapon.entityPrefab, TransformUsageFlags.Dynamic),

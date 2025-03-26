@@ -30,7 +30,6 @@ public partial struct HarvesterSystemCommon : ISystem
                 if (harvesterRW.ValueRO.Owner != Entity.Null)
                 {
                     Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(harvesterRW.ValueRO.Owner).ValueRO.Value;
-                    //ecb.AddComponent(harvesterEntity, new Parent { Value = characterEntity });
                 }
             }
             else
@@ -41,7 +40,6 @@ public partial struct HarvesterSystemCommon : ISystem
                     float3 position = SystemAPI.GetComponentRO<LocalTransform>(parentEntity).ValueRO.Position;
 
                     SystemAPI.GetComponentRW<LocalTransform>(harvesterEntity).ValueRW.Position = position;
-                    //ecb.RemoveComponent<Parent>(harvesterEntity);
                 }
             }
         }

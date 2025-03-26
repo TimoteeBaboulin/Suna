@@ -17,6 +17,7 @@ partial struct StuffSystems : ISystem
             .WithNone<StuffGameObjectRef>()
             .WithEntityAccess())
         {
+            
             if (state.EntityManager.HasComponent<CharacterModelBones>(owner.ValueRO.Value))
             {
                 CharacterModelBones charaBones = state.EntityManager.GetComponentData<CharacterModelBones>(owner.ValueRO.Value);
@@ -37,6 +38,7 @@ partial struct StuffSystems : ISystem
         foreach (var (goRef, entity) in SystemAPI
             .Query<StuffGameObjectRef>()
             .WithPresent<IsStuffInHand>()
+            .WithNone<TemporaryOverrideGameObjectActive>()
             .WithEntityAccess())
         {
             goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));

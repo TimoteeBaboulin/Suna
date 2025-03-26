@@ -76,11 +76,22 @@ public partial struct RoundSystemServer : ISystem
             _firstFrame = true;
         }
 
+        //Debug.Log(entity);
+
+        EntityQuery plantedHarvesterQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<HarvesterComponent, HarvesterPlanted>().Build(ref state);
+        NativeArray<Entity> plantedHarvesterEntities = plantedHarvesterQuery.ToEntityArray(Allocator.Temp);
+
         //Check if the bomb was planted
         //Entity entity = _query.GetSingletonEntity();
-        if (roundComponent.ValueRO.currentPhase == RoundPhase.ActionPhase && state.EntityManager.HasComponent<RoundCollectorPlantedComponent>(entity))
+        if (roundComponent.ValueRO.currentPhase is RoundPhase.ActionPhase && plantedHarvesterEntities.Length is not 0)
         {
+            //Debug.Log("Collector has been planted on the server");
             CollectorPlanted(ref state, entity, roundComponent, ecb);
+
+            foreach (Entity harvesterEntity in plantedHarvesterEntities)
+            {
+                ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, false);
+            }
         }
         else
         {
@@ -95,8 +106,6 @@ public partial struct RoundSystemServer : ISystem
         //If a client need to synchronise round data, this is used to reply with the full data
         foreach (var (request, command, rpcEntity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<RequestRoundDataRpcCommand>>().WithEntityAccess())
         {
-            //Debug.Log("[Server] Received round data update request.");
-
             Entity responseEntity = ecb.CreateEntity();
             ecb.AddComponent(responseEntity, new SendRpcCommandRequest
             {
@@ -115,10 +124,6 @@ public partial struct RoundSystemServer : ISystem
         ecb.Dispose();
 
         //Debug: Allow to fake a collector plant
-        //if (Keyboard.current[Key.Space].wasPressedThisFrame)
-        //{
-        //    state.EntityManager.AddComponent<RoundCollectorPlantedComponent>(entity);
-        //}
     }
 
     private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
@@ -224,7 +229,7 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.timer = buffer[(int)RoundPhase.PostPlantPhase];
 
         //Make sure to delete the tag so it doesn't get detected twice
-        state.EntityManager.RemoveComponent<RoundCollectorPlantedComponent>(entity);
+        ecb.RemoveComponent<RoundCollectorPlantedComponent>(entity);
 
 
         //Update the clients with the correct phase

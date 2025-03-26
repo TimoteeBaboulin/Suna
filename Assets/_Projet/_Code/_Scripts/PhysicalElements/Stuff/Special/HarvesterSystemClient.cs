@@ -1,48 +1,171 @@
+using AK.Wwise;
 using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
+using UnityEngine;
+using static ak.wwise;
+using static UnityEditor.PlayerSettings;
 
 public struct HarvesterStartPlant : IRpcCommand
 {
-
+    public NetworkTick tick;
+    public Entity harvester;
 }
 
-partial struct HarvesterSystemClient : ISystem
+public struct HarvesterStopPlant : IRpcCommand
 {
-    
+    public NetworkTick tick;
+    public Entity harvester;
+}
 
-    [BurstCompile]
-    public void OnCreate(ref SystemState state)
+[UpdateAfter(typeof(StuffSystems))]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+partial class HarvesterSystemClient : SystemBase
+{
+    private DefaultInputSystem input;
+    DefaultInputSystem.PlayerActions actions;
+
+    protected override void OnCreate()
     {
         
+        input = new DefaultInputSystem();
+        input.Enable();
+        actions = input.Player;
     }
 
-    [BurstCompile]
-    public void OnUpdate(ref SystemState state)
+    protected override void OnUpdate()
     {
-        //TODO: Tell the server to start/cancel the plant
-        foreach ((RefRW<HarvesterComponent> harvester, Entity harvesterEntity) 
-            in SystemAPI.Query<RefRW<HarvesterComponent>>().WithEntityAccess())
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        EntityQuery clientQuery = Entities.WithAll<GhostOwnerIsLocal, ClientComponent>().ToQuery();
+        NativeArray<Entity> clientEntities = clientQuery.ToEntityArray(Allocator.Temp);
+        if (clientEntities.Length is 0)
+            return;
+
+        Entity clientEntity = clientEntities[0];
+
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        NetworkTick currentTick = networkTime.ServerTick;
+
+        foreach ((RefRW<HarvesterComponent> harvesterRW, Entity harvesterEntity) in SystemAPI
+            .Query<RefRW<HarvesterComponent>>()
+            .WithEntityAccess())
         {
-            //if (!state.EntityManager.Exists(harvester.ValueRO.owner))
-            //    continue;
+            if (!EntityManager.HasComponent<StuffGameObjectRef>(harvesterEntity))
+            {
+                //Debug.Log("Instanciating harvester GO");
+                StuffGameObjectPrefab prefabRef = EntityManager.GetComponentObject<StuffGameObjectPrefab>(harvesterEntity);
+                StuffGameObjectRef goRef = new StuffGameObjectRef
+                {
+                    Value = Object.Instantiate(prefabRef.Value)
+                };
 
-            //Entity owner = harvester.ValueRO.;
-            //if (!state.EntityManager.HasComponent<CharacterInput>(owner))
-            //    continue;
+                ecb.AddComponent<TemporaryOverrideGameObjectActive>(harvesterEntity);
+                goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
+                ecb.AddComponent(harvesterEntity, goRef);
+            }
+            else if (harvesterRW.ValueRO.Owner == Entity.Null)
+            {
+                StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
+                goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
+            }
 
-            //CharacterInput input = state.EntityManager.GetComponentData<CharacterInput>(owner);
+            if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
+                continue;
+            
+            if (harvesterRW.ValueRO.Owner != clientEntity)
+                continue;
 
-            //if (input.shoot.IsSet)
-            //{
-            //    UnityEngine.Debug.Log("Shoot is set");
-            //}
+            Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
+
+            if (actions.Attack.WasPressedThisFrame())
+            {
+                HarvesterStartPlant rpc = new HarvesterStartPlant
+                {
+                    tick = currentTick,
+                    harvester = harvesterEntity
+                };
+
+                Entity rpcEntity = ecb.CreateEntity();
+                ecb.AddComponent(rpcEntity, rpc);
+                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+            }
+            else if (actions.Attack.WasReleasedThisFrame())
+            {
+                HarvesterStopPlant rpc = new HarvesterStopPlant
+                {
+                    tick = currentTick,
+                    harvester = harvesterEntity
+                };
+
+                Entity rpcEntity = ecb.CreateEntity();
+                ecb.AddComponent(rpcEntity, rpc);
+                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+            }
         }
-    }
 
-    [BurstCompile]
-    public void OnDestroy(ref SystemState state)
-    {
-        
+        foreach((RefRW<HarvesterComponent> HarvesterRW, LocalTransform harvesterTransform, Entity harvesterEntity) in SystemAPI
+            .Query<RefRW<HarvesterComponent>, LocalTransform>()
+            .WithAll<HarvesterPlanted>()
+            .WithEntityAccess())
+        {
+            Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
+            float3 harvesterPos = harvesterTransform.Position;
+            float3 characterPos = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;
+
+            if (actions.Interact.WasPressedThisFrame() && math.distance(harvesterPos, characterPos) <= 20)
+            {
+                RpcHarvesterDefuseStart rpc = new RpcHarvesterDefuseStart
+                {
+                    harvester = harvesterEntity,
+                    defuseStartTick = currentTick
+                };
+
+                Entity rpcEntity = ecb.CreateEntity();
+                ecb.AddComponent(rpcEntity, rpc);
+                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+            }
+        }
+
+        foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlanted rpc, Entity entity)
+            in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
+        {
+            SystemAPI.GetComponentRW<CharacterStuffList>(rpc.harvesterOwner).ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
+            ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
+
+            StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
+            if (goRef is null)
+                return;
+
+            goRef.Value.transform.SetParent(null);
+            goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(rpc.harvester).ValueRO.Position;
+            goRef.Value.SetActive(true);
+
+            ecb.AddComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
+            ecb.DestroyEntity(entity);
+        }
+
+        foreach((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
+            in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
+        {
+            ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
+
+            StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
+            CharacterModelBones charaBones = EntityManager.GetComponentData<CharacterModelBones>(rpc.character);
+            StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
+
+            goRef.Value.transform.SetParent(charaBones.ViewBoneTransform);
+            goRef.Value.transform.localPosition = commonData._stuffLocalOffsetView;
+
+            SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
+
+            ecb.DestroyEntity(entity);
+        }
+
+        ecb.Playback(EntityManager);
+        ecb.Dispose();
     }
 }
