@@ -136,6 +136,7 @@ public partial struct RespawnSystem : ISystem
 
             SpawnCharacter(entity, networkId, ecb, buffer[random]);
             ecb.RemoveComponent<WaitForRespawnTag>(entity);
+            ecb.RemoveComponent<WaitForRespawnTag>(entity);
 
             //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
             //Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
