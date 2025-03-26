@@ -11,15 +11,14 @@ public class ShopController : MonoBehaviour
     private UIDocument document;
     private VisualElement root;
     private VisualElement shop;
-    [SerializeField] VisualTreeAsset line;
-    [SerializeField] VisualTreeAsset stuff;
-    [SerializeField] List<string> items = new();
+    private VisualElement shopmenu;
 
     private void Awake()
     {
         document = GetComponent<UIDocument>();
         root = document.rootVisualElement;
         shop = root.Q<VisualElement>("Shop");
+        shopmenu = shop.Q<VisualElement>("ShopMenu");
         root.style.opacity = 0;
         document.sortingOrder = -1;
         root.SetEnabled(false);
@@ -27,56 +26,20 @@ public class ShopController : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < Mathf.CeilToInt(items.Count / 3f); i++)
-        {
-            shop.Add(line.Instantiate().Children().First());
-        }
-
-        Button element;
-        int amount = 0;
-        foreach (var child in shop.Children())
-        {
-            if (amount < items.Count - 3)
-            {
-                for (int i = 0; i < 3; i++)
-                {
-                    element = stuff.Instantiate().Children().First() as Button;
-                    element.text = items[amount];
-                    child.Add(element);
-                    amount++;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < items.Count - amount; i++)
-                {
-                    element = stuff.Instantiate().Children().First() as Button;
-                    element.text = items[amount + i];
-                    child.Add(element);
-                }
-            }
-        }
-        
-        foreach (var child in shop.Children())
-        {
-            foreach (Button button in child.Children())
-            {
-                button.clicked += () => {
-                    Debug.Log("Bought " + button.text);
-                    //EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-                    //EntityQuery query = entityManager.CreateEntityQuery(typeof(TestPlayerData));
-                    //Entity entity = query.ToEntityArray(Allocator.Temp).First();
-                    //TestPlayerData data = query.ToComponentDataArray<TestPlayerData>(Allocator.Temp).First();
-                    //if (data.Cash >= 100)
-                    //{
-                    //    data.Cash -= 100;
-                    //}
-                    //entityManager.SetComponentData(entity, data);
-                    //TestPlayerDataSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<TestPlayerDataSystem>();
-                    //system.InvokeCashUpdate(data.Cash);
-                };
-            }
-        }
+        Button button = new();
+        button.AddToClassList("shop_buy_slot_button");
+        button.style.position = Position.Absolute;
+        button.style.width = 100;
+        button.style.height = 100;
+        button.style.marginBottom = 10;
+        button.style.marginTop = 10;
+        button.style.marginLeft = 10;
+        button.style.marginRight = 10;
+        button.style.paddingBottom = 10;
+        button.style.paddingTop = 10;
+        button.style.paddingLeft = 10;
+        button.style.paddingRight = 10;
+        shopmenu.Add(button);
     }
 
     private void Update()
