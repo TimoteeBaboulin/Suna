@@ -40,6 +40,17 @@ namespace RangedWeapon
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
+            foreach (var (input, localView, chara) in SystemAPI //TODO : TEMP RECOIL
+              .Query<RefRO<CharacterInput>, RefRW<CharacterLocalViewRotation>>()
+              .WithAll<Simulate>()
+              .WithEntityAccess())
+            {
+                if (input.ValueRO.attack.IsSet)
+                {
+                    localView.ValueRW.ViewRotation.value.x -= 200f * SystemAPI.Time.DeltaTime;
+                }
+            }
+
             //Query
             foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
             .Query<RefRW<DynamicData>, CommonData, RefRW<StuffOwner>>()
@@ -80,12 +91,12 @@ namespace RangedWeapon
 
                     RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
 
-                    //Apply Recoil on camera
-                    if (state.EntityManager.HasComponent<CharacterLocalViewRotation>(owner))
-                    {
-                        RefRW<CharacterLocalViewRotation> localView = SystemAPI.GetComponentRW<CharacterLocalViewRotation>(owner);
-                        localView.ValueRW.ViewRotation.value.x -= 200f * SystemAPI.Time.DeltaTime;
-                    }
+                    ////Apply Recoil on camera
+                    //if (state.EntityManager.HasComponent<CharacterLocalViewRotation>(owner))
+                    //{
+                    //    RefRW<CharacterLocalViewRotation> localView = SystemAPI.GetComponentRW<CharacterLocalViewRotation>(owner);
+                    //    localView.ValueRW.ViewRotation.value.x -= 200f * SystemAPI.Time.DeltaTime;
+                    //}
 
                     // Apply damage to the target player
                     if (state.World.IsServer()
