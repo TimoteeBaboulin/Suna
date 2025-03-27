@@ -211,7 +211,25 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""SelectMainWeapon"",
                     ""type"": ""Button"",
-                    ""id"": ""d90a9569-a943-4ab3-8069-ed992005ee9c"",
+                    ""id"": ""9e6afd59-e2bc-45b5-ad0c-81ca29be3308"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectSecondWeapon"",
+                    ""type"": ""Button"",
+                    ""id"": ""6fb0810b-0a75-4a3f-a06e-88710a734383"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SelectMelee"",
+                    ""type"": ""Button"",
+                    ""id"": ""9b909faa-77e1-4108-9919-eec1c26400ee"",
                     ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
@@ -650,12 +668,34 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""6d7a82a0-6fff-47ff-83cc-b2271b47861a"",
+                    ""id"": ""04d3ca50-91e4-41cb-8540-2a20ad13491a"",
                     ""path"": ""<Keyboard>/1"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectMainWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a90be0b0-5ad7-4983-ba82-fe7a85128d36"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectSecondWeapon"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ae4539a1-4408-415b-a889-65ebda40eaac"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SelectMelee"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1257,6 +1297,8 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         m_Player_SelectNext = m_Player.FindAction("SelectNext", throwIfNotFound: true);
         m_Player_SelectPrevious = m_Player.FindAction("SelectPrevious", throwIfNotFound: true);
         m_Player_SelectMainWeapon = m_Player.FindAction("SelectMainWeapon", throwIfNotFound: true);
+        m_Player_SelectSecondWeapon = m_Player.FindAction("SelectSecondWeapon", throwIfNotFound: true);
+        m_Player_SelectMelee = m_Player.FindAction("SelectMelee", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1364,6 +1406,8 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SelectNext;
     private readonly InputAction m_Player_SelectPrevious;
     private readonly InputAction m_Player_SelectMainWeapon;
+    private readonly InputAction m_Player_SelectSecondWeapon;
+    private readonly InputAction m_Player_SelectMelee;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1432,6 +1476,14 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SelectMainWeapon => m_Wrapper.m_Player_SelectMainWeapon;
         /// <summary>
+        /// Provides access to the underlying input action "Player/SelectSecondWeapon".
+        /// </summary>
+        public InputAction @SelectSecondWeapon => m_Wrapper.m_Player_SelectSecondWeapon;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/SelectMelee".
+        /// </summary>
+        public InputAction @SelectMelee => m_Wrapper.m_Player_SelectMelee;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1499,6 +1551,12 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
             @SelectMainWeapon.started += instance.OnSelectMainWeapon;
             @SelectMainWeapon.performed += instance.OnSelectMainWeapon;
             @SelectMainWeapon.canceled += instance.OnSelectMainWeapon;
+            @SelectSecondWeapon.started += instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.performed += instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.canceled += instance.OnSelectSecondWeapon;
+            @SelectMelee.started += instance.OnSelectMelee;
+            @SelectMelee.performed += instance.OnSelectMelee;
+            @SelectMelee.canceled += instance.OnSelectMelee;
         }
 
         /// <summary>
@@ -1552,6 +1610,12 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
             @SelectMainWeapon.started -= instance.OnSelectMainWeapon;
             @SelectMainWeapon.performed -= instance.OnSelectMainWeapon;
             @SelectMainWeapon.canceled -= instance.OnSelectMainWeapon;
+            @SelectSecondWeapon.started -= instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.performed -= instance.OnSelectSecondWeapon;
+            @SelectSecondWeapon.canceled -= instance.OnSelectSecondWeapon;
+            @SelectMelee.started -= instance.OnSelectMelee;
+            @SelectMelee.performed -= instance.OnSelectMelee;
+            @SelectMelee.canceled -= instance.OnSelectMelee;
         }
 
         /// <summary>
@@ -1950,6 +2014,20 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectMainWeapon(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectSecondWeapon" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectSecondWeapon(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "SelectMelee" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelectMelee(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.
