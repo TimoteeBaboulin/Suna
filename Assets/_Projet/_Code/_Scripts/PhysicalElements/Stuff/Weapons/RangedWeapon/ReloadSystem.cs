@@ -61,11 +61,14 @@ namespace RangedWeapon
                     dynamicData.currentAmmo += ammoToAdd;
                     dynamicData.remainingAmmo -= ammoToAdd;
 
+                    #if UNITY_EDITOR
                     Debug.Log("Reload Finish !");
-
+                    #endif
                     if (!bulletInChamber)
                     {
+                    #if UNITY_EDITOR
                         Debug.Log("Load Chamber !");
+                    #endif
                     }
                 }
             }

@@ -1,11 +1,9 @@
-using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
-using UnityEngine.Rendering;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -70,8 +68,6 @@ public partial struct OnDieJob : IJobEntity
 }
 
 
-// ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RespawnSystem : ISystem
@@ -105,14 +101,16 @@ public partial struct RespawnSystem : ISystem
             teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
         }
 
-        foreach (var (playerComponent, entity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
+        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
+
+            //This is set up to allow easy team dispatching once it's implemented
             TeamSideType teamSideType = TeamSideType.Neutre;
-            if (SystemAPI.HasComponent<CorpoTeamTag>(entity))
+            if (SystemAPI.HasComponent<CorpoTeamTag>(clientEntity))
             {
                 teamSideType = TeamSideType.Corpo;
             }
-            else if (SystemAPI.HasComponent<NatifTeamTag>(entity))
+            else if (SystemAPI.HasComponent<NatifTeamTag>(clientEntity))
             {
                 teamSideType = TeamSideType.Natif;
             }
@@ -125,21 +123,25 @@ public partial struct RespawnSystem : ISystem
                 continue;
             }
 
+            //Spawns are currently random but we might need to dispatch them in order with a counter getting incremented
+            //Or a special procedure for new rounds
             Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
 
             var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
             int random = UnityEngine.Random.Range(0, buffer.Length);
 
-            //LocalTransform respawnZoneTransform = state.EntityManager.GetComponentData<LocalTransform>(spawnerEntity);
+            int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
 
-            int networkId = state.EntityManager.GetComponentData<GhostOwner>(entity).NetworkId;
+            //SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
+            //ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
+            //ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
 
             //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
-            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
+            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
-                SpawnCharacter(entity, networkId, ecb, buffer[random]);
-                ecb.RemoveComponent<WaitForRespawnTag>(entity);
+                SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
+                ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
             else
             {
@@ -151,20 +153,20 @@ public partial struct RespawnSystem : ISystem
                 ecb.SetComponentEnabled<CharacterEnableTag>(characterEntity, true);
             }
 
-            ecb.RemoveComponent<WaitForRespawnTag>(entity);
+            ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
         }
     }
 
-    public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
+    public Entity SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
     {
         PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
 
         if (prefabManager.Character == null)
         {
-            return;
+            return Entity.Null;
         }
 
-        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
+        FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
 
         Entity character = ecb.Instantiate(prefabManager.Character);
         ecb.SetComponent(character, new LocalTransform() //Set position
@@ -186,94 +188,6 @@ public partial struct RespawnSystem : ISystem
         ecb.SetComponent(character, new CharacterClientAttachedComponent { ClientEntity = client });
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
+        return character;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    SpawnerComponent spawnerComponent;
-//    if (SystemAPI.TryGetSingleton(out spawnerComponent))
-//    {
-//        Debug.Log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-//        respawnPtLookupInit.Update(ref state);
-//        resetStuffLookupInit.Update(ref state);
-
-//        var ecb = new EntityCommandBuffer(Allocator.TempJob);
-
-//        RespawnJob job = new RespawnJob
-//        {
-//            dt = SystemAPI.Time.DeltaTime,
-//            networkTime = SystemAPI.GetSingleton<NetworkTime>(),
-//            commandBuffer = ecb.AsParallelWriter(),
-
-//            respawnPtLookup = respawnPtLookupInit,
-//            resetStuffLookup = resetStuffLookupInit,
-
-//            spawnerEntity = SystemAPI.GetSingletonEntity<SpawnerComponent>()
-//        };
-//        state.Dependency = job.ScheduleParallel(state.Dependency);
-
-//        state.Dependency.Complete();
-//        ecb.Playback(state.EntityManager);
-//        ecb.Dispose();
-//    }
-//}
-//}
-
-//[BurstCompile]
-//public partial struct RespawnJob : IJobEntity
-//{
-//    public float dt;
-//    public NetworkTime networkTime;
-//    public EntityCommandBuffer.ParallelWriter commandBuffer;
-//    public Entity spawnerEntity;
-
-//    [ReadOnly] public ComponentLookup<LocalTransform> respawnPtLookup;
-//    [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
-
-//    public void Execute(Entity playerEntity, in CharacterControllerComponent controler,
-//        ref CurrentHealthComponent hp, in MaxHealthComponent maxHp, RefRW<LocalTransform> playerTransform)
-//    {
-//        //LocalTransform playerTransform;
-//        //respawnPtLookup.TryGetComponent(playerEntity, out playerTransform);
-
-//        LocalTransform respawnZoneTransform;
-//        respawnPtLookup.TryGetComponent(spawnerEntity, out respawnZoneTransform);
-
-//        //Changement de position, récupération des PV
-//        playerTransform.ValueRW.Position = respawnZoneTransform.Position;
-//        hp.Value = maxHp.Value;
-
-//        if (resetStuffLookup.HasComponent(spawnerEntity))
-//        {
-//            //TODO : Vider l'inventaire
-//            commandBuffer.RemoveComponent<ResetStuffTag>(playerEntity.Index, playerEntity);
-//        }
-//    }
-//}
-

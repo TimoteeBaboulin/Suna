@@ -139,6 +139,7 @@ MonoBehaviour:
   side: 0
   mainWeapon: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
   secondWeapon: {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
+  meleeWeapon: {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
   _view: {fileID: 0}
 --- !u!114 &-6395674489095318445
 MonoBehaviour:
@@ -152,25 +153,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac12afd96f18eee40a714a576dfe44f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharacterGameObject: {fileID: 4665399188383504928, guid: cd2f14b089757a8418d7c7d61d907874, type: 3}
+  CharacterGameObject: {fileID: 3694457614554756861, guid: 98185d05bb52a0c46ae44b08712b5402, type: 3}
   DeltaPosition: {fileID: 6774830378860753411}
-  HeadBoneName: B-head
-  ViewBoneName: B-view
-  ArmLeftBoneName0: B-upperArm.L
-  ArmLeftBoneName1: B-forearm.L
-  ArmLeftBoneName2: B-hand.L
-  ArmRightBoneName0: B-upperArm.R
-  ArmRightBoneName1: B-forearm.R
-  ArmRightBoneName2: B-hand.R
-  ThoraxBoneName: B-chest
-  StomachBoneName0: B-spine
-  StomachBoneName1: B-hips
-  LegLeftBoneName0: B-thigh.L
-  LegLeftBoneName1: B-shin.L
-  LegLeftBoneName2: B-foot.L
-  LegRightBoneName0: B-thigh.R
-  LegRightBoneName1: B-shin.R
-  LegRightBoneName2: B-foot.R
+  HeadBoneName: J_HEAD
+  ViewBoneName: J_VIEW
+  ArmLeftBoneName0: J_SK_SHOULDER_L
+  ArmLeftBoneName1: J_SK_ELBOW_L
+  ArmLeftBoneName2: J_WRIST02_L
+  ArmRightBoneName0: J_SK_SHOULDER_R
+  ArmRightBoneName1: J_SK_ELBOW_R
+  ArmRightBoneName2: J_WRIST02_R
+  ThoraxBoneName: J_CHEST
+  StomachBoneName0: J_ABS
+  StomachBoneName1: J_PELVIS
+  LegLeftBoneName0: J_GROIN_L
+  LegLeftBoneName1: J_LEG_L
+  LegLeftBoneName2: J_KNEE_L
+  LegRightBoneName0: J_GROIN_R
+  LegRightBoneName1: J_LEG_R
+  LegRightBoneName2: J_KNEE_R
 --- !u!114 &219538545545060558
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -207,7 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25baa7b3c5c84594381fe0b957c0f71a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 1
+  _maxHealth: 100
 --- !u!114 &2657201299575732514
 MonoBehaviour:
   m_ObjectHideFlags: 0

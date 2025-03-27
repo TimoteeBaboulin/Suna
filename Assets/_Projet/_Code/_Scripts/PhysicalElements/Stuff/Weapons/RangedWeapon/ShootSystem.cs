@@ -3,11 +3,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
-using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
-using static ak.wwise;
-using static UnityEngine.UI.GridLayoutGroup;
+
 using RaycastHit = Unity.Physics.RaycastHit;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
@@ -42,14 +40,16 @@ namespace RangedWeapon
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
+            float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
+
             //Query
             foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
-            .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
+            .Query<RefRW<DynamicData>, CommonData, RefRW<StuffOwner>>()
             .WithAll<IsStuffInHand, Simulate>()
             .WithEntityAccess())
             {
                 ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
-                ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+                ref Entity owner = ref ownerRef.ValueRW.Value;
 
                 //Check valid state
                 if (!(dynamicData.state == _State.Idle || dynamicData.state == _State.Shoot)) return;
@@ -63,19 +63,23 @@ namespace RangedWeapon
                 if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
                 float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
-
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
-                    dynamicData.firerateTimer -= SystemAPI.Time.DeltaTime;
+                    dynamicData.firerateTimer -= dt;
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.shoot.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+                if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
                 {
                     dynamicData.firerateTimer += commonData.firerate;
                     dynamicData.state = _State.Shoot;
                     dynamicData.currentAmmo--;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner, state.EntityManager);
+                    // Apply spread on raycast
+                    float2 recoil = CharacterShootUtils.TSprayPattern(commonData.magazineCapacity - dynamicData.currentAmmo, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                    quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                    recoilRotation = math.mul(input.shootRotation, recoilRotation);
+
+                    RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
 
                     // Apply damage to the target player
                     if (state.World.IsServer()
@@ -97,22 +101,6 @@ namespace RangedWeapon
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
                         }
                     }
-
-
-                    //if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                    //{
-                    //    var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
-
-                    //    if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
-                    //    {
-                    //        ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
-                    //        {
-                    //            Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
-                    //        });
-                    //        ecb.SetComponent(owner, new HasHitComponent { Value = true });
-                    //    }
-                    //}
-
                 }
                 else
                 {
@@ -183,9 +171,7 @@ namespace RangedWeapon
             if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
             {
                 // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
-
-                closestHit = allHits[0];
-                float closestDist = range;
+                float closestDist = float.MaxValue;
                 foreach (RaycastHit hit in allHits)
                 {
                     // If the entity hit is the shooter, skip

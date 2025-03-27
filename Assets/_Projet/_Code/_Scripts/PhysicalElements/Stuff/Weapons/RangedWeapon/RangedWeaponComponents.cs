@@ -2,8 +2,6 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 
-
-
 namespace RangedWeapon
 {
     public enum _State

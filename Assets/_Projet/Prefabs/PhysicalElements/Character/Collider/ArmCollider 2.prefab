@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2165384161016828304}
-  - component: {fileID: 6936694862184400581}
+  - component: {fileID: 4731849672630006856}
   - component: {fileID: 35335452385434871}
   m_Layer: 0
   m_Name: ArmCollider 2
@@ -33,8 +33,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &6936694862184400581
-CapsuleCollider:
+--- !u!65 &4731849672630006856
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -51,11 +51,9 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.06336511
-  m_Height: 0.19452298
-  m_Direction: 1
-  m_Center: {x: -0.0023740458, y: 0.074213326, z: 0.011648628}
+  serializedVersion: 3
+  m_Size: {x: 0.12225043, y: 0.037000246, z: 0.10000126}
+  m_Center: {x: -0.06214228, y: 0.0076611377, z: -0.00000002712225}
 --- !u!114 &35335452385434871
 MonoBehaviour:
   m_ObjectHideFlags: 0

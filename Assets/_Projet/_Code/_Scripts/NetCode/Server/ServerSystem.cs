@@ -31,7 +31,6 @@ public partial class ServerSystem : SystemBase
     {
         _clients.Update(this);
 
-        FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
         //Message from all clients to server
@@ -69,7 +68,7 @@ public partial class ServerSystem : SystemBase
             }
 
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
-            FixedString128Bytes worldName = ConnectionManager.Instance.Server.Name;
+            FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
             Entity client = ecb.Instantiate(prefabManager.Client);
             ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
             {

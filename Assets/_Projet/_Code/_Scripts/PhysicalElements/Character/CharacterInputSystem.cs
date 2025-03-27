@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -42,10 +43,15 @@ public partial class CharacterInputSystem : SystemBase
         bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
         bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
 
+        int selectedId = -1;
+        selectedId = actions.SelectMainWeapon.WasPressedThisFrame() ? 0 : selectedId;
+        selectedId = actions.SelectSecondWeapon.WasPressedThisFrame() ? 1 : selectedId;
+        selectedId = actions.SelectMelee.WasPressedThisFrame() ? 2 : selectedId;
+
         foreach (var (controller, input, modelBones) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, CharacterModelBones>()
 
-            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLoca clients cannot affect other clients data, can only change this if you're the owner and the local player
+            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             input.ValueRW.move = CharacterMove;
 
@@ -81,12 +87,12 @@ public partial class CharacterInputSystem : SystemBase
 
             if (isShootPressed)
             {
-                input.ValueRW.shoot.Set();
+                input.ValueRW.attack.Set();
                 input.ValueRW.shootRotation = modelBones.ViewBoneTransform.rotation;
             }
             else
             {
-                input.ValueRW.shoot = default;
+                input.ValueRW.attack = default;
             }
 
 
@@ -116,6 +122,8 @@ public partial class CharacterInputSystem : SystemBase
             {
                 input.ValueRW.selectPrevious = default;
             }
+
+            input.ValueRW.selectStuffId = selectedId;
         }
     }
 }
