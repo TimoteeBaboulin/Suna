@@ -14,7 +14,8 @@ public class ConnectionManager : MonoBehaviour
 {
     #region Fields
     [Header("Connection Settings")]
-    [Tooltip("No need to replace if lauching with clientServer Setting, NO NEED TO CHANGE THE IP")]
+    [SerializeField] private bool clientLocal = false;
+    [Tooltip("IP to reach/to connect on")]
     [SerializeField] private string _ip = "51.210.222.138";
     [SerializeField] private ushort _port = 7979;
 
@@ -111,7 +112,13 @@ public class ConnectionManager : MonoBehaviour
         {
             World.DefaultGameObjectInjectionWorld = _clientWorld;
 
-            string ip = _ip;
+            string ip = default;
+            ip = clientLocal ? _localIp :_ip;
+
+            if (!clientLocal)
+            {
+                Debug.Log(ip);
+            }
             ushort port = _port;
 
             if (_role == RoleType.ClientServer)

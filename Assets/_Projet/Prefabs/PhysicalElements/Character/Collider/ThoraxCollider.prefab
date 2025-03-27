@@ -9,8 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2165384161016828304}
-  - component: {fileID: 6936694862184400581}
-  - component: {fileID: 3480066477947727724}
+  - component: {fileID: 8523773936038030042}
   - component: {fileID: 35335452385434871}
   m_Layer: 0
   m_Name: ThoraxCollider
@@ -34,8 +33,8 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &6936694862184400581
-CapsuleCollider:
+--- !u!65 &8523773936038030042
+BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -52,34 +51,9 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.12293556
-  m_Height: 0.39797872
-  m_Direction: 0
-  m_Center: {x: 0.004636675, y: 0.045349658, z: 0.010878112}
---- !u!136 &3480066477947727724
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7412152404001876113}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.10388592
-  m_Height: 0.37737077
-  m_Direction: 0
-  m_Center: {x: 0.0042062104, y: 0.18376036, z: -0.007490726}
+  serializedVersion: 3
+  m_Size: {x: 0.3677618, y: 0.3284452, z: 0.31852007}
+  m_Center: {x: 0.00015714765, y: 0.16589797, z: 0.042221338}
 --- !u!114 &35335452385434871
 MonoBehaviour:
   m_ObjectHideFlags: 0

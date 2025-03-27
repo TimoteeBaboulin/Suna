@@ -60,7 +60,7 @@ public partial struct OnDieJob : IJobEntity
             commandBuffer.SetComponentEnabled<CharacterEnableTag>(sortKey, entity, false);
             commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
             commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
-            //commandBuffer.DestroyEntity(sortKey, entity);
+            commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
         }
@@ -132,23 +132,28 @@ public partial struct RespawnSystem : ISystem
 
             int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
 
+            SpawnCharacter(entity, networkId, ecb, buffer[random]);
+            ecb.RemoveComponent<WaitForRespawnTag>(entity);
+            ecb.RemoveComponent<WaitForRespawnTag>(entity);
+
             //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
-            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
-            if (!state.EntityManager.Exists(characterEntity))
-            {
-                characterEntity = SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
-            }
-            else
-            {
-                RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
-                RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
-                transform.ValueRW.Position = buffer[random];
-                currentHealth.ValueRW.Value = 100;
+            //Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(entity).Value;
+            //if (!state.EntityManager.Exists(characterEntity))
+            //{
+            //    SpawnCharacter(entity, networkId, ecb, buffer[random]);
+            //    ecb.RemoveComponent<WaitForRespawnTag>(entity);
+            //}
+            //else
+            //{
+            //    RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
+            //    RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
+            //    transform.ValueRW.Position = buffer[random];
+            //    currentHealth.ValueRW.Value = 100;
 
-                ecb.SetComponentEnabled<CharacterEnableTag>(characterEntity, true);
-            }
+            //    ecb.SetComponentEnabled<CharacterEnableTag>(characterEntity, true);
+            //}
 
-            ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
+            //ecb.RemoveComponent<WaitForRespawnTag>(entity);
         }
     }
 

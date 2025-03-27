@@ -94125,6 +94125,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 4169595300028514173}
     m_Modifications:
+    - target: {fileID: -6395674489095318445, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegLeftBoneName2
+      value: B-foot.L
+      objectReference: {fileID: 0}
+    - target: {fileID: -6395674489095318445, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegRightBoneName0
+      value: B-thigh.R
+      objectReference: {fileID: 0}
+    - target: {fileID: -6395674489095318445, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegRightBoneName1
+      value: B-shin.R
+      objectReference: {fileID: 0}
+    - target: {fileID: -6395674489095318445, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegRightBoneName2
+      value: B-foot.R
+      objectReference: {fileID: 0}
     - target: {fileID: 2584918407947073280, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
       propertyPath: m_Name
       value: Player
