@@ -1,0 +1,183 @@
+using GameNetwork;
+using GameNetwork.Utils;
+using System;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.Entities;
+using Unity.NetCode;
+using Unity.Networking.Transport;
+using Unity.Scenes;
+using UnityEngine;
+
+public class ConnectionHandlerNew : MonoBehaviour
+{
+    private enum RoleType { ClientServer, Server, Client }
+
+    [Header("Connection Settings")]
+    [SerializeField] private bool clientLocal = false;
+    [Tooltip("IP to reach/to connect on")]
+    [SerializeField] private string _ip = "51.210.222.138"; // default remote IP
+    private ushort _port = 7979;
+    private string _localIp = "127.0.0.1";
+
+    private RoleType _role = RoleType.ClientServer;
+    private World _serverWorld = null;
+    private World _clientWorld = null;
+
+    public NetworkEndpoint ClientEndpoint { get; private set; }
+    public NetworkEndpoint ServerEndpoint { get; private set; }
+
+    private void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        // Determine role from your bootstrap settings.
+        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
+            _role = RoleType.ClientServer;
+        else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            _role = RoleType.Server;
+        else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Client)
+            _role = RoleType.Client;
+
+        Debug.Log($"ConnectionHandlerNew: Role is {_role}");
+    }
+
+    /// <summary>
+    /// Handles connection settings and matchmaking.
+    /// </summary>
+    public async Task<ClientConnection> ConnectMatchmakingAsync(CancellationToken token)
+    {
+        // STEP 1: Start Loading
+        LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.StartLoading);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        // Check if worlds already exist.
+        if (_clientWorld != null || _serverWorld != null)
+        {
+            Debug.Log("ConnectionHandlerNew: World(s) already created!");
+            return null;
+        }
+
+        // STEP 2: Initialize Connection / Create Worlds
+        LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.InitializeConnection);
+        switch (_role)
+        {
+            case RoleType.ClientServer:
+                _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+                _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
+                break;
+            case RoleType.Server:
+                _serverWorld = ClientServerBootstrap.ServerWorld;
+                break;
+            case RoleType.Client:
+                _clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
+                break;
+            default:
+                Debug.LogError("ConnectionHandlerNew: No valid role specified.");
+                break;
+        }
+
+        // Optionally dispose any old simulation worlds.
+        DestroySimulationWorld();
+
+        // STEP 3: Setup server world if applicable.
+        if (_serverWorld != null)
+        {
+            ServerEndpoint = NetworkEndpoint.AnyIpv4.WithPort(_port);
+            var query = _serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            while (query.CalculateEntityCount() == 0)
+            {
+                await Task.Yield();
+            }
+            NetworkStreamDriver serverDriver = query.GetSingleton<NetworkStreamDriver>();
+            serverDriver.Listen(ServerEndpoint);
+            query.SetSingleton(serverDriver);
+
+            Debug.Log($"ConnectionHandlerNew: Server world listening on port {_port}");
+        }
+
+        // STEP 4: Setup client world and perform matchmaking.
+        if (_clientWorld != null)
+        {
+            World.DefaultGameObjectInjectionWorld = _clientWorld;
+            // Choose IP based on role. For client-only, use remote IP; for client/server, use local.
+            string ip = (_role == RoleType.ClientServer || clientLocal) ? _localIp : _ip;
+
+            // Create an instance of ClientConnection with these settings.
+            ClientConnection clientConn = new ClientConnection(ip, _port, clientLocal);
+
+            LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LookingForMatch);
+            Debug.Log("ConnectionHandlerNew: Starting matchmaking...");
+
+            // Await matchmaking.
+            ClientConnection connection = await clientConn.JoinOrCreateMatchmakerGameAsync(token);
+            ClientEndpoint = connection.ConnectEndpoint;
+
+            var queryClient = _clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            while (queryClient.CalculateEntityCount() == 0)
+            {
+                await Task.Yield();
+            }
+            NetworkStreamDriver clientDriver = queryClient.GetSingleton<NetworkStreamDriver>();
+            clientDriver.Connect(_clientWorld.EntityManager, ClientEndpoint);
+            queryClient.SetSingleton(clientDriver);
+
+            Debug.Log($"ConnectionHandlerNew: Client connecting to {ClientEndpoint.Address}:{ClientEndpoint.Port}");
+            // STEP 5: Load subscenes.
+            LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadGameScene);
+            SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            if (_serverWorld != null)
+                await LoadSubScenesAsync(subScenes, _serverWorld);
+            if (_clientWorld != null)
+                await LoadSubScenesAsync(subScenes, _clientWorld);
+
+            LoadingData.Instance.UpdateLoading(LoadingData.LoadingSteps.LoadingDone);
+            Debug.Log("ConnectionHandlerNew: Finished loading worlds and subscenes.");
+            return connection;
+        }
+        return null;
+    }
+
+    private async Task LoadSubScenesAsync(SubScene[] subScenes, World world)
+    {
+        while (!world.IsCreated)
+        {
+            await Task.Yield();
+        }
+        if (subScenes != null)
+        {
+            for (int i = 0; i < subScenes.Length; i++)
+            {
+                SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
+#if UNITY_EDITOR
+                flag = SceneLoadFlags.BlockOnImport;
+#endif
+                SceneSystem.LoadParameters loadParams = new SceneSystem.LoadParameters() { Flags = flag };
+                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value), loadParams);
+                while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
+                {
+                    world.Update();
+                    await Task.Yield();
+                }
+                Debug.Log($"ConnectionHandlerNew: Loaded subscene {subScenes[i].name} in world {world.Name}");
+            }
+        }
+    }
+
+    private void DestroySimulationWorld()
+    {
+        foreach (var world in World.All)
+        {
+            if (world.Flags == WorldFlags.Game)
+            {
+                world.Dispose();
+                break;
+            }
+        }
+    }
+}

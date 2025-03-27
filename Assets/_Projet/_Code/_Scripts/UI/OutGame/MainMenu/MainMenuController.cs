@@ -13,7 +13,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private UIDocument _settingsMenuDocument;
 
     [Header("Connection Helper")]
-    [SerializeField] private ConnectionManager connectionManager;
+    //[SerializeField] private ConnectionManager connectionManager;
 
     private VisualElement _mainMenu;
     private VisualElement _settingsMenu;
@@ -68,12 +68,11 @@ public class MainMenuController : MonoBehaviour
 
     private void OnPlayButton_Click()
     {
-        if (connectionManager != null)
-        {
-            connectionManager.Connect();
+        //if (connectionManager != null)
+        //{
+            GameManager.Instance.PlayMatchmaking();
             SceneManager.LoadScene((int)_sceneLoadOnPlay);
-        }
-
+        //}
     }
 
     private void OnSettingsButton_Click()
