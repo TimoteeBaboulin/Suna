@@ -46,7 +46,9 @@ partial struct HarvesterSystemServer : ISystem
             newRound = true;
         }
 
+        
         //Give the harvester to players if they don't have an owner already
+        //TODO: Currently, the entities need to be spawned on the client for the RPCs to not get Entity.Null'd
         if (newRound)
         {
             NativeList<Entity> corpoEntities = new NativeList<Entity>(Allocator.Temp);
@@ -125,7 +127,7 @@ partial struct HarvesterSystemServer : ISystem
                     {
                         if (harvesterRW.ValueRO.Owner == Entity.Null)
                         {
-                            if (currentTick.TicksSince(harvesterRW.ValueRO.DroppedTick) < 1)
+                            if (currentTick.TicksSince(harvesterRW.ValueRO.DroppedTick) < 15)
                                 continue;
 
                             float3 harvesterPosition = state.EntityManager.GetComponentData<LocalTransform>(harvesterEntity).Position;
@@ -202,7 +204,6 @@ partial struct HarvesterSystemServer : ISystem
                                         character = characterEntity
                                     };
                                     EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
-
 
                                     foreach (var client in query.ToEntityArray(Allocator.Temp))
                                     {

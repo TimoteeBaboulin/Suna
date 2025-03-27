@@ -47,15 +47,32 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 //TODO: Prevent planting while moving or prevent moving while planting
                 if (currentTick.TicksSince(harvesterRW.ValueRO.PlantStartedTick) >= 60 * 4)
                 {
-                    //TODO: Make the harvester owner automatically switch to primary, secondary or melee based on availability
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
 
                     Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(harvesterRW.ValueRO.Owner).ValueRO.Value;
-                    SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity).ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
+
+                    StuffType switchToType = StuffType.MainWeapon;
+                    Entity targetWeaponEntity = Entity.Null;
+                    RefRW<CharacterStuffList> stuffListRW = SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity);
+                    if (stuffListRW.ValueRO.Value[(int)StuffType.MainWeapon] == Entity.Null)
+                    {
+                        if (stuffListRW.ValueRO.Value[(int)StuffType.SecondaryWeapon] == Entity.Null)
+                        {
+                            switchToType = StuffType.Melee;
+                        }
+                        else
+                        {
+                            switchToType = StuffType.Melee;
+                        }
+                    }
+                    targetWeaponEntity = stuffListRW.ValueRO.Value[(int)switchToType];
+
+                    stuffListRW.ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
                     SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = Entity.Null;
                     SystemAPI.GetComponentRW<CharacterStuffInHandType>(characterEntity).ValueRW.Value = StuffType.Melee;
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(harvesterEntity, false);
+                    SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
                     //TODO: Spawn the harvester on the ground instead, and sync position on every client
                     harvesterTransformRW.ValueRW.Position = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;

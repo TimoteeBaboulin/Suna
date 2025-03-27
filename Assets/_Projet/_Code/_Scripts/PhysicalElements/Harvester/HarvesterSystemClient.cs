@@ -148,7 +148,7 @@ partial class HarvesterSystemClient : SystemBase
             ecb.DestroyEntity(entity);
         }
 
-        foreach((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
+        foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
         {
             ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
@@ -167,5 +167,6 @@ partial class HarvesterSystemClient : SystemBase
 
         ecb.Playback(EntityManager);
         ecb.Dispose();
+
     }
 }
