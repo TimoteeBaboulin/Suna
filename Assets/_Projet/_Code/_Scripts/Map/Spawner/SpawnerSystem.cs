@@ -1,12 +1,9 @@
-using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Scenes;
 using Unity.Transforms;
-using UnityEngine.Rendering;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -189,92 +186,3 @@ public partial struct RespawnSystem : ISystem
         return character;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    SpawnerComponent spawnerComponent;
-//    if (SystemAPI.TryGetSingleton(out spawnerComponent))
-//    {
-//        Debug.Log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHH");
-//        respawnPtLookupInit.Update(ref state);
-//        resetStuffLookupInit.Update(ref state);
-
-//        var ecb = new EntityCommandBuffer(Allocator.TempJob);
-
-//        RespawnJob job = new RespawnJob
-//        {
-//            dt = SystemAPI.Time.DeltaTime,
-//            networkTime = SystemAPI.GetSingleton<NetworkTime>(),
-//            commandBuffer = ecb.AsParallelWriter(),
-
-//            respawnPtLookup = respawnPtLookupInit,
-//            resetStuffLookup = resetStuffLookupInit,
-
-//            spawnerEntity = SystemAPI.GetSingletonEntity<SpawnerComponent>()
-//        };
-//        state.Dependency = job.ScheduleParallel(state.Dependency);
-
-//        state.Dependency.Complete();
-//        ecb.Playback(state.EntityManager);
-//        ecb.Dispose();
-//    }
-//}
-//}
-
-//[BurstCompile]
-//public partial struct RespawnJob : IJobEntity
-//{
-//    public float dt;
-//    public NetworkTime networkTime;
-//    public EntityCommandBuffer.ParallelWriter commandBuffer;
-//    public Entity spawnerEntity;
-
-//    [ReadOnly] public ComponentLookup<LocalTransform> respawnPtLookup;
-//    [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
-
-//    public void Execute(Entity playerEntity, in CharacterControllerComponent controler,
-//        ref CurrentHealthComponent hp, in MaxHealthComponent maxHp, RefRW<LocalTransform> playerTransform)
-//    {
-//        //LocalTransform playerTransform;
-//        //respawnPtLookup.TryGetComponent(playerEntity, out playerTransform);
-
-//        LocalTransform respawnZoneTransform;
-//        respawnPtLookup.TryGetComponent(spawnerEntity, out respawnZoneTransform);
-
-//        //Changement de position, récupération des PV
-//        playerTransform.ValueRW.Position = respawnZoneTransform.Position;
-//        hp.Value = maxHp.Value;
-
-//        if (resetStuffLookup.HasComponent(spawnerEntity))
-//        {
-//            //TODO : Vider l'inventaire
-//            commandBuffer.RemoveComponent<ResetStuffTag>(playerEntity.Index, playerEntity);
-//        }
-//    }
-//}
-

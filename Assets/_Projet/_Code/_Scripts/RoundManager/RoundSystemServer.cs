@@ -88,10 +88,14 @@ public partial struct RoundSystemServer : ISystem
             //Debug.Log("Collector has been planted on the server");
             CollectorPlanted(ref state, entity, roundComponent, ecb);
 
-            foreach (Entity harvesterEntity in plantedHarvesterEntities)
-            {
-                ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, false);
-            }
+            //foreach (Entity harvesterEntity in plantedHarvesterEntities)
+            //{
+            //    ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, false);
+            //}
+        }
+        else if (roundComponent.ValueRO.currentPhase is RoundPhase.PostPlantPhase && plantedHarvesterEntities.Length is 0)
+        {
+            HarvesterDefused(ref state, entity, roundComponent, ecb);
         }
         else
         {
@@ -218,6 +222,17 @@ public partial struct RoundSystemServer : ISystem
         {
             ecb.AddComponent<WaitForRespawnTag>(client.ValueRO.ClientEntity);
         }
+    }
+
+    private void HarvesterDefused(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
+    {
+        var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
+
+        component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+        component.ValueRW.timer = buffer[(int)RoundPhase.PostRoundPhase];
+
+        Victory(ref state, entity, component, TeamSideType.Natif, ecb);
+        SendCurrentPhase(ref state, entity, component, ecb);
     }
 
     private void CollectorPlanted(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)

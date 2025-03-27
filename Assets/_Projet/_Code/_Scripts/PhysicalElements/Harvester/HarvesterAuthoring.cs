@@ -1,6 +1,4 @@
-﻿using RangedWeapon;
-using Unity.Entities;
-using Unity.Transforms;
+﻿using Unity.Entities;
 using UnityEngine;
 
 public class HarvesterAuthoring : MonoBehaviour

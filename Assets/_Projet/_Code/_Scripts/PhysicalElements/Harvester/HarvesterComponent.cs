@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Unity.Entities;
+﻿using Unity.Entities;
 using Unity.NetCode;
 
 public partial struct HarvesterPlanting : IComponentData, IEnableableComponent
@@ -12,30 +11,50 @@ public partial struct HarvesterPlanted : IComponentData, IEnableableComponent
 
 }
 
-public partial struct RpcHarvesterPlanted : IRpcCommand
-{
-    public Entity harvester;
-    public NetworkTick plantedTick;
-    public Entity harvesterOwner;
-}
-
 public partial struct TemporaryOverrideGameObjectActive : IComponentData
 {
 
 }
 
-public partial struct RpcHarvesterDefuseStart : IRpcCommand
-{
-    public Entity harvester;
-    public NetworkTick defuseStartTick;
-}
-
+#region RPCCommands
 public partial struct RpcHarvesterOwnerChange : IRpcCommand
 {
     public Entity harvester;
     public Entity newOwner;
     public Entity character;
 }
+public partial struct RpcHarvesterPlanted : IRpcCommand
+{
+    public Entity harvester;
+    public NetworkTick plantedTick;
+    public Entity harvesterOwner;
+}
+public partial struct RpcHarvesterDefuseStop : IRpcCommand
+{
+    public Entity harvester;
+    public Entity character;
+    public NetworkTick defuseStopTick;
+}
+
+public partial struct RpcHarvesterDefuseStart : IRpcCommand
+{
+    public Entity harvester;
+    public Entity character;
+    public NetworkTick defuseStartTick;
+}
+
+public struct RpcHarvesterPlantStart : IRpcCommand
+{
+    public NetworkTick tick;
+    public Entity harvester;
+}
+
+public struct RpcHarvesterPlantStop : IRpcCommand
+{
+    public NetworkTick tick;
+    public Entity harvester;
+}
+#endregion //RPCCommands
 
 public partial struct HarvesterComponent : IComponentData
 {

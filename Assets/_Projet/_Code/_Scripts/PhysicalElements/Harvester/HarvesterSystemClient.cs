@@ -1,25 +1,9 @@
-using AK.Wwise;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using static ak.wwise;
-using static UnityEditor.PlayerSettings;
-
-public struct HarvesterStartPlant : IRpcCommand
-{
-    public NetworkTick tick;
-    public Entity harvester;
-}
-
-public struct HarvesterStopPlant : IRpcCommand
-{
-    public NetworkTick tick;
-    public Entity harvester;
-}
 
 [UpdateAfter(typeof(StuffSystems))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -83,7 +67,7 @@ partial class HarvesterSystemClient : SystemBase
 
             if (actions.Attack.WasPressedThisFrame())
             {
-                HarvesterStartPlant rpc = new HarvesterStartPlant
+                RpcHarvesterPlantStart rpc = new RpcHarvesterPlantStart
                 {
                     tick = currentTick,
                     harvester = harvesterEntity
@@ -95,7 +79,7 @@ partial class HarvesterSystemClient : SystemBase
             }
             else if (actions.Attack.WasReleasedThisFrame())
             {
-                HarvesterStopPlant rpc = new HarvesterStopPlant
+                RpcHarvesterPlantStop rpc = new RpcHarvesterPlantStop
                 {
                     tick = currentTick,
                     harvester = harvesterEntity
@@ -116,12 +100,28 @@ partial class HarvesterSystemClient : SystemBase
             float3 harvesterPos = harvesterTransform.Position;
             float3 characterPos = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;
 
-            if (actions.Interact.WasPressedThisFrame() && math.distance(harvesterPos, characterPos) <= 20)
+            if (actions.Interact.WasPressedThisFrame() && math.distance(harvesterPos, characterPos) <= 10)
             {
                 RpcHarvesterDefuseStart rpc = new RpcHarvesterDefuseStart
                 {
                     harvester = harvesterEntity,
-                    defuseStartTick = currentTick
+                    defuseStartTick = currentTick,
+                    character = characterEntity
+                };
+
+                Entity rpcEntity = ecb.CreateEntity();
+                ecb.AddComponent(rpcEntity, rpc);
+                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+            }
+
+            //Find a way to check whethere we're currently defusing
+            if (actions.Interact.WasReleasedThisFrame())
+            {
+                RpcHarvesterDefuseStop rpc = new RpcHarvesterDefuseStop
+                {
+                    harvester = harvesterEntity,
+                    defuseStopTick = currentTick,
+                    character = characterEntity
                 };
 
                 Entity rpcEntity = ecb.CreateEntity();
@@ -141,7 +141,7 @@ partial class HarvesterSystemClient : SystemBase
                 return;
 
             goRef.Value.transform.SetParent(null);
-            goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(rpc.harvester).ValueRO.Position;
+            goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(rpc.harvesterOwner).ValueRO.Position;
             goRef.Value.SetActive(true);
 
             ecb.AddComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
