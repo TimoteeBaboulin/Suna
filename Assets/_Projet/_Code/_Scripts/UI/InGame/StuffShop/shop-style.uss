@@ -37,3 +37,15 @@
     border-top-color: rgb(230, 229, 7);
     border-bottom-color: rgb(230, 229, 7);
 }
+
+.shop_buy_slot_button:active {
+    background-color: rgba(230, 229, 7, 0.38);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    border-left-color: rgba(230, 229, 7, 0.77);
+    border-right-color: rgba(230, 229, 7, 0.77);
+    border-top-color: rgba(230, 229, 7, 0.77);
+    border-bottom-color: rgba(230, 229, 7, 0.77);
+}
