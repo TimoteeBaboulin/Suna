@@ -76,7 +76,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
                     //TODO: Spawn the harvester on the ground instead, and sync position on every client
-                    float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.55f, 0);
+                    float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
                     harvesterRW.ValueRW.PlantedTick = currentTick;
 
@@ -114,6 +114,8 @@ partial struct HarvesterPlantingSystemServer : ISystem
         {
             //TODO: Add zone and ownership checks to avoid planting someone else's harvester outside of a site
             //Entity roundManagerEntity;
+            ecb.DestroyEntity(entity);
+
             if (currentPhase is not RoundPhase.ActionPhase or RoundPhase.PostRoundPhase)
             {
                 Debug.Log("[Server] Can't plant harvester during this phase");
@@ -121,7 +123,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 continue;
             }
 
-            ecb.DestroyEntity(entity);
             ecb.SetComponentEnabled<HarvesterPlanting>(rpc.harvester, true);
 
             if (currentTick.TicksSince(rpc.tick) > 10)
