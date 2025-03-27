@@ -141,7 +141,7 @@ partial class HarvesterSystemClient : SystemBase
                 return;
 
             goRef.Value.transform.SetParent(null);
-            goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(rpc.harvesterOwner).ValueRO.Position;
+            goRef.Value.transform.position = rpc.plantPosition;
             goRef.Value.SetActive(true);
 
             ecb.AddComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);

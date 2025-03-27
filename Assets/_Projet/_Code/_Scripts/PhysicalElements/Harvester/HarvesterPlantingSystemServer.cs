@@ -1,6 +1,7 @@
 ﻿using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
@@ -75,14 +76,16 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
                     //TODO: Spawn the harvester on the ground instead, and sync position on every client
-                    harvesterTransformRW.ValueRW.Position = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;
+                    float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.55f, 0);
+                    harvesterTransformRW.ValueRW.Position = plantPosition;
                     harvesterRW.ValueRW.PlantedTick = currentTick;
 
                     RpcHarvesterPlanted rpc = new RpcHarvesterPlanted
                     {
                         harvester = harvesterEntity,
                         plantedTick = currentTick,
-                        harvesterOwner = characterEntity
+                        harvesterOwner = characterEntity,
+                        plantPosition = plantPosition
                     };
 
                     EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);

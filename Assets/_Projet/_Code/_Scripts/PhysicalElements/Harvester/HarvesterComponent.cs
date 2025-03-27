@@ -1,4 +1,5 @@
 ﻿using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
 public partial struct HarvesterPlanting : IComponentData, IEnableableComponent
@@ -28,6 +29,8 @@ public partial struct RpcHarvesterPlanted : IRpcCommand
     public Entity harvester;
     public NetworkTick plantedTick;
     public Entity harvesterOwner;
+
+    public float3 plantPosition;
 }
 public partial struct RpcHarvesterDefuseStop : IRpcCommand
 {
