@@ -12,6 +12,11 @@ public struct ClientMessageRpcCommand : IRpcCommand
     public FixedString64Bytes message;
 }
 
+public struct ClientSessionCreationCommand : IRpcCommand
+{
+    public bool createNewSession;
+}
+
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class ClientSystem : SystemBase

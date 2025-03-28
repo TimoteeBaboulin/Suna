@@ -8,28 +8,34 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Scenes;
+using Unity_NetCode_Generated_Unity_Transforms;
 using UnityEngine;
 
 public class ConnectionHandlerNew : MonoBehaviour
 {
     private enum RoleType { ClientServer, Server, Client }
 
-    [Header("Connection Settings")]
-    public bool isClientLocal = false;
-    [Tooltip("IP to reach/to connect on")]
-    [SerializeField] private string _ip = "51.210.222.138"; // default remote IP
+    //[Header("Connection Settings")]
+    //public bool isClientLocal = false;
+    //[Tooltip("IP to reach/to connect on")]
+    //[SerializeField] private string _ip = "51.210.222.138"; // default remote IP
+    //private ushort _port = 7979;
+    //private string _localIp = "127.0.0.1";
+    private string _ip;
     private ushort _port = 7979;
     private string _localIp = "127.0.0.1";
+    private bool isClientLocal;
+    private ConnectionSettings connectionSettings;
 
     private RoleType _role = RoleType.ClientServer;
     private World _serverWorld = null;
     private World _clientWorld = null;
-    private SessionTransportHelper connection = null;
+    private SessionTransportHelper sessionTransport = null;
     public NetworkEndpoint ClientEndpoint { get; private set; }
     public NetworkEndpoint ServerEndpoint { get; private set; }
     public string IP { get; private set; } = "51.210.222.138";
     public ushort Port => _port;
-
+    public bool ClientLocal => isClientLocal;
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
@@ -37,6 +43,11 @@ public class ConnectionHandlerNew : MonoBehaviour
 
     private void Start()
     {
+        connectionSettings = GetComponent<ConnectionSettings>();
+        _ip = connectionSettings.IP;
+        _port = connectionSettings.Port;
+        isClientLocal = connectionSettings.isClientLocal;
+
         // Determine role from your bootstrap settings.
         if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
             _role = RoleType.ClientServer;
@@ -51,7 +62,7 @@ public class ConnectionHandlerNew : MonoBehaviour
     /// <summary>
     /// Handles connection settings and matchmaking.
     /// </summary>
-    public async Task<SessionTransportHelper> ConnectMatchmakingAsync(CancellationToken token, string sessionID)
+    public async Task<SessionTransportHelper> ConnectToSessionAsync(CancellationToken token, string sessionID)
     {
         // STEP 1: Start Loading
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.StartLoading);
@@ -126,7 +137,7 @@ public class ConnectionHandlerNew : MonoBehaviour
             Debug.Log($"sessionID in Handler : {sessionID}");
             //connection = await new SessionTransportHelper(_ip, _port, isClientLocal)
             //                                                 .CreateOrJoinSessionAsync(sessionID, token);
-            connection = await new SessionTransportHelper(_ip, _port, isClientLocal).JoinSessionByIdAsync(sessionID, token);
+            sessionTransport = await new SessionTransportHelper(_ip, _port, isClientLocal).JoinSessionByIdAsync(sessionID, token);
             SessionTransportHelper.SessionID = sessionID;
             //ClientEndpoint = connection.ConnectEndpoint;
 
@@ -158,7 +169,7 @@ public class ConnectionHandlerNew : MonoBehaviour
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
         Debug.Log("ConnectionHandlerNew: Finished loading worlds and subscenes.");
-        return connection;
+        return sessionTransport;
         //return null;
     }
 

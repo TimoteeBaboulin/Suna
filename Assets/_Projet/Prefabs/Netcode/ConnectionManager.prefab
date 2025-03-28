@@ -9,7 +9,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7540693576825535764}
-  - component: {fileID: 449767617614211302}
+  - component: {fileID: 6902115616936622361}
+  - component: {fileID: 5542147879625772516}
   m_Layer: 0
   m_Name: ConnectionManager
   m_TagString: Untagged
@@ -32,7 +33,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &449767617614211302
+--- !u!114 &6902115616936622361
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,8 +42,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 5556244542664566637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d42a77fee517b14bbd2a3fc9ef45eb2, type: 3}
+  m_Script: {fileID: 11500000, guid: 73be431a4fa497d4ca96fdc1ab92ae9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _ip: 141.94.194.103
-  _port: 7979
+  isClientLocal: 0
+  IP: 51.210.222.138
+  Port: 7979
+--- !u!114 &5542147879625772516
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5556244542664566637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da3e269c0224fee418d0cb0f9149bb5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

@@ -35,9 +35,11 @@ public class GameManager : Singleton<GameManager>
 
         if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
         {
-            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.isClientLocal);
+            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
         }
-        
+
+        //ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
+        //RpcUtils.SendDefaultToServerRPC(ref command);
     }
 
     public void SetSessionID(string sessionID)
@@ -52,7 +54,7 @@ public class GameManager : Singleton<GameManager>
         await QuerySessionsAsync();
         Debug.Log($"GameManager: Using session code: {SessionID}");
 
-        clientConnectionSettings = await connectionHandler.ConnectMatchmakingAsync(loadingToken.Token, SessionID);
+        clientConnectionSettings = await connectionHandler.ConnectToSessionAsync(loadingToken.Token, SessionID);
         //if (clientConnectionSettings == null)
         //{
         //    Debug.LogError("GameManager: Client connection settings are null.");
@@ -188,13 +190,30 @@ public class GameManager : Singleton<GameManager>
                 return;
             }
 
-            // For example, pick the first session:
-            var firstSession = results.Sessions[0];
-            Debug.Log($"Found session ID: {firstSession.Id}");
-            Debug.Log($"Session code: {firstSession.Id}");
-            Debug.Log($"Players: {firstSession.AvailableSlots}/{firstSession.MaxPlayers}");
 
-            SessionID = firstSession.Id;
+            //foreach (var session in results.Sessions)
+            //{
+            //    if (session.AvailableSlots != 0)
+            //    {
+            //        SessionID = session.Id;
+            //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+            //        Debug.Log($"Found session ID: {session.Id}");
+            //        Debug.Log($"Session code: {session.Id}");
+            //    }
+            //    else
+            //    {
+            //        ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
+            //        RpcUtils.SendClientToServerRpc(ref command);
+
+            //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+            //        Debug.Log($"Found session ID: {session.Id}");
+            //        Debug.Log($"Session code: {session.Id}");
+            //    }
+            //}
+            //var firstSession = results.Sessions[0];
+            //SessionID = firstSession.Id;
+
+
             // From here, you could store the session info in your own manager,
             // or pass it to an ECS system that sets a SessionInfo entity, etc.
         }

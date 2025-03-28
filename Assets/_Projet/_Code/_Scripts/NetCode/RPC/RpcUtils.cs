@@ -31,4 +31,16 @@ public class RpcUtils
         Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
         world.EntityManager.SetComponentData(entity, command);
     }
+
+    public static void SendDefaultToServerRPC<T>(ref T command) where T : unmanaged, IRpcCommand
+    {
+        World world = ClientServerBootstrap.ServerWorld;
+        Debug.LogError($"World in RPC COMMAND : {world}");
+        if (world == null || !world.IsCreated)
+        {
+            return;
+        }
+        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
+        world.EntityManager.SetComponentData(entity, command);
+    }
 }

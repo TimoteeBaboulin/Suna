@@ -119,17 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &277469203 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 449767617614211302, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-  m_PrefabInstance: {fileID: 2063913176}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1505545823}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d42a77fee517b14bbd2a3fc9ef45eb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &362290600
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,7 +503,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 277469203}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ConnectionManager, Assembly-CSharp
         m_MethodName: Connect
         m_Mode: 1
@@ -591,25 +580,6 @@ MultiplayerRolesData:
   m_ComponentsRolesMasks:
   - m_Object: {fileID: 1337306815}
     m_RolesMask: 1
---- !u!1 &1505545823 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-  m_PrefabInstance: {fileID: 2063913176}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1505545825
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1505545823}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: da3e269c0224fee418d0cb0f9149bb5c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  isClientLocal: 0
-  _ip: 51.210.222.138
 --- !u!1 &1623078504
 GameObject:
   m_ObjectHideFlags: 0
@@ -1455,21 +1425,9 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 449767617614211302, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: _ip
-      value: 82.65.198.80
-      objectReference: {fileID: 0}
-    - target: {fileID: 449767617614211302, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_Name
       value: ConnectionManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: m_IsActive
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7540693576825535764, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1514,10 +1472,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1505545825}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

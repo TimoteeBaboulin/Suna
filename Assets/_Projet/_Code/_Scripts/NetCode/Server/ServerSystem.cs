@@ -19,19 +19,11 @@ public struct InitializedClient : IComponentData
     public int id;
 }
 
-//public struct SessionInfo : IComponentData
-//{
-//    [GhostField] public FixedString64Bytes SessionID;
-//    [GhostField] public int PlayerCount;
-//    [GhostField] public int MaxPlayers;
-//}
-
-public struct ClientReady : IComponentData { }
-
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class ServerSystem : SystemBase
 {
     private ComponentLookup<NetworkId> _clients;
+    private SessionTransportHelper serverSession;
 
     protected override void OnCreate()
     {
@@ -42,11 +34,11 @@ public partial class ServerSystem : SystemBase
     {
         _clients.Update(this);
 
-        if (SessionData.Instance.CurrentPlayerCount < SessionData.Instance.SessionMaxPlayers)
-        {
-            Debug.Log($"[ServerSystem] Session is not full; waiting for more clients = {SessionData.Instance.CurrentPlayerCount}/{SessionData.Instance.SessionMaxPlayers}");
-            return;
-        }
+        //if (SessionData.Instance.CurrentPlayerCount < SessionData.Instance.SessionMaxPlayers)
+        //{
+        //    Debug.Log($"[ServerSystem] Session is not full; waiting for more clients = {SessionData.Instance.CurrentPlayerCount}/{SessionData.Instance.SessionMaxPlayers}");
+        //    return;
+        //}
 
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 

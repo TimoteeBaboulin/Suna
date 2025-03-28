@@ -15,7 +15,7 @@ public class CommonAutoConnect : ClientServerBootstrap
         {
             AutoConnectPort = 7979;
             SessionTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
-            DefaultListenAddress = NetworkEndpoint.AnyIpv4.WithPort(AutoConnectPort);
+            //DefaultListenAddress = NetworkEndpoint.AnyIpv4.WithPort(AutoConnectPort);
             return true;
         }
         return true;

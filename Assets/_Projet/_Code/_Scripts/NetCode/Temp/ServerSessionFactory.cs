@@ -40,4 +40,15 @@ public class ServerSessionFactory
             return null;
         }
     }
+
+    public static async Task<IMultiplaySessionManager> StartMultiplaySessionManagerAsync()
+    {
+        MultiplaySessionManagerOptions options = new MultiplaySessionManagerOptions { };
+
+        return await MultiplayerServerService.Instance.StartMultiplaySessionManagerAsync(options);
+    }
+
+
+
+
 }
