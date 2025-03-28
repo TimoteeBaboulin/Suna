@@ -82,24 +82,36 @@ namespace RangedWeapon
                     RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
 
                     // Apply damage to the target player
-                    if (state.World.IsServer()
-                            && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    if (state.World.IsServer())
                     {
-                        RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                            = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
-
-                        if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                        if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                         {
-                            SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager 
-                                = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                            ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                                && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
                             {
-                                Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
-                            });
-                            ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                                SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                    = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+
+                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                {
+                                    Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                });
+                                ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                            }
                         }
+
+                        // === VISUEL ===
+                        HitCommand hc = new HitCommand()
+                        {
+                            position = hit.Position,
+                            normal = hit.SurfaceNormal,
+                        };
+
+                        RpcUtils.SendServerToClientRpc(ref hc);
+                        // === FIN VISUEL ===
                     }
                 }
                 else
