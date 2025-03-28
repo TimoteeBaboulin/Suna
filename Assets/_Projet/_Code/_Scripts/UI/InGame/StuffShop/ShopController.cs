@@ -108,11 +108,17 @@ public class ShopController : MonoBehaviour
     private void OnShopButtonEnter(Button button)
     {
         VisualElement statsElement = new() { name = "StatsElement" };
-        root.Add(statsElement);
-        UI.SetSize(ref statsElement, 200f, 200f);
+        shopmenu.Add(statsElement);
+        UI.SetSize(ref statsElement, 300f, shopmenu.resolvedStyle.height * 3 / 4f);
         statsElement.style.position = Position.Absolute;
-        UI.SetPosition(ref statsElement, TextAnchor.MiddleRight, 50f, 0f);
+        UI.SetPosition(ref statsElement, TextAnchor.MiddleRight, -300f, 0f);
         statsElement.style.backgroundColor = new Color(1, 1, 1, .1f);
+        UI.SetBorderWidth(ref statsElement, 2);
+        UI.SetBorderColor(ref statsElement, new Color(1, 1, 1, .5f));
+        RangedWeaponData weapon = weaponDict[button];
+        statsElement.Add(UI.Label($"Name: {weapon.entityName}", 20, Color.white));
+        statsElement.Add(UI.Label($"Damage: {weapon.damage}", 20, Color.white));
+        statsElement.Add(UI.Label($"Firerate: {weapon.firerate}", 20, Color.white));
     }
 
     private void OnShopButtonLeave()

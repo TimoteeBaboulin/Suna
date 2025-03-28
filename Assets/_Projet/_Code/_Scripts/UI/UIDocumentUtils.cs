@@ -5,11 +5,11 @@ public class UIDocumentUtils
 {
     static public void SetMargin<T>(ref T element, float value = 0) where T : VisualElement
     {
-        SetMargin(ref element, new Vector4(value, value, value, value));
+        SetMargin(ref element, Vector4.one * value);
     }
     static public void SetPadding<T>(ref T element, float value = 0) where T : VisualElement
     {
-        SetPadding(ref element, new Vector4(value, value, value, value));
+        SetPadding(ref element, Vector4.one * value);
     }
     static public void SetMargin<T>(ref T element, Vector4 values) where T : VisualElement
     {
@@ -104,5 +104,33 @@ public class UIDocumentUtils
     static public void SetPosition<T>(ref T element, TextAnchor anchor, Vector2 shiftPosition) where T : VisualElement
     {
         SetPosition(ref element, anchor, shiftPosition.x, shiftPosition.y);
+    }
+
+    static public void SetBorderWidth<T>(ref T element, float value) where T : VisualElement
+    {
+        SetBorderWidth(ref element, Vector4.one * value);
+    }
+    static public void SetBorderWidth<T>(ref T element, Vector4 values) where T : VisualElement
+    {
+        element.style.borderTopWidth = values.x;
+        element.style.borderLeftWidth = values.y;
+        element.style.borderRightWidth = values.z;
+        element.style.borderBottomWidth = values.w;
+    }
+
+    static public void SetBorderColor<T>(ref T element, Color value) where T : VisualElement
+    {
+        element.style.borderTopColor = value;
+        element.style.borderLeftColor = value;
+        element.style.borderRightColor = value;
+        element.style.borderBottomColor = value;
+    }
+
+    static public Label Label(string text, float fontSize, Color color)
+    {
+        Label label = new(text);
+        label.style.fontSize = fontSize;
+        label.style.color = color;
+        return label;
     }
 }
