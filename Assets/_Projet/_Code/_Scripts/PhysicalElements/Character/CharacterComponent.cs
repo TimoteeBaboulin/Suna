@@ -84,10 +84,16 @@ public struct CharacterStuffList : IComponentData
 }
 
 [GhostComponent]
-
 public struct CharacterStuffInHandType : IComponentData 
 {
     [GhostField] public StuffType Value;
 }
 
+
+[GhostComponent]
+public struct CharacterMoney : IComponentData
+{
+    [GhostField] public uint money;
+    [GhostField] public uint maxMoney;
+}
 

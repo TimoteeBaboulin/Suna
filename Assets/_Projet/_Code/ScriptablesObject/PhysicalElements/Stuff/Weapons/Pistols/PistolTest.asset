@@ -21,10 +21,11 @@ MonoBehaviour:
   deploymentSpeed: 0
   storageSpeed: 0
   price: 0
+  killGain: 500
   _stuffLocalOffsetView: {x: 0.4, y: -0.35, z: 0.7}
   recoil: {x: 0, y: 0}
   damage: 12
-  range: 20
+  range: 100
   firerate: 0.8
   spread: 0
   spreadAiming: 0
