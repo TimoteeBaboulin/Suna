@@ -4,10 +4,13 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using static RoundSystemServer;
 
 //TODO: Add animation handling
+//TODO: Client does not know who the bomb is linked to when first loading
+//Maybe use a RPC to request more data
 [UpdateAfter(typeof(RespawnSystem))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct HarvesterSystemServer : ISystem
@@ -228,6 +231,34 @@ partial struct HarvesterSystemServer : ISystem
 
             default:
                 break;
+        }
+
+        foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcRequestHarvesterOwners rpc, Entity entity)
+    in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcRequestHarvesterOwners>().WithEntityAccess())
+        {
+            ecb.DestroyEntity(entity);
+
+            foreach ((RefRO<HarvesterComponent> harvester, Entity harvesterEntity) in SystemAPI
+                .Query<RefRO<HarvesterComponent>>()
+                .WithEntityAccess())
+            {
+                if (harvester.ValueRO.Owner == Entity.Null)
+                    continue;
+
+                RpcHarvesterOwnerChange response = new RpcHarvesterOwnerChange
+                {
+                    harvester = harvesterEntity,
+                    newOwner = harvester.ValueRO.Owner,
+                    character = SystemAPI.GetComponentRO<ClientCharacterAttached>(harvester.ValueRO.Owner).ValueRO.Value
+                };
+
+                Entity rpcEntity = ecb.CreateEntity();
+                ecb.AddComponent(rpcEntity, response);
+                ecb.AddComponent(rpcEntity, new SendRpcCommandRequest
+                {
+                    TargetConnection = request.ValueRO.SourceConnection
+                });
+            }
         }
 
         ecb.Playback(state.EntityManager);

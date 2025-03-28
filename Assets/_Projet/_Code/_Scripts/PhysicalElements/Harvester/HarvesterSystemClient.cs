@@ -70,7 +70,8 @@ partial class HarvesterSystemClient : SystemBase
                 RpcHarvesterPlantStart rpc = new RpcHarvesterPlantStart
                 {
                     tick = currentTick,
-                    harvester = harvesterEntity
+                    harvester = harvesterEntity,
+                    character = characterEntity
                 };
 
                 Entity rpcEntity = ecb.CreateEntity();

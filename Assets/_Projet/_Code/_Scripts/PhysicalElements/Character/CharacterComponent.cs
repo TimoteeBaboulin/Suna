@@ -36,6 +36,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public bool jumpRequest;
     [GhostField] public bool isGrounded;
     [GhostField] public bool isWalking;
+    [GhostField] public bool isOnSite;
 
     [GhostField] public float verticalCameraAngle;
 

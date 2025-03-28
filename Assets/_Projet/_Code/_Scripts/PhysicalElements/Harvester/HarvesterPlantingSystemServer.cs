@@ -13,7 +13,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<HarvesterComponent, HarvesterPlanting>().Build(ref state);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<HarvesterComponent>().Build(ref state);
         state.RequireForUpdate(query);
     }
 
@@ -123,6 +123,13 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 continue;
             }
 
+            if (!SystemAPI.GetComponentRO<CharacterComponent>(rpc.character).ValueRO.isOnSite)
+            {
+                Debug.Log("[Server] Not on site");
+
+                continue;
+            }
+
             ecb.SetComponentEnabled<HarvesterPlanting>(rpc.harvester, true);
 
             if (currentTick.TicksSince(rpc.tick) > 10)
@@ -146,6 +153,11 @@ partial struct HarvesterPlantingSystemServer : ISystem
             Debug.Log("[Server] Plant stopped");
 
             ecb.DestroyEntity(entity);
+        }
+
+        foreach (var characterRW in SystemAPI.Query<RefRW<CharacterComponent>>())
+        {
+            characterRW.ValueRW.isOnSite = false;
         }
 
         ecb.Playback(state.EntityManager);

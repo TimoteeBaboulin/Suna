@@ -50,12 +50,18 @@ public struct RpcHarvesterPlantStart : IRpcCommand
 {
     public NetworkTick tick;
     public Entity harvester;
+    public Entity character;
 }
 
 public struct RpcHarvesterPlantStop : IRpcCommand
 {
     public NetworkTick tick;
     public Entity harvester;
+}
+
+public struct RpcRequestHarvesterOwners : IRpcCommand
+{
+
 }
 #endregion //RPCCommands
 
