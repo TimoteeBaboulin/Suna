@@ -27,10 +27,10 @@ public class CharacterShootUtils
         currentRecoilYPos *= 8f;
 
         // Random on the impact
-        //float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
-        //float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);
-        //currentRecoilXPos += Mathf.Cos(randomTheta) * radius;
-        //currentRecoilYPos += Mathf.Sin(randomTheta) * radius;
+        float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
+        float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);
+        currentRecoilXPos += Mathf.Cos(randomTheta) * radius;
+        currentRecoilYPos += Mathf.Sin(randomTheta) * radius;
 
         // Amplifying the effect
         currentRecoilYPos *= amplifier;
