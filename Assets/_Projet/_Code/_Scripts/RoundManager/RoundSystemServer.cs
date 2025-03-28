@@ -222,6 +222,14 @@ public partial struct RoundSystemServer : ISystem
         {
             ecb.AddComponent<WaitForRespawnTag>(client.ValueRO.ClientEntity);
         }
+
+        foreach (var (harvester, harvesterEntity) in SystemAPI
+            .Query<HarvesterComponent>()
+            .WithNone<HarvesterRespawn>()
+            .WithEntityAccess())
+        {
+            ecb.AddComponent<HarvesterRespawn>(harvesterEntity);
+        }
     }
 
     private void HarvesterDefused(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)

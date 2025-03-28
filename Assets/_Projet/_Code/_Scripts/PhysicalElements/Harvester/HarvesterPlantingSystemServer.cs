@@ -75,7 +75,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(harvesterEntity, false);
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
-                    //TODO: Spawn the harvester on the ground instead, and sync position on every client
                     float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
                     harvesterRW.ValueRW.PlantedTick = currentTick;
@@ -112,7 +111,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlantStart rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlantStart>().WithEntityAccess())
         {
-            //TODO: Add zone and ownership checks to avoid planting someone else's harvester outside of a site
             //Entity roundManagerEntity;
             ecb.DestroyEntity(entity);
 

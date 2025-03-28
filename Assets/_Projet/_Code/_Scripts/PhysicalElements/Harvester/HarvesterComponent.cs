@@ -17,6 +17,11 @@ public partial struct TemporaryOverrideGameObjectActive : IComponentData
 
 }
 
+public partial struct HarvesterRespawn : IComponentData
+{
+
+}
+
 #region RPCCommands
 public partial struct RpcHarvesterOwnerChange : IRpcCommand
 {
@@ -71,4 +76,6 @@ public partial struct HarvesterComponent : IComponentData
     public NetworkTick DroppedTick;
     public NetworkTick PlantStartedTick;
     public NetworkTick PlantedTick;
+
+    public bool IsActive;
 }
