@@ -243,17 +243,6 @@ public partial struct RoundSystemServer : ISystem
         SendCurrentPhase(ref state, entity, component, ecb);
     }
 
-    private void HarvesterDefused(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
-    {
-        var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
-
-        component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
-        component.ValueRW.timer = buffer[(int)RoundPhase.PostRoundPhase];
-
-        Victory(ref state, entity, component, TeamSideType.Natif, ecb);
-        SendCurrentPhase(ref state, entity, component, ecb);
-    }
-
     private void CollectorPlanted(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);

@@ -58,9 +58,9 @@ public partial struct OnDieJob : IJobEntity
             && HasNoHealthTagLookup.HasComponent(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterEnableTag>(sortKey, entity, false);
-            //commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
-            commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
-            //commandBuffer.DestroyEntity(sortKey, entity);
+            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
+            //commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
+            commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
         }
