@@ -23,6 +23,10 @@ namespace RangedWeapon
 
         [GhostField] public int currentAmmo;
         [GhostField] public int remainingAmmo;
+
+        [GhostField] public int patternBulletIndex;
+        [GhostField] public float timeSinceLastFire;
+        [GhostField] public float lastFireTimeMax;
     }
 
     [GhostComponent]

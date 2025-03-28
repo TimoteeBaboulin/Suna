@@ -67,6 +67,18 @@ namespace RangedWeapon
                 if (dynamicData.firerateTimer > 0)
                     dynamicData.firerateTimer -= dt;
 
+                if (dynamicData.timeSinceLastFire < dynamicData.lastFireTimeMax)
+                {
+                    dynamicData.timeSinceLastFire += dt;
+                }
+                else
+                {
+                    dynamicData.timeSinceLastFire = dynamicData.lastFireTimeMax;
+                    dynamicData.patternBulletIndex = 0;
+                }
+
+                Debug.Log($"Time Since Last Fire {dynamicData.timeSinceLastFire}, Last Fire Time Max {dynamicData.lastFireTimeMax}");
+
                 // If the player shoots, the fire rate is valid, and there are still bullets left
                 if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
                 {
@@ -75,9 +87,12 @@ namespace RangedWeapon
                     dynamicData.currentAmmo--;
 
                     // Apply spread on raycast
-                    float2 recoil = CharacterShootUtils.TSprayPattern(commonData.magazineCapacity - dynamicData.currentAmmo, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                    float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
                     quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                     recoilRotation = math.mul(input.shootRotation, recoilRotation);
+
+                    dynamicData.timeSinceLastFire = 0f;
+                    dynamicData.patternBulletIndex++;
 
                     RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
 

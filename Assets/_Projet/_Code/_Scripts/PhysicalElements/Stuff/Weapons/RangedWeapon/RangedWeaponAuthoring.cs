@@ -55,6 +55,9 @@ public class RangedWeaponAuthoring : MonoBehaviour
             {
                 currentAmmo = data.magazineCapacity + 1, // 1 = bullet in chamber
                 remainingAmmo = data.magazineCapacity * (data.nbMagazine - 1),
+                patternBulletIndex = 0,
+                timeSinceLastFire = 0,
+                lastFireTimeMax = .7f
             });
 
             AddComponent(entity, new StuffOwner());
