@@ -13,7 +13,7 @@ namespace MHLab.StickyNotes
 		private static readonly Dictionary<Guid, StickyNote> _notes = new Dictionary<Guid, StickyNote>();
 
 	    private static bool _alreadyLoaded = false;
-	    private static bool _isInitialized = false;
+	    //private static bool _isInitialized = false;
 
 		public static int Count
 		{
@@ -191,7 +191,7 @@ namespace MHLab.StickyNotes
                 #endif
 	        }
 
-	        _isInitialized = true;
+	        //_isInitialized = true;
 	    }
 	}
 }

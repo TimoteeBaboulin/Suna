@@ -6,7 +6,7 @@ namespace MHLab.StickyNotes
     [CustomEditor(typeof(StickyNote), true)]
     public class StickyNoteEditor : Editor
     {
-        private bool _colorsFoldout = false;
+       // private bool _colorsFoldout = false;
         private bool _targetFoldout = false;
 
         private bool _debugFoldout = false;

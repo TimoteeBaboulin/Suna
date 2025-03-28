@@ -28,7 +28,7 @@ public class MainMenuController : MonoBehaviour
     private Slider _sensitivitySlider;
     private FloatField _sensitivityField;
 
-    [SerializeField] private SceneID _sceneLoadOnPlay = SceneID.MultipayerTest;
+   // [SerializeField] private SceneID _sceneLoadOnPlay = SceneID.MultipayerTest;
 
     private void Awake()
     {
@@ -70,8 +70,8 @@ public class MainMenuController : MonoBehaviour
     {
         //if (connectionManager != null)
         //{
-            GameManager.Instance.PlayMatchmaking();
-            SceneManager.LoadScene((int)_sceneLoadOnPlay);
+            GameManager.Instance.Play();
+            //SceneManager.LoadScene((int)_sceneLoadOnPlay);
         //}
     }
 

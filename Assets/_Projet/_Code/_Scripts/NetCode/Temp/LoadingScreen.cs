@@ -16,8 +16,8 @@ public class LoadingScreen : MonoBehaviour
         // Bind the progress bar (if needed)
         root.Q<ProgressBar>().SetBinding("value", new DataBinding
         {
-            dataSource = LoadingData.Instance,
-            dataSourcePath = new PropertyPath(LoadingData.LoadingProgressPropertyName),
+            dataSource = SessionData.Instance,
+            dataSourcePath = new PropertyPath(SessionData.LoadingProgressPropertyName),
             bindingMode = BindingMode.ToTarget,
         });
 
@@ -25,29 +25,29 @@ public class LoadingScreen : MonoBehaviour
         _loadingLabel = root.Q<Label>("LoadingStatus");
         _loadingLabel.SetBinding("text", new DataBinding
         {
-            dataSource = LoadingData.Instance,
-            dataSourcePath = new PropertyPath(LoadingData.LoadingStatusTextPropertyName),
+            dataSource = SessionData.Instance,
+            dataSourcePath = new PropertyPath(SessionData.LoadingStatusTextPropertyName),
             bindingMode = BindingMode.ToTarget,
         });
 
         // Log the initial value.
-        Debug.Log("Initial LoadingStatusText: " + LoadingData.Instance.LoadingStatusText);
+        Debug.Log("Initial LoadingStatusText: " + SessionData.Instance.LoadingStatusText);
 
         // Subscribe to property changes for debug logging.
-        LoadingData.Instance.propertyChanged += OnLoadingDataChanged;
+        SessionData.Instance.propertyChanged += OnLoadingDataChanged;
     }
 
     void OnDisable()
     {
-        LoadingData.Instance.propertyChanged -= OnLoadingDataChanged;
+        SessionData.Instance.propertyChanged -= OnLoadingDataChanged;
     }
 
     private void OnLoadingDataChanged(object sender, BindablePropertyChangedEventArgs e)
     {
         // Log changes when the LoadingStatusText property is updated.
-        if (e.propertyName == LoadingData.LoadingStatusTextPropertyName)
+        if (e.propertyName == SessionData.LoadingStatusTextPropertyName)
         {
-            Debug.Log("LoadingStatusText changed to: " + LoadingData.Instance.LoadingStatusText);
+            Debug.Log("LoadingStatusText changed to: " + SessionData.Instance.LoadingStatusText);
         }
     }
 }

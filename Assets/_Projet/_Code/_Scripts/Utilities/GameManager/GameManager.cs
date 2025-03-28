@@ -1,70 +1,221 @@
+using GameNetwork;
 using GameNetwork.Utils;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
+using Unity.Collections;
+using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
+using Unity.Services.Multiplayer;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.SceneManagement;
+using static Unity.NetCode.ClientServerBootstrap;
 
 public class GameManager : Singleton<GameManager>
 {
-    public enum GlobalGameState
-    {
-        MainMenu,
-        Loading,
-        InGame
-    }
+    public enum GlobalGameState { MainMenu, Loading, InGame }
+    public int MaxNbOfPlayer = 1;
+    public GlobalGameState GameState { get; private set; }
 
-    public int MaxNbOfPlayer = 4;
+    public string SessionID { get; private set; }
 
-    // This will store the connection settings returned by the ConnectionHandlerNew.
-    private ClientConnection clientConnectionSettings;
+    private SessionTransportHelper clientConnectionSettings;
     private CancellationTokenSource loadingToken;
     private ConnectionHandlerNew connectionHandler;
+    private SessionTransportHelper serverSession;
 
-    protected override void Awake()
+    protected override async void Awake()
     {
         base.Awake();
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
         loadingToken = new CancellationTokenSource();
+
+        if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
+        {
+            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.isClientLocal);
+        }
+        
+    }
+
+    public void SetSessionID(string sessionID)
+    {
+        // This could store the session ID internally, or trigger further logic
+        Debug.Log($"GameManager received SessionID: {sessionID}");
+        SessionID = sessionID;
+    }
+    public async void Play()
+    {
+        await SessionTransportHelper.StartServicesAsync();
+        await QuerySessionsAsync();
+        Debug.Log($"GameManager: Using session code: {SessionID}");
+
+        clientConnectionSettings = await connectionHandler.ConnectMatchmakingAsync(loadingToken.Token, SessionID);
+        //if (clientConnectionSettings == null)
+        //{
+        //    Debug.LogError("GameManager: Client connection settings are null.");
+        //    return;
+        //}
+        //Debug.Log($"GameManager: Connected Session ID: {clientConnectionSettings.Session.Id}");
+
+        //while (!IsSessionFull(clientConnectionSettings.Session))
+        //{
+        //    Debug.Log($"GameManager: Waiting for session to fill... Available slots: {clientConnectionSettings.Session.AvailableSlots}");
+        //    await Task.Delay(1000, loadingToken.Token);
+        //}
+        Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
+        GameState = GlobalGameState.InGame;
+        SceneManager.LoadScene("MultiplayerTest");
+
+        {//try
+         //{
+         //    await ClientConnection.StartServicesAsync(); // Ensure services are initialized.
+         //    Debug.Log($"GameManager: Using session ID: {SessionID}");
+
+            //    // Use ConnectionHandlerNew to perform matchmaking with the current SessionID.
+            //    clientConnectionSettings = await connectionHandler.ConnectMatchmakingAsync(loadingToken.Token, SessionID);
+            //    Debug.Log($"MaxPlayers: {clientConnectionSettings.Session.MaxPlayers}");
+            //    if (clientConnectionSettings == null)
+            //    {
+            //        Debug.LogError("GameManager: Client connection settings are null.");
+            //        return;
+            //    }
+            //    Debug.Log($"GameManager: Connected Session ID: {clientConnectionSettings.Session.Id}");
+
+            //    // Optionally, wait until the session is full before transitioning.
+            //    //while (!IsSessionFull(clientConnectionSettings.Session))
+            //    //{
+            //    //    Debug.Log($"GameManager: Waiting for session to fill... {clientConnectionSettings.Session.AvailableSlots}");
+            //    //    await Task.Delay(1000, loadingToken.Token);
+            //    //}
+
+            //    //while (!IsSessionFull(clientConnectionSettings.Session))
+            //    //{
+            //    //    await Task.Yield(); 
+            //    //}
+            //    //Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
+            //    //GameState = GlobalGameState.InGame;
+            //    //SceneManager.LoadScene("MultiplayerTest");
+
+            //    StartCoroutine(WaitUntilSessionIsFull());
+            //}
+            //catch (Exception ex)
+            //{
+            //    Debug.LogError($"GameManager: Error in Play: {ex}");
+            //}
+        }
+    }
+
+    private async void OnClickMatchmakeButton()
+    {
+        var matchOptions = new MatchmakerOptions
+        {
+            // e.g. your matchmaker queue name
+            QueueName = "myQueue",
+            // Additional matchmaking constraints...
+        };
+
+        var sessionOptions = new SessionOptions
+        {
+            MaxPlayers = 4
+        };
+
+        SessionTransportHelper helper = new SessionTransportHelper("127.0.0.1", 7979, false);
+        SessionTransportHelper result = await helper.MatchmakeSessionAsync(matchOptions, sessionOptions);
+
+        if (result == null)
+        {
+            Debug.LogError("Failed to matchmake session.");
+            return;
+        }
+
+        Debug.Log($"Successfully matched session: {result.Session.Id}");
+        // Proceed to connect your NetCode or NGO with the Relay info or direct IP.
+    }
+
+    private async void OnClickQuickJoinButton()
+    {
+        // 1. Define how quick join should behave
+        var quickJoinOptions = new QuickJoinOptions
+        {
+        };
+
+        // 2. Define session creation options if no session is found
+        var sessionOptions = new SessionOptions
+        {
+            MaxPlayers = 4
+        };
+
+        SessionTransportHelper helper = new SessionTransportHelper("127.0.0.1", 7979, false);
+        SessionTransportHelper result = await helper.QuickJoinSessionAsync(quickJoinOptions, sessionOptions);
+
+        if (result == null)
+        {
+            Debug.LogError("Failed to quick-join session.");
+            return;
+        }
+
+        Debug.Log($"Successfully quick-joined session: {result.Session.Id}");
     }
 
     /// <summary>
-    /// Initiates matchmaking via the connection handler.
-    /// Since ConnectionHandlerNew already creates the entity worlds,
-    /// GameManager just updates the game state (or loads the gameplay scene).
+    /// Checks whether the session is full.
+    /// Replace this with your actual logic based on ISession properties.
     /// </summary>
-    public async void PlayMatchmaking()
+    private bool IsSessionFull(ISession session)
+    {
+        // For example, if session.AvailableSlots == 0 then the session is full.
+        return session.AvailableSlots == 0;
+    }
+
+    private async Task QuerySessionsAsync()
     {
         try
         {
-            clientConnectionSettings = await connectionHandler.ConnectMatchmakingAsync(loadingToken.Token);
-
-            if (clientConnectionSettings == null)
+            var queryOptions = new QuerySessionsOptions
             {
-                Debug.LogError("GameManager: Client connection settings are null.");
+                // e.g. specify filters or pagination here
+            };
+
+            QuerySessionsResults results = await MultiplayerService.Instance.QuerySessionsAsync(queryOptions);
+
+            // 'results' now contains a list of sessions that match your filters.
+            if (results == null || results.Sessions.Count == 0)
+            {
+                Debug.Log("No sessions found.");
                 return;
             }
 
-            Debug.Log($"GameManager: Matchmaking complete. ClientEndpoint: {clientConnectionSettings.ConnectEndpoint}, " +
-                      $"ServerEndpoint: {clientConnectionSettings.ListenEndpoint}");
+            // For example, pick the first session:
+            var firstSession = results.Sessions[0];
+            Debug.Log($"Found session ID: {firstSession.Id}");
+            Debug.Log($"Session code: {firstSession.Id}");
+            Debug.Log($"Players: {firstSession.AvailableSlots}/{firstSession.MaxPlayers}");
 
-            
+            SessionID = firstSession.Id;
+            // From here, you could store the session info in your own manager,
+            // or pass it to an ECS system that sets a SessionInfo entity, etc.
         }
-        catch (System.Exception ex)
+        catch (SessionException e)
         {
-            Debug.LogError($"Error during matchmaking: {ex}");
+            Debug.LogError($"Error querying sessions: {e.Message}");
         }
+    }
 
-        // Use ConnectionHandlerNew to perform matchmaking and set up the worlds.
+    IEnumerator WaitUntilSessionIsFull()
+    {
+        while (!IsSessionFull(clientConnectionSettings.Session))
+        {
+            Debug.Log($"GameManager: Current player count: {clientConnectionSettings.Session.PlayerCount}, " +
+                $"available slots: {clientConnectionSettings.Session.AvailableSlots}");
 
-
-        // Now that worlds are created and subscenes loaded by ConnectionHandlerNew,
-        // update your global game state or load the gameplay scene.
-        //GameSettings.Instance.GameState = GlobalGameState.InGame;
-        // Optionally, if your gameplay scene is not already loaded, you can load it additively or normally:
-        // SceneManager.LoadScene("GameplayScene");
-
-        // Any further world management is handled by ConnectionHandlerNew.
+            SessionData.Instance.UpdateSessionState(clientConnectionSettings.Session.PlayerCount, clientConnectionSettings.Session.AvailableSlots, clientConnectionSettings.Session);
+            yield return null;
+        }
+        Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
+        GameState = GlobalGameState.InGame;
+        SceneManager.LoadScene("MultiplayerTest");
     }
 }

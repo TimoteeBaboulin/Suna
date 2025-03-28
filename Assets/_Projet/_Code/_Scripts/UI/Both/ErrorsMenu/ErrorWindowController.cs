@@ -22,7 +22,7 @@ public class ErrorWindowController : MonoBehaviour
     private Vector2 _mouseToWindowPosition = Vector2.zero;
 
     private bool _firstFrame = true;
-    private int _count = 0;
+   // private int _count = 0;
 
     [HideInInspector] public List<string> ErrorsOnStart = new();
 

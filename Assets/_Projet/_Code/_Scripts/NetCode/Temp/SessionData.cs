@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static GameNetwork.LoadingData;
 using Unity.Properties;
 using System.Runtime.CompilerServices;
+using Unity.Services.Multiplayer;
+using static System.Collections.Specialized.BitVector32;
 
 namespace GameNetwork
 {
-    public class LoadingData : INotifyBindablePropertyChanged
+    public class SessionData : INotifyBindablePropertyChanged
     {
         public enum LoadingSteps
         {
@@ -50,7 +51,7 @@ namespace GameNetwork
         }
 
         static readonly Dictionary<LoadingSteps, LoadingStepHelper> k_LoadingSteps = new()
-            {
+        {
             { LoadingSteps.StartLoading , new LoadingStepHelper("Loading game...", 0f, 0f) },
             { LoadingSteps.InitializeConnection , new LoadingStepHelper("Initializing connection...", 0.1f, 0.1f) },
             { LoadingSteps.LookingForMatch , new LoadingStepHelper("Looking for a match session...", 0.12f, 0.12f) },
@@ -73,17 +74,21 @@ namespace GameNetwork
 
             { LoadingSteps.NotLoading , new LoadingStepHelper("_", 0f, 0f) },
         };
-        
 
-        public static LoadingData Instance { get; private set; } = null!;
+        public static SessionData Instance { get; private set; } = null!;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
-        static void RuntimeInitializeOnLoad() => Instance = new LoadingData();
+        static void RuntimeInitializeOnLoad() => Instance = new SessionData();
 
-        LoadingData()
+        SessionData()
         {
             loadingProgress = 0.0f;
+            // Initialize session-related fields.
+            CurrentPlayerCount = 0;
+            SessionMaxPlayers = 0;
+            SessionID = string.Empty;
         }
+
         public event EventHandler<BindablePropertyChangedEventArgs> propertyChanged;
         void Notify([CallerMemberName] string property = "") =>
             propertyChanged?.Invoke(this, new BindablePropertyChangedEventArgs(property));
@@ -96,6 +101,24 @@ namespace GameNetwork
             Debug.Log(loadingStatusText);
         }
 
+        // Additional properties to track session state.
+        public int CurrentPlayerCount { get; private set; }
+        public int SessionMaxPlayers { get; private set; }
+        public string SessionID { get; private set; } = "SESSION01";
+
+        public ISession Session { get; private set; }
+
+        /// <summary>
+        /// Update the session state (e.g., when a client connects or disconnects).
+        /// </summary>
+        public void UpdateSessionState(int currentPlayerCount, int maxPlayers, ISession session)
+        {
+            CurrentPlayerCount = currentPlayerCount;
+            SessionMaxPlayers = maxPlayers;
+            Session = session;
+            SessionID = session.Id;
+            Debug.Log($"[LoadingData] Session state updated: {CurrentPlayerCount}/{SessionMaxPlayers} players, SessionID: {SessionID}");
+        }
 
         float loadingProgress;
         public const string LoadingProgressPropertyName = nameof(LoadingProgress);
@@ -119,11 +142,9 @@ namespace GameNetwork
             {
                 if (loadingStatusText == value)
                     return;
-
                 loadingStatusText = value;
                 Notify();
             }
         }
     }
 }
-

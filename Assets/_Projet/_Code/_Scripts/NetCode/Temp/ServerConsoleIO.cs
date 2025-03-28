@@ -8,7 +8,6 @@ using UnityEngine;
 public partial class ServerConsoleIO : SystemBase
 {
     private Thread _inputThread;
-    private bool _running = true;
     private CancellationTokenSource _cancellationTokenSource;
     protected override void OnCreate()
     {

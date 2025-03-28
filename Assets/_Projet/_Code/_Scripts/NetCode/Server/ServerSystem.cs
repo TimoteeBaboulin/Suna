@@ -1,7 +1,10 @@
-
+using GameNetwork;
+using GameNetwork.Utils;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Services.Multiplay;
+using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -16,6 +19,15 @@ public struct InitializedClient : IComponentData
     public int id;
 }
 
+//public struct SessionInfo : IComponentData
+//{
+//    [GhostField] public FixedString64Bytes SessionID;
+//    [GhostField] public int PlayerCount;
+//    [GhostField] public int MaxPlayers;
+//}
+
+public struct ClientReady : IComponentData { }
+
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class ServerSystem : SystemBase
 {
@@ -24,12 +36,17 @@ public partial class ServerSystem : SystemBase
     protected override void OnCreate()
     {
         _clients = GetComponentLookup<NetworkId>(true);
-
         RequireForUpdate<NetworkId>();
     }
     protected override void OnUpdate()
     {
         _clients.Update(this);
+
+        if (SessionData.Instance.CurrentPlayerCount < SessionData.Instance.SessionMaxPlayers)
+        {
+            Debug.Log($"[ServerSystem] Session is not full; waiting for more clients = {SessionData.Instance.CurrentPlayerCount}/{SessionData.Instance.SessionMaxPlayers}");
+            return;
+        }
 
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
@@ -41,9 +58,12 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
+        foreach (var (networkId, entity) in SystemAPI.Query<RefRO<NetworkId>>()
+                                                         .WithNone<InitializedClient>()
+                                                         .WithEntityAccess())
         {
-            InstantiateClient(entity, commandBuffer);
+            InstantiateClient(entity, commandBuffer);        
+           // Debug.Log($"Init cient : {SessionData.Instance.CurrentPlayerCount}/{SessionData.Instance.SessionMaxPlayers}");
         }
 
         //if (Keyboard.current.oKey.wasPressedThisFrame)
@@ -60,87 +80,45 @@ public partial class ServerSystem : SystemBase
 
     public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
     {
+        //if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
+        //{
+        //    if (prefabManager.Client == null)
+        //    {
+        //        return;
+        //    }
+
+        //    NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
+        //    FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
+        //    Entity client = ecb.Instantiate(prefabManager.Client);
+        //    ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
+        //    {
+        //        NetworkId = networkId.Value
+        //    });
+        //    ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
+        //    {
+        //        Value = client
+        //    });
+
+        //    ecb.AddComponent<InitializedClient>(ownerEntity);
+
+        //    ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
+        //}
+
         if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
         {
             if (prefabManager.Client == null)
-            {
                 return;
-            }
 
+            // Get the NetworkId from the connection entity.
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
             Entity client = ecb.Instantiate(prefabManager.Client);
-            ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
-            {
-                NetworkId = networkId.Value
-            });
-            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
-            {
-                Value = client
-            });
-
+            ecb.SetComponent(client, new GhostOwner() { NetworkId = networkId.Value });
+            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() { Value = client });
             ecb.AddComponent<InitializedClient>(ownerEntity);
 
-            ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
+            Debug.Log($"[ServerSystem] Instantiated client ghost for connection {networkId.Value} in world {worldName}");
         }
-    }
-    #endregion
-
-    //Broadcast message to a target/client or to all clients if no target
-    public void SendMessageRpc<T>(World world, ref T command, Entity target = default) where T : unmanaged, IRpcCommand
-    {
-        if (world == null || !world.IsCreated)
-        {
-            return;
-        }
-
-        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
-        world.EntityManager.SetComponentData(entity, command);
-
-
-        if (target != Entity.Null)
-        {
-            world.EntityManager.SetComponentData(entity, new SendRpcCommandRequest()
-            {
-                TargetConnection = target
-            });
-        }
-    }
-
-    #region Private Methods
-
-    private void UpdateClient(ref EntityCommandBuffer commandBuffer, ref FixedString128Bytes worldName)
-    {
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
-        {
-            commandBuffer.AddComponent<InitializedClient>(entity);
-            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
-
-            //Instantiate player at connection
-            if (prefabManager.Client != null)
-            {
-                Entity client = commandBuffer.Instantiate(prefabManager.Client);
-                LocalTransform clientTransform = prefabManager.TransformCompData;
-
-                commandBuffer.SetComponent(client, new LocalTransform() //Set position
-                {
-                    Position = clientTransform.Position,
-                    Rotation = clientTransform.Rotation,
-                    Scale = 1.0f
-                });
-                commandBuffer.SetComponent(client, new GhostOwner() //Set owner of player to connection
-                {
-                    NetworkId = id.ValueRO.Value,
-                });
-                commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
-                {
-                    Value = client
-                });
-            }
-            ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
-        }
-        commandBuffer.Playback(EntityManager);
-        commandBuffer.Dispose();
     }
     #endregion
 }
