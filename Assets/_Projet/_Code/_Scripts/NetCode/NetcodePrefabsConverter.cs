@@ -19,6 +19,9 @@ public class NetcodePrefabsConverter : MonoBehaviour
     public GameObject CharacterLegCollider0 = null;
     public GameObject CharacterLegCollider1 = null;
     public GameObject CharacterLegCollider2 = null;
+
+    [Header("Visual Elements Prefabs")]
+    public GameObject hitPrefab = null;
 }
 
 public struct PrefabsData : IComponentData

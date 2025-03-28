@@ -3,6 +3,7 @@ using Unity.Entities;
 using UnityEngine;
 
 using RangedWeapon;
+using UnityEngine.VFX;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
@@ -29,6 +30,7 @@ partial struct RangedWeaponViewSystem : ISystem
                     break;
                 case _State.Shoot:
                     goRef.Value.GetComponent<Animator>().SetTrigger("Fire");
+                    goRef.Value.GetComponent<VisualEffect>().Play();
                     data.ValueRW.state = _State.Idle;
                     break;
                 case _State.Reload:
