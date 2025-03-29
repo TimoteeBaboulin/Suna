@@ -13,7 +13,6 @@ public class CommonAutoConnect : ClientServerBootstrap
         }
         else if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
         {
-            AutoConnectPort = 7979;
             SessionTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
             //DefaultListenAddress = NetworkEndpoint.AnyIpv4.WithPort(AutoConnectPort);
             return true;

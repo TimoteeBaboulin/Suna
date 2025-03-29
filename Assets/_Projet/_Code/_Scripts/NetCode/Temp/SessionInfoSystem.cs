@@ -35,6 +35,16 @@ public partial class SessionInfoSystem : SystemBase
     //            SystemAPI.SetSingleton(sessionInfo);
     //        }
     //    }
+
+    //protected override void OnCreate()
+    //{
+    //    var serverConfig = MultiplayService.Instance.ServerConfig;
+    //    Debug.Log($"Server ID[{serverConfig.ServerId}]");
+    //    Debug.Log($"AllocationID[{serverConfig.AllocationId}]");
+    //    Debug.Log($"Port[{serverConfig.Port}]");
+    //    Debug.Log($"QueryPort[{serverConfig.QueryPort}");
+    //    Debug.Log($"LogDirectory[{serverConfig.ServerLogDirectory}]");
+    //}
     protected override async void OnUpdate()
     {
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientSessionCreationCommand>>().WithEntityAccess())

@@ -17,7 +17,6 @@ using static Unity.NetCode.ClientServerBootstrap;
 public class GameManager : Singleton<GameManager>
 {
     public enum GlobalGameState { MainMenu, Loading, InGame }
-    public int MaxNbOfPlayer = 1;
     public GlobalGameState GameState { get; private set; }
 
     public string SessionID { get; private set; }
@@ -33,21 +32,26 @@ public class GameManager : Singleton<GameManager>
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
         loadingToken = new CancellationTokenSource();
 
+        //try
+        //{
+        //    await SessionTransportHelper.StartServicesAsync();
+        //}
+        //catch (Exception e)
+        //{
+        //    Debug.Log(e);
+        //}
+
+
         if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
         {
-            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
+            Debug.Log($"Port in GameManager : {AutoConnectPort}");
+            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, AutoConnectPort, connectionHandler.ClientLocal);
         }
 
         //ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
         //RpcUtils.SendDefaultToServerRPC(ref command);
     }
 
-    public void SetSessionID(string sessionID)
-    {
-        // This could store the session ID internally, or trigger further logic
-        Debug.Log($"GameManager received SessionID: {sessionID}");
-        SessionID = sessionID;
-    }
     public async void Play()
     {
         await SessionTransportHelper.StartServicesAsync();
@@ -210,8 +214,8 @@ public class GameManager : Singleton<GameManager>
             //        Debug.Log($"Session code: {session.Id}");
             //    }
             //}
-            //var firstSession = results.Sessions[0];
-            //SessionID = firstSession.Id;
+            var firstSession = results.Sessions[0];
+            SessionID = firstSession.Id;
 
 
             // From here, you could store the session info in your own manager,

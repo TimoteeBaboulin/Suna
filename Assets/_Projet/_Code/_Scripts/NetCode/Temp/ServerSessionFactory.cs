@@ -9,7 +9,7 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
 {
-    public int MaxPlayers = 2;
+    public int MaxPlayers = 3;
     public string SessionCode { get; private set; } = "DDDDDD";
     private SessionTransportHelper serverConnectionSettings;
 
@@ -20,8 +20,6 @@ public class ServerSessionFactory
     {
         instance = new ServerSessionFactory();
         // Only run session creation on a dedicated server.
-        Debug.Log($"[instance] Error creating session: {instance}");
-        Debug.Log($"[Application.platform == RuntimePlatform.WindowsServer] {Application.platform == RuntimePlatform.WindowsServer}");
         try
         {
             SessionOptions options = new SessionOptions { MaxPlayers = instance.MaxPlayers };
@@ -40,15 +38,4 @@ public class ServerSessionFactory
             return null;
         }
     }
-
-    public static async Task<IMultiplaySessionManager> StartMultiplaySessionManagerAsync()
-    {
-        MultiplaySessionManagerOptions options = new MultiplaySessionManagerOptions { };
-
-        return await MultiplayerServerService.Instance.StartMultiplaySessionManagerAsync(options);
-    }
-
-
-
-
 }

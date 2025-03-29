@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 public struct ConnectionInfo : IComponentData
@@ -14,7 +15,7 @@ public class ConnectionSettings : MonoBehaviour
     public bool isClientLocal = false;
     [Tooltip("IP to reach/to connect on")]
     public string IP = "51.210.222.138"; // default remote IP
-    public ushort Port = 7979;
+    public ushort Port = ClientServerBootstrap.AutoConnectPort;
    // public string LocalIp = "127.0.0.1";
 }
 

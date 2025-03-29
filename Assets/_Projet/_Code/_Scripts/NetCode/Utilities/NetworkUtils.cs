@@ -47,6 +47,7 @@ namespace GameNetwork.Utils
             IsClientLocal = isClientLocal;
         }
 
+
         /// <summary>
         /// Uses Unity's Multiplayer Service to either join or create a session using a ticket.
         /// </summary>
@@ -124,15 +125,11 @@ namespace GameNetwork.Utils
                 options.WithNetworkHandler(networkHandler);
                 UnityEngine.Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
 
-                // --- Add your custom 6-char code here ---
-                if (options.SessionProperties == null)
+                //options.SessionProperties = new Dictionary<string, SessionProperty>();
 
-                    
-                    options.SessionProperties = new Dictionary<string, SessionProperty>();
-
-                string customCode = GenerateRandomSessionCode(6);
-                options.SessionProperties["CustomSessionCode"] = new SessionProperty(customCode);
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Assigned custom session code: {customCode}");
+                //string customCode = GenerateRandomSessionCode(6);
+                //options.SessionProperties["CustomSessionCode"] = new SessionProperty(customCode);
+                //UnityEngine.Debug.Log($"[SessionTransportHelper] Assigned custom session code: {customCode}");
                 // -----------------------------------------
 
                 // Attempt to create the session.
@@ -145,6 +142,7 @@ namespace GameNetwork.Utils
 
                 connection.Session = hostSession;
                 UnityEngine.Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
+                UnityEngine.Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
 
                 // Retrieve connection endpoints.
                 connection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
@@ -215,10 +213,9 @@ namespace GameNetwork.Utils
             var networkHandler = new NetworkHandler();
             options.WithNetworkHandler(networkHandler);
 
-            // Use the matchmaking queue (here "1vs1") to create a session.
             MatchmakerOptions match = new MatchmakerOptions
             {
-                QueueName = "1vs1",
+                QueueName = "1vs0",
             };
 
             gameConnection.Session = await MultiplayerService.Instance.MatchmakeSessionAsync(match, options, cancellationToken);
@@ -312,7 +309,7 @@ namespace GameNetwork.Utils
         public SessionOptions CreateSessionOptions()
         {
             // Assume GameManager.Instance.MaxNbOfPlayer is available.
-            SessionOptions options = new SessionOptions { MaxPlayers = 1 };
+            SessionOptions options = new SessionOptions { MaxPlayers = 3 }; //CAREFUL HERE MOTHERFUCKER
             return options.WithDirectNetwork(IP, IP, Port);
         }
     }

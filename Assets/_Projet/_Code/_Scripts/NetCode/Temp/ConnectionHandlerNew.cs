@@ -2,6 +2,7 @@ using GameNetwork;
 using GameNetwork.Utils;
 using System;
 using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Entities;
@@ -10,6 +11,8 @@ using Unity.Networking.Transport;
 using Unity.Scenes;
 using Unity_NetCode_Generated_Unity_Transforms;
 using UnityEngine;
+using static Unity.NetCode.ClientServerBootstrap;
+
 
 public class ConnectionHandlerNew : MonoBehaviour
 {
@@ -22,7 +25,7 @@ public class ConnectionHandlerNew : MonoBehaviour
     //private ushort _port = 7979;
     //private string _localIp = "127.0.0.1";
     private string _ip;
-    private ushort _port = 7979;
+   // private ushort _port = 7979;
     private string _localIp = "127.0.0.1";
     private bool isClientLocal;
     private ConnectionSettings connectionSettings;
@@ -34,18 +37,31 @@ public class ConnectionHandlerNew : MonoBehaviour
     public NetworkEndpoint ClientEndpoint { get; private set; }
     public NetworkEndpoint ServerEndpoint { get; private set; }
     public string IP { get; private set; } = "51.210.222.138";
-    public ushort Port => _port;
+   // public ushort Port => RequestedPlayType == PlayType.Server ? AutoConnectPort : (ushort)0;
     public bool ClientLocal => isClientLocal;
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        //AutoConnectPort = GetAvailablePort();
+        AutoConnectPort = 53867;
+        Debug.Log($"AutoConnectPort = {AutoConnectPort}");
+    }
+
+    public ushort GetAvailablePort()
+    {
+        TcpListener listener = new TcpListener(IPAddress.Any, 0); 
+        listener.Start();
+        ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
     }
 
     private void Start()
     {
         connectionSettings = GetComponent<ConnectionSettings>();
         _ip = connectionSettings.IP;
-        _port = connectionSettings.Port;
+       // _port = GetAvailablePort();
+
         isClientLocal = connectionSettings.isClientLocal;
 
         // Determine role from your bootstrap settings.
@@ -110,7 +126,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         if (_serverWorld != null)
         {
             World.DefaultGameObjectInjectionWorld = _serverWorld;
-            ServerEndpoint = NetworkEndpoint.AnyIpv4.WithPort(_port);
+            ServerEndpoint = NetworkEndpoint.AnyIpv4.WithPort(AutoConnectPort);
             {
                 using EntityQuery networkDriverQuery = _serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(ServerEndpoint);
@@ -127,7 +143,7 @@ public class ConnectionHandlerNew : MonoBehaviour
             IP = (_role == RoleType.ClientServer || isClientLocal) ? _localIp : _ip;
 
             // Create an instance of ClientConnection with these settings.
-            SessionTransportHelper clientConn = new SessionTransportHelper(IP, _port, isClientLocal);
+            SessionTransportHelper clientConn = new SessionTransportHelper(IP, ClientServerBootstrap.AutoConnectPort, isClientLocal);
 
             SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LookingForMatch);
             Debug.Log("ConnectionHandlerNew: Starting matchmaking...");
@@ -137,7 +153,8 @@ public class ConnectionHandlerNew : MonoBehaviour
             Debug.Log($"sessionID in Handler : {sessionID}");
             //connection = await new SessionTransportHelper(_ip, _port, isClientLocal)
             //                                                 .CreateOrJoinSessionAsync(sessionID, token);
-            sessionTransport = await new SessionTransportHelper(_ip, _port, isClientLocal).JoinSessionByIdAsync(sessionID, token);
+            sessionTransport = await new SessionTransportHelper(_ip, AutoConnectPort, isClientLocal).JoinSessionByIdAsync(sessionID, token);
+            //sessionTransport = await new SessionTransportHelper(_ip, ClientServerBootstrap.AutoConnectPort, isClientLocal).JoinOrCreateMatchmakerGameAsync(token);
             SessionTransportHelper.SessionID = sessionID;
             //ClientEndpoint = connection.ConnectEndpoint;
 
@@ -150,7 +167,7 @@ public class ConnectionHandlerNew : MonoBehaviour
             //clientDriver.Connect(_clientWorld.EntityManager, ClientEndpoint);
             //queryClient.SetSingleton(clientDriver);
 
-            ClientEndpoint = NetworkEndpoint.Parse(IP, _port);
+            ClientEndpoint = NetworkEndpoint.Parse(IP, AutoConnectPort);
             {
                 using EntityQuery networkDriverQuery = _clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
                 networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(_clientWorld.EntityManager, ClientEndpoint);
