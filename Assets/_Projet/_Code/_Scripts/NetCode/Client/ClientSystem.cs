@@ -39,7 +39,4 @@ public partial class ClientSystem : SystemBase
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
-    #region PrivateMethods
-
-    #endregion
 }

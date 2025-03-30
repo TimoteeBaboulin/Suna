@@ -24,7 +24,7 @@ public class ConnectionManager : MonoBehaviour
     private string _localIp = "127.0.0.1";
     private ushort _localPort = 7979;
 
-    public SubScene[] subScenes;
+    private SubScene[] subScenes;
     public enum RoleType
     {
         ClientServer,
