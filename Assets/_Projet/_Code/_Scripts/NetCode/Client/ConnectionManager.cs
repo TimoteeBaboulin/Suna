@@ -8,7 +8,9 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Scenes;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using static Unity.Scenes.SceneSystem;
 
 public class ConnectionManager : MonoBehaviour
 {
@@ -22,7 +24,7 @@ public class ConnectionManager : MonoBehaviour
     private string _localIp = "127.0.0.1";
     private ushort _localPort = 7979;
 
-    SubScene[] subScenes;
+    public SubScene[] subScenes;
     public enum RoleType
     {
         ClientServer,
@@ -150,14 +152,12 @@ public class ConnectionManager : MonoBehaviour
             StartCoroutine(LoadSubScenes(subScenes, _clientWorld));
         }
 
-
+        foreach (var scene in subScenes)
+        {
+            scene.gameObject.SetActive(true);
+        }
     }
 
-    public void CreateServer()
-    {
-        _role = RoleType.Server;
-        _serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-    }
     #endregion
 
     #region Private Methods
@@ -183,13 +183,13 @@ public class ConnectionManager : MonoBehaviour
         {
             for (int i = 0; i < subScenes.Length; i++)
             {
+                var subSceneGUID = new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value);
                 SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
 #if UNITY_EDITOR
                 flag = SceneLoadFlags.BlockOnImport;
 #endif
                 SceneSystem.LoadParameters loadParameters = new SceneSystem.LoadParameters() { Flags = flag };
-                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value),
-                    loadParameters);
+                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, subSceneGUID, loadParameters);
 
                 while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
                 {

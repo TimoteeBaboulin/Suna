@@ -43,11 +43,10 @@ public struct ClientPrefabData : IComponentData
     public Entity CharacterLegCollider2;
 }
 
-//Coucou ici Aurelien
-//public struct VisualEffetPrefabData : IComponentData
-//{
-//    public Entity hitVisualEffect;
-//}
+public struct VisualEffetPrefabData : IComponentData
+{
+    public Entity hitVisualEffect;
+}
 
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 {
@@ -67,13 +66,13 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity characterLegCollider1 = default;
         Entity characterLegCollider2 = default;
 
-        //Coucou ici Aurelien
-        //Entity hitEffect = default;
-        //if (authoring.hitPrefab != null)
-        //{
-        //    hitEffect = GetEntity(authoring.hitPrefab, TransformUsageFlags.Dynamic);
-        //}
         LocalTransform transformPrefab = default;
+        //Coucou ici Aurelien
+        Entity hitEffect = default;
+        if (authoring.hitPrefab != null)
+        {
+            hitEffect = GetEntity(authoring.hitPrefab, TransformUsageFlags.Dynamic);
+        }
 
         if (authoring.Client != null)
         {
@@ -146,10 +145,10 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         });
         AddComponent(entity, new CharacterTag());
 
-        //Entity VisualEffectentity = GetEntity(TransformUsageFlags.Dynamic);
-        //AddComponent(VisualEffectentity, new VisualEffetPrefabData
-        //{
-        //    hitVisualEffect = hitEffect
-        //});
+        Entity VisualEffectentity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(VisualEffectentity, new VisualEffetPrefabData
+        {
+            hitVisualEffect = hitEffect
+        });
     }
 }
