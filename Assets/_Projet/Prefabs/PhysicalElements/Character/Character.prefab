@@ -153,7 +153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac12afd96f18eee40a714a576dfe44f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CharacterGameObject: {fileID: 3694457614554756861, guid: 98185d05bb52a0c46ae44b08712b5402, type: 3}
+  CharacterGameObject: {fileID: 3694457614554756861, guid: 725fecfc4eac53c43b04b3411d88507e, type: 3}
   DeltaPosition: {fileID: 6774830378860753411}
   HeadBoneName: J_HEAD
   ViewBoneName: J_VIEW
@@ -237,7 +237,6 @@ MonoBehaviour:
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1000
-  MaxSendRate: 0
   prefabId: c377a8ea0ba8a164abbbccae22e66525
   HasOwner: 1
   SupportAutoCommandTarget: 1
