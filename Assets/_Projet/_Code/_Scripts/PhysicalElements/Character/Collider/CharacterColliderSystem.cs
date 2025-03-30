@@ -65,7 +65,7 @@ partial struct CommonCharacterColliderSystem : ISystem
         ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (characterCollider, modelBones) in SystemAPI
-            .Query<RefRO<CharacterColliderComponent>, CharacterModelBones>())
+            .Query<RefRO<CharacterColliderComponent>, ThirdPersonCharacterModelBonesTransform>())
         {
             CharacterColliderUtils.SetTransform(characterCollider.ValueRO.HeadEntity, modelBones.HeadBoneTransform, ecb, state.EntityManager);
             CharacterColliderUtils.SetTransform(characterCollider.ValueRO.ArmLeftEntity0, modelBones.ArmLeftBoneTransform0, ecb, state.EntityManager);

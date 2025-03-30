@@ -19780,6 +19780,10 @@ PrefabInstance:
       propertyPath: LegRightBoneName2
       value: B-foot.R
       objectReference: {fileID: 0}
+    - target: {fileID: -5565830434860651292, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: WeaponSlotName
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 2584918407947073280, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
       propertyPath: m_Name
       value: Player
@@ -19831,6 +19835,78 @@ PrefabInstance:
     - target: {fileID: 7095689921242147679, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: HeadBoneName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ViewBoneName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ThoraxBoneName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: WeaponSlotName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ArmLeftBoneName0
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ArmLeftBoneName1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ArmLeftBoneName2
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegLeftBoneName0
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegLeftBoneName1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegLeftBoneName2
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: StomachBoneName0
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: StomachBoneName1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ArmRightBoneName0
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ArmRightBoneName1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: ArmRightBoneName2
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegRightBoneName0
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegRightBoneName1
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7747839720245098777, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
+      propertyPath: LegRightBoneName2
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -60,8 +60,10 @@ namespace RangedWeapon
                 ref CharacterInput input = ref inputRef.ValueRW;
 
                 // Retrieve player bones
-                if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
-                float3 viewPos = modelBonesRef.ViewBoneTransform.position;
+                //if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
+                //float3 viewPos = modelBonesRef.ViewBoneTransform.position;
+
+                if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
 
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
@@ -79,7 +81,7 @@ namespace RangedWeapon
                     quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                     recoilRotation = math.mul(input.shootRotation, recoilRotation);
 
-                    RaycastHit hit = ClosestRayCast(recoilRotation, viewPos, commonData.range, owner, state.EntityManager);
+                    RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
 
                     // Apply damage to the target player
                     if (state.World.IsServer())
@@ -136,11 +138,11 @@ namespace RangedWeapon
             }
         }
 
-        bool TryGetOwnerBones(Entity owner, ref SystemState state, out CharacterModelBones modelBones)
+        bool TryGetOwnerBones(Entity owner, ref SystemState state, out ThirdPersonCharacterModelBonesTransform modelBones)
         {
-            if (state.EntityManager.HasComponent<CharacterModelBones>(owner))
+            if (state.EntityManager.HasComponent<ThirdPersonCharacterModelBonesTransform>(owner))
             {
-                modelBones = state.EntityManager.GetComponentData<CharacterModelBones>(owner);
+                modelBones = state.EntityManager.GetComponentData<ThirdPersonCharacterModelBonesTransform>(owner);
                 return true;
             }
             else
@@ -151,12 +153,27 @@ namespace RangedWeapon
             }
         }
 
+        bool TryGetCharacterStartShootPos(Entity owner, ref SystemState state, out float3 shootStartpos)
+        {
+            if (state.EntityManager.HasComponent<CharacterShootStartPositionDelta>(owner)
+                && state.EntityManager.HasComponent<LocalTransform>(owner))
+            {
+                shootStartpos = SystemAPI.GetComponentRO<CharacterShootStartPositionDelta>(owner).ValueRO.PositionDelta + 
+                    SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Position;
+                return true;
+            }
+            else
+            {
+                shootStartpos = default;
+                return false;
+            }
+        }
 
-        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner, in EntityManager entityManager)
+        RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
         {
             LocalTransform startTransform = new LocalTransform
             {
-                Position = viewPos,
+                Position = startPos,
                 Rotation = shootRotation,
                 Scale = 1,
             };

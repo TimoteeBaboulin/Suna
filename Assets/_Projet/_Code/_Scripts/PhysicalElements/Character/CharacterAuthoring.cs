@@ -27,6 +27,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public RangedWeaponData secondWeapon;
     public MeleeWeaponData meleeWeapon;
 
+    [Header("Shoot Start Position")]
+    public Transform shootStartpos;
+
     public class Baker : Baker<CharacterAuthoring>
     {
         public override void Bake(CharacterAuthoring cca)
@@ -86,6 +89,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, stuff);
             
             AddComponent(entity, new CharacterStuffInHandType());
+
+            AddComponent(entity, new CharacterShootStartPositionDelta { PositionDelta = cca.shootStartpos.position });
 
         }
     }

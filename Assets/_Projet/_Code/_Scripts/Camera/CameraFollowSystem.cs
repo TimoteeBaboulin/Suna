@@ -22,10 +22,13 @@ partial class CameraSystem : SystemBase
             return;
         }
 
-        foreach (var characterModelBones in SystemAPI.Query<CharacterModelBones>().WithAll<GhostOwnerIsLocal>())
+        foreach (var transform in SystemAPI
+            .Query<RefRO<LocalTransform>>()
+            .WithAll<CameraFollowIsEnable>())
         {
-            MainGameObjectCamera.Instance.transform.position = characterModelBones.ViewBoneTransform.position;
-            MainGameObjectCamera.Instance.transform.rotation = characterModelBones.ViewBoneTransform.rotation;
+            MainGameObjectCamera.Instance.transform.position = transform.ValueRO.Position;
+            MainGameObjectCamera.Instance.transform.rotation = transform.ValueRO.Rotation;
+            break;
         }
     }
 }

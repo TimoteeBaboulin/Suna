@@ -78,7 +78,7 @@ public partial struct CharacterMovementJob : IJobEntity
     }
 
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<CharacterAnimationState> animationState)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity/*, RefRW<ThirdPersonCharacterAnimationState> animationState*/)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -98,7 +98,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (isMoving)
         {
-            animationState.ValueRW.IsWalking = true;
+            //animationState.ValueRW.IsWalking = true;
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -123,7 +123,7 @@ public partial struct CharacterMovementJob : IJobEntity
         }
         else
         {
-            animationState.ValueRW.IsWalking = false;
+            //animationState.ValueRW.IsWalking = false;
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))

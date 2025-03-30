@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class CharacterModelScript : MonoBehaviour
+public class ThirdPersonCharacterModelBehaviour : MonoBehaviour
 {
     public SkinnedMeshRenderer MeshRenderer;
     [HideInInspector] public Quaternion NewHeadRotation;

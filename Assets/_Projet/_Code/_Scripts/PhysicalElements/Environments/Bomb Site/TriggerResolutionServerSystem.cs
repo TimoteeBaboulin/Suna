@@ -26,6 +26,8 @@ partial struct TriggerResolutionServerSystem : ISystem
             return;
         Simulation simulation = simulationSingleton.AsSimulation();
 
+        state.Dependency.Complete();
+
         foreach (var triggerEvent in simulation.TriggerEvents)
         {
             if (SystemAPI.HasComponent<CharacterComponent>(triggerEvent.EntityA)
