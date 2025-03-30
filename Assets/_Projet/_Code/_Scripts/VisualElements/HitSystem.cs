@@ -23,7 +23,6 @@ public partial class HitSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        // Create a command buffer to queue structural changes
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.TempJob);
 
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<HitCommand>>().WithEntityAccess())
@@ -32,13 +31,9 @@ public partial class HitSystem : SystemBase
             {
                 if (prefabManager.hitVisualEffect == null) { return; }
 
-                // Calculate the hit position
                 float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
-
-                // Instantiate the visual effect entity
                 Entity hitEffect = commandBuffer.Instantiate(prefabManager.hitVisualEffect);
 
-                // Add components to the hit effect
                 commandBuffer.SetComponent(hitEffect, new LocalTransform
                 {
                     Position = hitPosition,
@@ -46,15 +41,11 @@ public partial class HitSystem : SystemBase
                     Scale = 1.0f
                 });
 
-                // Add a DestroyTag component to the hit effect
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
 
-                // Destroy the original entity (request entity)
                 commandBuffer.DestroyEntity(entity);
             }
         }
-
-        // Playback the command buffer after the loop to apply changes
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
