@@ -159,7 +159,7 @@ public partial struct RespawnSystem : ISystem
 
     public Entity SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
     {
-        PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+        ClientPrefabData prefabManager = SystemAPI.GetSingleton<ClientPrefabData>();
 
         if (prefabManager.Character == null)
         {

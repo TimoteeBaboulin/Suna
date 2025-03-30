@@ -21,7 +21,7 @@ partial struct CommonCharacterColliderSystem : ISystem
             .WithAll<CharacterColliderInitEntityTag>()
             .WithEntityAccess())
         {
-            if (!SystemAPI.TryGetSingleton(out PrefabsData prefabsData)) { continue; }
+            if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
 
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.HeadEntity,
                 prefabsData.CharacterHeadCollider, entity, ecb, state.EntityManager);

@@ -27,9 +27,6 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public RangedWeaponData secondWeapon;
     public MeleeWeaponData meleeWeapon;
 
-    [Header("Visual")]
-    [SerializeField] private GameObject _view;
-
     public class Baker : Baker<CharacterAuthoring>
     {
         public override void Bake(CharacterAuthoring cca)

@@ -24,7 +24,7 @@ public class NetcodePrefabsConverter : MonoBehaviour
     public GameObject hitPrefab = null;
 }
 
-public struct PrefabsData : IComponentData
+public struct ClientPrefabData : IComponentData
 {
     //public Entity unit;
     public Entity Client;
@@ -42,6 +42,12 @@ public struct PrefabsData : IComponentData
     public Entity CharacterLegCollider1;
     public Entity CharacterLegCollider2;
 }
+
+//Coucou ici Aurelien
+//public struct VisualEffetPrefabData : IComponentData
+//{
+//    public Entity hitVisualEffect;
+//}
 
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 {
@@ -61,6 +67,12 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity characterLegCollider1 = default;
         Entity characterLegCollider2 = default;
 
+        //Coucou ici Aurelien
+        //Entity hitEffect = default;
+        //if (authoring.hitPrefab != null)
+        //{
+        //    hitEffect = GetEntity(authoring.hitPrefab, TransformUsageFlags.Dynamic);
+        //}
         LocalTransform transformPrefab = default;
 
         if (authoring.Client != null)
@@ -115,7 +127,7 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         }
 
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new PrefabsData
+        AddComponent(entity, new ClientPrefabData
         {
             // unit = unitPrefab,
             Client = clientPrefab,
@@ -133,5 +145,11 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             CharacterLegCollider2 = characterLegCollider2,
         });
         AddComponent(entity, new CharacterTag());
+
+        //Entity VisualEffectentity = GetEntity(TransformUsageFlags.Dynamic);
+        //AddComponent(VisualEffectentity, new VisualEffetPrefabData
+        //{
+        //    hitVisualEffect = hitEffect
+        //});
     }
 }
