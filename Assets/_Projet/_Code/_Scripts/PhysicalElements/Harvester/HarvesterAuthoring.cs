@@ -13,7 +13,8 @@ public class HarvesterAuthoring : MonoBehaviour
         {
             HarvesterComponent harvester = new HarvesterComponent
             {
-                Owner = Entity.Null
+                Owner = Entity.Null,
+                IsActive = false
             };
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, harvester);

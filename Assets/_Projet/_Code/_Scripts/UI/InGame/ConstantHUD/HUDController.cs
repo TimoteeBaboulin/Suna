@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -20,6 +21,7 @@ public class HUDController : MonoBehaviour
     private Label _armor;
     private Label _ammo;
     private Label _capacity;
+    private Label _money;
 
     private Label _corpoScore;
     private Label _natifScore;
@@ -61,6 +63,8 @@ public class HUDController : MonoBehaviour
 
         _ammo = _HUD.Q<Label>("AmmoLeftLabel");
         _capacity = _HUD.Q<Label>("AmmoCapacityLabel");
+
+        _money = _HUD.Q<Label>("Cash");
 
         _crosshairElement = _HUD.Q("Crosshair");
         _crosshairBaseColor = _crosshairElement.style.unityBackgroundImageTintColor;
@@ -108,6 +112,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
             _inGameHUDSystem.AmmoChangeEvent += System_OnAmmoChange;
+            _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
         }
 
         // Initialize RoundManagerLinkSystem in Update because need to be in the right world
@@ -208,6 +213,10 @@ public class HUDController : MonoBehaviour
     {
         _ammo.text = args.ammo.ToString();
         _capacity.text = args.remainingAmmo.ToString();
+    }
+    private void System_OnMoneyChange(object sender, InGameHUDSystem.MoneyArgs args)
+    {
+        _money.text = args.money.ToString();
     }
     private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs args)
     {

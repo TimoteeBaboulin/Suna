@@ -70,7 +70,8 @@ partial class HarvesterSystemClient : SystemBase
                 RpcHarvesterPlantStart rpc = new RpcHarvesterPlantStart
                 {
                     tick = currentTick,
-                    harvester = harvesterEntity
+                    harvester = harvesterEntity,
+                    character = characterEntity
                 };
 
                 Entity rpcEntity = ecb.CreateEntity();
@@ -154,10 +155,10 @@ partial class HarvesterSystemClient : SystemBase
             ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
 
             StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
-            CharacterModelBones charaBones = EntityManager.GetComponentData<CharacterModelBones>(rpc.character);
+            CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(rpc.character);
             StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
 
-            goRef.Value.transform.SetParent(charaBones.ViewBoneTransform);
+            goRef.Value.transform.SetParent(charaBones.WeaponSlotTransform);
             goRef.Value.transform.localPosition = commonData._stuffLocalOffsetView;
 
             SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;

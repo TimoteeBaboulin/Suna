@@ -13,7 +13,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<HarvesterComponent, HarvesterPlanting>().Build(ref state);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<HarvesterComponent>().Build(ref state);
         state.RequireForUpdate(query);
     }
 
@@ -75,8 +75,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(harvesterEntity, false);
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
-                    //TODO: Spawn the harvester on the ground instead, and sync position on every client
-                    float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.55f, 0);
+                    float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
                     harvesterRW.ValueRW.PlantedTick = currentTick;
 
@@ -112,8 +111,9 @@ partial struct HarvesterPlantingSystemServer : ISystem
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlantStart rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlantStart>().WithEntityAccess())
         {
-            //TODO: Add zone and ownership checks to avoid planting someone else's harvester outside of a site
             //Entity roundManagerEntity;
+            ecb.DestroyEntity(entity);
+
             if (currentPhase is not RoundPhase.ActionPhase or RoundPhase.PostRoundPhase)
             {
                 Debug.Log("[Server] Can't plant harvester during this phase");
@@ -121,7 +121,13 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 continue;
             }
 
-            ecb.DestroyEntity(entity);
+            if (!SystemAPI.GetComponentRO<CharacterComponent>(rpc.character).ValueRO.isOnSite)
+            {
+                Debug.Log("[Server] Not on site");
+
+                continue;
+            }
+
             ecb.SetComponentEnabled<HarvesterPlanting>(rpc.harvester, true);
 
             if (currentTick.TicksSince(rpc.tick) > 10)
@@ -145,6 +151,11 @@ partial struct HarvesterPlantingSystemServer : ISystem
             Debug.Log("[Server] Plant stopped");
 
             ecb.DestroyEntity(entity);
+        }
+
+        foreach (var characterRW in SystemAPI.Query<RefRW<CharacterComponent>>())
+        {
+            characterRW.ValueRW.isOnSite = false;
         }
 
         ecb.Playback(state.EntityManager);

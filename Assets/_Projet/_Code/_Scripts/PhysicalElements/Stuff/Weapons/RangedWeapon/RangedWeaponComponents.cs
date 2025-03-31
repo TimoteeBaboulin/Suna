@@ -52,6 +52,8 @@ namespace RangedWeapon
         [GhostField] public int damage;
         [GhostField] public int nbMagazine;
         [GhostField] public int magazineCapacity;
+
+        [GhostField] public uint killGain;
     }
 }
 

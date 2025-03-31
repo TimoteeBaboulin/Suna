@@ -49,6 +49,7 @@ public class RangedWeaponAuthoring : MonoBehaviour
                 knockbackForceOnKill = data.knockbackForceOnKill,
                 nbMagazine = data.nbMagazine,
                 magazineCapacity = data.magazineCapacity,
+                killGain = data.killGain
             });
 
             AddComponent(entity, new DynamicData
