@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GodRay
+  m_Shader: {fileID: 4800000, guid: 78eaa5c91fb4ff14086e87292f29bf7d, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _RayNoise:
+        m_Texture: {fileID: 2800000, guid: 0b4562c055f61f340b9a0807682630e8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SmokeNoise:
+        m_Texture: {fileID: 2800000, guid: c1bc0578a89e6034da15e05b239a7bb1, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BaseOpacity: 0.04
+    - _FadeScale: 0.07
+    - _FirstEndSize: 0.35
+    - _RayNoiseIntensity: -0.24
+    - _RayNoiseStartPoint: 0.73
+    - _SecondEndSize: 0.52
+    - _SmokeNoiseSpeed: 0.01
+    - _SmokeOpacity: 2.13
+    m_Colors:
+    - _RayColor: {r: 1, g: 0.72156864, b: 0.6156863, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
