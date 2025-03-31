@@ -52,6 +52,11 @@ public struct CharacterAndViewRotationComponent : IComponentData
     [GhostField] public quaternion ViewRotation;
 }
 
+public struct CharacterShootStartPositionDelta : IComponentData
+{
+    public float3 PositionDelta;
+}
+
 // This value is used for calculations that require the character's view rotation.
 public struct CharacterLocalViewRotation : IComponentData
 {
@@ -84,10 +89,16 @@ public struct CharacterStuffList : IComponentData
 }
 
 [GhostComponent]
-
 public struct CharacterStuffInHandType : IComponentData 
 {
     [GhostField] public StuffType Value;
 }
 
+
+[GhostComponent]
+public struct CharacterMoney : IComponentData
+{
+    [GhostField] public uint money;
+    [GhostField] public uint maxMoney;
+}
 

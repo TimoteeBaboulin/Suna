@@ -60,7 +60,7 @@ public partial class ServerSystem : SystemBase
 
     public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
     {
-        if (SystemAPI.TryGetSingleton(out PrefabsData prefabManager))
+        if (SystemAPI.TryGetSingleton(out ClientPrefabData prefabManager))
         {
             if (prefabManager.Client == null)
             {
@@ -114,7 +114,7 @@ public partial class ServerSystem : SystemBase
         foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
         {
             commandBuffer.AddComponent<InitializedClient>(entity);
-            PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+            ClientPrefabData prefabManager = SystemAPI.GetSingleton<ClientPrefabData>();
 
             //Instantiate player at connection
             if (prefabManager.Client != null)

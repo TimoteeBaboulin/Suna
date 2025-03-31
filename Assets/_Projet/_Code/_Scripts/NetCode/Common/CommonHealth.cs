@@ -1,16 +1,22 @@
+using RangedWeapon;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Services.Multiplayer;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 public struct MaxHealthComponent : IComponentData
 {
     public float Value;
 }
 
+[GhostComponent]
 public struct CurrentHealthComponent : IComponentData
 {
     [GhostField] public float Value;
+    [GhostField] public Entity lastDamager;
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
@@ -96,6 +102,7 @@ public partial struct CalculateFrameDamageJob : IJobEntity
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [UpdateAfter(typeof(CalculateFrameDamageSystem))]
+//[WithAll(typeof(Simulate))]
 public partial struct ApplyDamageSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -112,15 +119,38 @@ public partial struct ApplyDamageSystem : ISystem
     {
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+        ComponentLookup<CharacterMoney> moneyLookup = state.GetComponentLookup<CharacterMoney>();
+        ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
+        ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
+        ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
+
+        EntityQuery query = state.GetEntityQuery(typeof(CommonData));
+        NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
+        NativeHashMap<Entity, CommonData> commonDataMap = new NativeHashMap<Entity, CommonData>(entities.Length, Allocator.TempJob);
+
+        foreach(var entity in entities)
+        {
+            var data = state.EntityManager.GetSharedComponent<CommonData>(entity);
+            commonDataMap.Add(entity, data);
+        }
+
+        entities.Dispose();
 
         ApplyDamageJob job = new ApplyDamageJob
         {
             CurrentTick = currentTick,
+            MoneyLookup = moneyLookup,
+            ClientAttachedComponents = ccacLookup,
+            StuffListLookup = stuffListLookup,
+            InHandLookup = inHandLookup,
+            CommonDataMap = commonDataMap,
             ECB = ecb.AsParallelWriter()
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
 
         state.Dependency.Complete();
+
+        commonDataMap.Dispose();
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -132,9 +162,16 @@ public partial struct ApplyDamageSystem : ISystem
 public partial struct ApplyDamageJob : IJobEntity
 {
     [ReadOnly] public NetworkTick CurrentTick;
+    [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
+    [ReadOnly] public ComponentLookup<ClientCharacterAttached> ClientAttachedComponents;
+    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
+    [ReadOnly] public NativeHashMap<Entity, CommonData> CommonDataMap;
     public EntityCommandBuffer.ParallelWriter ECB;
 
-    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, RefRW<CurrentHealthComponent> currentHealth, DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
+    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey,
+        RefRW<CurrentHealthComponent> currentHealth,
+        DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
     {
         if (!damageThisTickBuffer.GetDataAtTick(CurrentTick, out var damageThisTick))
         {
@@ -152,6 +189,31 @@ public partial struct ApplyDamageJob : IJobEntity
         {
             currentHealth.ValueRW.Value = 0;
             ECB.AddComponent<HasNoHealthTag>(sortKey, entity);
+
+            //Aurelien (when the player dies, we add money to the killer)
+
+            if (currentHealth.ValueRO.lastDamager != Entity.Null)
+            {
+                Entity client = currentHealth.ValueRO.lastDamager;
+
+                if (MoneyLookup.TryGetComponent(client, out var cm) && ClientAttachedComponents.TryGetComponent(client, out var chara))
+                {
+                    if(StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
+                    {
+                        foreach(var element in stuffList.Value)
+                        {
+                            if (element == Entity.Null) continue;
+
+                            if (InHandLookup.TryGetComponent(element, out var inHand) && InHandLookup.IsComponentEnabled(element))
+                            {
+                                cm.money += CommonDataMap[element].killGain;
+                                ECB.SetComponent(sortKey, client, cm);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -59,8 +59,8 @@ public partial struct OnDieJob : IJobEntity
         {
             commandBuffer.SetComponentEnabled<CharacterEnableTag>(sortKey, entity, false);
             commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
-            commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
-            //commandBuffer.DestroyEntity(sortKey, entity);
+            //commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
+            commandBuffer.DestroyEntity(sortKey, entity);
 
             //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
         }
@@ -143,7 +143,7 @@ public partial struct RespawnSystem : ISystem
                 SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
-            else
+            else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
             {
                 RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
                 RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
@@ -151,15 +151,14 @@ public partial struct RespawnSystem : ISystem
                 currentHealth.ValueRW.Value = 100;
 
                 ecb.SetComponentEnabled<CharacterEnableTag>(characterEntity, true);
+                ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
-
-            ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
         }
     }
 
     public Entity SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
     {
-        PrefabsData prefabManager = SystemAPI.GetSingleton<PrefabsData>();
+        ClientPrefabData prefabManager = SystemAPI.GetSingleton<ClientPrefabData>();
 
         if (prefabManager.Character == null)
         {

@@ -1,0 +1,51 @@
+.shop-navigation-button {
+    background-color: rgba(255, 255, 255, 0.14);
+    color: rgb(255, 255, 255);
+}
+
+.shop-navigation-button:hover {
+    background-color: rgba(255, 255, 255, 0.24);
+    color: rgb(255, 255, 255);
+}
+
+.shop-navigation-button:active {
+    background-color: rgba(255, 255, 255, 0.38);
+    color: rgb(255, 255, 255);
+    background-image: none;
+}
+
+.shop_buy_slot_button {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.shop_buy_slot_button:hover {
+    background-color: rgba(230, 229, 7, 0.5);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    border-left-color: rgb(230, 229, 7);
+    border-right-color: rgb(230, 229, 7);
+    border-top-color: rgb(230, 229, 7);
+    border-bottom-color: rgb(230, 229, 7);
+}
+
+.shop_buy_slot_button:active {
+    background-color: rgba(230, 229, 7, 0.38);
+    border-top-width: 4px;
+    border-right-width: 4px;
+    border-bottom-width: 4px;
+    border-left-width: 4px;
+    border-left-color: rgba(230, 229, 7, 0.77);
+    border-right-color: rgba(230, 229, 7, 0.77);
+    border-top-color: rgba(230, 229, 7, 0.77);
+    border-bottom-color: rgba(230, 229, 7, 0.77);
+}

@@ -9,7 +9,6 @@ MultiplayerManager:
     2:
     - UnityEngine.UI:UnityEngine.UI:PositionAsUV1
     - UnityEngine.UI:UnityEngine.EventSystems:TouchInputModule
-    - Unity.RenderPipelines.HighDefinition.Runtime:UnityEngine.Rendering.HighDefinition:HDAdditionalReflectionData
     - UnityEngine.UI:UnityEngine.UI:Toggle
     - UnityEngine.UI:UnityEngine.UI:ContentSizeFitter
     - UnityEngine.UI:UnityEngine.UI:CanvasScaler
@@ -17,11 +16,11 @@ MultiplayerManager:
     - UnityEngine.CoreModule:UnityEngine:Light
     - UnityEngine.UI:UnityEngine.EventSystems:PointerInputModule
     - UnityEngine.UI:UnityEngine.UI:LayoutGroup
+    - Unity.RenderPipelines.Universal.Runtime:UnityEngine.Rendering.Universal:UniversalAdditionalCameraData
     - UnityEngine.UI:UnityEngine.UI:ToggleGroup
-    - UnityEngine.UI:UnityEngine.UI:Shadow
     - UnityEngine.UIElementsModule:UnityEngine.UIElements:InputWrapper
     - UnityEngine.UI:UnityEngine.UI:Slider
-    - Unity.RenderPipelines.HighDefinition.Runtime:UnityEngine.Rendering.HighDefinition:HDAdditionalLightData
+    - UnityEngine.UI:UnityEngine.UI:Shadow
     - UnityEngine.AudioModule:UnityEngine:AudioLowPassFilter
     - UnityEngine.SpriteShapeModule:UnityEngine.U2D:SpriteShapeRenderer
     - UnityEngine.AudioModule:UnityEngine:AudioSource
@@ -49,11 +48,10 @@ MultiplayerManager:
     - UnityEngine.UI:UnityEngine.EventSystems:BaseInput
     - UnityEngine.UI:UnityEngine.UI:InputField
     - UnityEngine.UI:UnityEngine.EventSystems:EventSystem
-    - Unity.RenderPipelines.HighDefinition.Runtime:UnityEngine.Rendering.HighDefinition:HDAdditionalCameraData
     - UnityEngine.UI:UnityEngine.UI:RawImage
+    - UnityEngine.UI:UnityEngine.EventSystems:StandaloneInputModule
     - UnityEngine.UI:UnityEngine.UI:Selectable
     - UnityEngine.UI:UnityEngine.EventSystems:UIBehaviour
-    - UnityEngine.UI:UnityEngine.EventSystems:StandaloneInputModule
     - UnityEngine.UI:UnityEngine.EventSystems:BaseRaycaster
     - UnityEngine.UI:UnityEngine.UI:Image
     - UnityEngine.UI:UnityEngine.UI:MaskableGraphic
@@ -80,4 +78,5 @@ MultiplayerManager:
     - UnityEngine.VFXModule:UnityEngine.VFX:VFXRenderer
     - UnityEngine.CoreModule:UnityEngine:LineRenderer
     - UnityEngine.UI:UnityEngine.UI:Outline
+    - Unity.RenderPipelines.Universal.Runtime:UnityEngine.Rendering.Universal:UniversalAdditionalLightData
     - UnityEngine.UI:UnityEngine.UI:ScrollRect

@@ -48,8 +48,8 @@ public partial class CharacterInputSystem : SystemBase
         selectedId = actions.SelectSecondWeapon.WasPressedThisFrame() ? 1 : selectedId;
         selectedId = actions.SelectMelee.WasPressedThisFrame() ? 2 : selectedId;
 
-        foreach (var (controller, input, modelBones) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, CharacterModelBones>()
+        foreach (var (controller, input, characterCamera) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>>()
 
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
@@ -88,7 +88,7 @@ public partial class CharacterInputSystem : SystemBase
             if (isShootPressed)
             {
                 input.ValueRW.attack.Set();
-                input.ValueRW.shootRotation = modelBones.ViewBoneTransform.rotation;
+                input.ValueRW.shootRotation = Camera.main.transform.rotation;
             }
             else
             {
