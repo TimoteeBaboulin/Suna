@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -5,40 +6,26 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateAfter(typeof(StuffSystems))]
+[UpdateAfter(typeof(StuffSystemClient))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class HarvesterSystemClient : SystemBase
 {
     private DefaultInputSystem input;
     DefaultInputSystem.PlayerActions actions;
-    bool firstFrame;
 
     protected override void OnCreate()
     {
-        
         input = new DefaultInputSystem();
         input.Enable();
         actions = input.Player;
-    }
 
-    private void AskForOwner(ref EntityCommandBuffer ecb)
-    {
-        Entity rpcEntity = ecb.CreateEntity();
-        ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
-        ecb.AddComponent<RpcRequestHarvesterOwners>(rpcEntity);
-
-        firstFrame = true;
+        RequireForUpdate<EquipStuffQueu>();
+        RequireForUpdate<UnequipStuffQueu>();
     }
 
     protected override void OnUpdate()
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-
-        if (firstFrame)
-        {
-            AskForOwner(ref ecb);
-            firstFrame = false;
-        }
 
         EntityQuery clientQuery = Entities.WithAll<GhostOwnerIsLocal, ClientComponent>().ToQuery();
         NativeArray<Entity> clientEntities = clientQuery.ToEntityArray(Allocator.Temp);
@@ -50,33 +37,36 @@ partial class HarvesterSystemClient : SystemBase
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.ServerTick;
 
-        foreach ((RefRW<HarvesterComponent> harvesterRW, Entity harvesterEntity) in SystemAPI
-            .Query<RefRW<HarvesterComponent>>()
+        var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
+        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();
+
+        foreach ((RefRW<HarvesterComponent> harvesterRW, RefRW<StuffOwner> ownerRW, Entity harvesterEntity) in SystemAPI
+            .Query<RefRW<HarvesterComponent>, RefRW<StuffOwner>>()
             .WithEntityAccess())
         {
-            if (!EntityManager.HasComponent<StuffGameObjectRef>(harvesterEntity))
-            {
-                //Debug.Log("Instanciating harvester GO");
-                StuffGameObjectPrefab prefabRef = EntityManager.GetComponentObject<StuffGameObjectPrefab>(harvesterEntity);
-                StuffGameObjectRef goRef = new StuffGameObjectRef
-                {
-                    Value = Object.Instantiate(prefabRef.Value)
-                };
+            //if (!EntityManager.HasComponent<StuffGameObjectRef>(harvesterEntity))
+            //{
+            //    Debug.Log("Instanciating harvester GO");
+            //    StuffGameObjectPrefab prefabRef = EntityManager.GetComponentObject<StuffGameObjectPrefab>(harvesterEntity);
+            //    StuffGameObjectRef goRef = new StuffGameObjectRef
+            //    {
+            //        Value = Object.Instantiate(prefabRef.Value)
+            //    };
 
-                ecb.AddComponent<TemporaryOverrideGameObjectActive>(harvesterEntity);
-                goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
-                ecb.AddComponent(harvesterEntity, goRef);
-            }
-            else if (harvesterRW.ValueRO.Owner == Entity.Null)
-            {
-                StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
-                goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
-            }
+        //    ecb.AddComponent<TemporaryOverrideGameObjectActive>(harvesterEntity);
+        //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
+        //    ecb.AddComponent(harvesterEntity, goRef);
+        //}
+        //        else if (harvesterRW.ValueRO.Owner == Entity.Null)
+        //{
+        //    StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
+        //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
+        //}
 
-            if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
+        if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
                 continue;
-            
-            if (harvesterRW.ValueRO.Owner != clientEntity)
+
+            if (ownerRW.ValueRO.Value != clientEntity)
                 continue;
 
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
@@ -108,7 +98,7 @@ partial class HarvesterSystemClient : SystemBase
             }
         }
 
-        foreach((RefRW<HarvesterComponent> HarvesterRW, LocalTransform harvesterTransform, Entity harvesterEntity) in SystemAPI
+        foreach ((RefRW<HarvesterComponent> HarvesterRW, LocalTransform harvesterTransform, Entity harvesterEntity) in SystemAPI
             .Query<RefRW<HarvesterComponent>, LocalTransform>()
             .WithAll<HarvesterPlanted>()
             .WithEntityAccess())
@@ -150,43 +140,51 @@ partial class HarvesterSystemClient : SystemBase
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlanted rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
-            SystemAPI.GetComponentRW<CharacterStuffList>(rpc.harvesterOwner).ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
+            //SystemAPI.GetComponentRW<CharacterStuffList>(rpc.harvesterOwner).ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
 
-            StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
-            if (goRef is null)
-                return;
+            //StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
+            //if (goRef is null)
+            //    return;
 
-            goRef.Value.transform.SetParent(null);
-            goRef.Value.transform.position = rpc.plantPosition;
-            goRef.Value.SetActive(true);
+            //goRef.Value.transform.SetParent(null);
+            //goRef.Value.transform.position = rpc.plantPosition;
+            //goRef.Value.SetActive(true);
 
-            ecb.AddComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
+            unequipStuffQueu.Add(new UnequipStuffQueu
+            {
+                Stuff = rpc.harvester,
+                Owner = rpc.harvesterOwner,
+                Position = rpc.plantPosition
+            });
+
+            //ecb.AddComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
             ecb.DestroyEntity(entity);
         }
 
+        //Add Harvester to Player
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
         {
-            ecb.DestroyEntity(entity);
-            if (rpc.character == Entity.Null)
+            //ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
+
+
+            //StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
+            //CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(rpc.character);
+            //StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
+
+            //goRef.Value.transform.SetParent(charaBones.WeaponSlotTransform);
+            //goRef.Value.transform.localPosition = commonData._stuffLocalOffsetView;
+
+            //SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
+
+            equipStuffQueu.Add(new EquipStuffQueu
             {
-                Debug.Log("[Client - Harvester] Couldn't change harvester owner due to the entity not being spawned yet. Asking for re-send from server.");
+                Stuff = rpc.harvester,
+                Owner = rpc.newOwner
+            });
 
-                AskForOwner(ref ecb);
-
-                continue;
-            }
-
-            ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
-            StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
-            CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(rpc.character);
-            StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
-
-            goRef.Value.transform.SetParent(charaBones.WeaponSlotTransform);
-            goRef.Value.transform.localPosition = commonData._stuffLocalOffsetView;
-
-            SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
+            ecb.DestroyEntity(entity);
         }
 
         ecb.Playback(EntityManager);

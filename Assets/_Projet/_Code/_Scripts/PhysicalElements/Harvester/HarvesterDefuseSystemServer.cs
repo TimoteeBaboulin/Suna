@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -50,10 +50,11 @@ partial struct HarvesterDefuseSystemServer : ISystem
             if (currentTick.TicksSince(defuseStartTick) < 4 * 60)
             {
                 float3 harvesterPos = SystemAPI.GetComponentRO<LocalTransform>(defusingHarvesterEntity).ValueRO.Position;
+                float defuseRange = SystemAPI.GetComponentRO<HarvesterComponent>(defusingHarvesterEntity).ValueRO.defuseRange;
                 float3 defuserPos = SystemAPI.GetComponentRO<LocalTransform>(defuserEntity).ValueRO.Position;
 
                 //TODO: Add other reasons to stop defusing (death of defuser, moving, jumping, trying to shoot...)
-                if (math.distance(harvesterPos, defuserPos) > 10)
+                if (math.distance(harvesterPos, defuserPos) > defuseRange)
                 {
                     defusingHarvesterEntity = Entity.Null;
                     defuserEntity = Entity.Null;
@@ -72,7 +73,7 @@ partial struct HarvesterDefuseSystemServer : ISystem
             }
         }
 
-        
+
 
         //RPC HANDLING____________________________________________________________________________________
         //Defuse Start

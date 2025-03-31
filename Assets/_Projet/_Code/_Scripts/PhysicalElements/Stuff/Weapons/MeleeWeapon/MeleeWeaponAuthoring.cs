@@ -1,60 +1,33 @@
-using Unity.Entities.Serialization;
 using Unity.Entities;
 using UnityEngine;
-using Unity.Collections;
-
-using MeleeWeapon;
 
 public class MeleeWeaponAuthoring : MonoBehaviour
 {
-    [Header("Weapon Data")]
-    public MeleeWeaponData commonData;
+    [Header("Warning : this field must only be used on an \nobject present in the scene or an unique object !")]
+    public RangedWeaponData meleeWeapon;
 
     public class Baker : Baker<MeleeWeaponAuthoring>
     {
         public override void Bake(MeleeWeaponAuthoring authoring)
         {
-            MeleeWeaponData data = authoring.commonData;
-            DependsOn(data);
-
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            AddSharedComponent(entity, new StuffCommonData
+            AddComponent(entity, new MeleeWeaponDynamicData());
+            AddComponent(entity, new MeleeWeaponDatabaseAccess());
+
+            AddComponent(entity, new StuffDatabaseAccess
             {
-                name = new FixedString64Bytes(data.entityName),
-                price = data.price,
-                type = data.type,
-                side = data.side,
-                deploymentSpeed = data.deploymentSpeed,
-                storageSpeed = data.storageSpeed,
-                _stuffLocalOffsetView = data._stuffLocalOffsetView //temp
+                IsConnectedToDatabase = false,
+                NameInDatabase = authoring.meleeWeapon != null ? authoring.meleeWeapon.entityName : ""
             });
-
-            AddSharedComponent(entity, new CommonData
-            {
-                damage = data.damage,
-                strongBlowDmg = data.strongBlowDmg,
-                backStabDmg = data.backStabDmg,
-                range = data.range,
-                strikeRate = data.strikeRate,
-                strongStrikeRate = data.strongStrikeRate
-    });
-
-            AddComponent(entity, new DynamicData());
             AddComponent(entity, new StuffOwner());
 
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);
 
-            AddComponentObject(entity, new StuffGameObjectPrefab
-            {
-                Value = data.gameobjectPrefab,
-            });
-
-            AddComponentObject(entity, new StuffUiImage
-            {
-                Value = data.UIImage,
-            });
+            AddComponent<StuffProcessPending>(entity);
+            SetComponentEnabled<StuffProcessPending>(entity, true);
         }
     }
 }
+

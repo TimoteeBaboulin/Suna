@@ -65,7 +65,7 @@ partial struct RoundSystemClient : ISystem
             {
                 return;
             }
-            
+
         }
 
         _firstFrame = false;
@@ -78,14 +78,14 @@ partial struct RoundSystemClient : ISystem
             round.ValueRW.timer = 0;
         }
 
-        foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
+        foreach (var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
         {
             round.ValueRW = update.ValueRO.roundData;
             buffer.DestroyEntity(entity);
         }
 
         //Read score change RPCs
-        foreach(var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
+        foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
         {
             ChangeScore(ref state, newRoundComponent.ValueRO.team, round);
             buffer.DestroyEntity(entity);
@@ -111,7 +111,8 @@ partial struct RoundSystemClient : ISystem
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
-    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
+    {
         //Update the score and loss streak of the corresponding teams
         switch (team)
         {

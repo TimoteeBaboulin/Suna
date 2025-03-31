@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5bcb39d6faa4754fa20568fe5b4b2dc, type: 3}
+  m_Name: Harvester Data
+  m_EditorClassIdentifier: 
+  gameobjectPrefab: {fileID: 521297520866367205, guid: ef2787168640cc142a1a7db5e1268b13, type: 3}
+  UIImage: {fileID: 0}
+  location: 3
+  type: 2
+  side: 0
+  entityName: Harvester
+  deploymentSpeed: 1
+  storageSpeed: 1
+  price: 0
+  killGain: 0
+  _stuffLocalOffsetView: {x: 0.4, y: -0.35, z: 0.7}
+  defuseRange: 10
+  pickupDistance: 5

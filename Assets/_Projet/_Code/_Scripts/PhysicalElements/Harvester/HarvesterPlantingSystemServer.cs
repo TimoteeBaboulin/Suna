@@ -1,4 +1,4 @@
-﻿using Unity.Burst;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -40,8 +40,8 @@ partial struct HarvesterPlantingSystemServer : ISystem
 
         if (currentPhase is RoundPhase.ActionPhase)
         {
-            foreach (var (harvesterRW, harvesterTransformRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<LocalTransform>>()
+            foreach (var (harvesterRW, harvesterTransformRW, ownerRW, harvesterEntity) in
+                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<LocalTransform>, RefRW<StuffOwner>> ()
                         .WithAll<HarvesterPlanting>()
                         .WithEntityAccess())
             {
@@ -51,27 +51,27 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
 
-                    Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(harvesterRW.ValueRO.Owner).ValueRO.Value;
+                    Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(ownerRW.ValueRO.Value).ValueRO.Value;
 
-                    StuffType switchToType = StuffType.MainWeapon;
+                    StuffInventoryLocation switchToLocation = StuffInventoryLocation.MainWeapon;
                     Entity targetWeaponEntity = Entity.Null;
                     RefRW<CharacterStuffList> stuffListRW = SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity);
-                    if (stuffListRW.ValueRO.Value[(int)StuffType.MainWeapon] == Entity.Null)
+                    if (stuffListRW.ValueRO.Value[(int)StuffInventoryLocation.MainWeapon] == Entity.Null)
                     {
-                        if (stuffListRW.ValueRO.Value[(int)StuffType.SecondaryWeapon] == Entity.Null)
+                        if (stuffListRW.ValueRO.Value[(int)StuffInventoryLocation.SecondaryWeapon] == Entity.Null)
                         {
-                            switchToType = StuffType.Melee;
+                            switchToLocation = StuffInventoryLocation.Melee;
                         }
                         else
                         {
-                            switchToType = StuffType.Melee;
+                            switchToLocation = StuffInventoryLocation.Melee;
                         }
                     }
-                    targetWeaponEntity = stuffListRW.ValueRO.Value[(int)switchToType];
+                    targetWeaponEntity = stuffListRW.ValueRO.Value[(int)switchToLocation];
 
                     stuffListRW.ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
                     SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = Entity.Null;
-                    SystemAPI.GetComponentRW<CharacterStuffInHandType>(characterEntity).ValueRW.Value = StuffType.Melee;
+                    SystemAPI.GetComponentRW<CharacterStuffInHandLocation>(characterEntity).ValueRW.Value = StuffInventoryLocation.Melee;
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(harvesterEntity, false);
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
@@ -99,7 +99,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                         });
                     }
 
-                    harvesterRW.ValueRW.Owner = Entity.Null;
+                    ownerRW.ValueRW.Value = Entity.Null;
 
                     Debug.Log("[Server] Harvester planted");
                 }

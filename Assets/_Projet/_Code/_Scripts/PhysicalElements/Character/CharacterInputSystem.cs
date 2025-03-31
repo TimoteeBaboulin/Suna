@@ -43,10 +43,10 @@ public partial class CharacterInputSystem : SystemBase
         bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
         bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
 
-        int selectedId = -1;
-        selectedId = actions.SelectMainWeapon.WasPressedThisFrame() ? 0 : selectedId;
-        selectedId = actions.SelectSecondWeapon.WasPressedThisFrame() ? 1 : selectedId;
-        selectedId = actions.SelectMelee.WasPressedThisFrame() ? 2 : selectedId;
+        int selectedLocation = 0;
+        selectedLocation = actions.SelectMainWeapon.WasPressedThisFrame() ? 1: selectedLocation;
+        selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
+        selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
         foreach (var (controller, input, characterCamera) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>>()
@@ -123,7 +123,8 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.selectPrevious = default;
             }
 
-            input.ValueRW.selectStuffId = selectedId;
+            input.ValueRW.stuffLocation = selectedLocation;
         }
     }
 }
+

@@ -1,4 +1,3 @@
-using RangedWeapon;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -112,6 +111,7 @@ public partial struct ApplyDamageSystem : ISystem
             .WithNone<HasNoHealthTag>();
 
         state.RequireForUpdate<NetworkTime>();
+        state.RequireForUpdate<GameResourcesDatabase>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
     }
 
@@ -124,13 +124,14 @@ public partial struct ApplyDamageSystem : ISystem
         ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
         ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
 
-        EntityQuery query = state.GetEntityQuery(typeof(CommonData));
+        EntityQuery query = state.GetEntityQuery(typeof(StuffDatabaseAccess));
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
-        NativeHashMap<Entity, CommonData> commonDataMap = new NativeHashMap<Entity, CommonData>(entities.Length, Allocator.TempJob);
+        NativeHashMap<Entity, StuffCommonData> commonDataMap = new NativeHashMap<Entity, StuffCommonData>(entities.Length, Allocator.TempJob);
 
-        foreach(var entity in entities)
+        GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+        foreach (var entity in entities)
         {
-            var data = state.EntityManager.GetSharedComponent<CommonData>(entity);
+            ref var data = ref state.EntityManager.GetComponentData<StuffDatabaseAccess>(entity).GetData(ref database);
             commonDataMap.Add(entity, data);
         }
 
@@ -166,7 +167,7 @@ public partial struct ApplyDamageJob : IJobEntity
     [ReadOnly] public ComponentLookup<ClientCharacterAttached> ClientAttachedComponents;
     [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
-    [ReadOnly] public NativeHashMap<Entity, CommonData> CommonDataMap;
+    [ReadOnly] public NativeHashMap<Entity, StuffCommonData> CommonDataMap;
     public EntityCommandBuffer.ParallelWriter ECB;
 
     public void Execute(Entity entity, [EntityIndexInQuery] int sortKey,
