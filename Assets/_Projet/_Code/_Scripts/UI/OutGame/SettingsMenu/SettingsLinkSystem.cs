@@ -1,15 +1,8 @@
 using Unity.Entities;
-using UnityEngine;
 
-//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation, WorldSystemFilterFlags.Default)]
-partial class MainMenuLinkSystem : SystemBase
+partial class SettingsLinkSystem : SystemBase
 {
     public bool ClientSettingsFound = false;
-
-    protected override void OnCreate()
-    {
-        //RequireForUpdate<ClientSettingsComponent>();
-    }
 
     protected override void OnUpdate()
     {
