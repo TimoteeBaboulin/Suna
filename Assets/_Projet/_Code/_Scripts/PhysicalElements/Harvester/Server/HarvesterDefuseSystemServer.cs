@@ -52,7 +52,6 @@ partial struct HarvesterDefuseSystemServer : ISystem
                 float3 harvesterPos = SystemAPI.GetComponentRO<LocalTransform>(defusingHarvesterEntity).ValueRO.Position;
                 float3 defuserPos = SystemAPI.GetComponentRO<LocalTransform>(defuserEntity).ValueRO.Position;
 
-                //TODO: Add other reasons to stop defusing (death of defuser, moving, jumping, trying to shoot...)
                 if (math.distance(harvesterPos, defuserPos) > 10)
                 {
                     defusingHarvesterEntity = Entity.Null;
