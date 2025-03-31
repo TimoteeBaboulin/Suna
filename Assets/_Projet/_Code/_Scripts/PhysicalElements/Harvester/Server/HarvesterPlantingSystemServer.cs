@@ -45,7 +45,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
                         .WithAll<HarvesterPlanting>()
                         .WithEntityAccess())
             {
-                //TODO: Prevent planting while moving or prevent moving while planting
                 if (currentTick.TicksSince(harvesterRW.ValueRO.PlantStartedTick) >= 60 * 4)
                 {
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
