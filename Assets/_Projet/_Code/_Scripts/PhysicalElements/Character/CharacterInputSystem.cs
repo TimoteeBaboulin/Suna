@@ -10,7 +10,7 @@ using UnityEngine.InputSystem;
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial class CharacterInputSystem : SystemBase
 {
-    private DefaultInputSystem input;
+    public DefaultInputSystem input;
 
     DefaultInputSystem.PlayerActions actions;
 

@@ -42,6 +42,7 @@ public class UIDocumentUtils
     {
         element.style.display = element.style.display.value == DisplayStyle.Flex ? DisplayStyle.None : DisplayStyle.Flex;
     }
+    static public bool IsActive<T>(ref T element) where T : VisualElement => element.style.display.value == DisplayStyle.Flex;
 
     static public Length PercentLength(float value) => new(value, LengthUnit.Percent);
     static public Length PixelLength(float value) => new(value, LengthUnit.Pixel);
