@@ -10,15 +10,16 @@ using UnityEngine;
 partial class HarvesterSystemClient : SystemBase
 {
     private DefaultInputSystem input;
-    DefaultInputSystem.PlayerActions actions;
+    DefaultInputSystem.PlayerActions playerActions;
+    DefaultInputSystem.HarvesterActions harvesterActions;
     bool firstFrame;
 
     protected override void OnCreate()
     {
-        
         input = new DefaultInputSystem();
         input.Enable();
-        actions = input.Player;
+        playerActions = input.Player;
+        harvesterActions = input.Harvester;
     }
 
     private void AskForOwner(ref EntityCommandBuffer ecb)
@@ -33,6 +34,8 @@ partial class HarvesterSystemClient : SystemBase
     protected override void OnUpdate()
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        //Debug.Log("Player actions is " + (playerActions.enabled ? "enabled" : "disabled"));
 
         if (firstFrame)
         {
@@ -81,7 +84,7 @@ partial class HarvesterSystemClient : SystemBase
 
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
 
-            if (actions.Attack.WasPressedThisFrame())
+            if (playerActions.Attack.WasPressedThisFrame())
             {
                 RpcHarvesterPlantStart rpc = new RpcHarvesterPlantStart
                 {
@@ -93,8 +96,13 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+
+                foreach(RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
+                {
+                    charInputs.ValueRW.enabled = false;
+                }
             }
-            else if (actions.Attack.WasReleasedThisFrame())
+            else if (harvesterActions.Attack.WasReleasedThisFrame())
             {
                 RpcHarvesterPlantStop rpc = new RpcHarvesterPlantStop
                 {
@@ -105,6 +113,11 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+
+                foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
+                {
+                    charInputs.ValueRW.enabled = true;
+                }
             }
         }
 
@@ -117,7 +130,7 @@ partial class HarvesterSystemClient : SystemBase
             float3 harvesterPos = harvesterTransform.Position;
             float3 characterPos = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;
 
-            if (actions.Interact.WasPressedThisFrame() && math.distance(harvesterPos, characterPos) <= 10)
+            if (playerActions.Interact.WasPressedThisFrame() && math.distance(harvesterPos, characterPos) <= 10)
             {
                 RpcHarvesterDefuseStart rpc = new RpcHarvesterDefuseStart
                 {
@@ -129,10 +142,15 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+
+                foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
+                {
+                    charInputs.ValueRW.enabled = false;
+                }
             }
 
             //Find a way to check whethere we're currently defusing
-            if (actions.Interact.WasReleasedThisFrame())
+            if (harvesterActions.Interact.WasReleasedThisFrame())
             {
                 RpcHarvesterDefuseStop rpc = new RpcHarvesterDefuseStop
                 {
@@ -144,6 +162,11 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+
+                foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
+                {
+                    charInputs.ValueRW.enabled = true;
+                }
             }
         }
 

@@ -20,4 +20,6 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public int selectStuffId;
 
     [GhostField] public quaternion shootRotation;
+
+    public bool enabled;
 }
