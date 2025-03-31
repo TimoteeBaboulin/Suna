@@ -19,14 +19,11 @@ public class SettingsMenuController : MonoBehaviour
         _sensitivityField.RegisterValueChangedCallback(OnSensitivityField_ValueChanged);
 
         // Load settings
-        if (ClientServerBootstrap.ServerWorld == null)
+        SettingsLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SettingsLinkSystem>();
+        if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
         {
-            SettingsLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SettingsLinkSystem>();
-            if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
-            {
-                _sensitivitySlider.value = clientSettings.Sensivity;
-                _sensitivityField.value = clientSettings.Sensivity;
-            }
+            _sensitivitySlider.value = clientSettings.Sensivity;
+            _sensitivityField.value = clientSettings.Sensivity;
         }
     }
 
@@ -48,14 +45,11 @@ public class SettingsMenuController : MonoBehaviour
         _sensitivitySlider.UnregisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
         _sensitivityField.UnregisterValueChangedCallback(OnSensitivityField_ValueChanged);
 
-        if (ClientServerBootstrap.ServerWorld == null)
+        SettingsLinkSystem settingsLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SettingsLinkSystem>();
+        if (settingsLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
         {
-            SettingsLinkSystem settingsLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SettingsLinkSystem>();
-            if (settingsLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
-            {
-                clientSettings.Sensivity = _sensitivitySlider.value;
-                settingsLinkSystem.UpdateClientSettings(clientSettings);
-            }
+            clientSettings.Sensivity = _sensitivitySlider.value;
+            settingsLinkSystem.UpdateClientSettings(clientSettings);
         }
     }
 }

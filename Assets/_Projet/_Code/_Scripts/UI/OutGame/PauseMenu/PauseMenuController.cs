@@ -2,6 +2,7 @@ using System.Linq;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -18,6 +19,9 @@ public class PauseMenuController : MonoBehaviour
     private Button _playButton;
     private Button _settingsButton;
 
+    [SerializeField] private DefaultInputSystem input;
+    bool inputFound = false;
+
     private void Awake()
     {
         _document = GetComponent<UIDocument>();
@@ -27,14 +31,22 @@ public class PauseMenuController : MonoBehaviour
         _homeButton = _tabBar.Q<Button>("HomeButton");
         _playButton = _tabBar.Q<Button>("PlayButton");
         _settingsButton = _tabBar.Q<Button>("SettingsButton");
+
+        UIDocumentUtils.SetActive(ref _root, false);
     }
 
-    private void OnDestroy()
+    private void Update()
     {
-        // Save and Close Settings if Settings Menu was open
-        if (gameObject.TryGetComponent(out SettingsMenuController settingsMenuController))
+        CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
+        if (system != null)
         {
-            SaveAndCloseSettings(settingsMenuController);
+            input = system.input;
+            inputFound = true;
+        }
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            UIDocumentUtils.ToggleActive(ref _root);
+            ActivateUIInput(UIDocumentUtils.IsActive(ref _root));
         }
     }
 
@@ -66,7 +78,7 @@ public class PauseMenuController : MonoBehaviour
         _background.Add(settingsMenuController.root);
     }
 
-    
+
 
     private void SaveAndCloseSettings(SettingsMenuController settingsMenuController)
     {
@@ -82,6 +94,23 @@ public class PauseMenuController : MonoBehaviour
 
     private void OnPlayButtonClicked()
     {
-        Destroy(gameObject);
+        UIDocumentUtils.SetActive(ref _root, false);
+        ActivateUIInput(false);
+    }
+
+    private void ActivateUIInput(bool value)
+    {
+        if (value)
+        {
+            input.Player.Disable();
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
+        }
+        else
+        {
+            input.Player.Enable();
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            UnityEngine.Cursor.visible = false;
+        }
     }
 }
