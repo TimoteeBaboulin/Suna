@@ -2,12 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Physics;
-using static ak.wwise;
-using static UnityEngine.UI.GridLayoutGroup;
 using UnityEngine;
-using static UnityEditor.Progress;
-using AK.Wwise;
 using Unity.Mathematics;
 
 public struct EquipStuffQueu : IBufferElementData
