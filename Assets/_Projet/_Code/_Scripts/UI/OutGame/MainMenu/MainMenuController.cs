@@ -1,3 +1,4 @@
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -13,7 +14,7 @@ public class MainMenuController : MonoBehaviour
     [SerializeField] private UIDocument _settingsMenuDocument;
 
     [Header("Connection Helper")]
-    [SerializeField] private ConnectionManager connectionManager;
+    //[SerializeField] private ConnectionManager connectionManager;
 
     private VisualElement _mainMenu;
     private VisualElement _settingsMenu;
@@ -65,15 +66,18 @@ public class MainMenuController : MonoBehaviour
             _sensitivityField.RegisterValueChangedCallback(OnSensitivityField_ValueChanged);
         }
     }
+    //if (connectionManager != null)
+    //{
+    //    connectionManager.Connect();
+    //    SceneManager.LoadScene((int)_sceneLoadOnPlay);
+    //}
 
-    private void OnPlayButton_Click()
+    private async void OnPlayButton_Click()
     {
-        if (connectionManager != null)
-        {
-            connectionManager.Connect();
-            SceneManager.LoadScene((int)_sceneLoadOnPlay);
-        }
-
+ 
+        _playButton.SetEnabled(false);
+        await GameManager.Instance.Play();
+        _playButton.SetEnabled(true);
     }
 
     private void OnSettingsButton_Click()

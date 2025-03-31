@@ -36,6 +36,8 @@ namespace GameNetwork
                     return configuration.DirectNetworkPublishAddress;
                 case (NetworkType.Relay, NetworkRole.Host):
                     return NetworkEndpoint.LoopbackIpv4.WithPort(configuration.RelayServerData.Endpoint.Port);
+                case (NetworkType.Relay, NetworkRole.Client):
+                    return configuration.RelayClientData.Endpoint;
                 default:
                     return default;
             }

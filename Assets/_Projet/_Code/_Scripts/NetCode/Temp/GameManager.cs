@@ -21,16 +21,15 @@ public class GameManager : Singleton<GameManager>
 
     public string SessionID { get; private set; }
 
-    private SessionTransportHelper clientConnectionSettings;
+    private ClientTransportHelper clientConnectionSettings;
     private CancellationTokenSource loadingToken;
     private ConnectionHandlerNew connectionHandler;
-    private SessionTransportHelper serverSession;
+    private ClientTransportHelper serverSession;
 
-    protected override async void Awake()
+    protected override void Awake()
     {
-        base.Awake();
-        connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
-        loadingToken = new CancellationTokenSource();
+        // base.Awake();
+
 
         //try
         //{
@@ -42,23 +41,42 @@ public class GameManager : Singleton<GameManager>
         //}
 
 
-        if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
-        {
-            Debug.Log($"Port in GameManager : {AutoConnectPort}");
-            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, AutoConnectPort, connectionHandler.ClientLocal);
-        }
+        //if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server || RequestedPlayType == PlayType.ClientAndServer)
+        //{
+        //    Debug.Log($"Port in GameManager : {AutoConnectPort}");
+        //    serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, AutoConnectPort, connectionHandler.ClientLocal);
+        //}
 
         //ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
         //RpcUtils.SendDefaultToServerRPC(ref command);
     }
 
-    public async void Play()
+    private void Start()
     {
-        await SessionTransportHelper.StartServicesAsync();
-        await QuerySessionsAsync();
+        connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
+        loadingToken = new CancellationTokenSource();
+    }
+
+    public async Task Play()
+    {
+        //await SessionTransportHelper.StartServicesAsync();
+        //await QuerySessionsAsync();
+
         Debug.Log($"GameManager: Using session code: {SessionID}");
 
         clientConnectionSettings = await connectionHandler.ConnectToSessionAsync(loadingToken.Token, SessionID);
+
+
+        Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
+        GameState = GlobalGameState.InGame;
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MultiplayerTest");
+        while (!asyncLoad.isDone)
+        {
+            await Task.Yield();
+        }
+
+
         //if (clientConnectionSettings == null)
         //{
         //    Debug.LogError("GameManager: Client connection settings are null.");
@@ -71,9 +89,7 @@ public class GameManager : Singleton<GameManager>
         //    Debug.Log($"GameManager: Waiting for session to fill... Available slots: {clientConnectionSettings.Session.AvailableSlots}");
         //    await Task.Delay(1000, loadingToken.Token);
         //}
-        Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
-        GameState = GlobalGameState.InGame;
-        SceneManager.LoadScene("MultiplayerTest");
+
 
         {//try
          //{
@@ -114,6 +130,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+
     private async void OnClickMatchmakeButton()
     {
         var matchOptions = new MatchmakerOptions
@@ -128,8 +145,8 @@ public class GameManager : Singleton<GameManager>
             MaxPlayers = 4
         };
 
-        SessionTransportHelper helper = new SessionTransportHelper("127.0.0.1", 7979, false);
-        SessionTransportHelper result = await helper.MatchmakeSessionAsync(matchOptions, sessionOptions);
+        ClientTransportHelper helper = new ClientTransportHelper("127.0.0.1", 7979, false);
+        ClientTransportHelper result = await helper.MatchmakeSessionAsync(matchOptions, sessionOptions);
 
         if (result == null)
         {
@@ -154,8 +171,8 @@ public class GameManager : Singleton<GameManager>
             MaxPlayers = 4
         };
 
-        SessionTransportHelper helper = new SessionTransportHelper("127.0.0.1", 7979, false);
-        SessionTransportHelper result = await helper.QuickJoinSessionAsync(quickJoinOptions, sessionOptions);
+        ClientTransportHelper helper = new ClientTransportHelper("127.0.0.1", 7979, false);
+        ClientTransportHelper result = await helper.QuickJoinSessionAsync(quickJoinOptions, sessionOptions);
 
         if (result == null)
         {

@@ -12,6 +12,7 @@ namespace GameNetwork
     {
         public NetworkRole Role;
         public NetworkType Type;
+        public RelayServerData RelayClientData;
         public RelayServerData RelayServerData;
     }
     public class DriverConstructor : INetworkStreamDriverConstructor
@@ -26,7 +27,17 @@ namespace GameNetwork
             {
                 Role = configuration.Role,
                 Type = configuration.Type,
+                RelayClientData = configuration.RelayClientData,
                 RelayServerData = configuration.RelayServerData
+            };
+        }
+
+        public DriverConstructor(NetworkRole role)
+        {
+            driverConfiguration = new DriverConfiguration
+            {
+                Role = role,
+                Type = NetworkType.Direct,
             };
         }
         public void CreateClientDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug)

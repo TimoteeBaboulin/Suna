@@ -11,20 +11,20 @@ public class ServerSessionFactory
 {
     public int MaxPlayers = 3;
     public string SessionCode { get; private set; } = "DDDDDD";
-    private SessionTransportHelper serverConnectionSettings;
+    private ClientTransportHelper serverConnectionSettings;
 
     static public ServerSessionFactory instance { get; private set; }
     private ServerSessionFactory() { }
 
-    public static async Task<SessionTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
+    public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
     {
         instance = new ServerSessionFactory();
         // Only run session creation on a dedicated server.
         try
         {
             SessionOptions options = new SessionOptions { MaxPlayers = instance.MaxPlayers };
-            SessionTransportHelper transportHelper = new SessionTransportHelper(ip, port, isClientLocal);
-            SessionTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
+            ClientTransportHelper transportHelper = new ClientTransportHelper(ip, port, isClientLocal);
+            ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
