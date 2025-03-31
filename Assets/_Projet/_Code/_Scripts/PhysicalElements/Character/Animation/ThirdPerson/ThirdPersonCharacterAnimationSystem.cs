@@ -16,16 +16,17 @@ partial struct ServerThirdPersonCharacterAnimationSystem : ISystem
 
         foreach (var (modelReference, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelReference>()
-            .WithNone<ThirdPersonCharacterAnimatorReference>()
+            .WithNone<CharacterAnimatorReference>()
             .WithEntityAccess())
         {
-            ThirdPersonCharacterAnimationUtils.AddAnimatorReferenceComponent(modelReference.ModelGameObject, characterEntity, ecb);
+            CommonCharacterAnimationUtils.AddAnimatorReferenceComponent(modelReference.ModelGameObject, characterEntity, ecb);
         }
 
-        foreach (var (animatorReference, animationState) in SystemAPI
-            .Query<ThirdPersonCharacterAnimatorReference, RefRO<ThirdPersonCharacterAnimationState>>())
+        foreach (var (animatorReference, thirdPersonAnimationState, commonAnimationState) in SystemAPI
+            .Query<CharacterAnimatorReference, RefRO<ThirdPersonCharacterAnimationState>, RefRO<CommonCharacterAnimationState>>())
         {
-            ThirdPersonCharacterAnimationUtils.SetParameters(animatorReference.Animator, animationState);
+            CommonCharacterAnimationUtils.SetParameters(animatorReference.Animator, commonAnimationState);
+            ThirdPersonCharacterAnimationUtils.SetParameters(animatorReference.Animator, thirdPersonAnimationState);
         }
 
         ecb.Playback(state.EntityManager);
@@ -47,15 +48,16 @@ partial struct ClientThirdPersonCharacterAnimationSystem : ISystem
 
         foreach (var (modelReference, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelReference>()
-            .WithNone<ThirdPersonCharacterAnimatorReference, GhostOwnerIsLocal>()
+            .WithNone<CharacterAnimatorReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
-            ThirdPersonCharacterAnimationUtils.AddAnimatorReferenceComponent(modelReference.ModelGameObject, characterEntity, ecb);
+            CommonCharacterAnimationUtils.AddAnimatorReferenceComponent(modelReference.ModelGameObject, characterEntity, ecb);
         }
 
-        foreach (var (animatorReference, animationState) in SystemAPI
-            .Query<ThirdPersonCharacterAnimatorReference, RefRO<ThirdPersonCharacterAnimationState>>())
+        foreach (var (animatorReference, animationState, commonAnimationState) in SystemAPI
+            .Query<CharacterAnimatorReference, RefRO<ThirdPersonCharacterAnimationState>, RefRO<CommonCharacterAnimationState>>())
         {
+            CommonCharacterAnimationUtils.SetParameters(animatorReference.Animator, commonAnimationState);
             ThirdPersonCharacterAnimationUtils.SetParameters(animatorReference.Animator, animationState);
         }
 

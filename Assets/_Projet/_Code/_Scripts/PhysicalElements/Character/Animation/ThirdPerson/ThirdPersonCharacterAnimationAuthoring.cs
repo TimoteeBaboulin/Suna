@@ -13,7 +13,7 @@ class ThirdPersonCharacterAnimationAuthoringBaker : Baker<ThirdPersonCharacterAn
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(entity, new ThirdPersonCharacterAnimationState
         {
-            IsWalking = false,
+
         });
     }
 }

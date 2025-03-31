@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: -5565830434860651292}
   - component: {fileID: 9007531882848270444}
   - component: {fileID: 7747839720245098777}
+  - component: {fileID: 1406327883203246079}
   - component: {fileID: 5597651270972698966}
   - component: {fileID: 219538545545060558}
   - component: {fileID: -7034213979156375631}
@@ -250,6 +251,18 @@ MonoBehaviour:
   LegRightBoneName0: J_GROIN_R
   LegRightBoneName1: J_LEG_R
   LegRightBoneName2: J_KNEE_R
+--- !u!114 &1406327883203246079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584918407947073280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1a85ede1c82f284aaa5535c15dd9e5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &5597651270972698966
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -327,6 +340,7 @@ MonoBehaviour:
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1000
+  MaxSendRate: 0
   prefabId: c377a8ea0ba8a164abbbccae22e66525
   HasOwner: 1
   SupportAutoCommandTarget: 1
