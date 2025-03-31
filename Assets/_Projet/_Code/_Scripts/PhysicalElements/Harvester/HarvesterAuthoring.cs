@@ -27,6 +27,9 @@ public class HarvesterAuthoring : MonoBehaviour
             AddComponent<HarvesterPlanted>(entity);
             SetComponentEnabled<HarvesterPlanted>(entity, false);
 
+            //TODO: Make the game wait before starting the rounds while people load
+            AddComponent<HarvesterRespawn>(entity);
+
             AddComponent<StuffOwner>(entity);
             StuffGameObjectPrefab stuffGameObjectPrefab = new StuffGameObjectPrefab
             {

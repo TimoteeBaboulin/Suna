@@ -151,7 +151,7 @@ partial struct HarvesterSystemServer : ISystem
                                     EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
 
                                     foreach (var client in query.ToEntityArray(Allocator.Temp))
-                                    {
+                                {
                                         Entity rpcEntity = ecb.CreateEntity();
                                         ecb.AddComponent(rpcEntity, rpc);
                                         ecb.AddComponent(rpcEntity, new SendRpcCommandRequest

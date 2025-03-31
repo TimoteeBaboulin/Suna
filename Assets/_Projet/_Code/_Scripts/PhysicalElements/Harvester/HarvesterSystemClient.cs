@@ -11,6 +11,7 @@ partial class HarvesterSystemClient : SystemBase
 {
     private DefaultInputSystem input;
     DefaultInputSystem.PlayerActions actions;
+    bool firstFrame;
 
     protected override void OnCreate()
     {
@@ -20,9 +21,24 @@ partial class HarvesterSystemClient : SystemBase
         actions = input.Player;
     }
 
+    private void AskForOwner(ref EntityCommandBuffer ecb)
+    {
+        Entity rpcEntity = ecb.CreateEntity();
+        ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+        ecb.AddComponent<RpcRequestHarvesterOwners>(rpcEntity);
+
+        firstFrame = true;
+    }
+
     protected override void OnUpdate()
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        if (firstFrame)
+        {
+            AskForOwner(ref ecb);
+            firstFrame = false;
+        }
 
         EntityQuery clientQuery = Entities.WithAll<GhostOwnerIsLocal, ClientComponent>().ToQuery();
         NativeArray<Entity> clientEntities = clientQuery.ToEntityArray(Allocator.Temp);
@@ -152,8 +168,17 @@ partial class HarvesterSystemClient : SystemBase
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
         {
-            ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
+            ecb.DestroyEntity(entity);
+            if (rpc.character == Entity.Null)
+            {
+                Debug.Log("[Client - Harvester] Couldn't change harvester owner due to the entity not being spawned yet. Asking for re-send from server.");
 
+                AskForOwner(ref ecb);
+
+                continue;
+            }
+
+            ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
             StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
             CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(rpc.character);
             StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
@@ -162,8 +187,6 @@ partial class HarvesterSystemClient : SystemBase
             goRef.Value.transform.localPosition = commonData._stuffLocalOffsetView;
 
             SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
-
-            ecb.DestroyEntity(entity);
         }
 
         ecb.Playback(EntityManager);
