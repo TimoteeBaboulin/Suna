@@ -15,8 +15,3 @@ public partial struct ScoreChangedComponent : IComponentData
 {
 
 }
-
-public partial struct CollectorPlantedComponent : IComponentData
-{
-
-}

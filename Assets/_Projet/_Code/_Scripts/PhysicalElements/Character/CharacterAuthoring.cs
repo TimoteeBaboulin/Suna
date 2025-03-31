@@ -27,8 +27,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public RangedWeaponData secondWeapon;
     public MeleeWeaponData meleeWeapon;
 
-    [Header("Visual")]
-    [SerializeField] private GameObject _view;
+    [Header("Shoot Start Position")]
+    public Transform shootStartpos;
 
     public class Baker : Baker<CharacterAuthoring>
     {
@@ -58,7 +58,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 isWalking = false,
             });
 
-
+            //TODO generate the prefabs once instead of once per character
             AddComponent(entity, new CharacterStuffPrefab
             {
                 MainWeaponPrefab = GetEntity(cca.mainWeapon.entityPrefab, TransformUsageFlags.Dynamic),
@@ -89,6 +89,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, stuff);
             
             AddComponent(entity, new CharacterStuffInHandType());
+
+            AddComponent(entity, new CharacterShootStartPositionDelta { PositionDelta = cca.shootStartpos.position });
 
         }
     }

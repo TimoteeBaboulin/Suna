@@ -48,7 +48,7 @@ namespace MeleeWeapon
 
                 // Retrieve player bones
                 if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
-                float3 viewPos = modelBonesRef.ViewBoneTransform.position;
+                float3 viewPos = modelBonesRef.WeaponSlotTransform.position;
 
 
                 // Calculate strike rate
@@ -96,11 +96,11 @@ namespace MeleeWeapon
             }
         }
 
-        bool TryGetOwnerBones(Entity owner, ref SystemState state, out CharacterModelBones modelBones)
+        bool TryGetOwnerBones(Entity owner, ref SystemState state, out CommonCharacterModelBonesTransform modelBones)
         {
-            if (state.EntityManager.HasComponent<CharacterModelBones>(owner))
+            if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner))
             {
-                modelBones = state.EntityManager.GetComponentData<CharacterModelBones>(owner);
+                modelBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner);
                 return true;
             }
             else

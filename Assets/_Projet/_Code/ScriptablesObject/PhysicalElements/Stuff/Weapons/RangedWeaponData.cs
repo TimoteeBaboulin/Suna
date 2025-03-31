@@ -15,6 +15,7 @@ public class RangedWeaponData : ScriptableObject, IStuff
     public float deploymentSpeed;
     public float storageSpeed;
     public int price;
+    public uint killGain = 300;
     public Vector3 _stuffLocalOffsetView; //temp
 
 

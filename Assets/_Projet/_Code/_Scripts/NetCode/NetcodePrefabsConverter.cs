@@ -5,8 +5,12 @@ using UnityEngine;
 public class NetcodePrefabsConverter : MonoBehaviour
 {
     //public GameObject unit = null;
+    [Header("Client Prefabs")]
     public GameObject Client = null;
+
+    [Header("Character Prefabs")]
     public GameObject Character = null;
+    public GameObject CharacterCamera = null;
 
     [Header("Character Collider Prefabs")]
     public GameObject CharacterHeadCollider = null;
@@ -19,14 +23,18 @@ public class NetcodePrefabsConverter : MonoBehaviour
     public GameObject CharacterLegCollider0 = null;
     public GameObject CharacterLegCollider1 = null;
     public GameObject CharacterLegCollider2 = null;
+
+    [Header("Visual Elements Prefabs")]
+    public GameObject hitPrefab = null;
 }
 
-public struct PrefabsData : IComponentData
+public struct ClientPrefabData : IComponentData
 {
     //public Entity unit;
     public Entity Client;
+
     public Entity Character;
-    public LocalTransform TransformCompData;
+    public Entity CharacterCamera;
 
     public Entity CharacterHeadCollider;
     public Entity CharacterArmCollider0;
@@ -38,6 +46,13 @@ public struct PrefabsData : IComponentData
     public Entity CharacterLegCollider0;
     public Entity CharacterLegCollider1;
     public Entity CharacterLegCollider2;
+
+    public LocalTransform TransformCompData;
+}
+
+public struct VisualEffetPrefabData : IComponentData
+{
+    public Entity hitVisualEffect;
 }
 
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
@@ -46,7 +61,10 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
     {
         //Entity unitPrefab = default;
         Entity clientPrefab = default;
+
         Entity characterPrefab = default;
+        Entity characterCameraPrefab = default;
+
         Entity characterHeadCollider = default;
         Entity characterArmCollider0 = default;
         Entity characterArmCollider1 = default;
@@ -59,17 +77,29 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity characterLegCollider2 = default;
 
         LocalTransform transformPrefab = default;
+        //Coucou ici Aurelien
+        Entity hitEffect = default;
+        if (authoring.hitPrefab != null)
+        {
+            hitEffect = GetEntity(authoring.hitPrefab, TransformUsageFlags.Dynamic);
+        }
 
         if (authoring.Client != null)
         {
             clientPrefab = GetEntity(authoring.Client, TransformUsageFlags.Dynamic);
         }
+
         if (authoring.Character != null)
         {
             characterPrefab = GetEntity(authoring.Character, TransformUsageFlags.Dynamic);
             transformPrefab.Position = authoring.Character.transform.position;
             transformPrefab.Rotation = authoring.Character.transform.rotation;
         }
+        if (authoring.CharacterCamera != null)
+        {
+            characterCameraPrefab = GetEntity(authoring.CharacterCamera, TransformUsageFlags.Dynamic);
+        }
+
         if (authoring.CharacterHeadCollider != null)
         {
             characterHeadCollider = GetEntity(authoring.CharacterHeadCollider, TransformUsageFlags.Dynamic);
@@ -112,12 +142,14 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         }
 
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
-        AddComponent(entity, new PrefabsData
+        AddComponent(entity, new ClientPrefabData
         {
             // unit = unitPrefab,
             Client = clientPrefab,
+
             Character = characterPrefab,
-            TransformCompData = transformPrefab,
+            CharacterCamera = characterCameraPrefab,
+            
             CharacterHeadCollider = characterHeadCollider,
             CharacterArmCollider0 = characterArmCollider0,
             CharacterArmCollider1 = characterArmCollider1,
@@ -128,7 +160,15 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             CharacterLegCollider0 = characterLegCollider0,
             CharacterLegCollider1 = characterLegCollider1,
             CharacterLegCollider2 = characterLegCollider2,
+
+            TransformCompData = transformPrefab,
         });
         AddComponent(entity, new CharacterTag());
+
+        Entity VisualEffectentity = GetEntity(TransformUsageFlags.Dynamic);
+        AddComponent(VisualEffectentity, new VisualEffetPrefabData
+        {
+            hitVisualEffect = hitEffect
+        });
     }
 }

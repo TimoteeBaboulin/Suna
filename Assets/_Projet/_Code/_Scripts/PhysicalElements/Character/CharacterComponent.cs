@@ -36,6 +36,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public bool jumpRequest;
     [GhostField] public bool isGrounded;
     [GhostField] public bool isWalking;
+    [GhostField] public bool isOnSite;
 
     [GhostField] public float verticalCameraAngle;
 
@@ -49,6 +50,11 @@ public struct CharacterAndViewRotationComponent : IComponentData
 {
     [GhostField] public quaternion CharacterRotation;
     [GhostField] public quaternion ViewRotation;
+}
+
+public struct CharacterShootStartPositionDelta : IComponentData
+{
+    public float3 PositionDelta;
 }
 
 // This value is used for calculations that require the character's view rotation.
@@ -83,10 +89,16 @@ public struct CharacterStuffList : IComponentData
 }
 
 [GhostComponent]
-
 public struct CharacterStuffInHandType : IComponentData 
 {
     [GhostField] public StuffType Value;
 }
 
+
+[GhostComponent]
+public struct CharacterMoney : IComponentData
+{
+    [GhostField] public uint money;
+    [GhostField] public uint maxMoney;
+}
 
