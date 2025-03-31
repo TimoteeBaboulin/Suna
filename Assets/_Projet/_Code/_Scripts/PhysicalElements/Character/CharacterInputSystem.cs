@@ -1,6 +1,7 @@
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
@@ -30,7 +31,7 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-       // InputSystem.Update();
+        // InputSystem.Update();
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
@@ -48,17 +49,20 @@ public partial class CharacterInputSystem : SystemBase
         selectedId = actions.SelectSecondWeapon.WasPressedThisFrame() ? 1 : selectedId;
         selectedId = actions.SelectMelee.WasPressedThisFrame() ? 2 : selectedId;
 
+        
+
         foreach (var (controller, input, characterCamera) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>>()
 
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
-            input.ValueRW.move = CharacterMove;
 
-            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
+            input.ValueRW.move = input.ValueRO.enabled ? CharacterMove : new Vector2(0,0);
+
+            input.ValueRW.look = input.ValueRO.enabled ? CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity : new Vector2(0, 0);
 
             //TODO :Make these into a function
-            if (isJumpPerfomered)
+            if (isJumpPerfomered && input.ValueRO.enabled)
             {
                 input.ValueRW.jump.Set();
             }
@@ -67,7 +71,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.jump = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkStarted)
+            if (isWalkStarted && input.ValueRO.enabled)
             {
                 input.ValueRW.walkStarted.Set();
             }
@@ -76,7 +80,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkStarted = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkCanceled)
+            if (isWalkCanceled && input.ValueRO.enabled)
             {
                 input.ValueRW.walkCanceled.Set();
             }
@@ -85,7 +89,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkCanceled = default; //Important to unset or we will have issues down the line
             }
 
-            if (isShootPressed)
+            if (isShootPressed && input.ValueRO.enabled)
             {
                 input.ValueRW.attack.Set();
                 input.ValueRW.shootRotation = Camera.main.transform.rotation;
@@ -96,7 +100,7 @@ public partial class CharacterInputSystem : SystemBase
             }
 
 
-            if (isReloadPressed)
+            if (isReloadPressed && input.ValueRO.enabled)
             {
                 input.ValueRW.reload.Set();
             }
@@ -105,7 +109,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.reload = default;
             }
 
-            if (isSelectNext)
+            if (isSelectNext && input.ValueRO.enabled)
             {
                 input.ValueRW.selectNext.Set();
             }
@@ -114,7 +118,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.selectNext = default;
             }
 
-            if (isSelectPrevious)
+            if (isSelectPrevious && input.ValueRO.enabled)
             {
                 input.ValueRW.selectPrevious.Set();
             }
