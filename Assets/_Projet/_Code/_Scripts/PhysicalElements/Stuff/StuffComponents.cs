@@ -60,7 +60,7 @@ public struct StuffCommonData
 {
     public BlobString Name;
     public UnityObjectRef<GameObject> viewPrefab;
-    public UnityObjectRef<GameObject> UIPrefab;
+    //public UnityObjectRef<GameObject> UIPrefab;
     public StuffInventoryLocation location;
     public StuffType type;
     public TeamSideType side;
@@ -73,7 +73,7 @@ public struct StuffCommonData
     public int dataID;
 }
 
-//public class StuffGameObjectPrefab : IComponentData
+//public class StuffGameObjectViewPrefab : IComponentData
 //{
 //    public GameObject Value;
 //}

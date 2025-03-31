@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using UnityEngine;
 
 public struct GameResourcesStuffEntityPrefabs : IComponentData
 {
@@ -25,3 +26,8 @@ public struct GameResourcesInstanciateStuffQueu : IBufferElementData
     public FixedString128Bytes StuffName;
     public Entity Owner;
 }
+
+//public class GameResourcesStuffViewPrefabBuffer : IBufferElementData
+//{
+//    public GameObject Value;
+//}

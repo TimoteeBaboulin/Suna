@@ -28,6 +28,14 @@ partial class HarvesterSystemClient : SystemBase
         RequireForUpdate<UnequipStuffQueu>();
     }
 
+    private void AskForOwner(ref EntityCommandBuffer ecb)
+    {
+        Entity rpcEntity = ecb.CreateEntity();
+        ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+        ecb.AddComponent<RpcRequestHarvesterOwners>(rpcEntity);
+
+        firstFrame = true;
+    }
     protected override void OnUpdate()
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);

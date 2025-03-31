@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -39,7 +40,8 @@ partial struct StuffSystemClient : ISystem
                 {
                     CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner.ValueRO.Value);
                     Transform viewTransform = charaBones.WeaponSlotTransform;
-                    goRef.Value = Object.Instantiate(data.viewPrefab.Value, viewTransform);
+                    goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID], viewTransform);
+                    //goRef.Value = Object.Instantiate(data.viewPrefab.Value, viewTransform);
                     goRef.Value.transform.localPosition = data._stuffLocalOffsetView;
                 }
             }
@@ -48,7 +50,9 @@ partial struct StuffSystemClient : ISystem
                 Vector3 pos = transform.ValueRO.Position;
                 quaternion rot = transform.ValueRO.Rotation;
 
-                goRef.Value = Object.Instantiate(data.viewPrefab.Value, pos, rot);
+                goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID], pos, rot);
+
+                //goRef.Value = Object.Instantiate(data.viewPrefab.Value, pos, rot);
             }
 
             ecb.AddComponent(entity, goRef);
@@ -78,3 +82,62 @@ partial struct StuffSystemClient : ISystem
         ecb.Dispose();
     }
 }
+
+//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+//[UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
+//public partial class StuffSystemClient : SystemBase
+//{
+//    private EntityQuery _query;
+
+//    protected override void OnCreate()
+//    {
+//        RequireForUpdate<GameResourcesDatabase>();
+//        RequireForUpdate<StuffOwner>();
+//        RequireForUpdate<StuffDatabaseAccess>();
+
+//        _query = GetEntityQuery(new EntityQueryDesc
+//        {
+//            None = new ComponentType[] { typeof(StuffProcessPending) }
+//        });
+//        RequireForUpdate(_query);
+//    }
+
+//    protected override void OnUpdate()
+//    {
+//        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+//        GameResourcesDatabase grs = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+//        foreach (var (owner, stuffDataRef, transform, entity) in SystemAPI
+//                    .Query<RefRO<StuffOwner>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>>()
+//                    .WithNone<StuffGameObjectRef>()
+//                    .WithDisabled<StuffProcessPending>()
+//                    .WithEntityAccess())
+//        {
+//            StuffGameObjectRef goRef = new StuffGameObjectRef();
+//            ref StuffCommonData data = ref stuffDataRef.ValueRO.GetData(ref grs);
+
+//            if (owner.ValueRO.Value != Entity.Null)
+//            {
+//                if (EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner.ValueRO.Value))
+//                {
+//                    CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner.ValueRO.Value);
+//                    Transform viewTransform = charaBones.WeaponSlotTransform;
+//                    goRef.Value = Object.Instantiate(data.viewPrefab.Value, viewTransform);
+//                    goRef.Value.transform.localPosition = data._stuffLocalOffsetView;
+//                }
+//            }
+//            else
+//            {
+//                Vector3 pos = transform.ValueRO.Position;
+//                quaternion rot = transform.ValueRO.Rotation;
+
+//                goRef.Value = Object.Instantiate(data.viewPrefab.Value, pos, rot);
+//            }
+
+//            ecb.AddComponent(entity, goRef);
+//        }
+
+//        ecb.Playback(EntityManager);
+//        ecb.Dispose();
+//    }
+//}

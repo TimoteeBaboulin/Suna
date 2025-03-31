@@ -17,6 +17,8 @@ public class GameResourcesAuthoring : MonoBehaviour
     {
         public override void Bake(GameResourcesAuthoring authoring)
         {
+            List<GameObject> stuffViewPrefabList = new();
+
             Entity entity = GetEntity(TransformUsageFlags.None);
 
             AddComponent(entity, new GameResourcesStuffEntityPrefabs
