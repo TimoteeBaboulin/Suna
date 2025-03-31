@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 398779188302630706}
-  - component: {fileID: -8436081297616427971}
+  - component: {fileID: 4173039831248957066}
   - component: {fileID: -8095411162693691296}
   - component: {fileID: -2707069019039050613}
   - component: {fileID: -900044854422650414}
   m_Layer: 0
-  m_Name: Gun_Entities
+  m_Name: MeleeWeapon_Entities
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-8436081297616427971
+--- !u!114 &4173039831248957066
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,10 +44,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1063816135455577480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ea3a3e7ba7359644d9ca1110d35c59c9, type: 3}
+  m_Script: {fileID: 11500000, guid: 38320b09b5ef67742b8fbb68222534ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  commonData: {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
 --- !u!114 &-8095411162693691296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -77,7 +76,7 @@ MonoBehaviour:
   OptimizationMode: 0
   Importance: 1
   MaxSendRate: 0
-  prefabId: 21894ec792b97094b89a701597dfc98c
+  prefabId: 07a30b937a3764d4a8f704c9f7563029
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0

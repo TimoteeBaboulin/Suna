@@ -1,26 +1,25 @@
-ï»¿using Unity.Entities;
+using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using UnityEngine;
 
-public partial struct HarvesterPlanting : IComponentData, IEnableableComponent
+[GhostComponent] //TODO : Attention à toujour mettre [GhostField] devant les variables,
+                 //[GhostComponent] ne le fait pas par defaut
+public struct HarvesterComponent : IComponentData
 {
+    [GhostField] public float defuseRange;
+    [GhostField] public float pickupDistance;
 
+    [GhostField] public NetworkTick DroppedTick;
+    [GhostField] public NetworkTick PlantStartedTick;
+    [GhostField] public NetworkTick PlantedTick;
+
+    [GhostField] public bool IsActive;
 }
 
-public partial struct HarvesterPlanted : IComponentData, IEnableableComponent
-{
+public partial struct HarvesterPlanting : IComponentData, IEnableableComponent{}
 
-}
-
-public partial struct TemporaryOverrideGameObjectActive : IComponentData
-{
-
-}
-
-public partial struct HarvesterRespawn : IComponentData
-{
-
-}
+public partial struct HarvesterPlanted : IComponentData, IEnableableComponent{}
 
 #region RPCCommands
 public partial struct RpcHarvesterOwnerChange : IRpcCommand
@@ -70,12 +69,18 @@ public struct RpcRequestHarvesterOwners : IRpcCommand
 }
 #endregion //RPCCommands
 
-public partial struct HarvesterComponent : IComponentData
-{
-    public Entity Owner;
-    public NetworkTick DroppedTick;
-    public NetworkTick PlantStartedTick;
-    public NetworkTick PlantedTick;
 
-    public bool IsActive;
+//public partial struct HarvesterPlanted : IComponentData, IEnableableComponent
+//{
+
+//}
+
+//public partial struct TemporaryOverrideGameObjectActive : IComponentData
+//{
+
+//}
+
+public partial struct HarvesterRespawn : IComponentData
+{
+
 }

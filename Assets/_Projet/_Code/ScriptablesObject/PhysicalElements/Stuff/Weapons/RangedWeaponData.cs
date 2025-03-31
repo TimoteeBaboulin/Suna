@@ -1,14 +1,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public interface IStuff { };
-[CreateAssetMenu(fileName = "Stuff Data", menuName = "Stuff Data/Ranged Weapon Data")]
-public class RangedWeaponData : ScriptableObject, IStuff
+[CreateAssetMenu(fileName = "Ranged Weapon Data", menuName = "Stuff Data/Ranged Weapon Data")]
+public class RangedWeaponData : ScriptableObject
 {
     [Header("Stuff infos")]
-    public GameObject entityPrefab;
-    public GameObject gameobjectPrefab;
+    public GameObject viewPrefab;
     public Image UIImage;
+    public StuffInventoryLocation location;
     public StuffType type;
     public TeamSideType side;
     public string entityName;
@@ -68,6 +67,8 @@ public class RangedWeaponData : ScriptableObject, IStuff
     
     [Tooltip("Propulsion of the enemy ragdoll when it dies")]
     public float knockbackForceOnKill;
+
+    public float lastFireTimeMax;
 
     public int nbMagazine;
     public int magazineCapacity;

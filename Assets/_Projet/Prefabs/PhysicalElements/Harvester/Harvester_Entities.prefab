@@ -9,12 +9,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 398779188302630706}
-  - component: {fileID: 4173039831248957066}
+  - component: {fileID: 6496461907609726781}
   - component: {fileID: -8095411162693691296}
   - component: {fileID: -2707069019039050613}
   - component: {fileID: -900044854422650414}
   m_Layer: 0
-  m_Name: Knife_Entities
+  m_Name: Harvester_Entities
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35,7 +35,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4173039831248957066
+--- !u!114 &6496461907609726781
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -44,10 +44,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1063816135455577480}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5523a1280be73ff43ace2d6f7d119069, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d547f9e7277c68418d71f0ef2cb172c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  commonData: {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
+  harvester: {fileID: 11400000, guid: 8641a930c8507084caa6fd98c321c55d, type: 2}
 --- !u!114 &-8095411162693691296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,8 +76,7 @@ MonoBehaviour:
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1
-  MaxSendRate: 0
-  prefabId: 07a30b937a3764d4a8f704c9f7563029
+  prefabId: d9b5e5c85a42a5443a2712c1442912a0
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0

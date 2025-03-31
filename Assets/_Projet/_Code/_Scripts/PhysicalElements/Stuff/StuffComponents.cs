@@ -1,39 +1,42 @@
 using System;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum StuffType
+public enum StuffInventoryLocation
 {
     MainWeapon,
     SecondaryWeapon,
     Melee,
     Harvester,
-    SpecialStuff
+    SpecialStuff1,
+    SpecialStuff2,
+    SpecialStuff3,
+    SpecialStuff4,
+
+    nbLocation
+}
+
+public enum StuffType
+{
+    RangedWeapon,
+    MeleeWeapon,
+    Harvester,
 }
 
 [GhostComponent]
-public struct StuffCommonData : ISharedComponentData, IEquatable<StuffCommonData>
+public struct StuffDatabaseAccess : IComponentData
 {
-    [GhostField] public FixedString64Bytes name;
-    [GhostField] public StuffType type;
-    [GhostField] public TeamSideType side;
-    [GhostField] public float deploymentSpeed;
-    [GhostField] public float storageSpeed;
-    [GhostField] public int price;
+    [GhostField] public int ID;
+    [GhostField] public bool IsConnectedToDatabase;
+    [GhostField] public FixedString128Bytes NameInDatabase;
 
-    public Vector3 _stuffLocalOffsetView; //temp
-
-    public bool Equals(StuffCommonData other)
+    public ref StuffCommonData GetData(ref GameResourcesDatabase database)
     {
-        return name.Equals(other.name);
-    }
-
-    public override int GetHashCode()
-    {
-        return name.GetHashCode();
+        return ref database.StuffDatabaseRef.Value.StuffCommonData[ID];
     }
 }
 
@@ -44,23 +47,45 @@ public struct StuffOwner : IComponentData
 }
 
 [GhostEnabledBit]
-public struct IsStuffInHand : IComponentData, IEnableableComponent 
-{ 
+public struct IsStuffInHand : IComponentData, IEnableableComponent
+{
 }
 
-public class StuffGameObjectPrefab : IComponentData
+[GhostEnabledBit]
+public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
-    public GameObject Value;
 }
+
+public struct StuffCommonData
+{
+    public BlobString Name;
+    public UnityObjectRef<GameObject> viewPrefab;
+    //public UnityObjectRef<GameObject> UIPrefab;
+    public StuffInventoryLocation location;
+    public StuffType type;
+    public TeamSideType side;
+    public float deploymentSpeed;
+    public float storageSpeed;
+    public int price;
+    public float3 _stuffLocalOffsetView;
+    public uint killGain;
+
+    public int dataID;
+}
+
+//public class StuffGameObjectViewPrefab : IComponentData
+//{
+//    public GameObject Value;
+//}
 
 public class StuffGameObjectRef : ICleanupComponentData
 {
     public GameObject Value;
 }
 
-public class StuffUiImage : ICleanupComponentData
-{
-    public Image Value;
-}
+//public class StuffUiImage : ICleanupComponentData
+//{
+//    public Image Value;
+//}
 
 

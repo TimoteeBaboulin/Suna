@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class MeleeWeaponData : ScriptableObject
 {
     [Header("Stuff infos")]
-    public GameObject entityPrefab;
-    public GameObject gameobjectPrefab;
+    public GameObject viewPrefab;
     public Image UIImage;
+    public StuffInventoryLocation location;
     public StuffType type;
     public TeamSideType side;
     public string entityName;
@@ -15,6 +15,7 @@ public class MeleeWeaponData : ScriptableObject
     public float storageSpeed;
     public int price;
     public Vector3 _stuffLocalOffsetView; //temp
+    public uint killGain;
 
     [Header("Attack")]
     public float damage;
