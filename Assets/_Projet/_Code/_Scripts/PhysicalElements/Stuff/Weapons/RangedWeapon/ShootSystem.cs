@@ -79,7 +79,6 @@ namespace RangedWeapon
                     dynamicData.patternBulletIndex = 0;
                 }
 
-                Debug.Log($"Time Since Last Fire {dynamicData.timeSinceLastFire}, Last Fire Time Max {dynamicData.lastFireTimeMax}");
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
                 if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)

@@ -5,6 +5,8 @@ public class CharacterShootUtils
 {
     public static float2 TSprayPattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 10f, in float targetDistance = 0f)
     {
+        if (bulletIndex == 0) return new float2(0.0f, 0.0f);
+
         // Values to returned
         float currentRecoilXPos = 0f;
         float currentRecoilYPos = 0f;
