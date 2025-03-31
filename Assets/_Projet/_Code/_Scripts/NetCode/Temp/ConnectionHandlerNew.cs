@@ -7,11 +7,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Scenes;
 using Unity.Services.Multiplayer;
 using Unity_NetCode_Generated_Unity_Transforms;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static ConnectionManager;
@@ -46,7 +48,7 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         connectionSettings = GetComponent<ConnectionSettings>();
         isClientLocal = connectionSettings.isClientLocal;
         _ip = connectionSettings.IP;
-        IP = (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer || isClientLocal) ? _localIp : _ip;
+        IP = (RequestedPlayType == PlayType.ClientAndServer || isClientLocal) ? _localIp : _ip;
         Port = connectionSettings.Port;
         DontDestroyOnLoad(gameObject);
 
@@ -69,7 +71,6 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
     {
         // _port = GetAvailablePort();
 
-
         // Determine role from your bootstrap settings.
         //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
         //    _role = RoleType.ClientServer;
@@ -78,7 +79,7 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         //else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Client)
         //    _role = RoleType.Client;
 
-        Debug.Log($"ConnectionHandlerNew: Role is {ClientServerBootstrap.RequestedPlayType}");
+        Debug.Log($"ConnectionHandlerNew: Role is {RequestedPlayType}");
     }
 
     /// <summary>
@@ -231,17 +232,23 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
             //    await LoadSubScenesAsync(subScenes, _clientWorld);
         }
 
-        //await LoadGameplayAsync(serverWorld, clientWorld);
+        await LoadGameplayAsync(serverWorld, clientWorld);
+
+        //if (clientWorld != null)
+        //{
+        //    await WaitForGhostReplicationAsync(clientWorld);
+        //    await WaitForAttachedCameraAsync(clientWorld);
+        //}
         // STEP 5: Load subscenes.
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadGameScene);
-        SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        if (serverWorld != null)
-            await LoadSubScenesAsync(subScenes, serverWorld);
-        if (clientWorld != null)
-            await LoadSubScenesAsync(subScenes, clientWorld);
+        //SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadGameScene);
+        //SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        //if (serverWorld != null)
+        //    await LoadSubScenesAsync(subScenes, serverWorld);
+        //if (clientWorld != null)
+        //    await LoadSubScenesAsync(subScenes, clientWorld);
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
-        Debug.Log("ConnectionHandlerNew: Finished loading worlds and subscenes.");
+        //Debug.Log("ConnectionHandlerNew: Finished loading worlds and subscenes.");
         return sessionTransport;
         //return null;
     }
@@ -294,28 +301,28 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
 
         serverWorld = null;
         clientWorld = null;
-        switch (ClientServerBootstrap.RequestedPlayType)
+        switch (RequestedPlayType)
         {
-            case ClientServerBootstrap.PlayType.ClientAndServer:
+            case PlayType.ClientAndServer:
                 //role = NetworkRole.Host;
-                clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-                serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                Debug.Log($"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
+                clientWorld = CreateClientWorld("ClientWorld");
+                serverWorld = CreateServerWorld("ServerWorld");
+                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
+                Debug.Log($"Connection Request Type {RequestedPlayType}");
                 //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                 break;
-            case ClientServerBootstrap.PlayType.Server:
+            case PlayType.Server:
                 //role = NetworkRole.Server;
                 serverWorld = ClientTransportHelper.ServerWorld;
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                Debug.Log($"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
+                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
+                Debug.Log($"Connection Request Type {RequestedPlayType}");
                 //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                 break;
-            case ClientServerBootstrap.PlayType.Client:
+            case PlayType.Client:
                 //role = NetworkRole.Client;
-                clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                Debug.Log($"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
+                clientWorld = CreateClientWorld("ClientWorld");
+                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
+                Debug.Log($"Connection Request Type {RequestedPlayType}");
                 //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                 break;
             default:
@@ -324,7 +331,7 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         }
     }
 
-    static async Task LoadSceneAsync(string sceneName, SessionData.LoadingSteps step)
+    private async Task LoadSceneAsync(string sceneName, SessionData.LoadingSteps step)
     {
         if (SceneManager.GetSceneByName(sceneName).isLoaded)
             return;
@@ -332,7 +339,7 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         UpdateLoadingStateAsync(step, sceneLoading);
         await sceneLoading;
     }
-    static async void UpdateLoadingStateAsync(SessionData.LoadingSteps step, AsyncOperation loadingTask)
+    private async void UpdateLoadingStateAsync(SessionData.LoadingSteps step, AsyncOperation loadingTask)
     {
         while (loadingTask != null && !loadingTask.isDone)
         {
@@ -341,50 +348,127 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         }
     }
 
-    static async Task LoadGameplayScenesAsync()
+    private async Task LoadGameplayScenesAsync()
     {
         await LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
     }
 
 
-    public static async Task LoadGameplayAsync(World server, World client)
+    public async Task LoadGameplayAsync(World server, World client)
     {
         await LoadGameplayScenesAsync();
         if (server != null)
+        {
+            Debug.Log($"Loading server {server}");
             await WaitForAllSubScenesToLoadAsync(server, SessionData.LoadingSteps.LoadServer);
+        }
         if (client != null)
+        {
+            Debug.Log($"Loading client {client}");
             await WaitForAllSubScenesToLoadAsync(client, SessionData.LoadingSteps.LoadClient);
+        }
     }
 
-    static async Task WaitForAllSubScenesToLoadAsync(World world, SessionData.LoadingSteps step)
+    private async Task WaitForAllSubScenesToLoadAsync(World world, SessionData.LoadingSteps step)
     {
         if (world == null)
             return;
 
         SessionData.Instance.UpdateLoading(step);
 
-        using var scenesQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<SceneReference>());
-        using var scenesLeftToLoad = scenesQuery.ToEntityListAsync(Allocator.Persistent, out var handle);
-        handle.Complete();
+        //using var scenesQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<SceneReference>());
+        //using var scenesLeftToLoad = scenesQuery.ToEntityListAsync(Allocator.Persistent, out var handle);
+        //handle.Complete();
+        //Debug.Log($"handle {handle}");
+        //Debug.Log($"Scenes left to load {scenesLeftToLoad.Length}");
+        //float count = scenesLeftToLoad.Length;
+        //while (scenesLeftToLoad.Length > 0)
+        //{
+            
+        //    for (var i = 0; i < scenesLeftToLoad.Length; i++)
+        //    {
+        //        var sceneEntity = scenesLeftToLoad[i];
+        //        if (SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
+        //        {
+        //            Debug.Log($"scenesLeftToLoad before {sceneEntity}");
+        //            scenesLeftToLoad.RemoveAt(i);
+        //            Debug.Log($"scenesLeftToLoad after {sceneEntity}");
+        //            var numLoaded = count - scenesLeftToLoad.Length;
+        //            var loadingProgress = numLoaded / count;
+        //            SessionData.Instance.UpdateLoading(step, loadingProgress);
+        //            i--;
+        //        }
+        //    }
+        //    await Awaitable.NextFrameAsync();
+        //}
 
-        float count = scenesLeftToLoad.Length;
-        while (scenesLeftToLoad.Length > 0)
         {
-            for (var i = 0; i < scenesLeftToLoad.Length; i++)
-            {
-                var sceneEntity = scenesLeftToLoad[i];
-                if (SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
-                {
-                    scenesLeftToLoad.RemoveAt(i);
-                    var numLoaded = count - scenesLeftToLoad.Length;
-                    var loadingProgress = numLoaded / count;
-                    SessionData.Instance.UpdateLoading(step, loadingProgress);
-                    i--;
-                }
-            }
+            //        while (!world.IsCreated)
+            //        {
+            //            await Awaitable.NextFrameAsync();
+            //        }
+            //        SessionData.Instance.UpdateLoading(step);
 
-            await Awaitable.NextFrameAsync();
+            //        SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            //        if (subScenes != null)
+            //        {
+            //            var count = subScenes.Length;
+            //            for (int i = 0; i < subScenes.Length; i++)
+            //            {
+            //                SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
+            //#if UNITY_EDITOR
+            //                flag = SceneLoadFlags.BlockOnImport;
+            //#endif
+            //                var sceneID = new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value);
+            //                SceneSystem.LoadParameters loadParams = new SceneSystem.LoadParameters() { Flags = flag };
+            //                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, sceneID, loadParams);
+
+            //                var numLoaded = count - subScenes.Length;
+            //                var loadingProgress = numLoaded / count;
+            //                SessionData.Instance.UpdateLoading(step, loadingProgress);
+            //                while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
+            //                {
+            //                    world.Update();
+            //                    await Awaitable.NextFrameAsync();
+            //                }
+            //                Debug.Log($"ConnectionHandlerNew: Loaded subscene {subScenes[i].name} in world {world.Name}");
+            //            }
+            //        }
         }
+    }
+
+    private async Task WaitForGhostReplicationAsync(World world, CancellationToken cancellationToken = default)
+    {
+        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WorldReplication);
+        using var ghostCountQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<GhostCount>());
+        var waitedForTicks = 0;
+        while (true)
+        {
+            if (ghostCountQuery.TryGetSingleton<GhostCount>(out var ghostCount))
+            {
+                var synchronizingPercentage = ghostCount.GhostCountOnServer == 0
+                    ? math.saturate(ghostCount.GhostCountInstantiatedOnClient / (float)ghostCount.GhostCountOnServer)
+                    : waitedForTicks > 60 ? 1f : 0f; // Apparently the server has no ghosts to send us, so ghost loading is complete.
+
+                SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WorldReplication, synchronizingPercentage);
+                if (synchronizingPercentage > 0.99f) // A bit of wiggle room, because in most games, ghosts are constantly created and destroyed.
+                    return;
+            }
+            await Awaitable.NextFrameAsync(cancellationToken);
+            waitedForTicks++;
+        }
+    }
+
+    private async Task WaitForAttachedCameraAsync(World world, CancellationToken cancellationToken = default)
+    {
+        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingOnPlayer);
+        using var mainEntityCameraQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterLocalViewRotation>());
+        while (!mainEntityCameraQuery.HasSingleton<CharacterLocalViewRotation>())
+        {
+            await Awaitable.NextFrameAsync(cancellationToken);
+        }
+        // Waiting an extra frame so that the player position is properly synced with the server.
+        await Awaitable.NextFrameAsync(cancellationToken);
     }
     private async Task LoadSubScenesAsync(SubScene[] subScenes, World world)
     {
