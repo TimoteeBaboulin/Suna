@@ -54,7 +54,7 @@ partial struct StuffSystemClient : ISystem
 
                 //goRef.Value = Object.Instantiate(data.viewPrefab.Value, pos, rot);
             }
-
+            Debug.Log(goRef.Value.name);
             ecb.AddComponent(entity, goRef);
         }
 
