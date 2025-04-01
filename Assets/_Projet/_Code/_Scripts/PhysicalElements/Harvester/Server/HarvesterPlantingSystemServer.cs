@@ -45,7 +45,8 @@ partial struct HarvesterPlantingSystemServer : ISystem
                         .WithAll<HarvesterPlanting>()
                         .WithEntityAccess())
             {
-                if (currentTick.TicksSince(harvesterRW.ValueRO.PlantStartedTick) >= 60 * 4)
+                NetworkTick plantStartTick = SystemAPI.GetComponentRO<HarvesterPlanting>(harvesterEntity).ValueRO.PlantStartedTick;
+                if (currentTick.TicksSince(plantStartTick) >= 60 * 4)
                 {
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
@@ -80,7 +81,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
 
                     float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
-                    harvesterRW.ValueRW.PlantedTick = currentTick;
+                    SystemAPI.GetComponentRW<HarvesterPlanting>(harvesterEntity).ValueRW.PlantStartedTick = currentTick;
 
                     RpcHarvesterPlanted rpc = new RpcHarvesterPlanted
                     {
@@ -137,11 +138,11 @@ partial struct HarvesterPlantingSystemServer : ISystem
             if (currentTick.TicksSince(rpc.tick) > 10)
             {
                 Debug.Log("[Server] Tick difference too great, using the server's current tick");
-                SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.PlantStartedTick = currentTick;
+                SystemAPI.GetComponentRW<HarvesterPlanting>(rpc.harvester).ValueRW.PlantStartedTick = currentTick;
             }
             else
             {
-                SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.PlantStartedTick = rpc.tick;
+                SystemAPI.GetComponentRW<HarvesterPlanting>(rpc.harvester).ValueRW.PlantStartedTick = rpc.tick;
             }
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsPlanting = true;
 
