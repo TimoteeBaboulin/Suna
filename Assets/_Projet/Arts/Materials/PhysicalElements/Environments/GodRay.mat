@@ -23,6 +23,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _DustParticles:
+        m_Texture: {fileID: 2800000, guid: 5c7ebfbe945f8804a96c6c412f55c521, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _RayNoise:
         m_Texture: {fileID: 2800000, guid: 0b4562c055f61f340b9a0807682630e8, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -33,14 +37,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BaseOpacity: 0.04
-    - _FadeScale: 0.07
-    - _FirstEndSize: 0.35
-    - _RayNoiseIntensity: -0.24
-    - _RayNoiseStartPoint: 0.73
-    - _SecondEndSize: 0.52
-    - _SmokeNoiseSpeed: 0.01
-    - _SmokeOpacity: 2.13
+    - _BaseOpacity: 0.09
+    - _DustAngle: 0.77
+    - _FadeScale: 0.19
+    - _FirstEndPosition: 0.5
+    - _FirstEndSize: 0.29
+    - _FogDensity: 1
+    - _LightScattering: 2.97
+    - _RayNoiseIntensity: 0.02
+    - _RayNoiseStartPoint: 0.37
+    - _SecondEndPosition: 0.5
+    - _SecondEndSize: 0.84
+    - _SmokeNoiseSpeed: 0.07
+    - _SmokeOpacity: 0.41
     m_Colors:
     - _RayColor: {r: 1, g: 0.72156864, b: 0.6156863, a: 1}
   m_BuildTextureStacks: []
