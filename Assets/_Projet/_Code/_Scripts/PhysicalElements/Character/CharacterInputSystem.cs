@@ -51,18 +51,20 @@ public partial class CharacterInputSystem : SystemBase
 
         
 
-        foreach (var (controller, input, characterCamera) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>>()
+        foreach (var (controller, input, characterCamera, harvesterActions) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>, RefRO<PlayerHarvesterActions>>()
 
             .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
 
-            input.ValueRW.move = input.ValueRO.enabled ? CharacterMove : new Vector2(0,0);
+            bool plantingOrDefusing = harvesterActions.ValueRO.IsDefusing || harvesterActions.ValueRO.IsPlanting;
 
-            input.ValueRW.look = input.ValueRO.enabled ? CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity : new Vector2(0, 0);
+            input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
+
+            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
 
             //TODO :Make these into a function
-            if (isJumpPerfomered && input.ValueRO.enabled)
+            if (isJumpPerfomered && !plantingOrDefusing)
             {
                 input.ValueRW.jump.Set();
             }
@@ -71,7 +73,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.jump = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkStarted && input.ValueRO.enabled)
+            if (isWalkStarted && !plantingOrDefusing)
             {
                 input.ValueRW.walkStarted.Set();
             }
@@ -80,7 +82,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkStarted = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkCanceled && input.ValueRO.enabled)
+            if (isWalkCanceled && !plantingOrDefusing)
             {
                 input.ValueRW.walkCanceled.Set();
             }
@@ -89,7 +91,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkCanceled = default; //Important to unset or we will have issues down the line
             }
 
-            if (isShootPressed && input.ValueRO.enabled)
+            if (isShootPressed && !plantingOrDefusing)
             {
                 input.ValueRW.attack.Set();
                 input.ValueRW.shootRotation = Camera.main.transform.rotation;
@@ -100,7 +102,7 @@ public partial class CharacterInputSystem : SystemBase
             }
 
 
-            if (isReloadPressed && input.ValueRO.enabled)
+            if (isReloadPressed && !plantingOrDefusing)
             {
                 input.ValueRW.reload.Set();
             }
@@ -109,7 +111,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.reload = default;
             }
 
-            if (isSelectNext && input.ValueRO.enabled)
+            if (isSelectNext && !plantingOrDefusing)
             {
                 input.ValueRW.selectNext.Set();
             }
@@ -118,7 +120,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.selectNext = default;
             }
 
-            if (isSelectPrevious && input.ValueRO.enabled)
+            if (isSelectPrevious && !plantingOrDefusing)
             {
                 input.ValueRW.selectPrevious.Set();
             }
