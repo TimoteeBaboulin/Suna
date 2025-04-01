@@ -8,29 +8,47 @@ partial class HarvesterPlantingSystem : SystemBase
     public event EventHandler OnPlantStart;
     public event EventHandler<HarversterPlantRunning> OnPlantRunning;
     public event EventHandler OnPlantCancelOrEnd;
+    float timeSpent = 0f;
+
+    protected override void OnCreate()
+    {
+        RequireForUpdate<NetworkTime>();
+    }
     protected override void OnUpdate()
     {
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.InterpolationTick;
 
-        foreach (var harvester in SystemAPI
+        foreach (var (harvester, entity) in SystemAPI
             .Query<RefRO<HarvesterComponent>>()
-            .WithAll<HarvesterPlanting>())
+            .WithAll<HarvesterPlanting>()
+            .WithEntityAccess())
         {
-            float timeSpent = currentTick.TicksSince(harvester.ValueRO.PlantStartedTick);
-
-            if (timeSpent == 0)
+            if (timeSpent == 0f)
             {
                 OnPlantStart?.Invoke(this, EventArgs.Empty);
             }
 
-            if (timeSpent >= 69 * 4)
+            RefRO<HarvesterPlanting> planting = SystemAPI.GetComponentRO<HarvesterPlanting>(entity);
+
+            timeSpent = currentTick.TicksSince(planting.ValueRO.PlantStartedTick);
+            if (timeSpent < 0f)
             {
-                OnPlantCancelOrEnd?.Invoke(this, EventArgs.Empty);
+                timeSpent = 0f;
             }
-            else
+
+            OnPlantRunning?.Invoke(this, new HarversterPlantRunning() { time = timeSpent, maxTime = 60 * 4 });
+        }
+
+        foreach (var (harvester, entity) in SystemAPI
+            .Query<RefRO<HarvesterComponent>>()
+            .WithNone<HarvesterPlanting>()
+            .WithEntityAccess())
+        {
+            if (timeSpent != 0f)
             {
-                OnPlantRunning?.Invoke(this, new HarversterPlantRunning() { time = timeSpent, maxTime = 60 * 4 });
+                timeSpent = 0f;
+                OnPlantCancelOrEnd?.Invoke(this, EventArgs.Empty);
             }
         }
     }

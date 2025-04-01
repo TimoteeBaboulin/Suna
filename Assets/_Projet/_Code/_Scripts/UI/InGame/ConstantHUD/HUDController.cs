@@ -114,6 +114,9 @@ public class HUDController : MonoBehaviour
 
         // Hide Message Box at start
         UI.SetActive(ref _messageBox, false);
+
+        UI.SetActive(ref _defuse, false);
+        UI.SetActive(ref _plant, false);
     }
 
     private void Update()
@@ -158,19 +161,19 @@ public class HUDController : MonoBehaviour
         }
 
         // Weapon Selection Scrolling
-        if (Input.GetAxis("Mouse ScrollWheel") < 0) // backward
-        {
-            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
-            selectedSlot = (selectedSlot + 1) % _weaponSlot.Count;
-            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
-        }
-        else if (Input.GetAxis("Mouse ScrollWheel") > 0) // forward
-        {
-            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
-            if (selectedSlot == 0) selectedSlot = _weaponSlot.Count - 1;
-            else selectedSlot = (selectedSlot - 1) % _weaponSlot.Count;
-            _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
-        }
+        //if (Input.GetAxis("Mouse ScrollWheel") < 0) // backward
+        //{
+        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
+        //    selectedSlot = (selectedSlot + 1) % _weaponSlot.Count;
+        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
+        //}
+        //else if (Input.GetAxis("Mouse ScrollWheel") > 0) // forward
+        //{
+        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
+        //    if (selectedSlot == 0) selectedSlot = _weaponSlot.Count - 1;
+        //    else selectedSlot = (selectedSlot - 1) % _weaponSlot.Count;
+        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
+        //}
 
         // If RoundManager Linked, change values (for now in update and not when needed)
         if (_roundManagerLinkSystem != null)
