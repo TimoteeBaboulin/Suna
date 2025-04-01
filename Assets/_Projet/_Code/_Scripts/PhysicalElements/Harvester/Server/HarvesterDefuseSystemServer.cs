@@ -59,12 +59,14 @@ partial struct HarvesterDefuseSystemServer : ISystem
                     defuserEntity = Entity.Null;
 
                     Debug.Log("[Server] Stopped defusing because of distance");
+                    SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
                 }
             }
             else
             {
                 //Defused
                 SystemAPI.SetComponentEnabled<HarvesterPlanted>(defusingHarvesterEntity, false);
+                SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
 
                 defusingHarvesterEntity = Entity.Null;
                 defuserEntity = Entity.Null;
@@ -108,6 +110,7 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             Debug.Log("[Server] Defuse started");
 
+            SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsDefusing = true;
             defuserEntity = character;
             defusingHarvesterEntity = rpc.harvester;
         }
@@ -139,6 +142,7 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             Debug.Log("[Server] Defuse stopped");
 
+            SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
             defuserEntity = Entity.Null;
             defusingHarvesterEntity = Entity.Null;
         }

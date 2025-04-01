@@ -120,11 +120,6 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
-
-                foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
-                {
-                    //charInputs.ValueRW.enabled = false;
-                }
             }
 
             //Find a way to check whethere we're currently defusing
@@ -140,11 +135,6 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
-
-                foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
-                {
-                    //charInputs.ValueRW.enabled = true;
-                }
             }
         }
 
