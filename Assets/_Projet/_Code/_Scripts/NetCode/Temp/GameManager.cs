@@ -11,6 +11,7 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.SceneManagement;
 using static Unity.NetCode.ClientServerBootstrap;
 
@@ -28,106 +29,40 @@ public class GameManager : Singleton<GameManager>
 
     protected override void Awake()
     {
-        // base.Awake();
-
-
-        //try
-        //{
-        //    await SessionTransportHelper.StartServicesAsync();
-        //}
-        //catch (Exception e)
-        //{
-        //    Debug.Log(e);
-        //}
-
-
-        //if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server || RequestedPlayType == PlayType.ClientAndServer)
-        //{
-        //    Debug.Log($"Port in GameManager : {AutoConnectPort}");
-        //    serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, AutoConnectPort, connectionHandler.ClientLocal);
-        //}
-
         //ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
         //RpcUtils.SendDefaultToServerRPC(ref command);
     }
 
-    private void Start()
+    private async void Start()
     {
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
         loadingToken = new CancellationTokenSource();
+
+
+        if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
+        {
+            await ClientTransportHelper.StartServicesAsync();
+            Debug.Log($"Port in GameManager : {AutoConnectPort}");
+            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
+        }
     }
 
     public async Task Play()
     {
-        //await SessionTransportHelper.StartServicesAsync();
-        //await QuerySessionsAsync();
+        await ClientTransportHelper.StartServicesAsync();
+        await QuerySessionsAsync();
 
+        SessionID = (RequestedPlayType == PlayType.ClientAndServer) ? "0" : SessionID;
         Debug.Log($"GameManager: Using session code: {SessionID}");
 
         clientConnectionSettings = await connectionHandler.ConnectToSessionAsync(loadingToken.Token, SessionID);
 
+        GameState = GlobalGameState.InGame;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
         Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
         GameState = GlobalGameState.InGame;
-
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("MultiplayerTest");
-        while (!asyncLoad.isDone)
-        {
-            await Task.Yield();
-        }
-
-
-        //if (clientConnectionSettings == null)
-        //{
-        //    Debug.LogError("GameManager: Client connection settings are null.");
-        //    return;
-        //}
-        //Debug.Log($"GameManager: Connected Session ID: {clientConnectionSettings.Session.Id}");
-
-        //while (!IsSessionFull(clientConnectionSettings.Session))
-        //{
-        //    Debug.Log($"GameManager: Waiting for session to fill... Available slots: {clientConnectionSettings.Session.AvailableSlots}");
-        //    await Task.Delay(1000, loadingToken.Token);
-        //}
-
-
-        {//try
-         //{
-         //    await ClientConnection.StartServicesAsync(); // Ensure services are initialized.
-         //    Debug.Log($"GameManager: Using session ID: {SessionID}");
-
-            //    // Use ConnectionHandlerNew to perform matchmaking with the current SessionID.
-            //    clientConnectionSettings = await connectionHandler.ConnectMatchmakingAsync(loadingToken.Token, SessionID);
-            //    Debug.Log($"MaxPlayers: {clientConnectionSettings.Session.MaxPlayers}");
-            //    if (clientConnectionSettings == null)
-            //    {
-            //        Debug.LogError("GameManager: Client connection settings are null.");
-            //        return;
-            //    }
-            //    Debug.Log($"GameManager: Connected Session ID: {clientConnectionSettings.Session.Id}");
-
-            //    // Optionally, wait until the session is full before transitioning.
-            //    //while (!IsSessionFull(clientConnectionSettings.Session))
-            //    //{
-            //    //    Debug.Log($"GameManager: Waiting for session to fill... {clientConnectionSettings.Session.AvailableSlots}");
-            //    //    await Task.Delay(1000, loadingToken.Token);
-            //    //}
-
-            //    //while (!IsSessionFull(clientConnectionSettings.Session))
-            //    //{
-            //    //    await Task.Yield(); 
-            //    //}
-            //    //Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
-            //    //GameState = GlobalGameState.InGame;
-            //    //SceneManager.LoadScene("MultiplayerTest");
-
-            //    StartCoroutine(WaitUntilSessionIsFull());
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.LogError($"GameManager: Error in Play: {ex}");
-            //}
-        }
     }
 
 
@@ -135,9 +70,7 @@ public class GameManager : Singleton<GameManager>
     {
         var matchOptions = new MatchmakerOptions
         {
-            // e.g. your matchmaker queue name
             QueueName = "myQueue",
-            // Additional matchmaking constraints...
         };
 
         var sessionOptions = new SessionOptions
@@ -155,17 +88,14 @@ public class GameManager : Singleton<GameManager>
         }
 
         Debug.Log($"Successfully matched session: {result.Session.Id}");
-        // Proceed to connect your NetCode or NGO with the Relay info or direct IP.
     }
 
     private async void OnClickQuickJoinButton()
     {
-        // 1. Define how quick join should behave
         var quickJoinOptions = new QuickJoinOptions
         {
         };
 
-        // 2. Define session creation options if no session is found
         var sessionOptions = new SessionOptions
         {
             MaxPlayers = 4
@@ -183,65 +113,50 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"Successfully quick-joined session: {result.Session.Id}");
     }
 
-    /// <summary>
-    /// Checks whether the session is full.
-    /// Replace this with your actual logic based on ISession properties.
-    /// </summary>
     private bool IsSessionFull(ISession session)
     {
-        // For example, if session.AvailableSlots == 0 then the session is full.
         return session.AvailableSlots == 0;
     }
 
     private async Task QuerySessionsAsync()
     {
-        try
+        var queryOptions = new QuerySessionsOptions
         {
-            var queryOptions = new QuerySessionsOptions
-            {
-                // e.g. specify filters or pagination here
-            };
+        };
 
-            QuerySessionsResults results = await MultiplayerService.Instance.QuerySessionsAsync(queryOptions);
+        QuerySessionsResults results = await MultiplayerService.Instance.QuerySessionsAsync(queryOptions);
 
-            // 'results' now contains a list of sessions that match your filters.
-            if (results == null || results.Sessions.Count == 0)
-            {
-                Debug.Log("No sessions found.");
-                return;
-            }
-
-
-            //foreach (var session in results.Sessions)
-            //{
-            //    if (session.AvailableSlots != 0)
-            //    {
-            //        SessionID = session.Id;
-            //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-            //        Debug.Log($"Found session ID: {session.Id}");
-            //        Debug.Log($"Session code: {session.Id}");
-            //    }
-            //    else
-            //    {
-            //        ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
-            //        RpcUtils.SendClientToServerRpc(ref command);
-
-            //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-            //        Debug.Log($"Found session ID: {session.Id}");
-            //        Debug.Log($"Session code: {session.Id}");
-            //    }
-            //}
-            var firstSession = results.Sessions[0];
-            SessionID = firstSession.Id;
-
-
-            // From here, you could store the session info in your own manager,
-            // or pass it to an ECS system that sets a SessionInfo entity, etc.
-        }
-        catch (SessionException e)
+        if (results == null || results.Sessions.Count == 0)
         {
-            Debug.LogError($"Error querying sessions: {e.Message}");
+            SessionID = "0";
+            Debug.Log("No sessions found.");
+            return;
         }
+
+
+        //foreach (var session in results.Sessions)
+        //{
+        //    if (session.AvailableSlots != 0)
+        //    {
+        //        SessionID = session.Id;
+        //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+        //        Debug.Log($"Found session ID: {session.Id}");
+        //        Debug.Log($"Session code: {session.Id}");
+        //    }
+        //    else
+        //    {
+        //        ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
+        //        RpcUtils.SendClientToServerRpc(ref command);
+
+        //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+        //        Debug.Log($"Found session ID: {session.Id}");
+        //        Debug.Log($"Session code: {session.Id}");
+        //    }
+        //}
+        var firstSession = results.Sessions[0];
+        SessionID = firstSession.Id;
+
+        Debug.Log($"SessionId is {SessionID}");
     }
 
     IEnumerator WaitUntilSessionIsFull()

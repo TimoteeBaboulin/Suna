@@ -54,21 +54,15 @@ namespace GameNetwork.Utils
         /// </summary>
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
-            await StartServicesAsync();
-            // Create a new instance with current settings.
-            var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
             //await StartServicesAsync();
+            var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
            // gameConnection.State = ClientConnectionState.Matchmaking;
 
-            // Create session options (using GameManager.Instance.MaxNbOfPlayer for max players).
             var options = gameConnection.CreateSessionOptions();
             var networkHandler = new NetworkHandler();
             options.WithNetworkHandler(networkHandler);
 
-            // Try to join the session with the given sessionId, or create it if it doesn't exist.
             gameConnection.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, options); //TEMP HERE DONT FORGET MOTHERFUCKER
-
-            // Retrieve connection endpoints from the network handler.
             gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
             gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
             gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;

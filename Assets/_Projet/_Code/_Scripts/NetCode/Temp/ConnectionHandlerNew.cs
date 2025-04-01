@@ -13,7 +13,6 @@ using Unity.Networking.Transport;
 using Unity.Scenes;
 using Unity.Services.Multiplayer;
 using Unity_NetCode_Generated_Unity_Transforms;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static ConnectionManager;
@@ -23,24 +22,14 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
 {
-    //[Header("Connection Settings")]
-    //public bool isClientLocal = false;
-    //[Tooltip("IP to reach/to connect on")]
-    //[SerializeField] private string _ip = "51.210.222.138"; // default remote IP
     private ushort _port = 7979;
-    //private string _localIp = "127.0.0.1";
     private string _ip;
-    // private ushort _port = 7979;
     private string _localIp = "127.0.0.1";
     private bool isClientLocal;
     private ConnectionSettings connectionSettings;
 
-    //private World _serverWorld = null;
-    //private World _clientWorld = null;
     private ClientTransportHelper sessionTransport = null;
-    //public NetworkEndpoint ClientEndpoint { get; private set; }
-    //public NetworkEndpoint ServerEndpoint { get; private set; }
-    public string IP { get; private set; } = "127.0.0.1";//"51.210.222.138";
+    public string IP { get; private set; }
     public ushort Port { get; private set; }
     public bool ClientLocal => isClientLocal;
     protected override void Awake()
@@ -49,13 +38,7 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         isClientLocal = connectionSettings.isClientLocal;
         _ip = connectionSettings.IP;
         IP = (RequestedPlayType == PlayType.ClientAndServer || isClientLocal) ? _localIp : _ip;
-        Port = connectionSettings.Port;
-        DontDestroyOnLoad(gameObject);
-
-
-        //AutoConnectPort = GetAvailablePort();
-        //AutoConnectPort = 53867;
-        //Debug.Log($"AutoConnectPort = {AutoConnectPort}");
+        Port =  connectionSettings.Port;
     }
 
     public ushort GetAvailablePort()
@@ -69,78 +52,18 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
 
     private void Start()
     {
-        // _port = GetAvailablePort();
-
-        // Determine role from your bootstrap settings.
-        //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-        //    _role = RoleType.ClientServer;
-        //else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-        //    _role = RoleType.Server;
-        //else if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Client)
-        //    _role = RoleType.Client;
-
         Debug.Log($"ConnectionHandlerNew: Role is {RequestedPlayType}");
     }
 
-    /// <summary>
-    /// Handles connection settings and matchmaking.
-    /// </summary>
+
     public async Task<ClientTransportHelper> ConnectToSessionAsync(CancellationToken token, string sessionID)
     {
-        // STEP 1: Start Loading
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.StartLoading);
-        //Cursor.lockState = CursorLockMode.Locked;
-        //Cursor.visible = false;
-        //NetworkRole role;
-        // Check if worlds already exist.
-        //if (_clientWorld != null)
-        //{
-        //    Debug.Log($"{_clientWorld} already created!");
-        //    return null;
-        //}
-
-        //if (_serverWorld != null)
-        //{
-        //    Debug.Log($"{_serverWorld} already created!");
-        //    return null;
-        //}
-
-        // STEP 2: Initialize Connection / Create Worlds
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.InitializeConnection);
 
-        CreateEntityWorlds(out var serverWorld, out var clientWorld);
-        {
-            // Optionally dispose any old simulation worlds.
-            //DestroySimulationWorld();
+        LoadUtils.CreateEntityWorlds(out var serverWorld, out var clientWorld);
 
-            // STEP 3: Setup server world if applicable.
-            //if (_serverWorld != null)
-            //{
-            //    World.DefaultGameObjectInjectionWorld = _serverWorld;
-
-            //    NetworkEndpoint serverEndPoint = NetworkEndpoint.AnyIpv4.WithPort(_port);
-            //    {
-            //        using EntityQuery networkDriverQuery = _serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            //        //networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Listen(serverEndPoint);
-            //        try
-            //        {
-            //            var driverRW = networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            //            var result = driverRW.Listen(serverEndPoint);
-            //            if (!result)
-            //            {
-            //                Debug.LogError($"Server failed to listen on {serverEndPoint}: result={result}");
-            //            }
-            //        }
-            //        catch (InvalidOperationException ex)
-            //        {
-            //            Debug.LogWarning($"Listen already called or driver already bound: {ex.Message}");
-            //        }
-            //    }
-
-            //    ServerConsole.Log(ServerConsole.LogType.Info, $"ServerOn {serverEndPoint.Address}");
-            //}
-        }
-        sessionTransport = await new ClientTransportHelper(IP, _port, isClientLocal).CreateOrJoinSessionAsync("0", token);
+        sessionTransport = await new ClientTransportHelper(IP, Port, isClientLocal).CreateOrJoinSessionAsync(sessionID, token);
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
         if (serverWorld != null)
         {
@@ -154,18 +77,6 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
             using var drvQuery = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             var clientDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
             clientDriver.Connect(clientWorld.EntityManager, sessionTransport.ConnectEndpoint);
-            //await ClientTransportHelper.WaitForPlayerConnectionAsync(token);
-
-            //ref var driver = ref SystemAPI.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            //driver.Connect(EntityManager, ConnectionSettings.Instance.ConnectionEndpoint);
-            //World.DefaultGameObjectInjectionWorld = clientWorld;
-
-
-            //sessionTransport.ConnectEndpoint = NetworkEndpoint.Parse(_ip, _port);
-            //{
-            //    using EntityQuery networkDriverQuery = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            //    networkDriverQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW.Connect(clientWorld.EntityManager, sessionTransport.ConnectEndpoint);
-            //}
         }
 
         {
@@ -232,209 +143,17 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
             //    await LoadSubScenesAsync(subScenes, _clientWorld);
         }
 
-        await LoadGameplayAsync(serverWorld, clientWorld);
+        await LoadUtils.LoadGameplayAsync(serverWorld, clientWorld);
 
-        //if (clientWorld != null)
-        //{
-        //    await WaitForGhostReplicationAsync(clientWorld);
-        //    await WaitForAttachedCameraAsync(clientWorld);
-        //}
-        // STEP 5: Load subscenes.
-        //SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadGameScene);
-        //SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        //if (serverWorld != null)
-        //    await LoadSubScenesAsync(subScenes, serverWorld);
-        //if (clientWorld != null)
-        //    await LoadSubScenesAsync(subScenes, clientWorld);
+        await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
+        if (clientWorld != null)
+        {
+            await WaitForGhostReplicationAsync(clientWorld);
+            //await WaitForAttachedCameraAsync(clientWorld);
+        }
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
-        //Debug.Log("ConnectionHandlerNew: Finished loading worlds and subscenes.");
         return sessionTransport;
-        //return null;
-    }
-
-    private void CreateEntityWorlds(ISession session, out World serverWorld, out World clientWorld)
-    {
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.CreateWorld);
-        DestroySimulationWorld();
-
-        serverWorld = null;
-        clientWorld = null;
-        switch (ClientServerBootstrap.RequestedPlayType)
-        {
-            case ClientServerBootstrap.PlayType.ClientAndServer:
-                //role = NetworkRole.Host;
-                clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-                serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                Debug.Log($"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
-                break;
-            case ClientServerBootstrap.PlayType.Server:
-                //role = NetworkRole.Server;
-                serverWorld = ClientTransportHelper.ServerWorld;
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                Debug.Log($"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
-                break;
-            case ClientServerBootstrap.PlayType.Client:
-                //role = NetworkRole.Client;
-                clientWorld = ClientServerBootstrap.CreateClientWorld("ClientWorld");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                Debug.Log($"Connection Request Type {ClientServerBootstrap.RequestedPlayType}");
-                //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
-                break;
-            default:
-                Debug.LogError("ConnectionHandlerNew: No valid role specified.");
-                break;
-        }
-        //if (session.IsHost)
-        //{
-        //    serverWorld = ClientServerBootstrap.CreateServerWorld("ServerWorld");
-        //}
-    }
-
-    private void CreateEntityWorlds(out World serverWorld, out World clientWorld)
-    {
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.CreateWorld);
-        DestroySimulationWorld();
-
-        serverWorld = null;
-        clientWorld = null;
-        switch (RequestedPlayType)
-        {
-            case PlayType.ClientAndServer:
-                //role = NetworkRole.Host;
-                clientWorld = CreateClientWorld("ClientWorld");
-                serverWorld = CreateServerWorld("ServerWorld");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                Debug.Log($"Connection Request Type {RequestedPlayType}");
-                //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
-                break;
-            case PlayType.Server:
-                //role = NetworkRole.Server;
-                serverWorld = ClientTransportHelper.ServerWorld;
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                Debug.Log($"Connection Request Type {RequestedPlayType}");
-                //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
-                break;
-            case PlayType.Client:
-                //role = NetworkRole.Client;
-                clientWorld = CreateClientWorld("ClientWorld");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                Debug.Log($"Connection Request Type {RequestedPlayType}");
-                //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
-                break;
-            default:
-                Debug.LogError("ConnectionHandlerNew: No valid role specified.");
-                break;
-        }
-    }
-
-    private async Task LoadSceneAsync(string sceneName, SessionData.LoadingSteps step)
-    {
-        if (SceneManager.GetSceneByName(sceneName).isLoaded)
-            return;
-        var sceneLoading = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
-        UpdateLoadingStateAsync(step, sceneLoading);
-        await sceneLoading;
-    }
-    private async void UpdateLoadingStateAsync(SessionData.LoadingSteps step, AsyncOperation loadingTask)
-    {
-        while (loadingTask != null && !loadingTask.isDone)
-        {
-            SessionData.Instance.UpdateLoading(step, loadingTask.progress);
-            await Awaitable.NextFrameAsync();
-        }
-    }
-
-    private async Task LoadGameplayScenesAsync()
-    {
-        await LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
-    }
-
-
-    public async Task LoadGameplayAsync(World server, World client)
-    {
-        await LoadGameplayScenesAsync();
-        if (server != null)
-        {
-            Debug.Log($"Loading server {server}");
-            await WaitForAllSubScenesToLoadAsync(server, SessionData.LoadingSteps.LoadServer);
-        }
-        if (client != null)
-        {
-            Debug.Log($"Loading client {client}");
-            await WaitForAllSubScenesToLoadAsync(client, SessionData.LoadingSteps.LoadClient);
-        }
-    }
-
-    private async Task WaitForAllSubScenesToLoadAsync(World world, SessionData.LoadingSteps step)
-    {
-        if (world == null)
-            return;
-
-        SessionData.Instance.UpdateLoading(step);
-
-        //using var scenesQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<SceneReference>());
-        //using var scenesLeftToLoad = scenesQuery.ToEntityListAsync(Allocator.Persistent, out var handle);
-        //handle.Complete();
-        //Debug.Log($"handle {handle}");
-        //Debug.Log($"Scenes left to load {scenesLeftToLoad.Length}");
-        //float count = scenesLeftToLoad.Length;
-        //while (scenesLeftToLoad.Length > 0)
-        //{
-            
-        //    for (var i = 0; i < scenesLeftToLoad.Length; i++)
-        //    {
-        //        var sceneEntity = scenesLeftToLoad[i];
-        //        if (SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
-        //        {
-        //            Debug.Log($"scenesLeftToLoad before {sceneEntity}");
-        //            scenesLeftToLoad.RemoveAt(i);
-        //            Debug.Log($"scenesLeftToLoad after {sceneEntity}");
-        //            var numLoaded = count - scenesLeftToLoad.Length;
-        //            var loadingProgress = numLoaded / count;
-        //            SessionData.Instance.UpdateLoading(step, loadingProgress);
-        //            i--;
-        //        }
-        //    }
-        //    await Awaitable.NextFrameAsync();
-        //}
-
-        {
-            //        while (!world.IsCreated)
-            //        {
-            //            await Awaitable.NextFrameAsync();
-            //        }
-            //        SessionData.Instance.UpdateLoading(step);
-
-            //        SubScene[] subScenes = FindObjectsByType<SubScene>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            //        if (subScenes != null)
-            //        {
-            //            var count = subScenes.Length;
-            //            for (int i = 0; i < subScenes.Length; i++)
-            //            {
-            //                SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
-            //#if UNITY_EDITOR
-            //                flag = SceneLoadFlags.BlockOnImport;
-            //#endif
-            //                var sceneID = new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value);
-            //                SceneSystem.LoadParameters loadParams = new SceneSystem.LoadParameters() { Flags = flag };
-            //                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, sceneID, loadParams);
-
-            //                var numLoaded = count - subScenes.Length;
-            //                var loadingProgress = numLoaded / count;
-            //                SessionData.Instance.UpdateLoading(step, loadingProgress);
-            //                while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
-            //                {
-            //                    world.Update();
-            //                    await Awaitable.NextFrameAsync();
-            //                }
-            //                Debug.Log($"ConnectionHandlerNew: Loaded subscene {subScenes[i].name} in world {world.Name}");
-            //            }
-            //        }
-        }
     }
 
     private async Task WaitForGhostReplicationAsync(World world, CancellationToken cancellationToken = default)
@@ -448,10 +167,10 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
             {
                 var synchronizingPercentage = ghostCount.GhostCountOnServer == 0
                     ? math.saturate(ghostCount.GhostCountInstantiatedOnClient / (float)ghostCount.GhostCountOnServer)
-                    : waitedForTicks > 60 ? 1f : 0f; // Apparently the server has no ghosts to send us, so ghost loading is complete.
+                    : waitedForTicks > 60 ? 1f : 0f; 
 
                 SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WorldReplication, synchronizingPercentage);
-                if (synchronizingPercentage > 0.99f) // A bit of wiggle room, because in most games, ghosts are constantly created and destroyed.
+                if (synchronizingPercentage > 0.99f) 
                     return;
             }
             await Awaitable.NextFrameAsync(cancellationToken);
@@ -467,44 +186,6 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
         {
             await Awaitable.NextFrameAsync(cancellationToken);
         }
-        // Waiting an extra frame so that the player position is properly synced with the server.
         await Awaitable.NextFrameAsync(cancellationToken);
-    }
-    private async Task LoadSubScenesAsync(SubScene[] subScenes, World world)
-    {
-        while (!world.IsCreated)
-        {
-            await Task.Yield();
-        }
-        if (subScenes != null)
-        {
-            for (int i = 0; i < subScenes.Length; i++)
-            {
-                SceneLoadFlags flag = SceneLoadFlags.BlockOnStreamIn;
-#if UNITY_EDITOR
-                flag = SceneLoadFlags.BlockOnImport;
-#endif
-                SceneSystem.LoadParameters loadParams = new SceneSystem.LoadParameters() { Flags = flag };
-                Entity sceneEntity = SceneSystem.LoadSceneAsync(world.Unmanaged, new Unity.Entities.Hash128(subScenes[i].SceneGUID.Value), loadParams);
-                while (!SceneSystem.IsSceneLoaded(world.Unmanaged, sceneEntity))
-                {
-                    world.Update();
-                    await Task.Yield();
-                }
-                Debug.Log($"ConnectionHandlerNew: Loaded subscene {subScenes[i].name} in world {world.Name}");
-            }
-        }
-    }
-
-    private void DestroySimulationWorld()
-    {
-        foreach (var world in World.All)
-        {
-            if (world.Flags == WorldFlags.Game)
-            {
-                world.Dispose();
-                break;
-            }
-        }
     }
 }

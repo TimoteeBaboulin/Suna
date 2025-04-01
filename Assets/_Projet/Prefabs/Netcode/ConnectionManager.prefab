@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 7540693576825535764}
   - component: {fileID: 449767617614211302}
+  - component: {fileID: 6707715421604416669}
+  - component: {fileID: 5354800617138303106}
   m_Layer: 0
   m_Name: ConnectionManager
   m_TagString: Untagged
@@ -39,7 +41,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5556244542664566637}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d42a77fee517b14bbd2a3fc9ef45eb2, type: 3}
   m_Name: 
@@ -47,4 +49,30 @@ MonoBehaviour:
   clientLocal: 0
   _ip: 51.210.222.138
   _port: 7979
-  subScenes: []
+--- !u!114 &6707715421604416669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5556244542664566637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cad4eaa849f8f714e98ba7ada4e15d8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isClientLocal: 0
+  IP: 51.210.222.138
+  Port: 7979
+--- !u!114 &5354800617138303106
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5556244542664566637}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da4822be39b32f3448af6066683232f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
