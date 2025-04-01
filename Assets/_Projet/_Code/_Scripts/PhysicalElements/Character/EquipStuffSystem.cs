@@ -5,21 +5,22 @@ using Unity.NetCode;
 using UnityEngine;
 using Unity.Mathematics;
 
+[GhostComponent]
 public struct EquipStuffQueu : IBufferElementData
 {
-    public Entity Owner;
-    public Entity Stuff;
+    [GhostField] public Entity Owner;
+    [GhostField] public Entity Stuff;
 }
 
+[GhostComponent]
 public struct UnequipStuffQueu : IBufferElementData
 {
-    public Entity Owner;
-    public Entity Stuff;
-    public float3 Position;
+    [GhostField] public Entity Owner;
+    [GhostField] public Entity Stuff;
+    [GhostField] public float3 Position;
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct EquipStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -43,27 +44,32 @@ public partial struct EquipStuffSystem : ISystem
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
-            unequipStuffQueu.Add(new UnequipStuffQueu
+            if (ownerStuffList.ValueRW.Value[(int)stufData.location] != Entity.Null)
             {
-                Stuff = ownerStuffList.ValueRW.Value[(int)stufData.location],
-                Owner = duo.Owner
-            });
+                unequipStuffQueu.Add(new UnequipStuffQueu
+                {
+                    Stuff = ownerStuffList.ValueRW.Value[(int)stufData.location],
+                    Owner = duo.Owner
+                });
+            }
 
             ownerStuffList.ValueRW.Value[(int)stufData.location] = duo.Stuff;
             stuffOwner.ValueRW.Value = duo.Owner;
 
             //Attach to Camera View
-            Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(duo.Owner).WeaponSlotTransform;
-            Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
-            stuffTrasform.SetParent(viewTransform);
-            stuffTrasform.localPosition = stufData._stuffLocalOffsetView;
+            if (state.World.IsClient())
+            {
+                Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(duo.Owner).WeaponSlotTransform;
+                Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
+                stuffTrasform.SetParent(viewTransform);
+                stuffTrasform.localPosition = stufData._stuffLocalOffsetView;
+            }
         }
         equipStuffQueu.Clear();
     }
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct UnequipStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -90,12 +96,14 @@ public partial struct UnequipStuffSystem : ISystem
             stuffOwner.ValueRW.Value = Entity.Null;
 
             //Untie Camera View
-            Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
-            stuffTrasform.SetParent(null);
-            stuffTrasform.localPosition = default;
-            stuffTrasform.gameObject.SetActive(true);
-            stuffTrasform.position = duo.Position;
-
+            if (state.World.IsClient())
+            {
+                Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
+                stuffTrasform.SetParent(null);
+                stuffTrasform.localPosition = default;
+                stuffTrasform.gameObject.SetActive(true);
+                stuffTrasform.position = duo.Position;
+            }
         }
         equipStuffQueu.Clear();
     }

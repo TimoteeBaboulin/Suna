@@ -55,6 +55,7 @@ partial class HarvesterSystemClient : SystemBase
             return;
 
         Entity clientEntity = clientEntities[0];
+        Entity localCharacter = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
 
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.ServerTick;
@@ -75,20 +76,21 @@ partial class HarvesterSystemClient : SystemBase
             //        Value = Object.Instantiate(prefabRef.Value)
             //    };
 
-        //    ecb.AddComponent<TemporaryOverrideGameObjectActive>(harvesterEntity);
-        //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
-        //    ecb.AddComponent(harvesterEntity, goRef);
-        //}
-        //        else if (harvesterRW.ValueRO.Owner == Entity.Null)
-        //{
-        //    StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
-        //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
-        //}
+            //    ecb.AddComponent<TemporaryOverrideGameObjectActive>(harvesterEntity);
+            //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
+            //    ecb.AddComponent(harvesterEntity, goRef);
+            //}
+            //        else if (harvesterRW.ValueRO.Owner == Entity.Null)
+            //{
+            //    StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
+            //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
+            //}
 
-        if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
+            //
+            if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
                 continue;
 
-            if (ownerRW.ValueRO.Value != clientEntity)
+            if (ownerRW.ValueRO.Value != localCharacter)
                 continue;
 
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
@@ -180,7 +182,7 @@ partial class HarvesterSystemClient : SystemBase
         }
 
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlanted rpc, Entity entity)
-            in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
+             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
             //SystemAPI.GetComponentRW<CharacterStuffList>(rpc.harvesterOwner).ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
@@ -210,7 +212,6 @@ partial class HarvesterSystemClient : SystemBase
         {
             //ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
 
-
             //StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
             //CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(rpc.character);
             //StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
@@ -220,17 +221,27 @@ partial class HarvesterSystemClient : SystemBase
 
             //SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
 
+            ecb.DestroyEntity(entity);
+
+            if (rpc.character == Entity.Null)
+            {
+                Entity responseEntity = ecb.CreateEntity();
+                ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
+                ecb.AddComponent<SendRpcCommandRequest>(responseEntity);
+
+                continue;
+            }
+
             equipStuffQueu.Add(new EquipStuffQueu
             {
                 Stuff = rpc.harvester,
-                Owner = rpc.newOwner
+                Owner = rpc.character
             });
 
-            ecb.DestroyEntity(entity);
+            
         }
 
         ecb.Playback(EntityManager);
         ecb.Dispose();
-
     }
 }

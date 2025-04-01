@@ -38,6 +38,9 @@ public class HarvesterAuthoring : MonoBehaviour
 
             AddComponent<HarvesterPlanted>(entity);
             SetComponentEnabled<HarvesterPlanted>(entity, false);
+
+            //TODO: Set the tag at the start of the match instead of at the loading of the map
+            AddComponent<HarvesterRespawn>(entity);
         }
     }
 }
