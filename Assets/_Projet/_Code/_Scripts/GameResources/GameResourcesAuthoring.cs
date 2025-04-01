@@ -25,7 +25,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             {
                 rangedWeaponEntityPrefab = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic),
                 meleeWeaponEntityPrefab = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic),
-                harvesterEntityPrefab = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic)
+                harvesterEntityPrefab = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic)
             });
 
             var builder = new BlobBuilder(Allocator.Temp);
