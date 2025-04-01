@@ -158,6 +158,19 @@ namespace GameNetwork.Utils
                 }
             }
         }
+
+        public static async Task UnloadScenesAsync(string sceneName)
+        {
+            SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.UnloadingWorld);
+
+            var gameplay = SceneManager.GetSceneByName(sceneName);
+            if (gameplay.IsValid() && gameplay != SceneManager.GetActiveScene())
+            {
+                var unloadScene = SceneManager.UnloadSceneAsync(gameplay);
+                UpdateLoadingStateAsync(SessionData.LoadingSteps.UnloadingGameScene, unloadScene);
+                await unloadScene;
+            }
+        }
     }
 }
 

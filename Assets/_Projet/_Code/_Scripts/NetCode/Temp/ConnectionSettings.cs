@@ -14,9 +14,8 @@ public class ConnectionSettings : MonoBehaviour
     [Header("Connection Settings")]
     public bool isClientLocal = false;
     [Tooltip("IP to reach/to connect on")]
-    public string IP = "51.210.222.138"; // default remote IP
+    public string IP = "51.210.222.138"; 
     public ushort Port = ClientServerBootstrap.AutoConnectPort;
-   // public string LocalIp = "127.0.0.1";
 }
 
 public class ConnectionSettingsBaker : Baker<ConnectionSettings>

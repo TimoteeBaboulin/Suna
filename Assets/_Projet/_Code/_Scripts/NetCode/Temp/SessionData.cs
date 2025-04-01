@@ -83,7 +83,6 @@ namespace GameNetwork
         SessionData()
         {
             loadingProgress = 0.0f;
-            // Initialize session-related fields.
             CurrentPlayerCount = 0;
             SessionMaxPlayers = 0;
             SessionID = string.Empty;
@@ -101,16 +100,13 @@ namespace GameNetwork
             Debug.Log(loadingStatusText);
         }
 
-        // Additional properties to track session state.
         public int CurrentPlayerCount { get; private set; }
         public int SessionMaxPlayers { get; private set; }
         public string SessionID { get; private set; } = "SESSION01";
 
         public ISession Session { get; private set; }
 
-        /// <summary>
-        /// Update the session state (e.g., when a client connects or disconnects).
-        /// </summary>
+
         public void UpdateSessionState(int currentPlayerCount, int maxPlayers, ISession session)
         {
             CurrentPlayerCount = currentPlayerCount;

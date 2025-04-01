@@ -19,7 +19,6 @@ public class ServerSessionFactory
     public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
     {
         instance = new ServerSessionFactory();
-        // Only run session creation on a dedicated server.
         try
         {
             SessionOptions options = new SessionOptions { MaxPlayers = instance.MaxPlayers };

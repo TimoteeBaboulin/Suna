@@ -173,4 +173,58 @@ public class GameManager : Singleton<GameManager>
         GameState = GlobalGameState.InGame;
         SceneManager.LoadScene("MultiplayerTest");
     }
+
+    public async Task DisconnectAndUnloadWorlds()
+    {
+        ClientTransportHelper.State = ClientConnectionState.NotConnected;
+
+        bool requestedDisconnect = false;
+        foreach (var world in World.All)
+        {
+            if (world.IsClient())
+            {
+                using var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
+                if (query.TryGetSingletonEntity<NetworkId>(out var networkId))
+                {
+                    requestedDisconnect = true;
+                    world.EntityManager.AddComponentData(networkId, new NetworkStreamRequestDisconnect());
+                }
+            }
+        }
+
+        if (requestedDisconnect)
+            await Awaitable.NextFrameAsync();
+
+        await LeaveSessionAsync();
+        await DestroyGameSessionWorlds();
+        await LoadUtils.UnloadScenesAsync("MultiplayerTest");
+    }
+
+    public async Task LeaveSessionAsync()
+    {
+        if (clientConnectionSettings != null)
+        {
+            clientConnectionSettings.Session.RemovedFromSession += OnSessionLeft;
+            await clientConnectionSettings.Session.LeaveAsync();
+        }
+    }
+
+    public void OnSessionLeft()
+    {
+        clientConnectionSettings = null;
+    }
+
+    static async Task DestroyGameSessionWorlds()
+    {
+        await Awaitable.EndOfFrameAsync();
+
+        for (var i = World.All.Count - 1; i >= 0; i--)
+        {
+            var world = World.All[i];
+            if (world.IsClient())
+            {
+                world.Dispose();
+            }
+        }
+    }
 }

@@ -8,7 +8,6 @@ public class CommonAutoConnect : ClientServerBootstrap
 {
     public override bool Initialize(string defaultWorldName)
     {
-        // The game is using the GameBoostrap to start.
         if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer 
             || RequestedPlayType == PlayType.ClientAndServer)
         {

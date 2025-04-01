@@ -24,7 +24,6 @@ namespace GameNetwork.Utils
 
     public class ClientTransportHelper
     {
-        // Instance fields for per-connection configuration.
         public ushort Port { get; private set; }
         public string IP { get; private set; }
         public bool IsClientLocal { get; private set; }
@@ -35,12 +34,10 @@ namespace GameNetwork.Utils
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
 
-        // A global static default port for convenience.
         public static string SessionID { get; set; }
         public static World ServerWorld { get; set; }
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
 
-        // Constructor receives settings so that each instance can have its own configuration.
         public ClientTransportHelper(string ip, ushort port, bool isClientLocal)
         {
             IP = ip;
@@ -70,35 +67,8 @@ namespace GameNetwork.Utils
             return gameConnection;
         }
 
-        //public static async Task<IHostSession> CreateNewServerSessionAsync(SessionOptions sessionOptions, ServerSessionSettings sessionSettings)
-        //{
-        //    // Ensure services are initialized.
-        //    await StartServicesAsync();
-        //    var gameConnection = new ClientConnection(IP, Port, IsClientLocal);
-        //    SessionOptions options = new SessionOptions { MaxPlayers = sessionSettings.MaxPlayers }.WithDirectNetwork(ClientConnection.IP, IP, Port);
-        //    IHostSession serverSession = await MultiplayerService.Instance.CreateSessionAsync(sessionOptions);
-        //    UnityEngine.Debug.Log($"Server created session with code: {serverSession.Id}");
-        //    return serverSession;
-        //}
-
         public async Task<ClientTransportHelper> CreateServerSessionAsync(SessionOptions sessionOptions)
         {
-            //var connection = new SessionTransportHelper(IP, Port, IsClientLocal);
-
-            //var options = connection.CreateSessionOptions();
-            //options.MaxPlayers = sessionOptions.MaxPlayers;
-            //var networkHandler = new NetworkHandler();
-            //options.WithNetworkHandler(networkHandler);
-
-            //connection.Session = await MultiplayerService.Instance.CreateSessionAsync(options);
-            //UnityEngine.Debug.Log($"[ClientConnection] Server created session with code: {connection.Session.Id}");
-
-            //connection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
-            //connection.ListenEndpoint = await networkHandler.ListenEndpoint;
-            //connection.SessionConnectionType = await networkHandler.SessionConnectionType;
-
-            //return connection;
-
             try
             {
                 //await StartServicesAsync();
@@ -127,7 +97,6 @@ namespace GameNetwork.Utils
                 //UnityEngine.Debug.Log($"[SessionTransportHelper] Assigned custom session code: {customCode}");
                 // -----------------------------------------
 
-                // Attempt to create the session.
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
@@ -153,22 +122,19 @@ namespace GameNetwork.Utils
             catch (Exception ex)
             {
                 UnityEngine.Debug.LogError($"[SessionTransportHelper] Error in CreateServerSessionAsync: {ex}");
-                throw; // or return null
+                throw; 
             }
         }
         public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionCode, CancellationToken cancellationToken)
         {
-            // Create a new instance with current settings.
             var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
             //await StartServicesAsync();
             //gameConnection.State = ClientConnectionState.Matchmaking;
 
-            // Create join options (and attach your network handler).
             var joinOptions = new JoinSessionOptions();
             var networkHandler = new NetworkHandler();
             joinOptions.WithNetworkHandler(networkHandler);
 
-            // Attempt to join the session with the given sessionCode.
             gameConnection.Session = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionCode, joinOptions);
             gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
             gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
@@ -178,12 +144,8 @@ namespace GameNetwork.Utils
             return gameConnection;
         }
 
-        /// <summary>
-        /// Uses Unity's Multiplayer Service to join matchmaking.
-        /// </summary>
         public async Task<ClientTransportHelper> JoinOrCreateMatchmakerGameAsync(CancellationToken cancellationToken)
         {
-            // Create a new instance with current settings.
             var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
             //await StartServicesAsync();
             //gameConnection.State = ClientConnectionState.Matchmaking;
@@ -205,70 +167,56 @@ namespace GameNetwork.Utils
             return gameConnection;
         }
 
-        /// <summary>
-        /// Uses Unity Services Matchmaker to find and join (or create) a session.
-        /// </summary>
-        /// <param name="matchOptions">Matchmaking queue options</param>
-        /// <param name="sessionOptions">Session creation options (max players, etc.)</param>
-        /// <param name="token">Cancellation token</param>
-        /// <returns>This helper, or null on error</returns>
         public async Task<ClientTransportHelper> MatchmakeSessionAsync(MatchmakerOptions matchOptions,
             SessionOptions sessionOptions,
             CancellationToken token = default)
         {
             try
             {
-                UnityEngine.Debug.Log("[SessionTransportHelper] Starting matchmaking...");
+                Debug.Log("[SessionTransportHelper] Starting matchmaking...");
 
-                // 1. Attempt to matchmake a session (join or create automatically).
                 Session = await MultiplayerService.Instance.MatchmakeSessionAsync(matchOptions, sessionOptions, token);
                 if (Session == null)
                 {
-                    UnityEngine.Debug.LogError("[SessionTransportHelper] Matchmaking returned a null session.");
+                    Debug.LogError("[SessionTransportHelper] Matchmaking returned a null session.");
                     return null;
                 }
 
                 SessionID = Session.Id;
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Matchmade session. Session ID: {Session.Id}, Code: {Session.Code}");
+                Debug.Log($"[SessionTransportHelper] Matchmade session. Session ID: {Session.Id}, Code: {Session.Code}");
 
                 return this;
             }
             catch (SessionException ex)
             {
-                UnityEngine.Debug.LogError($"[SessionTransportHelper] Error during matchmaking: {ex.Message}");
+                Debug.LogError($"[SessionTransportHelper] Error during matchmaking: {ex.Message}");
                 return null;
             }
         }
 
-        /// <summary>
-        /// Uses Unity Services Multiplayer to find or create a session via QuickJoin.
-        /// </summary>
-        /// <param name="quickJoinOptions">Search options for quick join</param>
-        /// <param name="sessionOptions">Options for creating a new session if none is found</param>
-        /// <returns>This helper, or null on error</returns>
         public async Task<ClientTransportHelper> QuickJoinSessionAsync(QuickJoinOptions quickJoinOptions,
             SessionOptions sessionOptions)
         {
             try
             {
-                UnityEngine.Debug.Log("[SessionTransportHelper] Starting quick join matchmaking...");
+                Debug.Log("[SessionTransportHelper] Starting quick join matchmaking...");
                 Session = await MultiplayerService.Instance.MatchmakeSessionAsync(quickJoinOptions, sessionOptions);
 
                 if (Session == null)
                 {
-                    UnityEngine.Debug.LogError("[SessionTransportHelper] Quick join returned a null session.");
+                    Debug.LogError("[SessionTransportHelper] Quick join returned a null session.");
                     return null;
                 }
 
                 SessionID = Session.Id;
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Quick-joined session. Session ID: {Session.Id}, Code: {Session.Code}");
+                Debug.Log($"[SessionTransportHelper] Quick-joined session. Session ID: {Session.Id}, Code: {Session.Code}");
 
 
                 return this;
             }
             catch (SessionException ex)
             {
-                UnityEngine.Debug.LogError($"[SessionTransportHelper] Error during quick join: {ex.Message}");
+                Debug.LogError($"[SessionTransportHelper] Error during quick join: {ex.Message}");
                 return null;
             }
         }
@@ -296,7 +244,6 @@ namespace GameNetwork.Utils
         }
         public SessionOptions CreateSessionOptions()
         {
-            // Assume GameManager.Instance.MaxNbOfPlayer is available.
             SessionOptions options = new SessionOptions { MaxPlayers = 3 }; //CAREFUL HERE MOTHERFUCKER
             return options.WithDirectNetwork(IP, IP, Port);
         }

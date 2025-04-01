@@ -60,7 +60,6 @@ namespace GameNetwork
 #if UNITY_EDITOR 
             var networkSettings = GameNetworkSettings(sendQueueCapacity: netcodeConfig.ServerSendQueueCapacity, receiveQueueCapacity: netcodeConfig.ServerReceiveQueueCapacity);
 
-            // Ipc driver is not needed unless we are self-connecting.
             if (driverConfiguration.Type == NetworkType.DistributedAuthority)
             {
                 networkSettings.WithRelayParameters(ref driverConfiguration.RelayServerData);
