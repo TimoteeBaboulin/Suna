@@ -17,6 +17,7 @@ public struct HarvesterComponent : IComponentData
     [GhostField] public bool IsActive;
 }
 
+[GhostComponent]
 public partial struct HarvesterPlanting : IComponentData, IEnableableComponent{}
 
 public partial struct HarvesterPlanted : IComponentData, IEnableableComponent{}
