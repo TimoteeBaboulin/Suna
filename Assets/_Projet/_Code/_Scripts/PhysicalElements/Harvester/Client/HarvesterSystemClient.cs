@@ -85,7 +85,8 @@ partial class HarvesterSystemClient : SystemBase
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
             }
-            else if (harvesterActions.Attack.WasReleasedThisFrame())
+
+            if (harvesterActions.Attack.WasReleasedThisFrame())
             {
                 RpcHarvesterPlantStop rpc = new RpcHarvesterPlantStop
                 {
