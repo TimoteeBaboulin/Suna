@@ -1,4 +1,4 @@
-using System;
+using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -9,95 +9,66 @@ using UnityEngine.UIElements;
 
 public class MainMenuController : MonoBehaviour
 {
-    [Header("HUD default Document")]
-    [SerializeField] private UIDocument _mainMenuDocument;
-    [SerializeField] private UIDocument _settingsMenuDocument;
-
-    [Header("Connection Helper")]
-    //[SerializeField] private ConnectionManager connectionManager;
-
-    private VisualElement _mainMenu;
-    private VisualElement _settingsMenu;
-
-    // Main Menu Elements
+    [Header("Main Menu Component")]
+    [SerializeField] private VisualTreeAsset _settingsMenuAsset;
+    private UIDocument _document;
+    private VisualElement _root;
     private Button _playButton;
     private Button _settingsButton;
     private Button _quitButton;
+    private VisualElement _container;
 
-    // Settings Menu Elements
-    private Button _exitButton;
-    private Slider _sensitivitySlider;
-    private FloatField _sensitivityField;
+    [Header("Connection Helper")]
+    [SerializeField] private ConnectionManager connectionManager;
 
     [SerializeField] private SceneID _sceneLoadOnPlay = SceneID.MultipayerTest;
 
     private void Awake()
     {
-        if (_mainMenuDocument != null && _settingsMenuDocument != null)
-        {
-            // Get the root visual elements
-            _mainMenu = _mainMenuDocument.rootVisualElement;
-            _settingsMenu = _settingsMenuDocument.rootVisualElement;
+        _document = GetComponent<UIDocument>();
 
-            // Disable the settings menu
-            _settingsMenu.style.opacity = 0;
-            _settingsMenu.SetEnabled(false);
-            _settingsMenuDocument.sortingOrder = -1;
+        // Get the root visual elements
+        _root = _document.rootVisualElement;
+        _container = _root.Q<VisualElement>("Container");
 
-            // Get the main menu elements
-            _playButton = _mainMenu.Q<Button>("PlayButton");
-            _playButton.clicked += OnPlayButton_Click;
+        // Get the main menu elements
+        _playButton = _root.Q<Button>("PlayButton");
+        _playButton.clicked += OnPlayButton_Click;
 
-            _settingsButton = _mainMenu.Q<Button>("SettingsButton");
-            _settingsButton.clicked += OnSettingsButton_Click;
+        _settingsButton = _root.Q<Button>("SettingsButton");
+        _settingsButton.clicked += OnSettingsButton_Click;
 
-            _quitButton = _mainMenu.Q<Button>("QuitButton");
-            _quitButton.clicked += OnQuitButton_Click;
-
-
-            // Get the settings menu elements
-            _exitButton = _settingsMenu.Q<Button>("ExitButton");
-            _exitButton.clicked += OnExitButton_Click;
-
-            _sensitivitySlider = _settingsMenu.Q<Slider>("SensitivitySlider");
-            _sensitivitySlider.RegisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
-
-            _sensitivityField = _settingsMenu.Q<FloatField>("SensitivityField");
-            _sensitivityField.RegisterValueChangedCallback(OnSensitivityField_ValueChanged);
-        }
+        _quitButton = _root.Q<Button>("QuitButton");
+        _quitButton.clicked += OnQuitButton_Click;
     }
-    //if (connectionManager != null)
-    //{
-    //    connectionManager.Connect();
-    //    SceneManager.LoadScene((int)_sceneLoadOnPlay);
-    //}
 
-    private async void OnPlayButton_Click()
+    private void OnPlayButton_Click()
     {
- 
-        _playButton.SetEnabled(false);
-        await GameManager.Instance.Play();
-        _playButton.SetEnabled(true);
+        if (connectionManager != null)
+        {
+            connectionManager.Connect();
+            SceneManager.LoadScene((int)_sceneLoadOnPlay);
+        }
     }
 
     private void OnSettingsButton_Click()
     {
-        _mainMenu.style.opacity = 0;
-        _mainMenu.SetEnabled(false);
-        _mainMenuDocument.sortingOrder = -1;
-
-        _settingsMenu.style.opacity = 1;
-        _settingsMenu.SetEnabled(true);
-        _settingsMenuDocument.sortingOrder = 0;
-
-        if (ClientServerBootstrap.ServerWorld == null)
+        // Save and Close Settings if Settings Menu was open
+        if (gameObject.TryGetComponent(out SettingsMenuController settingsMenuController))
         {
-            MainMenuLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<MainMenuLinkSystem>();
-            if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
-            {
-                _sensitivitySlider.value = clientSettings.Sensivity;
-            }
+            SaveAndCloseSettings(settingsMenuController);
         }
+
+        // Instantiate Settings Menu
+        settingsMenuController = gameObject.AddComponent<SettingsMenuController>();
+        settingsMenuController.root = _settingsMenuAsset.Instantiate().Children().First();
+        _container.Add(settingsMenuController.root);
+    }
+    private void SaveAndCloseSettings(SettingsMenuController settingsMenuController)
+    {
+        settingsMenuController.SaveSettings();
+        settingsMenuController.root.RemoveFromHierarchy();
+        Destroy(settingsMenuController);
     }
 
     private void OnQuitButton_Click()
@@ -106,38 +77,5 @@ public class MainMenuController : MonoBehaviour
 #if UNITY_EDITOR
         EditorApplication.isPlaying = false;
 #endif
-    }
-
-    private void OnExitButton_Click()
-    {
-        if (ClientServerBootstrap.ServerWorld == null)
-        {
-            MainMenuLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<MainMenuLinkSystem>();
-            if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
-            {
-                clientSettings.Sensivity = _sensitivitySlider.value;
-                mainMenuLinkSystem.UpdateClientSettings(clientSettings);
-            }
-        }
-
-        _settingsMenu.style.opacity = 0;
-        _settingsMenu.SetEnabled(false);
-        _settingsMenuDocument.sortingOrder = -1;
-
-        _mainMenu.style.opacity = 1;
-        _mainMenu.SetEnabled(true);
-        _mainMenuDocument.sortingOrder = 0;
-    }
-
-    private void OnSensitivitySlider_ValueChanged(ChangeEvent<float> evt)
-    {
-        _sensitivityField.value = evt.newValue;
-    }
-
-    private void OnSensitivityField_ValueChanged(ChangeEvent<float> evt)
-    {
-        float value = Mathf.Clamp(evt.newValue, _sensitivitySlider.lowValue, _sensitivitySlider.highValue);
-        _sensitivitySlider.value = value;
-        _sensitivityField.value = value;
     }
 }

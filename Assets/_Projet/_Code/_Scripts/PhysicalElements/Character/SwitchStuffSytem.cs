@@ -1,9 +1,10 @@
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Physics;
+using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct SwitchStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -18,69 +19,102 @@ public partial struct SwitchStuffSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        //Eviter répétition sur le serveur du a la différence de framerate avec le client
-        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        if (!networkTime.IsFirstPredictionTick) return;
-
-        float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-
+        //Switch with mouseScroll
         foreach (var (stuffListRef, activeStuffRef, inputRef, chara) in SystemAPI
-        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandType>, RefRO<CharacterInput>>()
+        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRef.ValueRO;
             ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
-            ref CharacterStuffInHandType stuffInHandType = ref activeStuffRef.ValueRW;
 
-            if (state.World.IsServer())
+            int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
+
+            if (dir != 0 && stuffList.Value.Length > 1)
             {
-                Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
-                Entity nextStuff;
+                ref CharacterStuffInHandLocation stuffInHandLocation = ref activeStuffRef.ValueRW;
 
-                int whileLimit = 0;
-                int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
+                Entity previousStuff = stuffList.Value[(int)stuffInHandLocation.Value];
+                Entity nextStuff = Entity.Null;
 
-                if (dir != 0)
+                for (int i = 0; i < stuffList.Value.Length; i++)
                 {
-                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+                    stuffInHandLocation.Value += dir;
 
-                    do
-                    {
-                        stuffInHandType.Value += dir;
+                    stuffInHandLocation.Value = (StuffInventoryLocation)((stuffList.Value.Length + (int)stuffInHandLocation.Value) % stuffList.Value.Length);
 
-                        stuffInHandType.Value = (StuffType)((stuffList.Value.Length + (int)stuffInHandType.Value) % stuffList.Value.Length);
+                    nextStuff = stuffList.Value[(int)stuffInHandLocation.Value];
 
-                        nextStuff = stuffList.Value[(int)stuffInHandType.Value];
-
-                        whileLimit++;
-
-                    } while (nextStuff == Entity.Null && whileLimit < stuffList.Value.Length);
-
-                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                    if (nextStuff != Entity.Null) break;
                 }
-            }
-        }
-
-        foreach (var (stuffListRef, activeStuffRef, inputRef, chara) in SystemAPI
-        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandType>, RefRO<CharacterInput>>()
-        .WithEntityAccess())
-        {
-            ref readonly CharacterInput input = ref inputRef.ValueRO;
-            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
-            ref CharacterStuffInHandType stuffInHandType = ref activeStuffRef.ValueRW;
-
-            if (state.World.IsServer() && input.selectStuffId != -1)
-            {
-                Entity previousStuff = stuffList.Value[(int)stuffInHandType.Value];
-                Entity nextStuff = stuffList.Value[input.selectStuffId];
 
                 if (nextStuff != Entity.Null)
                 {
                     state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
                     state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                }
+            }
+        }
 
-                    stuffInHandType.Value = (StuffType)input.selectStuffId;
+        ////Switch with shortcut
+        foreach (var (stuffListRef, stuffInHandTypeRef, inputRef, chara) in SystemAPI
+        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>, RefRO<CharacterInput>>()
+        .WithEntityAccess())
+        {
+            ref readonly CharacterInput input = ref inputRef.ValueRO;
+            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
+
+            if (input.stuffLocation > 0)
+            {
+                ref CharacterStuffInHandLocation stuffInHandLocation = ref stuffInHandTypeRef.ValueRW;
+                int nextLocation = input.stuffLocation - 1;
+
+                if ((int)stuffInHandLocation.Value != input.stuffLocation && stuffList.Value.Length > 1)
+                {
+                    Entity previousStuff = stuffList.Value[(int)stuffInHandLocation.Value];
+                    Entity nextStuff = stuffList.Value[nextLocation];
+
+                    if (nextStuff != Entity.Null)
+                    {
+                        state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+                        state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true); //Conaard
+
+                        stuffInHandLocation.Value = (StuffInventoryLocation)nextLocation;
+                    }
+                }
+            }
+        }
+
+        //Auto Switch if Hands empty
+        foreach (var (stuffListRef, stuffInHandTypeRef, chara) in SystemAPI
+        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>>()
+        .WithEntityAccess())
+        {
+            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
+
+            if (stuffList.Value.Length > 0)
+            {
+                ref CharacterStuffInHandLocation stuffInHandLocation = ref stuffInHandTypeRef.ValueRW;
+
+                Entity previousStuff = stuffList.Value[(int)stuffInHandLocation.Value];
+                Entity nextStuff = Entity.Null;
+
+                if (previousStuff == Entity.Null)
+                {
+                    for (int i = 0; i < stuffList.Value.Length; i++)
+                    {
+                        nextStuff = stuffList.Value[i];
+                        stuffInHandLocation.Value = (StuffInventoryLocation)i;
+
+                        if (nextStuff != Entity.Null)
+                        {
+                            state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
+                            break;
+                        }
+                    }
+                }
+                else if (!state.EntityManager.IsComponentEnabled<IsStuffInHand>(previousStuff))
+                {
+                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, true);
                 }
             }
         }

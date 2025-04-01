@@ -5,13 +5,15 @@ public class CharacterShootUtils
 {
     public static float2 TSprayPattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 10f, in float targetDistance = 0f)
     {
+        if (bulletIndex == 0) return new float2(0.0f, 0.0f);
+
         // Values to returned
         float currentRecoilXPos = 0f;
         float currentRecoilYPos = 0f;
 
         // Pattern differentiater
         int bulletCutPattern = 14;
-        if (bulletIndex % bulletCutPattern < bulletCutPattern / 2)
+        if (bulletIndex < bulletCutPattern / 2)
         {
             currentRecoilXPos = 0;
             currentRecoilYPos = 3f / 4f * (1 - bulletIndex % bulletCutPattern);

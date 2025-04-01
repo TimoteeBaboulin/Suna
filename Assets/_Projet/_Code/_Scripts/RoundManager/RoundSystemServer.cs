@@ -2,6 +2,8 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Physics;
+using Unity.Rendering;
 using UnityEngine;
 using static RoundSystemClient;
 
@@ -179,6 +181,16 @@ public partial struct RoundSystemServer : ISystem
         {
             if (component.ValueRW.currentPhase == RoundPhase.PostPlantPhase)
                 Victory(ref state, entity, component, TeamSideType.Corpo, ecb);
+            if (component.ValueRO.currentPhase == RoundPhase.BuyPhase)
+            {
+                foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+                {
+                    physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
+                }
+            }
             component.ValueRW.currentPhase++;
         }
 
@@ -229,6 +241,14 @@ public partial struct RoundSystemServer : ISystem
             .WithEntityAccess())
         {
             ecb.AddComponent<HarvesterRespawn>(harvesterEntity);
+        }
+
+        foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+        {
+            physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
         }
     }
 

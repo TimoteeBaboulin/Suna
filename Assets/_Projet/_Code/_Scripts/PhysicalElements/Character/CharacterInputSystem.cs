@@ -1,6 +1,7 @@
 using System.Linq;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
@@ -9,7 +10,7 @@ using UnityEngine.InputSystem;
 [UpdateInGroup(typeof(GhostInputSystemGroup))]
 public partial class CharacterInputSystem : SystemBase
 {
-    private DefaultInputSystem input;
+    public DefaultInputSystem input;
 
     DefaultInputSystem.PlayerActions actions;
 
@@ -30,7 +31,7 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-       // InputSystem.Update();
+        // InputSystem.Update();
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
@@ -43,22 +44,23 @@ public partial class CharacterInputSystem : SystemBase
         bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
         bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
 
-        int selectedId = -1;
-        selectedId = actions.SelectMainWeapon.WasPressedThisFrame() ? 0 : selectedId;
-        selectedId = actions.SelectSecondWeapon.WasPressedThisFrame() ? 1 : selectedId;
-        selectedId = actions.SelectMelee.WasPressedThisFrame() ? 2 : selectedId;
+        int selectedLocation = 0;
+        selectedLocation = actions.SelectMainWeapon.WasPressedThisFrame() ? 1: selectedLocation;
+        selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
+        selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
-        foreach (var (controller, input, characterCamera) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>>()
-
-            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
+        foreach (var (controller, input, characterCamera, harvesterActions) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>, RefRO<PlayerHarvesterActions>>()
+            .WithAll<CharacterIsEnable, GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
-            input.ValueRW.move = CharacterMove;
+            bool plantingOrDefusing = harvesterActions.ValueRO.IsDefusing || harvesterActions.ValueRO.IsPlanting;
+
+            input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
 
             input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
 
             //TODO :Make these into a function
-            if (isJumpPerfomered)
+            if (isJumpPerfomered && !plantingOrDefusing)
             {
                 input.ValueRW.jump.Set();
             }
@@ -67,7 +69,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.jump = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkStarted)
+            if (isWalkStarted && !plantingOrDefusing)
             {
                 input.ValueRW.walkStarted.Set();
             }
@@ -76,7 +78,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkStarted = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkCanceled)
+            if (isWalkCanceled && !plantingOrDefusing)
             {
                 input.ValueRW.walkCanceled.Set();
             }
@@ -85,7 +87,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkCanceled = default; //Important to unset or we will have issues down the line
             }
 
-            if (isShootPressed)
+            if (isShootPressed && !plantingOrDefusing)
             {
                 input.ValueRW.attack.Set();
                 input.ValueRW.shootRotation = Camera.main.transform.rotation;
@@ -96,7 +98,7 @@ public partial class CharacterInputSystem : SystemBase
             }
 
 
-            if (isReloadPressed)
+            if (isReloadPressed && !plantingOrDefusing)
             {
                 input.ValueRW.reload.Set();
             }
@@ -105,7 +107,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.reload = default;
             }
 
-            if (isSelectNext)
+            if (isSelectNext && !plantingOrDefusing)
             {
                 input.ValueRW.selectNext.Set();
             }
@@ -114,7 +116,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.selectNext = default;
             }
 
-            if (isSelectPrevious)
+            if (isSelectPrevious && !plantingOrDefusing)
             {
                 input.ValueRW.selectPrevious.Set();
             }
@@ -123,7 +125,16 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.selectPrevious = default;
             }
 
-            input.ValueRW.selectStuffId = selectedId;
+            input.ValueRW.stuffLocation = selectedLocation;
+        }
+
+        foreach (var input in SystemAPI
+            .Query<RefRW<CharacterInput>>()
+            .WithAll<GhostOwnerIsLocal>()
+            .WithNone<CharacterIsEnable>())
+        {
+            input.ValueRW = default;
         }
     }
 }
+

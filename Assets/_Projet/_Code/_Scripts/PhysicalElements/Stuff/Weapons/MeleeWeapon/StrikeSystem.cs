@@ -33,13 +33,16 @@ namespace MeleeWeapon
             var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
             EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
+            var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
             //Query
-            foreach (var (dynamicDataRef, commonData, ownerRef, weapon) in SystemAPI
-            .Query<RefRW<DynamicData>, CommonData, RefRO<StuffOwner>>()
+            foreach (var (dynamicDataRW, databaseAccessRO, ownerRef, weapon) in SystemAPI
+            .Query<RefRW<MeleeWeaponDynamicData>, RefRO<MeleeWeaponDatabaseAccess>, RefRW<StuffOwner>>()
             .WithAll<IsStuffInHand, Simulate>()
             .WithEntityAccess())
             {
-                ref DynamicData dynamicData = ref dynamicDataRef.ValueRW;
+                ref MeleeWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
+                ref MeleeWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
                 ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
                 // Retrieve player input

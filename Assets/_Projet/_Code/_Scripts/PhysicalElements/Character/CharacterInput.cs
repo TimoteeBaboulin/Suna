@@ -17,7 +17,7 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public InputEvent selectNext;
     [GhostField] public InputEvent selectPrevious;
 
-    [GhostField] public int selectStuffId;
+    [GhostField] public int stuffLocation;
 
     [GhostField] public quaternion shootRotation;
 }

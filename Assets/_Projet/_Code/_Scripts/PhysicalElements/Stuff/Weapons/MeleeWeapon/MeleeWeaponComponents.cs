@@ -1,23 +1,31 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
-namespace MeleeWeapon
+[GhostComponent]
+public struct MeleeWeaponDynamicData : IComponentData
 {
-    [GhostComponent]
-    public struct DynamicData : IComponentData
-    {
-        [GhostField] public float strikeTimer;
-        [GhostField] public float strongStrikeTimer;
-    }
+    [GhostField] public float strikeTimer;
+    [GhostField] public float strongStrikeTimer;
+}
 
-    [GhostComponent]
-    public struct CommonData : ISharedComponentData
+public struct MeleeWeaponCommonData : IBufferElementData
+{
+    public float damage;
+    public float strongBlowDmg;
+    public float backStabDmg;
+    public float range;
+    public float strikeRate;
+    public float strongStrikeRate;
+}
+
+[GhostComponent]
+public struct MeleeWeaponDatabaseAccess : IComponentData
+{
+    [GhostField] public int Value;
+
+    public ref MeleeWeaponCommonData GetData(ref GameResourcesDatabase database)
     {
-        [GhostField] public float damage;
-        [GhostField] public float strongBlowDmg;
-        [GhostField] public float backStabDmg;
-        [GhostField] public float range;
-        [GhostField] public float strikeRate;
-        [GhostField] public float strongStrikeRate;
+        return ref database.StuffDatabaseRef.Value.MeleeWeaponsCommonData[Value];
     }
 }

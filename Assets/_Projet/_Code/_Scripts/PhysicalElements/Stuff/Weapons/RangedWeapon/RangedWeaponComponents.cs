@@ -2,59 +2,81 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 
-namespace RangedWeapon
+public enum RangedWeaponState
 {
-    public enum _State
-    {
-        Idle,
-        Shoot,
-        Reload,
-        Droped
-    }
+    Idle,
+    Shoot,
+    Reload,
+    Droped
+}
 
-    [GhostComponent]
-    public struct DynamicData : IComponentData
-    {
-        [GhostField] public _State state;
+[GhostComponent]
+public struct RangedWeaponDynamicData : IComponentData
+{
+    [GhostField] public RangedWeaponState state;
 
-        [GhostField] public float reloadTimer;
-        [GhostField] public float fastReloadTimer;
-        [GhostField] public float firerateTimer;
+    [GhostField] public float reloadTimer;
+    [GhostField] public float fastReloadTimer;
+    [GhostField] public float firerateTimer;
+    [GhostField] public float timeSinceLastFire;
 
-        [GhostField] public int currentAmmo;
-        [GhostField] public int remainingAmmo;
-    }
+    [GhostField] public int currentAmmo;
+    [GhostField] public int remainingAmmo;
+    [GhostField] public int patternBulletIndex;
+}
 
-    [GhostComponent]
-    public struct CommonData : ISharedComponentData
-    {
-        [GhostField] public float2 recoil;
+public struct RangedWeaponCommonData
+{
+    public float2 recoil;
 
-        [GhostField] public float range;
-        [GhostField] public float firerate;
-        [GhostField] public float spread;
-        [GhostField] public float spreadAiming;
-        [GhostField] public float coefSpray;
-        [GhostField] public float coefSprayAiming;
-        [GhostField] public float ergonomics;
-        [GhostField] public float roundsPerMin;
-        [GhostField] public float dmgFallOff;
-        [GhostField] public float coefModifMoveSpeed;
-        [GhostField] public float coefModifMoveSpeedAiming;
-        [GhostField] public float reloadSpeed;
-        [GhostField] public float fastReloadSpeed;
-        [GhostField] public float knockbackForceOnKill;
+    public float range;
+    public float firerate;
+    public float spread;
+    public float spreadAiming;
+    public float coefSpray;
+    public float coefSprayAiming;
+    public float ergonomics;
+    public float roundsPerMin;
+    public float dmgFallOff;
+    public float coefModifMoveSpeed;
+    public float coefModifMoveSpeedAiming;
+    public float reloadSpeed;
+    public float fastReloadSpeed;
+    public float knockbackForceOnKill;
+    public float lastFireTimeMax;
 
-        [GhostField] public int damage;
-        [GhostField] public int nbMagazine;
-        [GhostField] public int magazineCapacity;
+    public int damage;
+    public int nbMagazine;
+    public int magazineCapacity;
 
-        [GhostField] public uint killGain;
-    }
+    //public ScopeData scope;
+    //public HandleData handle;
+    //public CrossData cross;
+    //public SilencerData silencer;
+    //public MagazineData magazine;
+
+    //public float thorax;
+    //public float stomach;
+    //public float legs_Arms;
+    //public float head;
+
+    //public GameObject ammoType;
+
+    //Accessor
+    public int MaxAmmo { get => nbMagazine * magazineCapacity + 1; }
 }
 
 
+[GhostComponent]
+public struct RangedWeaponDatabaseAccess : IComponentData
+{
+    [GhostField] public int Value;
 
+    public readonly ref RangedWeaponCommonData GetData(ref GameResourcesDatabase database)
+    {
+        return ref database.StuffDatabaseRef.Value.RangedWeaponsCommonData[Value];
+    }
+}
 
 
 //public ScopeData scope;

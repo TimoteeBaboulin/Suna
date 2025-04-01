@@ -3,6 +3,8 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using Unity.Physics;
+using Unity.Rendering;
 using UnityEngine;
 using static RoundSystemServer;
 
@@ -65,7 +67,7 @@ partial struct RoundSystemClient : ISystem
             {
                 return;
             }
-            
+
         }
 
         _firstFrame = false;
@@ -78,14 +80,14 @@ partial struct RoundSystemClient : ISystem
             round.ValueRW.timer = 0;
         }
 
-        foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
+        foreach (var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
         {
             round.ValueRW = update.ValueRO.roundData;
             buffer.DestroyEntity(entity);
         }
 
         //Read score change RPCs
-        foreach(var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
+        foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
         {
             ChangeScore(ref state, newRoundComponent.ValueRO.team, round);
             buffer.DestroyEntity(entity);
@@ -94,7 +96,7 @@ partial struct RoundSystemClient : ISystem
         //Read phase change RPCs
         foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ChangePhaseRpcCommand>>().WithEntityAccess())
         {
-            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round);
+            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round, buffer);
             buffer.DestroyEntity(entity);
         }
 
@@ -111,31 +113,55 @@ partial struct RoundSystemClient : ISystem
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
-    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
+    {
         //Update the score and loss streak of the corresponding teams
         switch (team)
         {
             case TeamSideType.Corpo:
                 component.ValueRW.corporationScore++;
-                component.ValueRW.nativeLossStreak = Math.Min(component.ValueRW.nativeLossStreak + 1, component.ValueRW.maxStreakCount);
+                component.ValueRW.nativeLossStreak = System.Math.Min(component.ValueRW.nativeLossStreak + 1, component.ValueRW.maxStreakCount);
                 component.ValueRW.corporationLossStreak = 0;
 
                 break;
 
             case TeamSideType.Natif:
                 component.ValueRW.nativeScore++;
-                component.ValueRW.corporationLossStreak = Math.Min(component.ValueRW.corporationLossStreak + 1, component.ValueRW.maxStreakCount);
+                component.ValueRW.corporationLossStreak = System.Math.Min(component.ValueRW.corporationLossStreak + 1, component.ValueRW.maxStreakCount);
                 component.ValueRW.nativeLossStreak = 0;
 
                 break;
         }
     }
-    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component)
+    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Update the timer and phases after receiving an update
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         component.ValueRW.currentPhase = phase;
         component.ValueRW.timer = buffer[(int)phase];
+
+        if (phase == RoundPhase.ActionPhase)
+        {
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+            {
+                physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
+                ecb.AddComponent<DisableRendering>(barrierEntity);
+            }
+        }
+        else if (phase == RoundPhase.BuyPhase)
+        {
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+            {
+                physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
+                ecb.RemoveComponent<DisableRendering>(barrierEntity);
+            }
+        }
     }
 }

@@ -27,9 +27,19 @@ public class CommonCharacterModelUtils
 
     public static void DisableModelRendering(in GameObject modelGameObject)
     {
-        if (modelGameObject.TryGetComponent(out ThirdPersonCharacterModelBehaviour modelBehaviour))
+        if (modelGameObject.TryGetComponent(out ThirdPersonCharacterModelBehaviour modelBehaviour)
+            && modelBehaviour.MeshRenderer.enabled)
         {
             modelBehaviour.MeshRenderer.enabled = false;
+        }
+    }
+
+    public static void EnableModelRendering(in GameObject modelGameObject)
+    {
+        if (modelGameObject.TryGetComponent(out ThirdPersonCharacterModelBehaviour modelBehaviour)
+            && !modelBehaviour.MeshRenderer.enabled)
+        {
+            modelBehaviour.MeshRenderer.enabled = true;
         }
     }
 
