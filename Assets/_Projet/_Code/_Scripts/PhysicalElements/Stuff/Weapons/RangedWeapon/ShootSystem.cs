@@ -107,7 +107,8 @@ public partial struct ShootSystem : ISystem
                             = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
                         if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                            && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
                         {
                             SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
                                 = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
@@ -225,6 +226,12 @@ public partial struct ShootSystem : ISystem
                 {
                     Entity characterHitEntity = entityManager.GetComponentData<CharacterColliderDataComponent>(hit.Entity).CharacterEntity;
                     if (characterHitEntity == owner)
+                    {
+                        continue;
+                    }
+
+                    if (entityManager.HasComponent<CharacterIsEnable>(characterHitEntity)
+                        && !entityManager.IsComponentEnabled<CharacterIsEnable>(characterHitEntity))
                     {
                         continue;
                     }

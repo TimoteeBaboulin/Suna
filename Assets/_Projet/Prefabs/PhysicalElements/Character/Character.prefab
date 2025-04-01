@@ -179,6 +179,7 @@ MonoBehaviour:
   mainWeapon: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
   secondWeapon: {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
   meleeWeapon: {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
+  harvester: {fileID: 0}
   shootStartpos: {fileID: 3110814641794125789}
 --- !u!114 &7914458545506051013
 MonoBehaviour:
@@ -232,7 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1352854426f8f04a852b27987ee01b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CorpoModelPrefab: {fileID: 8493708129214133782, guid: e431b0836903edd46872984261b60565, type: 3}
+  CorpoModelPrefab: {fileID: 6960812845692969296, guid: 5cc0a0c27a43e2343b936429c90ce3df, type: 3}
   DeltaPosition: {fileID: 6774830378860753411}
   ViewBoneName: J_VIEW
   HeadBoneName: J_HEAD

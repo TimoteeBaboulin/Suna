@@ -49,14 +49,10 @@ public partial class CharacterInputSystem : SystemBase
         selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
         selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
-        
-
         foreach (var (controller, input, characterCamera, harvesterActions) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>, RefRO<PlayerHarvesterActions>>()
-
-            .WithAll<GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
+            .WithAll<CharacterIsEnable, GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
-
             bool plantingOrDefusing = harvesterActions.ValueRO.IsDefusing || harvesterActions.ValueRO.IsPlanting;
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
@@ -130,6 +126,14 @@ public partial class CharacterInputSystem : SystemBase
             }
 
             input.ValueRW.stuffLocation = selectedLocation;
+        }
+
+        foreach (var input in SystemAPI
+            .Query<RefRW<CharacterInput>>()
+            .WithAll<GhostOwnerIsLocal>()
+            .WithNone<CharacterIsEnable>())
+        {
+            input.ValueRW = default;
         }
     }
 }

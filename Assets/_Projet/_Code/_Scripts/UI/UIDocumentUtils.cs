@@ -30,6 +30,11 @@ public class UIDocumentUtils
         element.style.width = width;
         element.style.height = height;
     }
+    static public void SetSize<T>(ref T element, Length width, Length height) where T : VisualElement
+    {
+        element.style.width = width;
+        element.style.height = height;
+    }
     static public void SetSize<T>(ref T element, Vector2 size) where T : VisualElement
     {
         SetSize(ref element, size.x, size.y);
@@ -46,6 +51,7 @@ public class UIDocumentUtils
 
     static public Length PercentLength(float value) => new(value, LengthUnit.Percent);
     static public Length PixelLength(float value) => new(value, LengthUnit.Pixel);
+    static public Length AutoLength() => Length.Auto();
 
     static public void SetPosition<T>(ref T element, TextAnchor anchor, float xShift, float yShift) where T : VisualElement
     {

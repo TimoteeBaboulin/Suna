@@ -8,7 +8,9 @@ using UnityEngine;
 public struct CharacterTag : IComponentData { }
 
 [GhostEnabledBit]
-public struct CharacterEnableTag : IComponentData, IEnableableComponent { }
+public struct CharacterIsEnable : IComponentData, IEnableableComponent { }
+
+public struct CharacterDeadColliderTag : IComponentData { }
 
 [GhostComponent]
 public struct CharacterComponent : IComponentData
