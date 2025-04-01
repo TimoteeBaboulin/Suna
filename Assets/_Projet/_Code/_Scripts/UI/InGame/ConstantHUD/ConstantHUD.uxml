@@ -25,8 +25,22 @@
         <engine:Label text="00" name="Second" style="color: rgb(0, 0, 0); font-size: 40%; flex-shrink: 0; flex-grow: 0; -unity-font-style: bold;" />
     </engine:VisualElement>
     <engine:VisualElement name="WeaponContainer" style="flex-grow: 1; position: absolute; right: 40px; bottom: 150px; flex-direction: column;" />
-    <engine:VisualElement name="MessageBox" style="flex-grow: 1; position: absolute; background-color: rgba(0, 0, 0, 0.25); width: 700px; height: 500px; top: auto; left: 10px; bottom: 100px;">
+    <engine:VisualElement name="MessageBox" style="flex-grow: 1; position: absolute; background-color: rgba(0, 0, 0, 0.25); width: 700px; height: 500px; top: auto; left: 10px; bottom: 100px; display: none;">
         <engine:Label text="Chat" name="Title" style="color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 20px; text-overflow: clip;" />
         <engine:ScrollView enabled="true" />
+    </engine:VisualElement>
+    <engine:VisualElement name="BombInteracting" style="flex-grow: 1; position: absolute; align-self: center; align-items: center; justify-content: center; bottom: 200px;">
+        <engine:VisualElement name="Defuse" style="flex-grow: 1; width: 600px; height: 100px; position: absolute; background-color: rgba(255, 255, 255, 0.2); display: none;">
+            <engine:Label text="Defusing" name="DefuseLabel" style="position: absolute; top: 10px; left: 20px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; color: rgb(255, 255, 255); -unity-font-style: bold;" />
+            <engine:VisualElement name="DefuseIndicator" style="flex-grow: 1; position: absolute; bottom: 20px; left: 20px; width: 560px; height: 30px; background-color: rgba(0, 0, 0, 0.5);">
+                <engine:VisualElement name="DefuseFill" style="flex-grow: 1; background-color: rgb(17, 194, 0); width: 0;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
+        <engine:VisualElement name="Plant" style="flex-grow: 1; width: 600px; height: 100px; position: absolute; background-color: rgba(255, 255, 255, 0.2); display: none;">
+            <engine:Label text="Plant" name="PlantLabel" style="position: absolute; top: 10px; left: 20px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; font-size: 25px; color: rgb(255, 255, 255); -unity-font-style: bold;" />
+            <engine:VisualElement name="PlantIndicator" style="flex-grow: 1; position: absolute; bottom: 20px; left: 20px; width: 560px; height: 30px; background-color: rgba(0, 0, 0, 0.5);">
+                <engine:VisualElement name="PlantFill" style="flex-grow: 1; background-color: rgb(17, 194, 0); width: 0;" />
+            </engine:VisualElement>
+        </engine:VisualElement>
     </engine:VisualElement>
 </engine:UXML>

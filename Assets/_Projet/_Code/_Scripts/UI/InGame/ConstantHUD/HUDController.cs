@@ -2,11 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Collections;
 using Unity.Entities;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+
+using UI = UIDocumentUtils;
 
 public class HUDController : MonoBehaviour
 {
@@ -52,6 +52,14 @@ public class HUDController : MonoBehaviour
     [SerializeField] private GameObject _errorWindowPrefab;
     private GameObject _errorWindowInstance;
 
+    // Bomb Interaction - Deffuse
+    VisualElement _defuse;
+    VisualElement _defuseFill;
+
+    // Bomb Interaction - Plant
+    VisualElement _plant;
+    VisualElement _plantFill;
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -80,6 +88,12 @@ public class HUDController : MonoBehaviour
         _messageBox = _HUD.Q<VisualElement>("MessageBox");
         _messageBoxScrollView = _messageBox.Q<ScrollView>();
 
+        _defuse = _HUD.Q<VisualElement>("Defuse");
+        _defuseFill = _defuse.Q<VisualElement>("DefuseFill");
+
+        _plant = _HUD.Q<VisualElement>("Plant");
+        _plantFill = _plant.Q<VisualElement>("PlantFill");
+
         // Initialize Weapon Container
         for (int i = 0; i < _weaponSlot.Count; i++)
         {
@@ -96,8 +110,7 @@ public class HUDController : MonoBehaviour
         }
 
         // Hide Message Box at start
-        _messageBox.style.opacity = 0;
-        _messageBox.SetEnabled(false);
+        UI.SetActive(ref _messageBox, false);
     }
 
     private void Update()
@@ -163,11 +176,10 @@ public class HUDController : MonoBehaviour
         }
 
         // Open and close Message Box
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            _messageBox.style.opacity = _messageBox.style.opacity.value == 1 ? 0 : 1;
-            _messageBox.SetEnabled(_messageBox.enabledInHierarchy);
-        }
+        //if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    UI.ToggleActive(ref _messageBox);
+        //}
     }
 
     private void OnErrorMessageReceived(object sender, ErrorWindowCallerSystem.ErrorMessage args)
@@ -236,6 +248,70 @@ public class HUDController : MonoBehaviour
         label.style.color = messageColor;
         label.style.fontSize = 20;
         _messageBoxScrollView.contentContainer.Add(label);
+    }
+
+    public void SetActiveDefuse(bool value)
+    {
+        UI.SetActive(ref _defuse, value);
+    }
+
+    public void SetActivePlant(bool value)
+    {
+        UI.SetActive(ref _plant, value);
+    }
+
+    public void ResetDefuse()
+    {
+        UI.SetSize(ref _defuseFill, UI.PercentLength(0), UI.AutoLength());
+    }
+
+    public void ResetPlant()
+    {
+        UI.SetSize(ref _plantFill, UI.PercentLength(0), UI.AutoLength());
+    }
+
+    public void SetDefuseTime(float t)
+    {
+        UI.SetSize(ref _defuseFill, UI.PercentLength(t * 100f), UI.AutoLength());
+    }
+
+    public void SetPlantTime(float t)
+    {
+        UI.SetSize(ref _plantFill, UI.PercentLength(t * 100f), UI.AutoLength());
+    }
+
+    private void OnDefuseStarts(object sender, EventArgs args)
+    {
+        ResetDefuse();
+        SetActiveDefuse(true);
+    }
+
+    private void OnDefuseRunning(object sender, EventArgs args)
+    {
+        //SetDefuseTime(args.time);
+    }
+
+    private void OnDefuseCancelOrEnd(object sender, EventArgs args)
+    {
+        SetActiveDefuse(false);
+        ResetDefuse();
+    }
+
+    private void OnPlantStarts(object sender, EventArgs args)
+    {
+        ResetPlant();
+        SetActivePlant(true);
+    }
+
+    private void OnPlantRunning(object sender, EventArgs args)
+    {
+        //SetPlantTime(args.time);
+    }
+
+    private void OnPlantCancelOrEnd(object sender, EventArgs args)
+    {
+        SetActivePlant(false);
+        ResetPlant();
     }
 }
 
