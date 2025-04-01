@@ -11,16 +11,23 @@ public struct HarvesterComponent : IComponentData
     [GhostField] public float pickupDistance;
 
     [GhostField] public NetworkTick DroppedTick;
-    [GhostField] public NetworkTick PlantStartedTick;
-    [GhostField] public NetworkTick PlantedTick;
 
     [GhostField] public bool IsActive;
 }
 
+[GhostEnabledBit]
 [GhostComponent]
-public partial struct HarvesterPlanting : IComponentData, IEnableableComponent{}
+public partial struct HarvesterPlanting : IComponentData, IEnableableComponent
+{
+    [GhostField] public NetworkTick PlantStartedTick;
+}
 
-public partial struct HarvesterPlanted : IComponentData, IEnableableComponent{}
+[GhostEnabledBit]
+[GhostComponent]
+public partial struct HarvesterPlanted : IComponentData, IEnableableComponent
+{
+    [GhostField] public NetworkTick PlantedTick;
+}
 
 #region RPCCommands
 public partial struct RpcHarvesterOwnerChange : IRpcCommand
