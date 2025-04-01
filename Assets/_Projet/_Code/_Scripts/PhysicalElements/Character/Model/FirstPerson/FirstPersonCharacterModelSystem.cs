@@ -25,9 +25,19 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation) in SystemAPI
-            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>())
+        foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>()
+            .WithEntityAccess())
         {
+            if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
+            {
+                CommonCharacterModelUtils.DisableModelRendering(modelReference.ModelGameObject);
+            }
+            else
+            {
+                CommonCharacterModelUtils.EnableModelRendering(modelReference.ModelGameObject);
+            }
+
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = math.mul(characterTransform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
             CommonCharacterModelUtils.UpdateModelPositionAndRotation(modelReference.ModelGameObject.transform, newPosition, newRotation);
