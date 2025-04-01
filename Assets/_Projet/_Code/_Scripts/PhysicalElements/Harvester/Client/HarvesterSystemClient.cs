@@ -221,13 +221,24 @@ partial class HarvesterSystemClient : SystemBase
 
             //SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
 
+            ecb.DestroyEntity(entity);
+
+            if (rpc.character == Entity.Null)
+            {
+                Entity responseEntity = ecb.CreateEntity();
+                ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
+                ecb.AddComponent<SendRpcCommandRequest>(responseEntity);
+
+                continue;
+            }
+
             equipStuffQueu.Add(new EquipStuffQueu
             {
                 Stuff = rpc.harvester,
-                Owner = rpc.newOwner
+                Owner = rpc.character
             });
 
-            ecb.DestroyEntity(entity);
+            
         }
 
         ecb.Playback(EntityManager);
