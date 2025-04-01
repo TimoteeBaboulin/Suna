@@ -906,6 +906,46 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponSlot.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[0].Tex
+      value: 
+      objectReference: {fileID: 2800000, guid: e3711f371b8c09a4196e495c46c31aaa, type: 3}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[1].Tex
+      value: 
+      objectReference: {fileID: 2800000, guid: e76b32bc0cb751c4ba6356e840148f12, type: 3}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[2].Tex
+      value: 
+      objectReference: {fileID: 2800000, guid: 17e93a7d2b73ab042a2fa69ffbd00533, type: 3}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[3].Tex
+      value: 
+      objectReference: {fileID: 2800000, guid: a38a5857621389f44bba254545190bfb, type: 3}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[0].Weapon
+      value: ar_corpo
+      objectReference: {fileID: 0}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[1].Weapon
+      value: handgun_corpo
+      objectReference: {fileID: 0}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[2].Weapon
+      value: knife
+      objectReference: {fileID: 0}
+    - target: {fileID: 1770968620400763954, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
+      propertyPath: _weaponMap.Array.data[3].Weapon
+      value: shotgun
+      objectReference: {fileID: 0}
     - target: {fileID: 2506461295743325042, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
       propertyPath: m_Name
       value: HUD
