@@ -52,6 +52,9 @@ public class HUDController : MonoBehaviour
     [SerializeField] private GameObject _errorWindowPrefab;
     private GameObject _errorWindowInstance;
 
+    // Bomb Interaction
+    HarvesterPlantingSystem _harvesterPlantingSystem;
+
     // Bomb Interaction - Deffuse
     VisualElement _defuse;
     VisualElement _defuseFill;
@@ -138,6 +141,14 @@ public class HUDController : MonoBehaviour
         {
             _errorWindowCallerSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<ErrorWindowCallerSystem>();
             _errorWindowCallerSystem.OnErrorMessageSent += OnErrorMessageReceived;
+        }
+
+        if (_harvesterPlantingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _harvesterPlantingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterPlantingSystem>();
+            _harvesterPlantingSystem.OnPlantStart += OnPlantStarts;
+            _harvesterPlantingSystem.OnPlantRunning += OnPlantRunning;
+            _harvesterPlantingSystem.OnPlantCancelOrEnd += OnPlantCancelOrEnd;
         }
 
         if (_hitRegistered)
@@ -303,9 +314,9 @@ public class HUDController : MonoBehaviour
         SetActivePlant(true);
     }
 
-    private void OnPlantRunning(object sender, EventArgs args)
+    private void OnPlantRunning(object sender, HarvesterPlantingSystem.HarversterPlantRunning args)
     {
-        //SetPlantTime(args.time);
+        SetPlantTime(args.time / args.maxTime);
     }
 
     private void OnPlantCancelOrEnd(object sender, EventArgs args)
