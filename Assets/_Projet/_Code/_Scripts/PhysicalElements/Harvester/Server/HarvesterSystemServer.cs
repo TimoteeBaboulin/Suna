@@ -289,8 +289,8 @@ partial struct HarvesterSystemServer : ISystem
                 RpcHarvesterOwnerChange response = new RpcHarvesterOwnerChange
                 {
                     harvester = harvesterEntity,
-                    newOwner = ownerRO.ValueRO.Value,
-                    character = SystemAPI.GetComponentRO<ClientCharacterAttached>(ownerRO.ValueRO.Value).ValueRO.Value
+                    newOwner = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(ownerRO.ValueRO.Value).ValueRO.ClientEntity,
+                    character = ownerRO.ValueRO.Value
                 };
 
                 Entity rpcEntity = ecb.CreateEntity();
