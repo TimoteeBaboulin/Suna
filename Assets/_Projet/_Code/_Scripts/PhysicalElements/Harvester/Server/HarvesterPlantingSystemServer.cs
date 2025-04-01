@@ -50,9 +50,9 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 {
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
+                    Entity characterEntity = ownerRW.ValueRO.Value;
 
-                    Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(ownerRW.ValueRO.Value).ValueRO.Value;
-
+                    
                     StuffInventoryLocation switchToLocation = StuffInventoryLocation.MainWeapon;
                     Entity targetWeaponEntity = Entity.Null;
                     RefRW<CharacterStuffList> stuffListRW = SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity);
@@ -69,11 +69,15 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     }
                     targetWeaponEntity = stuffListRW.ValueRO.Value[(int)switchToLocation];
 
-                    stuffListRW.ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
-                    SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = Entity.Null;
                     SystemAPI.GetComponentRW<CharacterStuffInHandLocation>(characterEntity).ValueRW.Value = StuffInventoryLocation.Melee;
-                    SystemAPI.SetComponentEnabled<IsStuffInHand>(harvesterEntity, false);
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
+
+                    var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();
+                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    {
+                        Owner = characterEntity,
+                        Stuff = harvesterEntity
+                    });
 
                     float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
@@ -98,8 +102,9 @@ partial struct HarvesterPlantingSystemServer : ISystem
                             TargetConnection = client
                         });
                     }
-
+                    SystemAPI.GetComponentRW<PlayerHarvesterActions>(characterEntity).ValueRW.IsPlanting = false;
                     ownerRW.ValueRW.Value = Entity.Null;
+
 
                     Debug.Log("[Server] Harvester planted");
                 }
@@ -139,6 +144,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
             {
                 SystemAPI.GetComponentRW<HarvesterPlanting>(rpc.harvester).ValueRW.PlantStartedTick = rpc.tick;
             }
+            SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsPlanting = true;
 
             Debug.Log("[Server] Plant started");
         }
@@ -150,6 +156,8 @@ partial struct HarvesterPlantingSystemServer : ISystem
 
             Debug.Log("[Server] Plant stopped");
 
+            Entity owner = SystemAPI.GetComponentRO<StuffOwner>(rpc.harvester).ValueRO.Value;
+            SystemAPI.GetComponentRW<PlayerHarvesterActions>(owner).ValueRW.IsPlanting = false;
             ecb.DestroyEntity(entity);
         }
 

@@ -18,7 +18,7 @@ partial class HarvesterSystemClient : SystemBase
 
     protected override void OnCreate()
     {
-        input = new DefaultInputSystem();
+        input = World.GetOrCreateSystemManaged<CharacterInputSystem>().input;
         input.Enable();
 
         playerActions = input.Player;
@@ -39,9 +39,6 @@ partial class HarvesterSystemClient : SystemBase
     protected override void OnUpdate()
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-
-
-        //Debug.Log("Player actions is " + (playerActions.enabled ? "enabled" : "disabled"));
 
         if (firstFrame)
         {
@@ -67,26 +64,6 @@ partial class HarvesterSystemClient : SystemBase
             .Query<RefRW<HarvesterComponent>, RefRW<StuffOwner>>()
             .WithEntityAccess())
         {
-            //if (!EntityManager.HasComponent<StuffGameObjectRef>(harvesterEntity))
-            //{
-            //    Debug.Log("Instanciating harvester GO");
-            //    StuffGameObjectPrefab prefabRef = EntityManager.GetComponentObject<StuffGameObjectPrefab>(harvesterEntity);
-            //    StuffGameObjectRef goRef = new StuffGameObjectRef
-            //    {
-            //        Value = Object.Instantiate(prefabRef.Value)
-            //    };
-
-            //    ecb.AddComponent<TemporaryOverrideGameObjectActive>(harvesterEntity);
-            //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
-            //    ecb.AddComponent(harvesterEntity, goRef);
-            //}
-            //        else if (harvesterRW.ValueRO.Owner == Entity.Null)
-            //{
-            //    StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
-            //    goRef.Value.transform.position = SystemAPI.GetComponentRO<LocalTransform>(harvesterEntity).ValueRO.Position;
-            //}
-
-            //
             if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
                 continue;
 
@@ -107,11 +84,6 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
-
-                foreach(RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
-                {
-                    charInputs.ValueRW.enabled = false;
-                }
             }
             else if (harvesterActions.Attack.WasReleasedThisFrame())
             {
@@ -124,11 +96,6 @@ partial class HarvesterSystemClient : SystemBase
                 Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
                 ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
-
-                foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
-                {
-                    charInputs.ValueRW.enabled = true;
-                }
             }
         }
 
@@ -156,7 +123,7 @@ partial class HarvesterSystemClient : SystemBase
 
                 foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
                 {
-                    charInputs.ValueRW.enabled = false;
+                    //charInputs.ValueRW.enabled = false;
                 }
             }
 
@@ -176,7 +143,7 @@ partial class HarvesterSystemClient : SystemBase
 
                 foreach (RefRW<CharacterInput> charInputs in SystemAPI.Query<RefRW<CharacterInput>>())
                 {
-                    charInputs.ValueRW.enabled = true;
+                    //charInputs.ValueRW.enabled = true;
                 }
             }
         }
@@ -184,16 +151,7 @@ partial class HarvesterSystemClient : SystemBase
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlanted rpc, Entity entity)
              in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
-            //SystemAPI.GetComponentRW<CharacterStuffList>(rpc.harvesterOwner).ValueRW.Value[(int)StuffType.Harvester] = Entity.Null;
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
-
-            //StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
-            //if (goRef is null)
-            //    return;
-
-            //goRef.Value.transform.SetParent(null);
-            //goRef.Value.transform.position = rpc.plantPosition;
-            //goRef.Value.SetActive(true);
 
             unequipStuffQueu.Add(new UnequipStuffQueu
             {
@@ -202,7 +160,6 @@ partial class HarvesterSystemClient : SystemBase
                 Position = rpc.plantPosition
             });
 
-            //ecb.AddComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
             ecb.DestroyEntity(entity);
         }
 
