@@ -10,18 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a93a526a0c3a50d46a4e220681031974, type: 3}
-  m_Name: KnifeTest
+  m_Name: KnifeNeutral
   m_EditorClassIdentifier: 
-  viewPrefab: {fileID: 6440599648175510709, guid: af50f9ec0fd09e94281f518310762df7, type: 3}
+  viewPrefab: {fileID: 154954595485734654, guid: 21f1ec14cf3f2bc4fb2b756e5bd03749, type: 3}
   UIImage: {fileID: 0}
   location: 2
   type: 1
-  side: 0
-  entityName: Knife
+  side: 2
+  entityName: KnifeNeutral
   deploymentSpeed: 1
   storageSpeed: 1
   price: 0
-  _stuffLocalOffsetView: {x: 0.4, y: -0.14, z: 0.4}
+  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
   killGain: 0
   damage: 5
   strongBlowDmg: 10

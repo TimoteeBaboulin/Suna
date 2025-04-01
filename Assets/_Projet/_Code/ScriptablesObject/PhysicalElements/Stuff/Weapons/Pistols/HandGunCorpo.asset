@@ -10,45 +10,45 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
-  m_Name: M1A1Data
+  m_Name: HandGunCorpo
   m_EditorClassIdentifier: 
-  viewPrefab: {fileID: 1063816135455577480, guid: 114c1e9f9f0f25a4aa9172168730f354, type: 3}
+  viewPrefab: {fileID: 8334931021088554020, guid: 2fa5fa5b8bab31942bc2805bb5d67601, type: 3}
   UIImage: {fileID: 0}
-  location: 0
+  location: 1
   type: 0
   side: 0
-  entityName: M1A1
+  entityName: HandGunCorpo
   deploymentSpeed: 0
   storageSpeed: 0
-  price: 1
-  killGain: 300
-  _stuffLocalOffsetView: {x: 0.4, y: -0.35, z: 0.7}
-  recoil: {x: 2, y: 3}
-  damage: 30
+  price: 0
+  killGain: 500
+  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
+  recoil: {x: 0, y: 0}
+  damage: 12
   range: 100
-  firerate: 0.2
-  spread: 6
-  spreadAiming: 7
-  coefSpray: 8
-  coefSprayAiming: 9
-  ergonomics: 10
-  roundsPerMin: 11
-  dmgFallOff: 12
-  coefModifMoveSpeed: 13
-  coefModifMoveSpeedAiming: 14
-  reloadSpeed: 2
-  fastReloadSpeed: 1
-  knockbackForceOnKill: 17
+  firerate: 0.8
+  spread: 0
+  spreadAiming: 0
+  coefSpray: 0
+  coefSprayAiming: 0
+  ergonomics: 0
+  roundsPerMin: 0
+  dmgFallOff: 0
+  coefModifMoveSpeed: 0
+  coefModifMoveSpeedAiming: 0
+  reloadSpeed: 1
+  fastReloadSpeed: 0.5
+  knockbackForceOnKill: 0
   lastFireTimeMax: 0.7
-  nbMagazine: 4
-  magazineCapacity: 60
+  nbMagazine: 6
+  magazineCapacity: 12
   scope: {fileID: 0}
   handle: {fileID: 0}
   cross: {fileID: 0}
   silencer: {fileID: 0}
   magazine: {fileID: 0}
-  thorax: 20
-  stomach: 21
-  legs_Arms: 22
-  head: 23
+  thorax: 0
+  stomach: 0
+  legs_Arms: 0
+  head: 0
   ammoType: {fileID: 0}
