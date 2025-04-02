@@ -67,12 +67,11 @@ partial struct HarvesterDefuseSystemServer : ISystem
                 //Defused
                 SystemAPI.SetComponentEnabled<HarvesterPlanted>(defusingHarvesterEntity, false);
                 SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
+                SystemAPI.SetComponentEnabled<HarvesterDefusing>(defusingHarvesterEntity, false);
 
                 defusingHarvesterEntity = Entity.Null;
                 defuserEntity = Entity.Null;
                 Debug.Log("[Server] Harvester was defused");
-
-                SystemAPI.SetComponentEnabled<HarvesterDefusing>(defusingHarvesterEntity, false);
             }
         }
 
