@@ -14,19 +14,19 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
-  m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_FogMode: 3
+  m_Fog: 1
+  m_FogColor: {r: 0.9607843, g: 0.47843137, b: 0.1764706, a: 1}
+  m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
-  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
-  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
-  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
+  m_AmbientSkyColor: {r: 0.25490198, g: 0.5647059, b: 0.7176471, a: 1}
+  m_AmbientEquatorColor: {r: 0.5058824, g: 0.56078434, b: 0.7490196, a: 1}
+  m_AmbientGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_AmbientIntensity: 1
-  m_AmbientMode: 0
+  m_AmbientMode: 1
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: babc67b72a83f184e8592680fc29d551, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -94,7 +94,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 112000002, guid: 7b6f4aefcf14a4345a5c6437c2d9028d, type: 2}
-  m_LightingSettings: {fileID: 4890085278179872738, guid: 005fff8a06bbc654b849ab7261b39207, type: 2}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: aacaff9688c586f4783cefa481e76fb8, type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -648,6 +648,56 @@ MultiplayerRolesData:
   m_ComponentsRolesMasks:
   - m_Object: {fileID: 1337306815}
     m_RolesMask: 1
+--- !u!1 &1427998401
+GameObject:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1427998403}
+  - component: {fileID: 1427998402}
+  m_Layer: 0
+  m_Name: ProbeVolumePerSceneData
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1427998402
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427998401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a83d2f7ae04ab6f4f99b0d85377be998, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializedBakingSet: {fileID: 0}
+  sceneGUID: a366e6748623df340b010de537642672
+  obsoleteAsset: {fileID: 0}
+  obsoleteCellSharedDataAsset: {fileID: 0}
+  obsoleteCellSupportDataAsset: {fileID: 0}
+  obsoleteSerializedScenarios: []
+--- !u!4 &1427998403
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1427998401}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1623078504
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,19 +1040,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ab704b4536c06478030f49690b0f13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitializationSettings: {fileID: 11400000, guid: a33fd9d9c7c56424cbcbea0493620991, type: 2}
-  basePath: 
-  language: 
-  defaultPoolSize: 0
-  lowerPoolSize: 0
-  streamingPoolSize: 0
-  memoryCutoffThreshold: 0
-  monitorPoolSize: 0
-  monitorQueuePoolSize: 0
-  callbackManagerBufferSize: 0
-  spatialAudioPoolSize: 0
-  maxSoundPropagationDepth: 0
-  engineLogging: 0
 --- !u!4 &1810152299
 Transform:
   m_ObjectHideFlags: 0
@@ -1232,7 +1269,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.4
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -1271,18 +1308,18 @@ Light:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingLayerMask: 1
-  m_Lightmapping: 4
+  m_Lightmapping: 1
   m_LightShadowCasterMode: 2
   m_AreaSize: {x: 0.5, y: 0.5}
   m_BounceIntensity: 1
-  m_ColorTemperature: 8000
+  m_ColorTemperature: 3873
   m_UseColorTemperature: 1
   m_BoundingSphereOverride: {x: 7.234e-42, y: 2.524355e-29, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_UseViewFrustumForShadowCasterCull: 1
   m_ForceVisible: 0
   m_ShadowRadius: 0
-  m_ShadowAngle: 50
+  m_ShadowAngle: 90
   m_LightUnit: 2
   m_LuxAtDistance: 1
   m_EnableSpotReflector: 1
@@ -1294,13 +1331,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1999031785}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.60925335, y: 0.0145374555, z: 0.037393834, w: 0.79196}
+  m_LocalRotation: {x: 0.1563055, y: -0.11935342, z: 0.61040354, w: 0.767288}
   m_LocalPosition: {x: 0, y: 8.65, z: 45.78}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 74.562, y: 14.932, z: 16.801}
+  m_LocalEulerAnglesHint: {x: 22.679, y: 0.476, z: 77.102}
 --- !u!1652712579 &1999031789
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
@@ -1326,8 +1363,8 @@ MonoBehaviour:
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
   m_LightLayerMask: 1
-  m_RenderingLayers: 1
-  m_CustomShadowLayers: 0
+  m_RenderingLayers: 5
+  m_CustomShadowLayers: 1
   m_ShadowLayerMask: 1
   m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
@@ -1386,8 +1423,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
-  far clip plane: 1000
+  near clip plane: 0.1
+  far clip plane: 2000
   field of view: 60
   orthographic: 0
   orthographic size: 5
@@ -1433,10 +1470,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4189884339f7f3b49aa74c61c3840393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isDefaultListener: 1
-  bOverrideScalingFactor: 0
-  scalingFactor: -1
-  listenerId: 0
 --- !u!114 &2021676139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1449,18 +1482,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b60de2044443d544ab62056252bafac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_listeners:
-    initialListenerList: []
-    useDefaultListeners: 1
-  isEnvironmentAware: 1
-  isStaticObject: 0
-  usePositionOffsetData: 0
-  m_positionOffsetData:
-    KeepMe: 0
-    positionOffset: {x: 0, y: 0, z: 0}
-  scalingFactor: 1
-  m_posOffsetData: {fileID: 0}
-  listenerMask: 1
 --- !u!114 &2021676140
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1550,3 +1571,4 @@ SceneRoots:
   - {fileID: 1738390745}
   - {fileID: 1697229219}
   - {fileID: 1259431066}
+  - {fileID: 1427998403}
