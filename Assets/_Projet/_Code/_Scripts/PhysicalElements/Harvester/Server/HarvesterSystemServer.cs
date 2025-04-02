@@ -25,8 +25,11 @@ partial struct HarvesterSystemServer : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
-        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();
+        if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueu>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueu>(out var unequipStuffQueu))
+        {
+           // Debug.Log("Can't handle harvester spawn since equip and unequip queues are not loaded yet");
+            return;
+        }
 
         if (!harvesterIsInstantiated)
         {

@@ -786,6 +786,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[0]'
+      value: 
+      objectReference: {fileID: 6329907263781521101, guid: bab3f7c6f28e00b41a4352536ec1c637, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8334931021088554020, guid: 2fa5fa5b8bab31942bc2805bb5d67601, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[2]'
+      value: 
+      objectReference: {fileID: 154954595485734654, guid: 21f1ec14cf3f2bc4fb2b756e5bd03749, type: 3}
     - target: {fileID: 6542852334063179998, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: m_Name
       value: TempSingletonMochePourPrefabStuffView
@@ -1187,7 +1199,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60
   orthographic: 0
@@ -1253,7 +1265,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2021676133}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2784ad5664d3b354982d95815c56b0d1, type: 3}
   m_Name: 

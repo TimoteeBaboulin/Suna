@@ -102,7 +102,7 @@ public partial struct RoundSystemServer : ISystem
         else
         {
             //Update the timer and change to next phase in case the timer runs out
-            roundComponent.ValueRW.timer -= Time.deltaTime;
+            roundComponent.ValueRW.timer -= SystemAPI.Time.DeltaTime;
             if (roundComponent.ValueRO.timer < 0)
             {
                 TimeOutPhase(ref state, entity, roundComponent, ecb);
