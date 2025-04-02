@@ -6,7 +6,7 @@ using Unity.Physics;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
-partial struct CommonCharacterPhysicsSystem : ISystem
+partial struct CharacterEnvironementColliderSystem : ISystem
 {
     [BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -26,7 +26,7 @@ partial struct CommonCharacterPhysicsSystem : ISystem
             .WithEntityAccess())
         {
             CollisionFilter filter = physicsCollider.ValueRO.Value.Value.GetCollisionFilter();
-            filter.CollidesWith &= ~(1u << 6);
+            filter.CollidesWith = ~(1u << 6);
             physicsCollider.ValueRO.Value.Value.SetCollisionFilter(filter);
             ecb.AddComponent<CharacterDeadColliderTag>(characterEntity);
         }
@@ -37,7 +37,7 @@ partial struct CommonCharacterPhysicsSystem : ISystem
             .WithEntityAccess())
         {
             CollisionFilter filter = physicsCollider.ValueRO.Value.Value.GetCollisionFilter();
-            filter.CollidesWith &= 0xFFFFFFFF;
+            filter.CollidesWith = 0xFFFFFFFF;
             physicsCollider.ValueRO.Value.Value.SetCollisionFilter(filter);
             ecb.RemoveComponent<CharacterDeadColliderTag>(characterEntity);
         }
