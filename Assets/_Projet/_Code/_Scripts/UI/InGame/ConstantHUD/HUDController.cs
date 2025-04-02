@@ -184,7 +184,6 @@ public class HUDController : MonoBehaviour
 
     private void OnStuffIdChange(object sender, WeaponListLinkSystem.StuffIdEventArgs args)
     {
-        Debug.Log(args.StuffId);
         foreach (VisualElement weapon in _weaponContainer.Children())
         {
             bool selectedId = int.Parse(weapon.Q<Label>("Slot").text) == (args.StuffId + 1);
