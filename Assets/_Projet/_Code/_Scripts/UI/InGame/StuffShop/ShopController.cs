@@ -47,7 +47,18 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
-                btn.clicked += () => Debug.Log(weaponDict[btn].entityName);
+
+
+                btn.clicked += () => /*Debug.Log(weaponDict[btn].entityName);*/
+                {
+                    ShopCommand sc = new ShopCommand
+                    {
+                        weaponData = weaponDict[btn].entityName,
+                    };
+
+                    RpcUtils.SendClientToServerRpc(ref sc);
+                };
+
                 // On hover Debug Log entity name
                 btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
                 btn.RegisterCallback<PointerLeaveEvent>(evt => OnShopButtonLeave());
@@ -60,8 +71,9 @@ public class ShopController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.B))
         {
+            Debug.LogError("Coucou");
             UI.ToggleActive(ref root);
         }
     }

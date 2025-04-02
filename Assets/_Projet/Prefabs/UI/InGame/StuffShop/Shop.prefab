@@ -64,18 +64,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 594129500dd49d24bb6f4a2324fb8c1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  line: {fileID: 9197481963319205126, guid: 59167dc34773eb543884dff016b2c2a0, type: 3}
-  stuff: {fileID: 9197481963319205126, guid: 30617fd960daa6041940831319625e3b, type: 3}
-  items:
-  - Pistol
-  - Sniper
-  - Rifle
-  - Grenade
-  - Flash
-  - Molotov
-  - Kevlar
-  - Helmet
-  - Knife
-  - Bow
-  - Flamethrower
-  - Minigun
+  m1a1: {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
