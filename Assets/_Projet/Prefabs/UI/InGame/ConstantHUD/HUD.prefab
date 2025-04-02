@@ -66,23 +66,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponAsset: {fileID: 9197481963319205126, guid: 6bd4124618971034296a0ec34e5b3522, type: 3}
   _weaponMap:
-  - Weapon: Knife
-    Tex: {fileID: 2800000, guid: 743fbec9600556340bf5504eb988d570, type: 3}
-  - Weapon: PistolC
-    Tex: {fileID: 2800000, guid: 55e83f6a90f7e164e869bc625cd999d2, type: 3}
-  - Weapon: PistolN
-    Tex: {fileID: 2800000, guid: e288b126403db6c42a5024b39b75da8a, type: 3}
-  - Weapon: RifleC
-    Tex: {fileID: 2800000, guid: b0d9994389febad43989d138706390be, type: 3}
-  - Weapon: RifleN
-    Tex: {fileID: 2800000, guid: 120eb63a7dcf16f45ace0b0a9c8cafa0, type: 3}
-  - Weapon: Shotgun
-    Tex: {fileID: 2800000, guid: bef0b3d40807d854296bed240d6fbabb, type: 3}
-  _weaponSlot:
-  - SlotNumber: 1
-    Weapon: RifleC
-  - SlotNumber: 2
-    Weapon: PistolC
-  - SlotNumber: 3
-    Weapon: Knife
+  - Weapon: ar_corpo
+    Tex: {fileID: 2800000, guid: e3711f371b8c09a4196e495c46c31aaa, type: 3}
+  - Weapon: handgun_corpo
+    Tex: {fileID: 2800000, guid: e76b32bc0cb751c4ba6356e840148f12, type: 3}
+  - Weapon: knife
+    Tex: {fileID: 2800000, guid: 17e93a7d2b73ab042a2fa69ffbd00533, type: 3}
+  - Weapon: shotgun
+    Tex: {fileID: 2800000, guid: a38a5857621389f44bba254545190bfb, type: 3}
+  - Weapon: flash
+    Tex: {fileID: 2800000, guid: 3bf107d4b83258940b56973fc07a2140, type: 3}
+  - Weapon: grenade
+    Tex: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
+  - Weapon: molotov
+    Tex: {fileID: 2800000, guid: 155ce38312023144daed970fc32403d4, type: 3}
+  - Weapon: harvester
+    Tex: {fileID: 2800000, guid: 5df4077d4c9959d4891fdd672a71c71c, type: 3}
+  - Weapon: smoke
+    Tex: {fileID: 2800000, guid: 6443b435f173e9140baa4b8395256c97, type: 3}
+  _weaponSlot: []
   _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}

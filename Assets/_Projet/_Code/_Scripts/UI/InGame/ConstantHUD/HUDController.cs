@@ -97,21 +97,6 @@ public class HUDController : MonoBehaviour
         _plant = _HUD.Q<VisualElement>("Plant");
         _plantFill = _plant.Q<VisualElement>("PlantFill");
 
-        // Initialize Weapon Container
-        for (int i = 0; i < _weaponSlot.Count; i++)
-        {
-            _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
-            _weaponContainer.Children().Last().Q<Label>("Slot").text = _weaponSlot[i].SlotNumber.ToString();
-            _weaponContainer.Children().Last().style.backgroundImage = new()
-            {
-                value = new()
-                {
-                    texture = _weaponMap.Find(wm => wm.Weapon == _weaponSlot[i].Weapon).Tex
-                }
-            };
-            _weaponContainer.Children().Last().style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, i == selectedSlot ? 1f : .125f);
-        }
-
         // Hide Message Box at start
         UI.SetActive(ref _messageBox, false);
 
