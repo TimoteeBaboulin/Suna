@@ -60,7 +60,7 @@ MonoBehaviour:
     m_UseCustomSerializer: 0
   ConnectTimeoutMS: 1000
   MaxConnectAttempts: 60
-  DisconnectTimeoutMS: 30000
+  DisconnectTimeoutMS: 10000
   HeartbeatTimeoutMS: 500
   ReconnectionTimeoutMS: 2000
   ClientSendQueueCapacity: 64
