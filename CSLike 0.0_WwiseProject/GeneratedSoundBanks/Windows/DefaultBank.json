@@ -1,0 +1,79 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Windows",
+  "BasePlatform": "Windows",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "154",
+  "SoundBanks": [
+   {
+    "Id": "187290962",
+    "Type": "User",
+    "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
+    "Language": "SFX",
+    "Hash": "{DE38A212-61F9-8035-F0CA-529101696C7A}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
+    "ShortName": "DefaultBank",
+    "Path": "DefaultBank.bnk",
+    "Media": [
+     {
+      "Id": "66276190",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "GUNShotg_Saiga 12 Cal.12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo.wav",
+      "CachePath": "57/{57FE2521-54B8-13A9-A567-D2396A727F5C}.wem"
+     },
+     {
+      "Id": "612258208",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "That Person's Name Is   Bravely Default OST.wav",
+      "CachePath": "56/{56AACBAB-372B-1291-E6A0-970043C86FBE}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "202194903",
+      "Name": "Music_Play",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music_Play",
+      "GUID": "{3EBA5C8C-4553-482C-90E4-A03692DA77AE}",
+      "DurationType": "OneShot",
+      "DurationMin": "338.2335",
+      "DurationMax": "338.2335",
+      "MediaRefs": [
+       {
+        "Id": "612258208"
+       }
+      ]
+     },
+     {
+      "Id": "3227181061",
+      "Name": "Music_Stop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music_Stop",
+      "GUID": "{ED12738B-57AB-4F92-9E1B-85F324984FA9}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "3479778571",
+      "Name": "Sound_Play",
+      "ObjectPath": "\\Events\\Default Work Unit\\Sound_Play",
+      "GUID": "{6DA026ED-0C7F-4945-830C-DA3BDFF95CE3}",
+      "DurationType": "OneShot",
+      "DurationMin": "49.367916",
+      "DurationMax": "49.367916",
+      "MediaRefs": [
+       {
+        "Id": "66276190"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{2C3AA7D1-B64F-6F77-33B5-C58319C77D8B}"
+ }
+}

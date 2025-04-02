@@ -1,0 +1,5 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="WeaponVisual" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/AmmoInfo/Arme_non_selectionne.png?fileID=2800000&amp;guid=f708df506774cc14f94f8c074c2e4250&amp;type=3#Arme_non_selectionne&quot;); width: 189px; height: 67px; -unity-background-scale-mode: stretch-to-fill; margin-top: 20px; margin-right: 20px; margin-bottom: 20px; margin-left: 20px;">
+        <engine:Label text="1" name="Slot" style="-unity-text-align: upper-right; color: rgb(255, 255, 255); -unity-font-style: bold; font-size: 25px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; right: -20px; top: -10px;" />
+    </engine:VisualElement>
+</engine:UXML>

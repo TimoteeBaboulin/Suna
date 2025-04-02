@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Projet/_Code/_Scripts/UI/OutGame/MainMenu/main-menu.uss?fileID=7433441132597879392&amp;guid=a94d734d4c6be40489081ba40fa40f7f&amp;type=3#main-menu" />
+    <ui:VisualElement name="Background" style="flex-grow: 1; visibility: visible; display: flex; flex-direction: row;">
+        <ui:VisualElement name="MainMenuElements" class="element-background" style="width: 600px; background-color: rgba(77, 77, 77, 0.75);">
+            <ui:VisualElement style="flex-grow: 1; -unity-background-scale-mode: scale-to-fit; background-image: none;" />
+            <ui:Button text="Play" name="PlayButton" class="main-menu-button" />
+            <ui:Button text="Settings" name="SettingsButton" class="main-menu-button" />
+            <ui:Button text="Quit" name="QuitButton" class="main-menu-button" />
+        </ui:VisualElement>
+        <ui:VisualElement name="Container" style="flex-grow: 1;" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_EnableSafetyChecks: 1
   m_AutomaticSelectionOptions:
-    m_StripRenderComponents: 0
-    m_StripUIComponents: 0
-    m_StripAudioComponents: 0
+    m_StripRenderComponents: 1
+    m_StripUIComponents: 1
+    m_StripAudioComponents: 1
     m_CustomComponentsList:
       m_Keys: []
       m_Values: 
