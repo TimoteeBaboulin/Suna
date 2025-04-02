@@ -4,6 +4,8 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 using Unity.Mathematics;
+using Unity.Rendering;
+using Unity.Transforms;
 
 [GhostComponent]
 public struct EquipStuffQueu : IBufferElementData
@@ -40,7 +42,10 @@ public partial struct EquipStuffSystem : ISystem
 
         foreach (var duo in equipStuffQueu)
         {
+            if (duo.Owner == Entity.Null || duo.Stuff == Entity.Null) continue;
+
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
+            var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
@@ -49,7 +54,8 @@ public partial struct EquipStuffSystem : ISystem
                 unequipStuffQueu.Add(new UnequipStuffQueu
                 {
                     Stuff = ownerStuffList.ValueRW.Value[(int)stufData.location],
-                    Owner = duo.Owner
+                    Owner = duo.Owner,
+                    Position = ownerPos
                 });
             }
 
@@ -88,6 +94,8 @@ public partial struct UnequipStuffSystem : ISystem
 
         foreach (var duo in equipStuffQueu)
         {
+            if (duo.Owner == Entity.Null || duo.Stuff == Entity.Null) continue;
+
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
