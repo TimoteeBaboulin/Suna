@@ -33,20 +33,18 @@ public class GameManager : Singleton<GameManager>
         //RpcUtils.SendDefaultToServerRPC(ref command);
     }
 
-    private async void Start()
+    private void Start()
     {
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
         loadingToken = new CancellationTokenSource();
 
 
-        if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
-        {
-            await ClientTransportHelper.StartServicesAsync();
-            Debug.Log($"Port in GameManager : {AutoConnectPort}");
-            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
-        }
+        //if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
+        //{
+        //    Debug.Log($"Port in GameManager : {AutoConnectPort}");
+        //    serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
+        //}
     }
-
     public async Task Play()
     {
         await ClientTransportHelper.StartServicesAsync();

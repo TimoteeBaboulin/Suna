@@ -1,4 +1,5 @@
 
+using GameNetwork.Utils;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -21,11 +22,12 @@ public partial class ServerSystem : SystemBase
 {
     private ComponentLookup<NetworkId> _clients;
 
-    protected override void OnCreate()
+    protected override async void OnCreate()
     {
         _clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
+        await ClientTransportHelper.StartServicesAsync();
     }
     protected override void OnUpdate()
     {
