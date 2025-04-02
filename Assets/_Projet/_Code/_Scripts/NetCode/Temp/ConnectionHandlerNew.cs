@@ -20,7 +20,7 @@ using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
 
-public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
+public class ConnectionHandlerNew : MonoBehaviour
 {
     private ushort _port = 7979;
     private string _ip;
@@ -32,7 +32,7 @@ public class ConnectionHandlerNew : Singleton<ConnectionHandlerNew>
     public string IP { get; private set; }
     public ushort Port { get; private set; }
     public bool ClientLocal => isClientLocal;
-    protected override void Awake()
+    protected void Awake()
     {
         connectionSettings = GetComponent<ConnectionSettings>();
         isClientLocal = connectionSettings.isClientLocal;

@@ -27,7 +27,6 @@ public partial class ServerSystem : SystemBase
         _clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
-        await ClientTransportHelper.StartServicesAsync();
     }
     protected override void OnUpdate()
     {

@@ -33,17 +33,17 @@ public class GameManager : Singleton<GameManager>
         //RpcUtils.SendDefaultToServerRPC(ref command);
     }
 
-    private void Start()
+    private async void Start()
     {
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
         loadingToken = new CancellationTokenSource();
 
-
-        //if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
-        //{
-        //    Debug.Log($"Port in GameManager : {AutoConnectPort}");
-        //    serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
-        //}
+        if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
+        {
+            await ClientTransportHelper.StartServicesAsync();
+            Debug.Log($"Port in GameManager : {AutoConnectPort}");
+            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
+        }
     }
     public async Task Play()
     {
@@ -216,9 +216,13 @@ public class GameManager : Singleton<GameManager>
     {
         await Awaitable.EndOfFrameAsync();
 
+
         for (var i = World.All.Count - 1; i >= 0; i--)
         {
             var world = World.All[i];
+
+            if (world == World.DefaultGameObjectInjectionWorld) { continue; }
+
             if (world.IsClient())
             {
                 world.Dispose();
