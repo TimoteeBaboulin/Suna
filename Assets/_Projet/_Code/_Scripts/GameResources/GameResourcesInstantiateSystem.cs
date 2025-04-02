@@ -21,28 +21,22 @@ partial struct InstanciateEntityStuffSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        Debug.Log("Pre-Loop");
 
         foreach (var (prefabsRO, database, stuffQueu) in SystemAPI.Query<
             RefRO<GameResourcesStuffEntityPrefabs>,
             RefRO<GameResourcesDatabase>,
             DynamicBuffer<GameResourcesInstanciateStuffQueu>>())
         {
-            Debug.Log("Start Loop");
             ref var stuffCommonDataArray = ref database.ValueRO.StuffDatabaseRef.Value.StuffCommonData;
             ref readonly var prefabs = ref prefabsRO.ValueRO;
             FixedString128Bytes Name;
 
-            Debug.Log("Pre-Second Loop");
             foreach (var item in stuffQueu)
             {
-                Debug.Log("Pre-Third Loop");
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
-                    Debug.Log("Pre-Instantiate");
                     Name = item.StuffName;
 
-                    Debug.Log("Pre-If");
                     if (stuffCommonDataArray[i].Name.ToString() == Name.Value)
                     {
                         ref StuffCommonData stuffData = ref stuffCommonDataArray[i];
@@ -63,7 +57,6 @@ partial struct InstanciateEntityStuffSystem : ISystem
                                 break;
                         }
 
-                        Debug.Log("Pre-Genuine Instantiate");
                         if (prefab != Entity.Null)
                         {
                             Entity stuff = ecb.Instantiate(prefab);
@@ -91,7 +84,6 @@ partial struct InstanciateEntityStuffSystem : ISystem
             }
             stuffQueu.Clear();
         }
-        Debug.Log("End Instantiate");
     }
 }
 
