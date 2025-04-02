@@ -9,7 +9,7 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
 {
-    public int MaxPlayers = 3;
+    public int MaxPlayers = 11;
     public string SessionCode { get; private set; } = "DDDDDD";
     private ClientTransportHelper serverConnectionSettings;
 
