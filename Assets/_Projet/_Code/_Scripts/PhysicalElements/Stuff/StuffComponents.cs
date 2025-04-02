@@ -51,7 +51,7 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 {
 }
 
-[GhostEnabledBit]
+
 public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
 }

@@ -5,7 +5,6 @@ using System.Linq;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.UIElements;
-
 using UI = UIDocumentUtils;
 
 public class HUDController : MonoBehaviour
@@ -37,16 +36,16 @@ public class HUDController : MonoBehaviour
 
     private StyleColor _crosshairBaseColor;
 
-    // Weapon Slot
+    // Weapon List
     private VisualElement _weaponContainer;
     [SerializeField] private VisualTreeAsset _weaponAsset;
     [SerializeField] List<WeaponMap> _weaponMap;
     [SerializeField] List<WeaponSlot> _weaponSlot;
-    private int selectedSlot = 0;
+    private WeaponListLinkSystem _weaponListLinkSystem;
 
     // Message Box
-    private VisualElement _messageBox;
-    private ScrollView _messageBoxScrollView;
+    //private VisualElement _messageBox;
+    //private ScrollView _messageBoxScrollView;
 
     // ErrorWindow
     [SerializeField] private GameObject _errorWindowPrefab;
@@ -88,8 +87,8 @@ public class HUDController : MonoBehaviour
 
         _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
 
-        _messageBox = _HUD.Q<VisualElement>("MessageBox");
-        _messageBoxScrollView = _messageBox.Q<ScrollView>();
+        //_messageBox = _HUD.Q<VisualElement>("MessageBox");
+        //_messageBoxScrollView = _messageBox.Q<ScrollView>();
 
         _defuse = _HUD.Q<VisualElement>("Defuse");
         _defuseFill = _defuse.Q<VisualElement>("DefuseFill");
@@ -98,7 +97,7 @@ public class HUDController : MonoBehaviour
         _plantFill = _plant.Q<VisualElement>("PlantFill");
 
         // Hide Message Box at start
-        UI.SetActive(ref _messageBox, false);
+        //UI.SetActive(ref _messageBox, false);
 
         UI.SetActive(ref _defuse, false);
         UI.SetActive(ref _plant, false);
@@ -107,7 +106,7 @@ public class HUDController : MonoBehaviour
     private void Update()
     {
         // If too much message, delete previous ones
-        if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
+        //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
         // Initialize InGameHUDSystem in Update because need to be in the right world
         if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
@@ -139,26 +138,17 @@ public class HUDController : MonoBehaviour
             _harvesterPlantingSystem.OnPlantCancelOrEnd += OnPlantCancelOrEnd;
         }
 
+        if (_weaponListLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _weaponListLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<WeaponListLinkSystem>();
+            _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
+        }
+
         if (_hitRegistered)
         {
             _hitRegistered = false;
             StartCoroutine(HitRegistered());
         }
-
-        // Weapon Selection Scrolling
-        //if (Input.GetAxis("Mouse ScrollWheel") < 0) // backward
-        //{
-        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
-        //    selectedSlot = (selectedSlot + 1) % _weaponSlot.Count;
-        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
-        //}
-        //else if (Input.GetAxis("Mouse ScrollWheel") > 0) // forward
-        //{
-        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
-        //    if (selectedSlot == 0) selectedSlot = _weaponSlot.Count - 1;
-        //    else selectedSlot = (selectedSlot - 1) % _weaponSlot.Count;
-        //    _weaponContainer.Children().ToList()[selectedSlot].style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, 1f);
-        //}
 
         // If RoundManager Linked, change values (for now in update and not when needed)
         if (_roundManagerLinkSystem != null)
@@ -179,6 +169,19 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
+    }
+
+    private void OnStuffListChange(object sender, WeaponListLinkSystem.StuffListChangeEventArgs args)
+    {
+        _weaponContainer.Clear();
+        int count = 0;
+        foreach (string stuffName in args.StuffListNames)
+        {
+            _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
+            _weaponContainer.Children().Last().Q<Label>("Slot").text = (args.StuffListIds[count] + 1).ToString();
+            _weaponContainer.Children().Last().style.backgroundImage = _weaponMap.Find(wm => wm.Weapon == stuffName.ToLower()).Tex;
+            count++;
+        }
     }
 
     private void OnErrorMessageReceived(object sender, ErrorWindowCallerSystem.ErrorMessage args)
@@ -240,14 +243,14 @@ public class HUDController : MonoBehaviour
         _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
 
-    public void SendMessageToTchat(string message, Color messageColor)
-    {
-        if (message == null) return;
-        Label label = new(message);
-        label.style.color = messageColor;
-        label.style.fontSize = 20;
-        _messageBoxScrollView.contentContainer.Add(label);
-    }
+    //public void SendMessageToTchat(string message, Color messageColor)
+    //{
+    //    if (message == null) return;
+    //    Label label = new(message);
+    //    label.style.color = messageColor;
+    //    label.style.fontSize = 20;
+    //    _messageBoxScrollView.contentContainer.Add(label);
+    //}
 
     public void SetActiveDefuse(bool value)
     {

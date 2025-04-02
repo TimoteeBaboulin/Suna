@@ -3,7 +3,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+
 partial struct InstanciateEntityStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -86,7 +86,7 @@ partial struct InstanciateEntityStuffSystem : ISystem
     }
 }
 
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+
 partial struct ProcessPendingStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)

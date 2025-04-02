@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2642215316524588410}
   - component: {fileID: 879477122032621473}
   - component: {fileID: 1770968620400763954}
+  - component: {fileID: 6461208371077268186}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -66,9 +67,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponAsset: {fileID: 9197481963319205126, guid: 6bd4124618971034296a0ec34e5b3522, type: 3}
   _weaponMap:
-  - Weapon: ar_corpo
+  - Weapon: m1a1
     Tex: {fileID: 2800000, guid: e3711f371b8c09a4196e495c46c31aaa, type: 3}
-  - Weapon: handgun_corpo
+  - Weapon: gun
     Tex: {fileID: 2800000, guid: e76b32bc0cb751c4ba6356e840148f12, type: 3}
   - Weapon: knife
     Tex: {fileID: 2800000, guid: 17e93a7d2b73ab042a2fa69ffbd00533, type: 3}
@@ -86,3 +87,14 @@ MonoBehaviour:
     Tex: {fileID: 2800000, guid: 6443b435f173e9140baa4b8395256c97, type: 3}
   _weaponSlot: []
   _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}
+--- !u!1652712579 &6461208371077268186
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8977548657208505599}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 1770968620400763954}
+    m_RolesMask: 1
