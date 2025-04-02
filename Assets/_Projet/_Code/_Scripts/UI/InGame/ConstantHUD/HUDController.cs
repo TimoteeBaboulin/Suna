@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
@@ -151,6 +152,7 @@ public class HUDController : MonoBehaviour
         {
             _weaponListLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<WeaponListLinkSystem>();
             _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
+            _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
 
         if (_hitRegistered)
@@ -180,6 +182,16 @@ public class HUDController : MonoBehaviour
         //}
     }
 
+    private void OnStuffIdChange(object sender, WeaponListLinkSystem.StuffIdEventArgs args)
+    {
+        Debug.Log(args.StuffId);
+        foreach (VisualElement weapon in _weaponContainer.Children())
+        {
+            bool selectedId = int.Parse(weapon.Q<Label>("Slot").text) == (args.StuffId + 1);
+            weapon.style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, selectedId ? 1f : .125f);
+        }
+    }
+
     private void OnStuffListChange(object sender, WeaponListLinkSystem.StuffListChangeEventArgs args)
     {
         _weaponContainer.Clear();
@@ -188,9 +200,9 @@ public class HUDController : MonoBehaviour
         {
             _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
             _weaponContainer.Children().Last().Q<Label>("Slot").text = (args.StuffListIds[count] + 1).ToString();
-            _weaponContainer.Children().Last().style.backgroundImage = _weaponMap.Find(wm => wm.Weapon.ToLower() == stuffName.ToLower()).Tex;
+            _weaponContainer.Children().Last().style.backgroundImage = _weaponMap.Find(wm => wm.Weapon == stuffName).Tex;
+            _weaponContainer.Children().Last().style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, .125f);
             count++;
-            Debug.Log(stuffName);
         }
     }
 

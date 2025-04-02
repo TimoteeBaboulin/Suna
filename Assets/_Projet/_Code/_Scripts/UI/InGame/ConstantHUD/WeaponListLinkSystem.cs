@@ -11,7 +11,13 @@ partial class WeaponListLinkSystem : SystemBase
         public List<int> StuffListIds;
     }
 
+    public class StuffIdEventArgs : EventArgs
+    {
+        public int StuffId;
+    }
+
     public event EventHandler<StuffListChangeEventArgs> OnStuffListChange;
+    public event EventHandler<StuffIdEventArgs> OnStuffIdChange;
 
     int stuffInHandIndex = -1;
 
@@ -41,6 +47,12 @@ partial class WeaponListLinkSystem : SystemBase
                     StuffListIds = ids
                 });
             }
+
+            stuffInHandIndex = (int)stuffInHand.ValueRO.Value;
+            OnStuffIdChange?.Invoke(this, new StuffIdEventArgs()
+            {
+                StuffId = stuffInHandIndex
+            });
         }
     }
 }
