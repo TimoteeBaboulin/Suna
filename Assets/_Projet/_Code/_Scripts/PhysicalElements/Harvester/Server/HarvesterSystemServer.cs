@@ -27,7 +27,7 @@ partial struct HarvesterSystemServer : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
         if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueu>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueu>(out var unequipStuffQueu))
         {
-            Debug.Log("Can't handle harvester spawn since equip and unequip queues are not loaded yet");
+           // Debug.Log("Can't handle harvester spawn since equip and unequip queues are not loaded yet");
             return;
         }
 
