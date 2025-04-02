@@ -53,6 +53,7 @@ public class HUDController : MonoBehaviour
 
     // Bomb Interaction
     HarvesterPlantingSystem _harvesterPlantingSystem;
+    HarvesterDefusingSystem _harvesterDefusingSystem;
 
     // Bomb Interaction - Deffuse
     VisualElement _defuse;
@@ -137,6 +138,14 @@ public class HUDController : MonoBehaviour
             _harvesterPlantingSystem.OnPlantRunning += OnPlantRunning;
             _harvesterPlantingSystem.OnPlantCancelOrEnd += OnPlantCancelOrEnd;
         }
+        
+        if (_harvesterDefusingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        {
+            _harvesterDefusingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterDefusingSystem>();
+            _harvesterDefusingSystem.OnDefuseStart += OnDefuseStarts;
+            _harvesterDefusingSystem.OnDefuseRunning += OnDefuseRunning;
+            _harvesterDefusingSystem.OnDefuseCancelOrEnd += OnDefuseCancelOrEnd;
+        }
 
         if (_weaponListLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
@@ -179,8 +188,9 @@ public class HUDController : MonoBehaviour
         {
             _weaponContainer.Add(_weaponAsset.Instantiate().Children().First());
             _weaponContainer.Children().Last().Q<Label>("Slot").text = (args.StuffListIds[count] + 1).ToString();
-            _weaponContainer.Children().Last().style.backgroundImage = _weaponMap.Find(wm => wm.Weapon == stuffName.ToLower()).Tex;
+            _weaponContainer.Children().Last().style.backgroundImage = _weaponMap.Find(wm => wm.Weapon.ToLower() == stuffName.ToLower()).Tex;
             count++;
+            Debug.Log(stuffName);
         }
     }
 
@@ -288,9 +298,9 @@ public class HUDController : MonoBehaviour
         SetActiveDefuse(true);
     }
 
-    private void OnDefuseRunning(object sender, EventArgs args)
+    private void OnDefuseRunning(object sender, HarvesterDefusingSystem.HarversterDefuseRunning args)
     {
-        //SetDefuseTime(args.time);
+        SetDefuseTime(args.time / args.maxTime);
     }
 
     private void OnDefuseCancelOrEnd(object sender, EventArgs args)

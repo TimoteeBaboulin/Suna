@@ -67,11 +67,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponAsset: {fileID: 9197481963319205126, guid: 6bd4124618971034296a0ec34e5b3522, type: 3}
   _weaponMap:
-  - Weapon: m1a1
+  - Weapon: RifleCorpo
     Tex: {fileID: 2800000, guid: e3711f371b8c09a4196e495c46c31aaa, type: 3}
-  - Weapon: gun
+  - Weapon: HandGunCorpo
     Tex: {fileID: 2800000, guid: e76b32bc0cb751c4ba6356e840148f12, type: 3}
-  - Weapon: knife
+  - Weapon: KnifeNeutral
     Tex: {fileID: 2800000, guid: 17e93a7d2b73ab042a2fa69ffbd00533, type: 3}
   - Weapon: shotgun
     Tex: {fileID: 2800000, guid: a38a5857621389f44bba254545190bfb, type: 3}
@@ -81,7 +81,7 @@ MonoBehaviour:
     Tex: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
   - Weapon: molotov
     Tex: {fileID: 2800000, guid: 155ce38312023144daed970fc32403d4, type: 3}
-  - Weapon: harvester
+  - Weapon: Harvester
     Tex: {fileID: 2800000, guid: 5df4077d4c9959d4891fdd672a71c71c, type: 3}
   - Weapon: smoke
     Tex: {fileID: 2800000, guid: 6443b435f173e9140baa4b8395256c97, type: 3}
