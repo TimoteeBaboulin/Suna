@@ -40,7 +40,7 @@ partial struct RoundSystemClient : ISystem
         }
     }
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         if (!_running) return;
@@ -78,6 +78,16 @@ partial struct RoundSystemClient : ISystem
         if (round.ValueRW.timer < 0)
         {
             round.ValueRW.timer = 0;
+        }
+
+        var b = SystemAPI.GetBuffer<PhaseTimesBuffer>(query.GetSingletonEntity());
+
+        if (round.ValueRW.currentPhase == RoundPhase.ActionPhase && (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) < 2)
+        {
+            foreach (var (matOverride, entity) in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>().WithEntityAccess())
+            {
+                matOverride.ValueRW.Value = (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) / 2.0f;
+            }
         }
 
         foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
@@ -148,18 +158,18 @@ partial struct RoundSystemClient : ISystem
                     .WithEntityAccess())
             {
                 physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
-                ecb.AddComponent<DisableRendering>(barrierEntity);
             }
         }
         else if (phase == RoundPhase.BuyPhase)
         {
-            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>>()
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
                     .WithAll<SpawnBarrierComponent>()
                     .WithEntityAccess())
             {
                 physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
-                ecb.RemoveComponent<DisableRendering>(barrierEntity);
+
+                matOverride.ValueRW.Value = 0;
             }
         }
     }
