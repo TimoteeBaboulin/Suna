@@ -13,9 +13,11 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID MUSIC_PLAY = 202194903U;
-        static const AkUniqueID MUSIC_STOP = 3227181061U;
-        static const AkUniqueID SOUND_PLAY = 3479778571U;
+        static const AkUniqueID FOOTSTEPS = 2385628198U;
+        static const AkUniqueID PISTOL_RELOAD = 1068215004U;
+        static const AkUniqueID PISTOL_SHOOT = 2124970216U;
+        static const AkUniqueID RIFLE_RELOAD = 3214964847U;
+        static const AkUniqueID RIFLE_SHOOT = 1117295805U;
     } // namespace EVENTS
 
     namespace BANKS
