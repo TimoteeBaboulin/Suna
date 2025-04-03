@@ -31,11 +31,11 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
             {
-                CommonCharacterModelUtils.DisableModelRendering(modelReference.ModelGameObject);
+                modelReference.ModelGameObject.SetActive(false);
             }
             else
             {
-                CommonCharacterModelUtils.EnableModelRendering(modelReference.ModelGameObject);
+                modelReference.ModelGameObject.SetActive(true);
             }
 
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;

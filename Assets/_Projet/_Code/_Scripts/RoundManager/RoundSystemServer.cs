@@ -136,7 +136,6 @@ public partial struct RoundSystemServer : ISystem
         else
         {
             //Update the timer and change to next phase in case the timer runs out
-
             switch (roundComponent.ValueRO.currentPhase)
             {
                 case RoundPhase.ActionPhase:

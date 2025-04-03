@@ -34,15 +34,6 @@ public class CommonCharacterModelUtils
         }
     }
 
-    public static void EnableModelRendering(in GameObject modelGameObject)
-    {
-        if (modelGameObject.TryGetComponent(out ThirdPersonCharacterModelBehaviour modelBehaviour)
-            && !modelBehaviour.MeshRenderer.enabled)
-        {
-            modelBehaviour.MeshRenderer.enabled = true;
-        }
-    }
-
     public static void UpdateModelPositionAndRotation(in Transform modelTransform, in float3 newPosition, in quaternion newRotation)
     {
         modelTransform.position = newPosition;

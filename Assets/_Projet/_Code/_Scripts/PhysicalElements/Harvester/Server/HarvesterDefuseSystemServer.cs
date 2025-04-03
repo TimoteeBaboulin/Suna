@@ -67,6 +67,7 @@ partial struct HarvesterDefuseSystemServer : ISystem
                 //Defused
                 SystemAPI.SetComponentEnabled<HarvesterPlanted>(defusingHarvesterEntity, false);
                 SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
+                SystemAPI.SetComponentEnabled<HarvesterDefusing>(defusingHarvesterEntity, false);
 
                 defusingHarvesterEntity = Entity.Null;
                 defuserEntity = Entity.Null;
@@ -110,6 +111,8 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             Debug.Log("[Server] Defuse started");
 
+            SystemAPI.SetComponentEnabled<HarvesterDefusing>(rpc.harvester, true);
+            SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.DefuseStartedTick = defuseStartTick;
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsDefusing = true;
             defuserEntity = character;
             defusingHarvesterEntity = rpc.harvester;
@@ -142,6 +145,7 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             Debug.Log("[Server] Defuse stopped");
 
+            SystemAPI.SetComponentEnabled<HarvesterDefusing>(rpc.harvester, false);
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
             defuserEntity = Entity.Null;
             defusingHarvesterEntity = Entity.Null;
