@@ -13,7 +13,7 @@ namespace AK
 {
     namespace EVENTS
     {
-        static const AkUniqueID FOOTSTEPS = 2385628198U;
+        static const AkUniqueID FOOTSTEP = 1866025847U;
         static const AkUniqueID PISTOL_RELOAD = 1068215004U;
         static const AkUniqueID PISTOL_SHOOT = 2124970216U;
         static const AkUniqueID RIFLE_RELOAD = 3214964847U;

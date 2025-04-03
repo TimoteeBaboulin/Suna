@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584579513946868820
+    m_lastTime: -8584579477936171716
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -94,11 +94,11 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584579513962158346
+    m_lastTime: -8584579477936271619
     List:
-    - name: Music_Play
-      guid: 8c5cba3e53452c4890e4a03692da77ae
-      id: 202194903
+    - name: Footstep
+      guid: 9b328937a796d24fb9542e5b638b2771
+      id: 1866025847
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -106,16 +106,16 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Music_Play
+      - ElementName: Footstep
         ObjectType: 3
-        guid: 8c5cba3e53452c4890e4a03692da77ae
-      Path: Events\Default Work Unit\Music_Play
+        guid: 9b328937a796d24fb9542e5b638b2771
+      Path: Events\Default Work Unit\Footstep
       maxAttenuation: 0
-      maxDuration: 338.2335
-      minDuration: 338.2335
-    - name: Music_Stop
-      guid: 8b7312edab57924f9e1b85f324984fa9
-      id: 3227181061
+      maxDuration: 0.5611338
+      minDuration: 0.5611338
+    - name: Pistol_Reload
+      guid: 7c31bd991b042f4f9d594c0543e9f945
+      id: 1068215004
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -123,16 +123,16 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Music_Stop
+      - ElementName: Pistol_Reload
         ObjectType: 3
-        guid: 8b7312edab57924f9e1b85f324984fa9
-      Path: Events\Default Work Unit\Music_Stop
+        guid: 7c31bd991b042f4f9d594c0543e9f945
+      Path: Events\Default Work Unit\Pistol_Reload
       maxAttenuation: 0
-      maxDuration: 0
-      minDuration: 0
-    - name: Sound_Play
-      guid: ed26a06d7f0c4549830cda3bdff95ce3
-      id: 3479778571
+      maxDuration: 0.69659865
+      minDuration: 0.69659865
+    - name: Pistol_Shoot
+      guid: cf6965ca56287c4f9e9f530727951166
+      id: 2124970216
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -140,13 +140,47 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Sound_Play
+      - ElementName: Pistol_Shoot
         ObjectType: 3
-        guid: ed26a06d7f0c4549830cda3bdff95ce3
-      Path: Events\Default Work Unit\Sound_Play
+        guid: cf6965ca56287c4f9e9f530727951166
+      Path: Events\Default Work Unit\Pistol_Shoot
       maxAttenuation: 0
-      maxDuration: 49.367916
-      minDuration: 49.367916
+      maxDuration: 2.0273924
+      minDuration: 2.0273924
+    - name: Rifle_Reload
+      guid: 4c505f4ba9ab8148903749464fff5b5f
+      id: 3214964847
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Rifle_Reload
+        ObjectType: 3
+        guid: 4c505f4ba9ab8148903749464fff5b5f
+      Path: Events\Default Work Unit\Rifle_Reload
+      maxAttenuation: 0
+      maxDuration: 0.23832199
+      minDuration: 0.23832199
+    - name: Rifle_Shoot
+      guid: 9a27464da56fff45bee18aa41bdabb7c
+      id: 1117295805
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Rifle_Shoot
+        ObjectType: 3
+        guid: 9a27464da56fff45bee18aa41bdabb7c
+      Path: Events\Default Work Unit\Rifle_Shoot
+      maxAttenuation: 0
+      maxDuration: 2.970771
+      minDuration: 2.970771
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:

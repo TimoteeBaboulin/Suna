@@ -10,21 +10,21 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{6CEE75E8-704A-C6D4-89AE-04323770A4AC}",
+    "Hash": "{C7154B79-945B-AA3B-C6BE-24983A5766FB}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
     "Media": [
      {
-      "Id": "21044539",
+      "Id": "143169538",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "SFX\\concrete1.wav",
-      "CachePath": "6E/{6E8F3959-3D3B-C650-4912-7AF0B7B1C5B5}.wem"
+      "ShortName": "SFX\\pistol_clipin.wav",
+      "CachePath": "99/{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem"
      },
      {
-      "Id": "348054887",
+      "Id": "521724105",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
@@ -32,31 +32,15 @@
       "CachePath": "7B/{7B106A5E-73D1-0E6B-B22E-61158445DCF0}.wem"
      },
      {
-      "Id": "570355304",
+      "Id": "698735216",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "SFX\\smg_clip_out.wav",
-      "CachePath": "B1/{B13A6F69-A1BD-C4D2-2911-14C92124BC59}.wem"
+      "ShortName": "SFX\\concrete1.wav",
+      "CachePath": "6E/{6E8F3959-3D3B-C650-4912-7AF0B7B1C5B5}.wem"
      },
      {
-      "Id": "682814584",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "SFX\\pistol_worldreload.wav",
-      "CachePath": "99/{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem"
-     },
-     {
-      "Id": "864037239",
-      "Language": "SFX",
-      "Streaming": "false",
-      "Location": "Memory",
-      "ShortName": "SFX\\smg_clip_in.wav",
-      "CachePath": "D7/{D7BD706A-BAC0-E190-6F84-13E4ADDCDD11}.wem"
-     },
-     {
-      "Id": "955785442",
+      "Id": "700034105",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
@@ -64,26 +48,42 @@
       "CachePath": "61/{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem"
      },
      {
-      "Id": "972086427",
+      "Id": "846430684",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "SFX\\pistol_clipin.wav",
+      "ShortName": "SFX\\smg_clip_out.wav",
+      "CachePath": "B1/{B13A6F69-A1BD-C4D2-2911-14C92124BC59}.wem"
+     },
+     {
+      "Id": "905442807",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX\\pistol_worldreload.wav",
       "CachePath": "99/{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem"
+     },
+     {
+      "Id": "1044764746",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX\\smg_clip_in.wav",
+      "CachePath": "D7/{D7BD706A-BAC0-E190-6F84-13E4ADDCDD11}.wem"
      }
     ],
     "Events": [
      {
-      "Id": "2385628198",
-      "Name": "Footsteps",
-      "ObjectPath": "\\Events\\Default Work Unit\\Footsteps",
-      "GUID": "{9BA9EEDA-A1CD-4BB6-B34D-6E4BFCB8838E}",
+      "Id": "1866025847",
+      "Name": "Footstep",
+      "ObjectPath": "\\Events\\Default Work Unit\\Footstep",
+      "GUID": "{3789329B-96A7-4FD2-B954-2E5B638B2771}",
       "DurationType": "OneShot",
       "DurationMin": "0.5611338",
       "DurationMax": "0.5611338",
       "MediaRefs": [
        {
-        "Id": "21044539"
+        "Id": "698735216"
        }
       ]
      },
@@ -91,13 +91,13 @@
       "Id": "1068215004",
       "Name": "Pistol_Reload",
       "ObjectPath": "\\Events\\Default Work Unit\\Pistol_Reload",
-      "GUID": "{09A4282B-4F6D-4C19-83C8-EED09F5E6DBF}",
+      "GUID": "{99BD317C-041B-4F2F-9D59-4C0543E9F945}",
       "DurationType": "OneShot",
       "DurationMin": "0.69659865",
       "DurationMax": "0.69659865",
       "MediaRefs": [
        {
-        "Id": "682814584"
+        "Id": "905442807"
        }
       ]
      },
@@ -105,13 +105,13 @@
       "Id": "2124970216",
       "Name": "Pistol_Shoot",
       "ObjectPath": "\\Events\\Default Work Unit\\Pistol_Shoot",
-      "GUID": "{9320093F-AA7C-457E-B155-2EDE40BE15B6}",
+      "GUID": "{CA6569CF-2856-4F7C-9E9F-530727951166}",
       "DurationType": "OneShot",
       "DurationMin": "2.0273924",
       "DurationMax": "2.0273924",
       "MediaRefs": [
        {
-        "Id": "348054887"
+        "Id": "521724105"
        }
       ]
      },
@@ -119,13 +119,13 @@
       "Id": "3214964847",
       "Name": "Rifle_Reload",
       "ObjectPath": "\\Events\\Default Work Unit\\Rifle_Reload",
-      "GUID": "{C9B4AF04-33DE-4951-984E-5BDA12AB2E0A}",
+      "GUID": "{4B5F504C-ABA9-4881-9037-49464FFF5B5F}",
       "DurationType": "OneShot",
       "DurationMin": "0.23832199",
       "DurationMax": "0.23832199",
       "MediaRefs": [
        {
-        "Id": "864037239"
+        "Id": "1044764746"
        }
       ]
      },
@@ -133,19 +133,19 @@
       "Id": "1117295805",
       "Name": "Rifle_Shoot",
       "ObjectPath": "\\Events\\Default Work Unit\\Rifle_Shoot",
-      "GUID": "{59019BA6-C8F6-441A-B552-B71610AAB41F}",
+      "GUID": "{4D46279A-6FA5-45FF-BEE1-8AA41BDABB7C}",
       "DurationType": "OneShot",
       "DurationMin": "2.970771",
       "DurationMax": "2.970771",
       "MediaRefs": [
        {
-        "Id": "955785442"
+        "Id": "700034105"
        }
       ]
      }
     ]
    }
   ],
-  "FileHash": "{59329B46-9921-BBA4-FDF3-DDBE2D8DB88D}"
+  "FileHash": "{E93F9A05-F05F-A7B1-92B2-D1FD85BAB0AB}"
  }
 }
