@@ -21,7 +21,6 @@ partial struct InstanciateEntityStuffSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-
         foreach (var (prefabsRO, database, stuffQueu) in SystemAPI.Query<
             RefRO<GameResourcesStuffEntityPrefabs>,
             RefRO<GameResourcesDatabase>,

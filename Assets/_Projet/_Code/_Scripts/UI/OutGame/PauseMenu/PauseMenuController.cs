@@ -1,4 +1,3 @@
-using GameNetwork.Utils;
 using System.Linq;
 using Unity.Entities;
 using Unity.NetCode;
@@ -88,14 +87,9 @@ public class PauseMenuController : MonoBehaviour
         Destroy(settingsMenuController);
     }
 
-    private async void OnHomeButtonClicked()
+    private void OnHomeButtonClicked()
     {
-        if (GameManager.Instance != null)
-        {
-            await GameManager.Instance.DisconnectAndUnloadWorlds();
-            await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
-        }
-        //SceneManager.LoadScene("MainMenu");
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void OnPlayButtonClicked()

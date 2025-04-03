@@ -40,7 +40,7 @@ partial struct RoundSystemClient : ISystem
         }
     }
 
-    //[BurstCompile]
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         if (!_running) return;
@@ -67,7 +67,7 @@ partial struct RoundSystemClient : ISystem
             {
                 return;
             }
-            
+
         }
 
         _firstFrame = false;
@@ -80,24 +80,14 @@ partial struct RoundSystemClient : ISystem
             round.ValueRW.timer = 0;
         }
 
-        var b = SystemAPI.GetBuffer<PhaseTimesBuffer>(query.GetSingletonEntity());
-
-        if (round.ValueRW.currentPhase == RoundPhase.ActionPhase && (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) < 2)
-        {
-            foreach (var (matOverride, entity) in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>().WithEntityAccess())
-            {
-                matOverride.ValueRW.Value = (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) / 2.0f;
-            }
-        }
-
-        foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
+        foreach (var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
         {
             round.ValueRW = update.ValueRO.roundData;
             buffer.DestroyEntity(entity);
         }
 
         //Read score change RPCs
-        foreach(var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
+        foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
         {
             ChangeScore(ref state, newRoundComponent.ValueRO.team, round);
             buffer.DestroyEntity(entity);
@@ -123,7 +113,8 @@ partial struct RoundSystemClient : ISystem
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
-    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
+    {
         //Update the score and loss streak of the corresponding teams
         switch (team)
         {
@@ -158,18 +149,18 @@ partial struct RoundSystemClient : ISystem
                     .WithEntityAccess())
             {
                 physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
+                ecb.AddComponent<DisableRendering>(barrierEntity);
             }
         }
         else if (phase == RoundPhase.BuyPhase)
         {
-            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
                     .WithAll<SpawnBarrierComponent>()
                     .WithEntityAccess())
             {
                 physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
-
-                matOverride.ValueRW.Value = 0;
+                ecb.RemoveComponent<DisableRendering>(barrierEntity);
             }
         }
     }

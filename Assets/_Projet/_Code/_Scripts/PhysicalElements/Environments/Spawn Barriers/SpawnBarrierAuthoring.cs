@@ -12,6 +12,5 @@ class SpawnBarrierAuthoringBaker : Baker<SpawnBarrierAuthoring>
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent<SpawnBarrierComponent>(entity);
-        AddComponent<SpawnFenceMaterialOverride>(entity);
     }
 }

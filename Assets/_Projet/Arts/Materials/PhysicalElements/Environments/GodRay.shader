@@ -161,8 +161,7 @@ Shader "Unlit/GodRay"
                     //return float4(voro, voro, voro, 1);
                     color.a *= mask;
                     color.a *= saturate(1 - pow(SAMPLE_TEXTURE2D(_RayNoise, sampler_SmokeNoise, float2(input.uv.x, input.uv.y / size)).r, _RayNoiseIntensity) * smoothstep(_RayNoiseStartPoint, 1, input.uv.x));
-                    color.a *= saturate(exp2(log2(saturate((pow(dot(input.normScreen, float3(0, 0, 1)), 2) * 1.5 - .3) / .8) * _FogDensity) * _LightScattering));
-                    color.a *= saturate(smoothstep(0.04, .1, input.screenPos.z));
+                    color.a *= saturate(exp2(log2(saturate((pow(dot(input.normScreen, float3(0, 0, 1)), 2) - .2) / .8) * _FogDensity) * _LightScattering));
 
                     return color;
                 }

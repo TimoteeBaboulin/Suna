@@ -15,7 +15,7 @@ public struct HasHitComponent : IComponentData
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ShootSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -53,89 +53,87 @@ public partial struct ShootSystem : ISystem
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
             //Check valid state
-            if (dynamicData.state == RangedWeaponState.Idle || dynamicData.state == RangedWeaponState.Shoot)
+            if (!(dynamicData.state == RangedWeaponState.Idle || dynamicData.state == RangedWeaponState.Shoot)) return;
+            dynamicData.state = RangedWeaponState.Idle;
+
+            // Retrieve player input
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+            ref CharacterInput input = ref inputRef.ValueRW;
+
+            // Retrieve player bones
+            //if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
+            //float3 viewPos = modelBonesRef.ViewBoneTransform.position;
+
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+
+            // Calculate fire rate
+            if (dynamicData.firerateTimer > 0)
+                dynamicData.firerateTimer -= dt;
+
+            if (dynamicData.timeSinceLastFire < commonData.lastFireTimeMax)
             {
-                dynamicData.state = RangedWeaponState.Idle;
+                dynamicData.timeSinceLastFire += dt;
+            }
+            else
+            {
+                dynamicData.timeSinceLastFire = commonData.lastFireTimeMax;
+                dynamicData.patternBulletIndex = 0;
+            }
 
-                // Retrieve player input
-                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
-                ref CharacterInput input = ref inputRef.ValueRW;
 
-                // Retrieve player bones
-                //if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
-                //float3 viewPos = modelBonesRef.ViewBoneTransform.position;
+            // If the player shoots, the fire rate is valid, and there are still bullets left
+            if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+            {
+                dynamicData.firerateTimer += commonData.firerate;
+                dynamicData.state = RangedWeaponState.Shoot;
+                dynamicData.currentAmmo--;
 
-                if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+                // Apply spread on raycast
+                float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                recoilRotation = math.mul(input.shootRotation, recoilRotation);
 
-                // Calculate fire rate
-                if (dynamicData.firerateTimer > 0)
-                    dynamicData.firerateTimer -= dt;
+                dynamicData.timeSinceLastFire = 0f;
+                dynamicData.patternBulletIndex++;
 
-                if (dynamicData.timeSinceLastFire < commonData.lastFireTimeMax)
+                RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
+
+                // Apply damage to the target player
+                if (state.World.IsServer())
                 {
-                    dynamicData.timeSinceLastFire += dt;
-                }
-                else
-                {
-                    dynamicData.timeSinceLastFire = commonData.lastFireTimeMax;
-                    dynamicData.patternBulletIndex = 0;
-                }
-
-
-                // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
-                {
-                    dynamicData.firerateTimer += commonData.firerate;
-                    dynamicData.state = RangedWeaponState.Shoot;
-                    dynamicData.currentAmmo--;
-
-                    // Apply spread on raycast
-                    float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
-                    quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
-                    recoilRotation = math.mul(input.shootRotation, recoilRotation);
-
-                    dynamicData.timeSinceLastFire = 0f;
-                    dynamicData.patternBulletIndex++;
-
-                    RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
-
-                    // Apply damage to the target player
-                    if (state.World.IsServer())
+                    if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                        {
-                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                        RefRO<CharacterColliderDataComponent> CharacterBodyPartData
                             = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                            if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                                && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
-                                && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
-                            {
-                                SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
-                                    = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
-
-                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
-                                {
-                                    Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
-                                });
-                                ecb.SetComponent(owner, new HasHitComponent { Value = true });
-                            }
-                        }
-
-                        // === VISUEL ===
-                        HitCommand hc = new HitCommand()
+                        if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                            && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
                         {
-                            position = hit.Position,
-                            normal = hit.SurfaceNormal,
-                        };
-                        RpcUtils.SendServerToClientRpc(ref hc);
-                        // === FIN VISUEL ===
+                            SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+
+                            ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            {
+                                Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                            });
+                            ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                        }
                     }
+
+                    // === VISUEL ===
+                    HitCommand hc = new HitCommand()
+                    {
+                        position = hit.Position,
+                        normal = hit.SurfaceNormal,
+                    };
+                    RpcUtils.SendServerToClientRpc(ref hc);
+                    // === FIN VISUEL ===
                 }
-                else
-                {
-                    ecb.SetComponent(owner, new HasHitComponent { Value = false });
-                }
+            }
+            else
+            {
+                ecb.SetComponent(owner, new HasHitComponent { Value = false });
             }
         }
     }

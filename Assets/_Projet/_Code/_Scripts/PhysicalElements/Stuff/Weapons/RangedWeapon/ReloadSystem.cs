@@ -7,7 +7,7 @@ using UnityEngine;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RangedWeaponReloadSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -39,48 +39,38 @@ public partial struct RangedWeaponReloadSystem : ISystem
         .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
-
             //Simplification des components de l'arme
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
             ref var data = ref dataAccessRef.ValueRO.GetData(ref gr);
 
-            if (dynamicData.state != RangedWeaponState.Reload)
+            //Recuperation Input joueur
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+            ref CharacterInput input = ref inputRef.ValueRW;
+
+            //state.EntityManager.GetSharedComponent<RangedWeaponCommonData>(weapon);
+
+            //Calcul du reloadTimer
+            if (dynamicData.reloadTimer > 0)
+                dynamicData.reloadTimer -= dt;
+
+            if (input.reload.IsSet && dynamicData.reloadTimer <= 0 && dynamicData.currentAmmo < data.magazineCapacity + 1 && dynamicData.remainingAmmo != 0)
             {
-                //Recuperation Input joueur
-                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
-                ref CharacterInput input = ref inputRef.ValueRW;
+                dynamicData.reloadTimer = data.reloadSpeed;
 
-                if (input.reload.IsSet && dynamicData.currentAmmo < data.magazineCapacity + 1 && dynamicData.remainingAmmo > 0)
-                {
-                    dynamicData.reloadTimer = data.reloadSpeed;
+                bool bulletInChamber = dynamicData.currentAmmo > 0;
 
-                    dynamicData.state = RangedWeaponState.Reload;
+                int ammoToAdd = Mathf.Min(data.magazineCapacity, dynamicData.remainingAmmo) - dynamicData.currentAmmo;
+                dynamicData.currentAmmo += ammoToAdd;
+                dynamicData.remainingAmmo -= ammoToAdd;
+
 #if UNITY_EDITOR
-                    Debug.Log("Reload Start !");
+                Debug.Log("Reload Finish !");
 #endif
-                }
-            }
-            else
-            {
-                //Calcul du reloadTimer
-                if (dynamicData.reloadTimer > 0)
-                    dynamicData.reloadTimer -= dt;
-
-                if (dynamicData.reloadTimer <= 0)
+                if (!bulletInChamber)
                 {
-                    bool bulletInChamber = dynamicData.currentAmmo > 0;
-                    int ammoToAdd = Mathf.Min(data.magazineCapacity, dynamicData.remainingAmmo) - dynamicData.currentAmmo + (bulletInChamber ? 1 : 0);
-
-                    dynamicData.state = RangedWeaponState.Idle;
-                    dynamicData.currentAmmo += ammoToAdd;
-                    dynamicData.remainingAmmo -= ammoToAdd;
 #if UNITY_EDITOR
-                    Debug.Log("Reload Finish !");
-                    if (!bulletInChamber)
-                    {
-                        Debug.Log("Load Chamber !");
-                    }
+                    Debug.Log("Load Chamber !");
 #endif
                 }
             }

@@ -42,11 +42,13 @@ public class MainMenuController : MonoBehaviour
         _quitButton.clicked += OnQuitButton_Click;
     }
 
-    private async void OnPlayButton_Click()
+    private void OnPlayButton_Click()
     {
-        _playButton.SetEnabled(false);
-        await GameManager.Instance.Play();
-        _playButton.SetEnabled(true);
+        if (connectionManager != null)
+        {
+            connectionManager.Connect();
+            SceneManager.LoadScene((int)_sceneLoadOnPlay);
+        }
     }
 
     private void OnSettingsButton_Click()
