@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Physics;
-using Unity.Rendering;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 using static RoundSystemClient;
+
+
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RoundSystemServer : ISystem
@@ -57,6 +60,37 @@ public partial struct RoundSystemServer : ISystem
         }
     }
 
+    public int CharacterCountAliveInTeam(TeamSideType team, ref SystemState state)
+    {
+        Debug.Log($"Team name:{team.ToString()}");
+        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(team.ToString());
+        List<int> totalPlayerIDs = new List<int>();
+
+        int count = 0;
+
+        foreach (var (client, ghost) in SystemAPI.Query<ClientComponent, GhostInstance>())
+        {
+            if (players.Exists((obj) =>
+            {
+                return int.Parse(obj.Id) == ghost.ghostId;
+            }))
+            {
+                count++;
+            }
+
+            //totalPlayerIDs.Add(ghost.ghostId);
+            //Debug.Log(ghost.ghostId);
+        }
+
+        
+        foreach (IReadOnlyPlayer player in players)
+        {
+            Debug.Log(player.Id);
+        }
+
+        return count;
+    }
+
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -102,7 +136,35 @@ public partial struct RoundSystemServer : ISystem
         else
         {
             //Update the timer and change to next phase in case the timer runs out
-            roundComponent.ValueRW.timer -= Time.deltaTime;
+
+            switch (roundComponent.ValueRO.currentPhase)
+            {
+                case RoundPhase.ActionPhase:
+                    if (CharacterCountAliveInTeam(TeamSideType.Natif, ref state) == 0)
+                    {
+                        Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
+                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                    }
+                    else if(CharacterCountAliveInTeam(TeamSideType.Corpo, ref state) == 0)
+                    {
+                        Victory(ref state, entity, roundComponent, TeamSideType.Natif, ecb);
+                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                    }
+                    break;
+                case RoundPhase.PostPlantPhase:
+                    if (CharacterCountAliveInTeam(TeamSideType.Natif, ref state) == 0)
+                    {
+                        Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
+                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                    }
+                    break;
+            }
+
+            roundComponent.ValueRW.timer -= SystemAPI.Time.DeltaTime;
+
             if (roundComponent.ValueRO.timer < 0)
             {
                 TimeOutPhase(ref state, entity, roundComponent, ecb);
