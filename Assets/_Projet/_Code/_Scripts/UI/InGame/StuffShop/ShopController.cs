@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 using UI = UIDocumentUtils;
@@ -11,6 +13,9 @@ public class ShopController : MonoBehaviour
     private VisualElement root;
     private VisualElement shop;
     private VisualElement shopmenu;
+
+    [SerializeField] private DefaultInputSystem input;
+    bool inputFound = false;
 
     [SerializeField] private RangedWeaponData m1a1;
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
@@ -47,7 +52,7 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
-
+                //AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
 
                 btn.clicked += () => /*Debug.Log(weaponDict[btn].entityName);*/
                 {
@@ -57,24 +62,31 @@ public class ShopController : MonoBehaviour
                     };
 
                     RpcUtils.SendClientToServerRpc(ref sc);
+                    UI.SetActive(ref root, false);
+                    ActivateUIInput(false);
                 };
 
                 // On hover Debug Log entity name
                 btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
                 btn.RegisterCallback<PointerLeaveEvent>(evt => OnShopButtonLeave());
             }
-            else
-            {
-            }
         }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
+
+        if (system != null)
         {
-            Debug.LogError("Coucou");
+            input = system.input;
+            inputFound = true;
+        }
+
+        if (Keyboard.current.bKey.wasPressedThisFrame)
+        {
             UI.ToggleActive(ref root);
+            ActivateUIInput(UI.IsActive(ref root));
         }
     }
 
@@ -111,6 +123,15 @@ public class ShopController : MonoBehaviour
         button.Add(label);
     }
 
+    private void AddWeaponIcon(ref Button button, Texture2D icon)
+    {
+        Image image = new();
+        image.image = icon;
+        image.style.position = Position.Absolute;
+        UI.SetPosition(ref image, TextAnchor.MiddleCenter, 0, 0);
+        button.Add(image);
+    }
+
     private void AddProductLabelsToShopButton(ref Button button, string productName, string productPrice)
     {
         AddLabelToShopButton(ref button, productName, 30, TextAnchor.UpperRight, new(5, 5));
@@ -136,5 +157,21 @@ public class ShopController : MonoBehaviour
     private void OnShopButtonLeave()
     {
         root.Q<VisualElement>("StatsElement")?.RemoveFromHierarchy();
+    }
+
+    private void ActivateUIInput(bool value)
+    {
+        if (value)
+        {
+            input.Player.Disable();
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
+        }
+        else
+        {
+            input.Player.Enable();
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            UnityEngine.Cursor.visible = false;
+        }
     }
 }

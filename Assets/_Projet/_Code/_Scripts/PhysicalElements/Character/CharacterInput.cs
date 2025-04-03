@@ -4,7 +4,7 @@ using Unity.NetCode;
 using Unity.Transforms;
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted, OwnerSendType = SendToOwnerType.SendToNonOwner)]
-public struct CharacterInput :IInputComponentData
+public struct CharacterInput : IInputComponentData
 {
     [GhostField] public float2 move;
     [GhostField] public float2 look;
@@ -16,6 +16,8 @@ public struct CharacterInput :IInputComponentData
     [GhostField] public InputEvent attack;
     [GhostField] public InputEvent selectNext;
     [GhostField] public InputEvent selectPrevious;
+
+    public InputEvent openShop;
 
     [GhostField] public int stuffLocation;
 
