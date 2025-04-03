@@ -9,6 +9,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport;
+using Unity.Services.Matchmaker;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -53,6 +54,7 @@ public class GameManager : Singleton<GameManager>
         SessionID = (RequestedPlayType == PlayType.ClientAndServer) ? "0" : SessionID;
         Debug.Log($"GameManager: Using session code: {SessionID}");
 
+        //clientConnectionSettings = await connectionHandler.ConnectToSessionAsync(loadingToken.Token, SessionID);
         clientConnectionSettings = await connectionHandler.ConnectToSessionAsync(loadingToken.Token, SessionID);
 
         GameState = GlobalGameState.InGame;
@@ -61,22 +63,27 @@ public class GameManager : Singleton<GameManager>
 
         Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
         GameState = GlobalGameState.InGame;
+
+        var matchmakingResults = clientConnectionSettings.Session.GetMatchmakingResults();
+        foreach (var team in matchmakingResults.MatchProperties.Teams)
+        {
+            foreach (var player in team.PlayerIds)
+            {
+                Debug.Log($"team {team.TeamName} Player ID {player}");
+            }
+        }
     }
 
-
-    private async void OnClickMatchmakeButton()
+    public async void OnClickMatchmakeButton()
     {
         var matchOptions = new MatchmakerOptions
         {
-            QueueName = "myQueue",
+            QueueName = ClientTransportHelper.GlobalQueueName,
         };
 
-        var sessionOptions = new SessionOptions
-        {
-            MaxPlayers = 4
-        };
+        var sessionOptions = new SessionOptions{  };
 
-        ClientTransportHelper helper = new ClientTransportHelper("127.0.0.1", 7979, false);
+        ClientTransportHelper helper = new ClientTransportHelper(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
         ClientTransportHelper result = await helper.MatchmakeSessionAsync(matchOptions, sessionOptions);
 
         if (result == null)
@@ -132,27 +139,27 @@ public class GameManager : Singleton<GameManager>
         }
 
 
-        //foreach (var session in results.Sessions)
-        //{
-        //    if (session.AvailableSlots != 0)
-        //    {
-        //        SessionID = session.Id;
-        //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-        //        Debug.Log($"Found session ID: {session.Id}");
-        //        Debug.Log($"Session code: {session.Id}");
-        //    }
-        //    else
-        //    {
-        //        ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
-        //        RpcUtils.SendClientToServerRpc(ref command);
+        foreach (var session in results.Sessions)
+        {
+            if (session.AvailableSlots != 0)
+            {
+                SessionID = session.Id;
+                Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+                Debug.Log($"Found session ID: {session.Id}");
+                Debug.Log($"Session code: {session.Id}");
+            }
+            else
+            {
+                ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
+                RpcUtils.SendClientToServerRpc(ref command);
 
-        //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-        //        Debug.Log($"Found session ID: {session.Id}");
-        //        Debug.Log($"Session code: {session.Id}");
-        //    }
-        //}
-        var firstSession = results.Sessions[0];
-        SessionID = firstSession.Id;
+                Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+                Debug.Log($"Found session ID: {session.Id}");
+                Debug.Log($"Session code: {session.Id}");
+            }
+        }
+        //var firstSession = results.Sessions[0];
+        //SessionID = firstSession.Id;
 
         Debug.Log($"SessionId is {SessionID}");
     }

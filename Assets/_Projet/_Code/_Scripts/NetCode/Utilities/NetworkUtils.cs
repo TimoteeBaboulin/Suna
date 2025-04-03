@@ -38,6 +38,10 @@ namespace GameNetwork.Utils
         public static World ServerWorld { get; set; }
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
 
+        public static string GlobalQueueName = "1vs1";
+
+        public static int MaxNbPlayers = 3;
+
         public ClientTransportHelper(string ip, ushort port, bool isClientLocal)
         {
             IP = ip;
@@ -73,22 +77,18 @@ namespace GameNetwork.Utils
             {
                 //await StartServicesAsync();
 
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {IP}, Port: {Port}, IsClientLocal: {IsClientLocal}");
+                Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {IP}, Port: {Port}, IsClientLocal: {IsClientLocal}");
 
-                // Create a new instance of SessionTransportHelper with the current settings.
                 var connection = new ClientTransportHelper(IP, Port, IsClientLocal);
 
-                // Build default session options using the instance's helper.
                 var options = connection.CreateSessionOptions();
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
+                Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
 
-                // Override MaxPlayers with the provided value.
                 options.MaxPlayers = sessionOptions.MaxPlayers;
 
-                // Attach a network handler
                 var networkHandler = new NetworkHandler();
                 options.WithNetworkHandler(networkHandler);
-                UnityEngine.Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
+                Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
 
                 //options.SessionProperties = new Dictionary<string, SessionProperty>();
 
@@ -100,19 +100,18 @@ namespace GameNetwork.Utils
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
-                    UnityEngine.Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
+                    Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
                     return connection;
                 }
 
                 connection.Session = hostSession;
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
-                UnityEngine.Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
+                Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
+                Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
 
-                // Retrieve connection endpoints.
                 connection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
                 connection.ListenEndpoint = await networkHandler.ListenEndpoint;
                 connection.SessionConnectionType = await networkHandler.SessionConnectionType;
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
+                Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
                     $"ConnectEndpoint={connection.ConnectEndpoint}, " +
                     $"ListenEndpoint={connection.ListenEndpoint}, " +
                     $"SessionConnectionType={connection.SessionConnectionType}");
@@ -121,7 +120,7 @@ namespace GameNetwork.Utils
             }
             catch (Exception ex)
             {
-                UnityEngine.Debug.LogError($"[SessionTransportHelper] Error in CreateServerSessionAsync: {ex}");
+                Debug.LogError($"[SessionTransportHelper] Error in CreateServerSessionAsync: {ex}");
                 throw; 
             }
         }
@@ -156,7 +155,7 @@ namespace GameNetwork.Utils
 
             MatchmakerOptions match = new MatchmakerOptions
             {
-                QueueName = "1vs0",
+                QueueName = GlobalQueueName,
             };
 
             gameConnection.Session = await MultiplayerService.Instance.MatchmakeSessionAsync(match, options, cancellationToken);
@@ -242,9 +241,11 @@ namespace GameNetwork.Utils
                 await Awaitable.NextFrameAsync(cancellationToken);
             }
         }
+
         public SessionOptions CreateSessionOptions()
         {
-            SessionOptions options = new SessionOptions { MaxPlayers = 3 }; //CAREFUL HERE MOTHERFUCKER
+            SessionOptions options = new SessionOptions { MaxPlayers = ClientTransportHelper.MaxNbPlayers }; //CAREFUL HERE MOTHERFUCKER
+            //SessionOptions options = new SessionOptions { }; //CAREFUL HERE MOTHERFUCKER
             return options.WithDirectNetwork(IP, IP, Port);
         }
     }

@@ -46,6 +46,7 @@ public class MainMenuController : MonoBehaviour
     {
         _playButton.SetEnabled(false);
         await GameManager.Instance.Play();
+        //GameManager.Instance.OnClickMatchmakeButton();
         _playButton.SetEnabled(true);
     }
 
