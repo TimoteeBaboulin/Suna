@@ -27,6 +27,7 @@ public partial struct HarvesterPlanting : IComponentData, IEnableableComponent
 public partial struct HarvesterDefusing : IComponentData, IEnableableComponent
 {
     [GhostField] public NetworkTick DefuseStartedTick;
+    [GhostField] public Entity Defuser;
 }
 
 [GhostEnabledBit]

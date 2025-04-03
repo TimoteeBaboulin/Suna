@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.NetCode;
 
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+
 partial class WeaponListLinkSystem : SystemBase
 {
     public class StuffListChangeEventArgs : EventArgs
@@ -23,36 +24,38 @@ partial class WeaponListLinkSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
-
-        foreach (var (stuffList, stuffInHand) in SystemAPI
-            .Query<RefRO<CharacterStuffList>, RefRO<CharacterStuffInHandLocation>>())
+        if (SystemAPI.TryGetSingleton(out GameResourcesDatabase database))
         {
-            List<string> names = new();
-            List<int> ids = new();
-            foreach (var stuffEntity in stuffList.ValueRO.Value)
+            foreach (var (stuffList, stuffInHand) in SystemAPI
+            .Query<RefRO<CharacterStuffList>, RefRO<CharacterStuffInHandLocation>>()
+            .WithAll<GhostOwnerIsLocal>())
             {
-                if (stuffEntity != Entity.Null)
+                List<string> names = new();
+                List<int> ids = new();
+                foreach (var stuffEntity in stuffList.ValueRO.Value)
                 {
-                    StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
-                    names.Add(dbAccess.GetData(ref database).Name.ToString());
-                    ids.Add((int)dbAccess.GetData(ref database).location);
+                    if (stuffEntity != Entity.Null)
+                    {
+                        StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+                        names.Add(dbAccess.GetData(ref database).Name.ToString());
+                        ids.Add((int)dbAccess.GetData(ref database).location);
+                    }
                 }
-            }
-            if (names.Count > 0)
-            {
-                OnStuffListChange?.Invoke(this, new StuffListChangeEventArgs()
+                if (names.Count > 0)
                 {
-                    StuffListNames = names,
-                    StuffListIds = ids
+                    OnStuffListChange?.Invoke(this, new StuffListChangeEventArgs()
+                    {
+                        StuffListNames = names,
+                        StuffListIds = ids
+                    });
+                }
+
+                stuffInHandIndex = (int)stuffInHand.ValueRO.Value;
+                OnStuffIdChange?.Invoke(this, new StuffIdEventArgs()
+                {
+                    StuffId = stuffInHandIndex
                 });
             }
-
-            stuffInHandIndex = (int)stuffInHand.ValueRO.Value;
-            OnStuffIdChange?.Invoke(this, new StuffIdEventArgs()
-            {
-                StuffId = stuffInHandIndex
-            });
         }
     }
 }

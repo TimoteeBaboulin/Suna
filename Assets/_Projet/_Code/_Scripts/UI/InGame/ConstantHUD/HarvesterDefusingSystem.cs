@@ -24,14 +24,16 @@ partial class HarvesterDefusingSystem : SystemBase
             .WithAll<HarvesterDefusing>()
             .WithEntityAccess())
         {
+            RefRO<HarvesterDefusing> defusing = SystemAPI.GetComponentRO<HarvesterDefusing>(entity);
+            if (defusing.ValueRO.Defuser == Entity.Null) continue;
+            if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(defusing.ValueRO.Defuser)) continue;
             if (timeSpent == 0f)
             {
                 OnDefuseStart?.Invoke(this, EventArgs.Empty);
             }
 
-            RefRO<HarvesterDefusing> planting = SystemAPI.GetComponentRO<HarvesterDefusing>(entity);
 
-            timeSpent = currentTick.TicksSince(planting.ValueRO.DefuseStartedTick);
+            timeSpent = currentTick.TicksSince(defusing.ValueRO.DefuseStartedTick);
             if (timeSpent < 0f)
             {
                 timeSpent = 0f;
@@ -42,7 +44,7 @@ partial class HarvesterDefusingSystem : SystemBase
 
         foreach (var (harvester, entity) in SystemAPI
             .Query<RefRO<HarvesterComponent>>()
-            .WithNone<HarvesterDefusing>()
+            .WithDisabled<HarvesterDefusing>()
             .WithEntityAccess())
         {
             if (timeSpent != 0f)
