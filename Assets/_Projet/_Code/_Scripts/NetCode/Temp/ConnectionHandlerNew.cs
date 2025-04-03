@@ -1,6 +1,7 @@
 using GameNetwork;
 using GameNetwork.Utils;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -14,8 +15,10 @@ using Unity.Scenes;
 using Unity.Services.Multiplayer;
 using Unity_NetCode_Generated_Unity_Transforms;
 using UnityEngine;
+using UnityEngine.Analytics;
 using UnityEngine.SceneManagement;
 using static ConnectionManager;
+using static GameManager;
 using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
@@ -32,6 +35,9 @@ public class ConnectionHandlerNew : MonoBehaviour
     public string IP { get; private set; }
     public ushort Port { get; private set; }
     public bool ClientLocal => isClientLocal;
+
+    private static readonly List<string> PlayerProcessingQueue = new List<string>();
+    private static bool processingQueue = false;
     protected void Awake()
     {
         connectionSettings = GetComponent<ConnectionSettings>();
@@ -79,18 +85,93 @@ public class ConnectionHandlerNew : MonoBehaviour
             clientDriver.Connect(clientWorld.EntityManager, sessionTransport.ConnectEndpoint);
         }
         await LoadUtils.LoadGameplayAsync(serverWorld, clientWorld);
-
         await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
-        if (clientWorld != null)
-        {
-            await WaitForGhostReplicationAsync(clientWorld);
-            //await WaitForAttachedCameraAsync(clientWorld);
-        }
+        await WaitUntilSessionIsFullAsync(token, clientWorld);
+        //if (clientWorld != null)
+        //{
+        //    await WaitForGhostReplicationAsync(clientWorld);
+        //    //await WaitForAttachedCameraAsync(clientWorld);
+        //}
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
         return sessionTransport;
     }
 
+
+    private async Task WaitUntilSessionIsFullAsync(CancellationToken token, World clientWorld)
+    {
+        string localPlayerId = sessionTransport.Session.CurrentPlayer.Id;
+
+        lock (PlayerProcessingQueue)
+        {
+            PlayerProcessingQueue.Add(localPlayerId);
+        }
+
+        while (!IsSessionFull(sessionTransport.Session))
+        {
+            if (token.IsCancellationRequested || !Application.isPlaying)
+            {
+                Debug.Log("WaitUntilSessionIsFullAsync: Cancelled or application is no longer playing.");
+                token.ThrowIfCancellationRequested();
+                return;
+            }
+
+            Debug.Log($"GameManager: Current player count: {sessionTransport.Session.PlayerCount}, " +
+                      $"available slots: {sessionTransport.Session.AvailableSlots}");
+
+            SessionData.Instance.UpdateSessionState(
+                sessionTransport.Session.PlayerCount,
+                sessionTransport.Session.AvailableSlots,
+                sessionTransport.Session);
+
+            await Task.Delay(16, token);
+        }
+
+        const int baseDelayMs = 50;
+        const int incrementMs = 25;
+
+        while (true)
+        {
+            int index;
+            lock (PlayerProcessingQueue)
+            {
+                index = PlayerProcessingQueue.IndexOf(localPlayerId);
+            }
+
+            if (index == 0)
+            {
+                break;
+            }
+
+            int dynamicDelay = baseDelayMs + (index * incrementMs);
+            Debug.Log($"Waiting for my turn... My index is {index}, delaying for {dynamicDelay} ms.");
+            await Task.Delay(dynamicDelay, token);
+        }
+
+        await Task.Delay(baseDelayMs, token);
+
+        try
+        {
+            if (IsSessionFull(sessionTransport.Session))
+            {
+                if (clientWorld != null)
+                {
+                    await WaitForGhostReplicationAsync(clientWorld);
+                    //await WaitForAttachedCameraAsync(clientWorld);
+                }
+            }
+        }
+        finally
+        {
+            lock (PlayerProcessingQueue)
+            {
+                if (PlayerProcessingQueue.Count > 0 && PlayerProcessingQueue[0] == localPlayerId)
+                {
+                    PlayerProcessingQueue.RemoveAt(0);
+                }
+            }
+        }
+    }
     private async Task WaitForGhostReplicationAsync(World world, CancellationToken cancellationToken = default)
     {
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WorldReplication);
@@ -122,5 +203,10 @@ public class ConnectionHandlerNew : MonoBehaviour
             await Awaitable.NextFrameAsync(cancellationToken);
         }
         await Awaitable.NextFrameAsync(cancellationToken);
+    }
+
+    private bool IsSessionFull(ISession session)
+    {
+        return session.AvailableSlots == 0;
     }
 }

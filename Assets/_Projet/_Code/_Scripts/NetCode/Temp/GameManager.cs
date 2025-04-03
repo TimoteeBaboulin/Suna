@@ -66,28 +66,6 @@ public class GameManager : Singleton<GameManager>
 
         foreach (var player in clientConnectionSettings.Session.Players)
         {
-            // Assuming the server might be included in the players list, skip if needed:
-            // if (player.IsServer) continue;
-
-            // Retrieve the team information from the player's properties
-
-            foreach (var property in player.Properties)
-            {
-                if (property.Value.Value == "corpo")
-                {
-                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
-                }
-                else if (property.Value.Value == "natif")
-                {
-                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
-                }
-            }
-        }
-
-        for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
-        {
-            var player = clientConnectionSettings.Session.Players[i];
-
             foreach (var property in player.Properties)
             {
                 if (property.Value.Value == "corpo")
@@ -102,6 +80,14 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    public bool IsSessionFull()
+    {
+        if (clientConnectionSettings != null)
+        {
+            return clientConnectionSettings.Session.AvailableSlots == 0;
+        }
+        return false;
+    }
     public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
     {
         List<IReadOnlyPlayer> playersInTeam = new List<IReadOnlyPlayer>();
@@ -135,7 +121,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (clientConnectionSettings != null)
         {
-            return clientConnectionSettings.Session.Players.Count - 1; 
+            return clientConnectionSettings.Session.Players.Count - 1;
         }
         return 0;
     }
@@ -188,10 +174,7 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"Successfully quick-joined session: {result.Session.Id}");
     }
 
-    private bool IsSessionFull(ISession session)
-    {
-        return session.AvailableSlots == 0;
-    }
+
 
     private async Task QuerySessionsAsync()
     {
@@ -232,21 +215,6 @@ public class GameManager : Singleton<GameManager>
         SessionID = firstSession.Id;
 
         Debug.Log($"SessionId is {SessionID}");
-    }
-
-    IEnumerator WaitUntilSessionIsFull()
-    {
-        while (!IsSessionFull(clientConnectionSettings.Session))
-        {
-            Debug.Log($"GameManager: Current player count: {clientConnectionSettings.Session.PlayerCount}, " +
-                $"available slots: {clientConnectionSettings.Session.AvailableSlots}");
-
-            SessionData.Instance.UpdateSessionState(clientConnectionSettings.Session.PlayerCount, clientConnectionSettings.Session.AvailableSlots, clientConnectionSettings.Session);
-            yield return null;
-        }
-        Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
-        GameState = GlobalGameState.InGame;
-        SceneManager.LoadScene("MultiplayerTest");
     }
 
     public async Task DisconnectAndUnloadWorlds()

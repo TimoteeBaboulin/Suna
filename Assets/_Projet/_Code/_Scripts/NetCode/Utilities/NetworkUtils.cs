@@ -37,7 +37,7 @@ namespace GameNetwork.Utils
         public static string SessionID { get; set; }
         public static World ServerWorld { get; set; }
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-        public static int MaxNbOfPlayers = 5;
+        public static int MaxNbOfPlayers = 3;
         public ClientTransportHelper(string ip, ushort port, bool isClientLocal)
         {
             IP = ip;
@@ -59,7 +59,7 @@ namespace GameNetwork.Utils
             var networkHandler = new NetworkHandler();
             options.WithNetworkHandler(networkHandler);
 
-            gameConnection.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, options); //TEMP HERE DONT FORGET MOTHERFUCKER
+            gameConnection.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, options);
             gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
             gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
             gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
@@ -151,6 +151,7 @@ namespace GameNetwork.Utils
             //gameConnection.State = ClientConnectionState.Matchmaking;
 
             var options = gameConnection.CreateSessionOptions();
+
             var networkHandler = new NetworkHandler();
             options.WithNetworkHandler(networkHandler);
 
