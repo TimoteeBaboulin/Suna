@@ -44,14 +44,11 @@ public class MainMenuController : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         UnityEngine.Cursor.visible = true;
     }
-
-    private void OnPlayButton_Click()
+    private async void OnPlayButton_Click()
     {
-        if (connectionManager != null)
-        {
-            connectionManager.Connect();
-            SceneManager.LoadScene((int)_sceneLoadOnPlay);
-        }
+        _playButton.SetEnabled(false);
+        await GameManager.Instance.Play();
+        _playButton.SetEnabled(true);
     }
 
     private void OnSettingsButton_Click()

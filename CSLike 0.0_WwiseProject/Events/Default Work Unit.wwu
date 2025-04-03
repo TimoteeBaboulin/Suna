@@ -3,37 +3,56 @@
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="Music_Play" ID="{3EBA5C8C-4553-482C-90E4-A03692DA77AE}">
+				<Event Name="Pistol_Shoot" ID="{CA6569CF-2856-4F7C-9E9F-530727951166}">
 					<ChildrenList>
-						<Action Name="" ID="{CC22E66D-1DAA-40F5-BDF4-D282DEF8BE49}" ShortID="62752791">
+						<Action Name="" ID="{666E3B21-005B-4CDE-AAA1-D523B497B5E7}" ShortID="954496367">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="That Person's Name Is   Bravely Default OST" ID="{5900C41B-8BB6-457C-AE06-CAAF40839D4A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+									<ObjectRef Name="pistol_shoot" ID="{3B129407-21A2-4B2B-80A8-9726A4351553}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Music_Stop" ID="{ED12738B-57AB-4F92-9E1B-85F324984FA9}">
+				<Event Name="Pistol_Reload" ID="{99BD317C-041B-4F2F-9D59-4C0543E9F945}">
 					<ChildrenList>
-						<Action Name="" ID="{77E20F8A-8E5F-42BB-8563-CF65F4D82C02}" ShortID="388070052">
-							<PropertyList>
-								<Property Name="ActionType" Type="int16" Value="2"/>
-							</PropertyList>
+						<Action Name="" ID="{051736A9-651D-42A4-9DD8-C08E38D1BCEB}" ShortID="743739476">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="That Person's Name Is   Bravely Default OST" ID="{5900C41B-8BB6-457C-AE06-CAAF40839D4A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+									<ObjectRef Name="pistol_worldreload" ID="{CC435951-8D78-420A-B240-2DA2D46AE172}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
 					</ChildrenList>
 				</Event>
-				<Event Name="Sound_Play" ID="{6DA026ED-0C7F-4945-830C-DA3BDFF95CE3}">
+				<Event Name="Rifle_Shoot" ID="{4D46279A-6FA5-45FF-BEE1-8AA41BDABB7C}">
 					<ChildrenList>
-						<Action Name="" ID="{E3354481-B3FE-4252-AE3F-7B7B618370DB}" ShortID="698799128">
+						<Action Name="" ID="{E69522AD-CD8A-4062-B5B6-9C7053011C61}" ShortID="458072047">
 							<ReferenceList>
 								<Reference Name="Target">
-									<ObjectRef Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{B217BC1E-EF9B-47ED-91A3-61895CB2FF72}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+									<ObjectRef Name="smg_shoot" ID="{9527AB01-F0DD-4FA4-B11B-A9AA3467E616}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Rifle_Reload" ID="{4B5F504C-ABA9-4881-9037-49464FFF5B5F}">
+					<ChildrenList>
+						<Action Name="" ID="{C3B8A67E-6FE5-4489-8378-0E129E0AB988}" ShortID="442628448">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="smg_clip_in" ID="{EB59BBA8-1FDE-477C-908B-03CFA1133451}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="Footstep" ID="{3789329B-96A7-4FD2-B954-2E5B638B2771}">
+					<ChildrenList>
+						<Action Name="" ID="{524EFAEA-EECF-48AB-BF78-669742CB9345}" ShortID="95373067">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 								</Reference>
 							</ReferenceList>
 						</Action>
