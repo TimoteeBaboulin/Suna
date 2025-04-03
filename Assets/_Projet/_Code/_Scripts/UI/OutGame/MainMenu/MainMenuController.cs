@@ -1,7 +1,4 @@
 using System.Linq;
-using Unity.Collections;
-using Unity.Entities;
-using Unity.NetCode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -40,6 +37,12 @@ public class MainMenuController : MonoBehaviour
 
         _quitButton = _root.Q<Button>("QuitButton");
         _quitButton.clicked += OnQuitButton_Click;
+    }
+
+    private void Start()
+    {
+        UnityEngine.Cursor.lockState = CursorLockMode.None;
+        UnityEngine.Cursor.visible = true;
     }
 
     private void OnPlayButton_Click()
