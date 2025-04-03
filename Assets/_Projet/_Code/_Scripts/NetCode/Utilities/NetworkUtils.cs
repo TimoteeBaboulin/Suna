@@ -37,7 +37,7 @@ namespace GameNetwork.Utils
         public static string SessionID { get; set; }
         public static World ServerWorld { get; set; }
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-
+        public static int MaxNbOfPlayers = 5;
         public ClientTransportHelper(string ip, ushort port, bool isClientLocal)
         {
             IP = ip;
@@ -244,7 +244,20 @@ namespace GameNetwork.Utils
         }
         public SessionOptions CreateSessionOptions()
         {
-            SessionOptions options = new SessionOptions { MaxPlayers = 3 }; //CAREFUL HERE MOTHERFUCKER
+            int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
+            var options = new SessionOptions { MaxPlayers = maxPlayers };
+
+            int playersPerTeam = (maxPlayers - 1) / 2;
+
+            for (int i = 0; i < maxPlayers - 1; i++) 
+            {
+                string team = i < playersPerTeam ? "corpo" : "natif";
+                options.PlayerProperties.Add(
+                    $"player{i + 1}", 
+                    new PlayerProperty(team, VisibilityPropertyOptions.Public)
+                );
+            }
+
             return options.WithDirectNetwork(IP, IP, Port);
         }
     }

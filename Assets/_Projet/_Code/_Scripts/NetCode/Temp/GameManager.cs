@@ -61,6 +61,83 @@ public class GameManager : Singleton<GameManager>
 
         Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
         GameState = GlobalGameState.InGame;
+
+        Debug.Log($"Nb of players{GetCurrentNbOfPlayersInSession()}");
+
+        foreach (var player in clientConnectionSettings.Session.Players)
+        {
+            // Assuming the server might be included in the players list, skip if needed:
+            // if (player.IsServer) continue;
+
+            // Retrieve the team information from the player's properties
+
+            foreach (var property in player.Properties)
+            {
+                if (property.Value.Value == "corpo")
+                {
+                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
+                }
+                else if (property.Value.Value == "natif")
+                {
+                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
+                }
+            }
+        }
+
+        for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
+        {
+            var player = clientConnectionSettings.Session.Players[i];
+
+            foreach (var property in player.Properties)
+            {
+                if (property.Value.Value == "corpo")
+                {
+                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
+                }
+                else if (property.Value.Value == "natif")
+                {
+                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
+                }
+            }
+        }
+    }
+
+    public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    {
+        List<IReadOnlyPlayer> playersInTeam = new List<IReadOnlyPlayer>();
+        for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
+        {
+            var player = clientConnectionSettings.Session.Players[i];
+
+            foreach (var property in player.Properties)
+            {
+                if (property.Value.Value == teamName)
+                {
+                    playersInTeam.Add(player);
+                    break;
+                }
+            }
+        }
+        return playersInTeam;
+    }
+
+    public List<IReadOnlyPlayer> GetAllPlayers()
+    {
+        List<IReadOnlyPlayer> allPlayers = new List<IReadOnlyPlayer>();
+        for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
+        {
+            allPlayers.Add(clientConnectionSettings.Session.Players[i]);
+        }
+        return allPlayers;
+    }
+
+    public int GetCurrentNbOfPlayersInSession()
+    {
+        if (clientConnectionSettings != null)
+        {
+            return clientConnectionSettings.Session.Players.Count - 1; 
+        }
+        return 0;
     }
 
 

@@ -9,7 +9,6 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
 {
-    public int MaxPlayers = 11;
     public string SessionCode { get; private set; } = "DDDDDD";
     private ClientTransportHelper serverConnectionSettings;
 
@@ -21,7 +20,7 @@ public class ServerSessionFactory
         instance = new ServerSessionFactory();
         try
         {
-            SessionOptions options = new SessionOptions { MaxPlayers = instance.MaxPlayers };
+            SessionOptions options = new SessionOptions { MaxPlayers = ClientTransportHelper.MaxNbOfPlayers };
             ClientTransportHelper transportHelper = new ClientTransportHelper(ip, port, isClientLocal);
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
