@@ -1,0 +1,85 @@
+﻿using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.NetCode;
+using Unity.Services.Multiplayer;
+using UnityEngine;
+
+
+public static class PlayerHelpers
+{
+    /// <summary>
+    /// Function used to receive the number of players alive in a team
+    /// The function is managed so can't be used in ISystems or Burst Compiled methods
+    /// Written by Timotee
+    /// </summary>
+    static public int CountPlayersAliveManaged(TeamSideType team, World world)
+    {
+        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(team.ToString());
+        List<int> totalPlayerIDs = new List<int>();
+
+        int count = 0;
+
+        EntityQueryDesc desc = new EntityQueryDesc
+        {
+            All = new ComponentType[] { typeof(ClientComponent), typeof(GhostInstance) }
+        };
+        EntityQuery query = world.EntityManager.CreateEntityQuery(desc);
+
+        NativeArray<Entity> clients = query.ToEntityArray(Allocator.Temp);
+        NativeArray<GhostInstance> ghosts = query.ToComponentDataArray<GhostInstance>(Allocator.Temp);
+
+        for (int i = 0; i < clients.Length; i++)
+        {
+            bool foundPlayerId = players.Exists(
+                (obj) =>
+                {
+                    return int.Parse(obj.Id) == ghosts[i].ghostId;
+                });
+
+            if (!foundPlayerId)
+                continue;
+
+            Debug.Log($"Found player with id {ghosts[i].ghostId}");
+
+            if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
+            {
+                count++;
+            }
+        }
+
+        foreach (IReadOnlyPlayer player in players)
+        {
+            Debug.Log(player.Id);
+        }
+
+        Debug.Log($"{count} players alive in {team.ToString()}");
+
+        return count;
+    }
+}
+
+[UpdateBefore(typeof(RoundSystemServer))]
+public partial class CountPlayersSystemServer : SystemBase
+{
+    protected override void OnCreate()
+    {
+        base.OnCreate();
+
+        RequireForUpdate<RoundComponent>();
+    }
+
+    protected override void OnUpdate()
+    {
+        if (!SystemAPI.TryGetSingletonEntity<RoundComponent>(out var entity))
+        {
+            return;
+        }
+
+        RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
+
+        playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
+        playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+    }
+}
