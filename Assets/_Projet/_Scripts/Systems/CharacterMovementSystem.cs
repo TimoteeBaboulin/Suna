@@ -48,8 +48,6 @@ public partial struct CharacterMovementJob : IJobEntity
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
 
-    const float gravity = -9.81f;
-
     private static float3 ProjectOnPlan(float3 vec, float3 normal)
     {
         return vec - math.project(vec, normal);
@@ -65,16 +63,10 @@ public partial struct CharacterMovementJob : IJobEntity
         return math.normalize(ProjectOnPlan(moveDir, groundNormal));
     }
 
-    private bool OnSlope(float3 groundNormal)
+    private bool OnSlope(float3 groundNormal, float maxSlopeAngle)
     {
-        float maxAngle = 50; //TODO: Avoid Magic Numbers lul
         float angle = Angle(groundNormal, math.up());
-        return angle != 0f && angle <= maxAngle;
-    }
-
-    private float3 float3Lerp(float3 a, float3 b, float x)
-    {
-        return a + (b - a) * x;
+        return angle != 0f && angle <= maxSlopeAngle;
     }
 
     public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
@@ -143,14 +135,14 @@ public partial struct CharacterMovementJob : IJobEntity
             }
         }
 
-        bool onSlope = OnSlope(groundNormal) && controller.isGrounded;
+        bool onSlope = OnSlope(groundNormal, controller.maxSlopeAngle) && controller.isGrounded;
 
         if(controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
         {
             controller.isGrounded = false;
         }
 
-        if (isMoving && Angle(math.up(), groundNormal) < 50)
+        if (isMoving && Angle(math.up(), groundNormal) < controller.maxSlopeAngle)
         {
             controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
         }
@@ -210,7 +202,7 @@ public partial struct CharacterMovementJob : IJobEntity
             vel.Linear.z *= (1.0f - controller.drag);
         }
 
-        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * gravity * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * 9.81f * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
         if (onSlope && !isMoving && !controller.isJumping) //Prevents jumping when stopping on a slope
             vel.Linear.y = 0;
