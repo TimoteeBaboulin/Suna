@@ -13,7 +13,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public float drag = 0.1f;
     public float maxStepHeight = 0.5f;
     public float linearDampingXZ = 0.5f;
-    public float gravityScale = 1.0f;
+    public float gravityScale = -1.0f;
     public float maxSlopeAngle = 50.0f;
 
     [Header("Vertical Movement Parameters")]
