@@ -16,7 +16,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &4913276160335550425
 Transform:
@@ -245,7 +245,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 0
 --- !u!4 &8922503318427528325
 Transform:
@@ -364,7 +364,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &2947700578625322954
 Transform:
@@ -399,7 +399,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &9050775112791370578
 Transform:
@@ -520,7 +520,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 0
 --- !u!4 &6935311374001171064
 Transform:
@@ -717,7 +717,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5190117214808249314, guid: 332e9746383b4274f8ca89d6c67b094f, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5190117214808249314, guid: 332e9746383b4274f8ca89d6c67b094f, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 2147483647
       objectReference: {fileID: 0}
     - target: {fileID: 6621712599224020688, guid: 332e9746383b4274f8ca89d6c67b094f, type: 3}
       propertyPath: m_ScaleInLightmap
@@ -1284,6 +1288,7 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 3479796416434319325, guid: 1d7cd68c93af9f24db2fcfd7a6c4d613, type: 3}
     - {fileID: 8544141714857169615, guid: 1d7cd68c93af9f24db2fcfd7a6c4d613, type: 3}
+    - {fileID: 8609259440755176462, guid: 1d7cd68c93af9f24db2fcfd7a6c4d613, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 4169595300028514173, guid: 1d7cd68c93af9f24db2fcfd7a6c4d613, type: 3}
       insertIndex: 0
