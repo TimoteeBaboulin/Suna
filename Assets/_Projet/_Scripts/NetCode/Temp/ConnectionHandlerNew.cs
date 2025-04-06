@@ -63,28 +63,33 @@ public class ConnectionHandlerNew : MonoBehaviour
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.StartLoading);
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.InitializeConnection);
 
-        LoadUtils.CreateEntityWorlds(out var serverWorld, out var clientWorld);
-        sessionTransport = await new ClientTransportHelper().CreateOrJoinSessionAsync(sessionID, token);
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
-        if (serverWorld != null)
+        LoadUtils.CreateEntityWorlds();
+        if (RequestedPlayType == PlayType.ClientAndServer)
         {
-            using var drvQuery = serverWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
+        }
+
+        sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
+        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
+        if (ClientTransportHelper.ServerWorld != null)
+        {
+            using var drvQuery = ClientTransportHelper.ServerWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
             serverDriver.Listen(sessionTransport.ListenEndpoint);
         }
 
-        if (clientWorld != null)
+        if (ClientTransportHelper.ClientWorld != null)
         {
-            using var drvQuery = clientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
+            using var drvQuery = ClientTransportHelper.ClientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
             var clientDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            clientDriver.Connect(clientWorld.EntityManager, sessionTransport.ConnectEndpoint);
+            clientDriver.Connect(ClientTransportHelper.ClientWorld.EntityManager, sessionTransport.ConnectEndpoint);
         }
-        await LoadUtils.LoadGameplayAsync(serverWorld, clientWorld);
+        await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
         await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
         //await WaitUntilSessionIsFullAsync(token, clientWorld);
-        if (clientWorld != null)
+        if (ClientTransportHelper.ClientWorld != null)
         {
-            await WaitForGhostReplicationAsync(clientWorld);
+            await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
             //await WaitForAttachedCameraAsync(clientWorld);
         }
 
@@ -178,10 +183,10 @@ public class ConnectionHandlerNew : MonoBehaviour
             {
                 var synchronizingPercentage = ghostCount.GhostCountOnServer == 0
                     ? math.saturate(ghostCount.GhostCountInstantiatedOnClient / (float)ghostCount.GhostCountOnServer)
-                    : waitedForTicks > 60 ? 1f : 0f; 
+                    : waitedForTicks > 60 ? 1f : 0f;
 
                 SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WorldReplication, synchronizingPercentage);
-                if (synchronizingPercentage > 0.99f) 
+                if (synchronizingPercentage > 0.99f)
                     return;
             }
             await Awaitable.NextFrameAsync(cancellationToken);

@@ -4,6 +4,7 @@ using Unity.Networking.Transport;
 using Unity.Entities;
 using Unity.Services.Multiplayer;
 using GameNetwork;
+using GameNetwork.Utils;
 public class CommonAutoConnect : ClientServerBootstrap
 {
     public override bool Initialize(string defaultWorldName)
@@ -17,10 +18,17 @@ public class CommonAutoConnect : ClientServerBootstrap
         else if (Application.platform == RuntimePlatform.WindowsServer)
         {
             AutoConnectPort = 7979;
-            CreateServerWorld("ServerWorld");
+            ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
             //DefaultListenAddress = NetworkEndpoint.AnyIpv4.WithPort(AutoConnectPort);
 
             return true;
+        }
+
+        if (RequestedPlayType == PlayType.ClientAndServer)
+        {
+            AutoConnectPort = 0;
+            ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
+            return false;
         }
         return true;
     }

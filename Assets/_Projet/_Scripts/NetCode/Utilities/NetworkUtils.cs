@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.Entities;
 using Unity.Multiplayer.Widgets;
+using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
@@ -35,18 +36,19 @@ namespace GameNetwork.Utils
         public NetworkType SessionConnectionType { get; private set; }
 
         public static string SessionID { get; set; }
-        public static World ServerWorld { get; set; }
         public static string CurrentIP { get; set; } = "51.210.222.138";
         public static ushort CurrentPort { get; set; } = 7979;
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
         public static int MaxNbOfPlayers = 11;
+        public static World ClientWorld { get; set; } = null;
+        public static World ServerWorld { get; set; } = null;
 
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
             //await StartServicesAsync();
             var gameConnection = new ClientTransportHelper();
-           // gameConnection.State = ClientConnectionState.Matchmaking;
+            // gameConnection.State = ClientConnectionState.Matchmaking;
 
             var options = gameConnection.CreateSessionOptions();
             var networkHandler = new NetworkHandler();
@@ -103,7 +105,7 @@ namespace GameNetwork.Utils
             catch (Exception ex)
             {
                 UnityEngine.Debug.LogError($"[SessionTransportHelper] Error in CreateServerSessionAsync: {ex}");
-                throw; 
+                throw;
             }
         }
         public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionCode, CancellationToken cancellationToken)
@@ -231,17 +233,25 @@ namespace GameNetwork.Utils
 
             int playersPerTeam = (maxPlayers - 1) / 2;
 
-            for (int i = 0; i < maxPlayers - 1; i++) 
+            for (int i = 0; i < maxPlayers - 1; i++)
             {
                 string team = i < playersPerTeam ? "corpo" : "natif";
                 options.PlayerProperties.Add(
-                    $"player{i + 1}", 
+                    $"player{i + 1}",
                     new PlayerProperty(team, VisibilityPropertyOptions.Public)
                 );
             }
 
             Debug.Log($"Create sessions with IP {CurrentIP}, Port {CurrentPort}");
-            return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
+
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
+            {
+                return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
+            }
+            else
+            {
+                return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
+            }
         }
     }
 }

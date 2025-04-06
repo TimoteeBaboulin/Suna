@@ -12,26 +12,27 @@ namespace GameNetwork.Utils
 {
     public class LoadUtils
     {
-        public static void CreateEntityWorlds(out World serverWorld, out World clientWorld)
+        public static void CreateEntityWorlds()
         {
             SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.CreateWorld);
             DestroySimulationWorld();
 
-            serverWorld = null;
-            clientWorld = null;
             switch (RequestedPlayType)
             {
                 case PlayType.ClientAndServer:
                     //role = NetworkRole.Host;
-                    clientWorld = CreateClientWorld("ClientWorld");
-                    serverWorld = CreateServerWorld("ServerWorld");
+                    ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
+                    ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
+                    if (ClientTransportHelper.ServerWorld == null)
+                    {
+                        Debug.LogError("Server world creation failed in ClientAndServer mode.");
+                    }
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Server:
                     //role = NetworkRole.Server;
-                    serverWorld = ServerWorld;
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"serverWorld in CreateEntityWorlds {ServerWorld}");
@@ -39,7 +40,7 @@ namespace GameNetwork.Utils
                     break;
                 case PlayType.Client:
                     //role = NetworkRole.Client;
-                    clientWorld = CreateClientWorld("ClientWorld");
+                    ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
@@ -50,33 +51,30 @@ namespace GameNetwork.Utils
             }
         }
 
-        public static void CreateEntityWorlds(ISession session, out World serverWorld, out World clientWorld)
+        public static void CreateEntityWorlds(ISession session)
         {
             SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.CreateWorld);
             DestroySimulationWorld();
 
-            serverWorld = null;
-            clientWorld = null;
             switch (RequestedPlayType)
             {
                 case PlayType.ClientAndServer:
                     //role = NetworkRole.Host;
-                    clientWorld = CreateClientWorld("ClientWorld");
-                    serverWorld = CreateServerWorld("ServerWorld");
+                    ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
+                    ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Server:
                     //role = NetworkRole.Server;
-                    serverWorld = ClientTransportHelper.ServerWorld;
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Client:
                     //role = NetworkRole.Client;
-                    clientWorld = CreateClientWorld("ClientWorld");
+                    ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
                     Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);

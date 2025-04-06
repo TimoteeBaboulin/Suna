@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using System;
 using System.Threading.Tasks;
 using Unity.NetCode;
@@ -44,28 +45,43 @@ namespace GameNetwork
 
         private static NetworkEndpoint GetConnectEndpoint(NetworkConfiguration configuration)
         {
-            return (configuration.Type, configuration.Role) switch
+            //return (configuration.Type, configuration.Role) switch
+            //{
+            //    (NetworkType.Direct, NetworkRole.Host) =>
+            //        NetworkEndpoint.LoopbackIpv4.WithPort(configuration.DirectNetworkListenAddress.Port),
+            //    (NetworkType.Direct, NetworkRole.Client) =>
+            //        configuration.DirectNetworkPublishAddress,
+            //    (NetworkType.Relay, NetworkRole.Host) =>
+            //        NetworkEndpoint.LoopbackIpv4.WithPort(configuration.RelayServerData.Endpoint.Port),
+            //    (NetworkType.Relay, NetworkRole.Client) =>
+            //        configuration.RelayClientData.Endpoint,
+            //    _ => throw new InvalidOperationException(
+            //        $"Invalid NetworkType/Role combination: {configuration.Type}, {configuration.Role}")
+            //};
+
+            switch (configuration.Type, configuration.Role)
             {
-                (NetworkType.Direct, NetworkRole.Host) =>
-                    NetworkEndpoint.LoopbackIpv4.WithPort(configuration.DirectNetworkListenAddress.Port),
-                (NetworkType.Direct, NetworkRole.Client) =>
-                    configuration.DirectNetworkPublishAddress,
-                (NetworkType.Relay, NetworkRole.Host) =>
-                    NetworkEndpoint.LoopbackIpv4.WithPort(configuration.RelayServerData.Endpoint.Port),
-                (NetworkType.Relay, NetworkRole.Client) =>
-                    configuration.RelayClientData.Endpoint,
-                _ => throw new InvalidOperationException(
-                    $"Invalid NetworkType/Role combination: {configuration.Type}, {configuration.Role}")
-            };
+                case (NetworkType.Direct, NetworkRole.Host):
+                    return NetworkEndpoint.LoopbackIpv4.WithPort(configuration.DirectNetworkListenAddress.Port);
+                case (NetworkType.Direct, NetworkRole.Client):
+                    return configuration.DirectNetworkPublishAddress;
+                case (NetworkType.Relay, NetworkRole.Host):
+                    return NetworkEndpoint.LoopbackIpv4.WithPort(configuration.RelayServerData.Endpoint.Port);
+                case (NetworkType.Relay, NetworkRole.Client):
+                    return configuration.RelayClientData.Endpoint;
+                default:
+                    return default;
+            }
         }
 
         private static NetworkEndpoint GetListenEndpoint(NetworkConfiguration configuration)
         {
-            return configuration.Type switch
+            return (configuration.Type, configuration.Role) switch
             {
-                NetworkType.Direct => configuration.DirectNetworkListenAddress,
-                NetworkType.Relay => NetworkEndpoint.AnyIpv4,
-                _ => throw new InvalidOperationException($"Invalid NetworkType for listening: {configuration.Type}")
+                (NetworkType.Direct, NetworkRole.Host) => configuration.DirectNetworkListenAddress,
+                (NetworkType.Direct, NetworkRole.Client) => NetworkEndpoint.LoopbackIpv4.WithPort(ClientTransportHelper.CurrentPort),
+                (NetworkType.Relay, _) => NetworkEndpoint.AnyIpv4,
+                _ => throw new InvalidOperationException($"Invalid configuration for listening: {configuration.Type}, {configuration.Role}")
             };
         }
 
