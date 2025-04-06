@@ -82,7 +82,7 @@ namespace GameNetwork.Utils
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
-                    .Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
+                    Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
                     return connection;
                 }
 
