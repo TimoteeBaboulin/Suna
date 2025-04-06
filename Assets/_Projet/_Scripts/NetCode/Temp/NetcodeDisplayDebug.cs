@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using TMPro;
 using UnityEngine;
 
@@ -9,7 +10,7 @@ public class NetcodeDisplayDebug : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        debugText.text = $"IP {connectionHandler.IP}, Port {connectionHandler.Port}";
+        debugText.text = $"IP {ClientTransportHelper.CurrentIP}, Port {ClientTransportHelper.CurrentPort}";
     }
 
     // Update is called once per frame

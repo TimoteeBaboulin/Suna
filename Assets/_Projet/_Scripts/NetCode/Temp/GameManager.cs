@@ -42,7 +42,7 @@ public class GameManager : Singleton<GameManager>
         {
             await ClientTransportHelper.StartServicesAsync();
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
-            serverSession = await ServerSessionFactory.CreateServerSession(connectionHandler.IP, connectionHandler.Port, connectionHandler.ClientLocal);
+            serverSession = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
         }
     }
     public async Task Play()
@@ -53,7 +53,7 @@ public class GameManager : Singleton<GameManager>
         SessionID = (RequestedPlayType == PlayType.ClientAndServer) ? "0" : SessionID;
         Debug.Log($"GameManager: Using session code: {SessionID}");
 
-        clientConnectionSettings = await connectionHandler.ConnectToSessionAsync(loadingToken.Token, SessionID);
+        clientConnectionSettings = await connectionHandler.Connect(loadingToken.Token, SessionID);
 
         GameState = GlobalGameState.InGame;
         Cursor.lockState = CursorLockMode.Locked;
@@ -139,7 +139,7 @@ public class GameManager : Singleton<GameManager>
             MaxPlayers = 4
         };
 
-        ClientTransportHelper helper = new ClientTransportHelper("127.0.0.1", 7979, false);
+        ClientTransportHelper helper = new ClientTransportHelper();
         ClientTransportHelper result = await helper.MatchmakeSessionAsync(matchOptions, sessionOptions);
 
         if (result == null)
@@ -162,7 +162,7 @@ public class GameManager : Singleton<GameManager>
             MaxPlayers = 4
         };
 
-        ClientTransportHelper helper = new ClientTransportHelper("127.0.0.1", 7979, false);
+        ClientTransportHelper helper = new ClientTransportHelper();
         ClientTransportHelper result = await helper.QuickJoinSessionAsync(quickJoinOptions, sessionOptions);
 
         if (result == null)

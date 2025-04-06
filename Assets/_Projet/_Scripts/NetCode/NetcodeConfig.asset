@@ -23,7 +23,7 @@ MonoBehaviour:
     TargetFrameRateMode: 0
     m_SendSnapshotsForCatchUpTicks: 0
     SnapshotAckMaskCapacity: 4096
-    HandshakeApprovalTimeoutMS: 5000
+    HandshakeApprovalTimeoutMS: 30000
   ClientTickRate:
     InterpolationTimeNetTicks: 2
     InterpolationTimeMS: 0
@@ -58,7 +58,7 @@ MonoBehaviour:
     m_IrrelevantImportanceDownScale: 1
     m_TempStreamSize: 8192
     m_UseCustomSerializer: 0
-  ConnectTimeoutMS: 1000
+  ConnectTimeoutMS: 10000
   MaxConnectAttempts: 60
   DisconnectTimeoutMS: 10000
   HeartbeatTimeoutMS: 500

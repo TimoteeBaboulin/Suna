@@ -28,23 +28,19 @@ public class ConnectionHandlerNew : MonoBehaviour
     private ushort _port = 7979;
     private string _ip;
     private string _localIp = "127.0.0.1";
-    private bool isClientLocal;
     private ConnectionSettings connectionSettings;
 
     private ClientTransportHelper sessionTransport = null;
-    public string IP { get; private set; }
-    public ushort Port { get; private set; }
-    public bool ClientLocal => isClientLocal;
 
     private static readonly List<string> PlayerProcessingQueue = new List<string>();
     private static bool processingQueue = false;
     protected void Awake()
     {
         connectionSettings = GetComponent<ConnectionSettings>();
-        isClientLocal = connectionSettings.isClientLocal;
+        ClientTransportHelper.isClientLocal = connectionSettings.isClientLocal;
         _ip = connectionSettings.IP;
-        IP = (RequestedPlayType == PlayType.ClientAndServer || isClientLocal) ? _localIp : _ip;
-        Port =  connectionSettings.Port;
+        ClientTransportHelper.CurrentIP = (RequestedPlayType == PlayType.ClientAndServer || ClientTransportHelper.isClientLocal) ? _localIp : _ip;
+        ClientTransportHelper.CurrentPort = connectionSettings.Port;
     }
 
     public ushort GetAvailablePort()
@@ -62,14 +58,13 @@ public class ConnectionHandlerNew : MonoBehaviour
     }
 
 
-    public async Task<ClientTransportHelper> ConnectToSessionAsync(CancellationToken token, string sessionID)
+    public async Task<ClientTransportHelper> Connect(CancellationToken token, string sessionID)
     {
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.StartLoading);
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.InitializeConnection);
 
         LoadUtils.CreateEntityWorlds(out var serverWorld, out var clientWorld);
-
-        sessionTransport = await new ClientTransportHelper(IP, Port, isClientLocal).CreateOrJoinSessionAsync(sessionID, token);
+        sessionTransport = await new ClientTransportHelper().CreateOrJoinSessionAsync(sessionID, token);
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
         if (serverWorld != null)
         {

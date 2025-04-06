@@ -24,10 +24,10 @@ namespace GameNetwork.Utils
 
     public class ClientTransportHelper
     {
-        public ushort Port { get; private set; }
-        public string IP { get; private set; }
-        public bool IsClientLocal { get; private set; }
-        public bool AllowConnection { get; private set; } = true;
+        //public ushort Port { get; private set; }
+        //public string IP { get; private set; }
+        //public bool IsClientLocal { get; private set; }
+        //public bool AllowConnection { get; private set; } = true;
 
         public ISession Session { get; private set; }
         public NetworkEndpoint ListenEndpoint { get; private set; }
@@ -36,23 +36,16 @@ namespace GameNetwork.Utils
 
         public static string SessionID { get; set; }
         public static World ServerWorld { get; set; }
+        public static string CurrentIP { get; set; } = "51.210.222.138";
+        public static ushort CurrentPort { get; set; } = 7979;
+        public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-        public static int MaxNbOfPlayers = 3;
-        public ClientTransportHelper(string ip, ushort port, bool isClientLocal)
-        {
-            IP = ip;
-            Port = port;
-            IsClientLocal = isClientLocal;
-        }
+        public static int MaxNbOfPlayers = 11;
 
-
-        /// <summary>
-        /// Uses Unity's Multiplayer Service to either join or create a session using a ticket.
-        /// </summary>
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
             //await StartServicesAsync();
-            var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
+            var gameConnection = new ClientTransportHelper();
            // gameConnection.State = ClientConnectionState.Matchmaking;
 
             var options = gameConnection.CreateSessionOptions();
@@ -73,46 +66,34 @@ namespace GameNetwork.Utils
             {
                 //await StartServicesAsync();
 
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {IP}, Port: {Port}, IsClientLocal: {IsClientLocal}");
+                Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {CurrentIP}, Port: {CurrentPort}");
 
-                // Create a new instance of SessionTransportHelper with the current settings.
-                var connection = new ClientTransportHelper(IP, Port, IsClientLocal);
+                var connection = new ClientTransportHelper();
 
-                // Build default session options using the instance's helper.
                 var options = connection.CreateSessionOptions();
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
+                Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
 
-                // Override MaxPlayers with the provided value.
                 options.MaxPlayers = sessionOptions.MaxPlayers;
 
-                // Attach a network handler
                 var networkHandler = new NetworkHandler();
                 options.WithNetworkHandler(networkHandler);
-                UnityEngine.Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
-
-                //options.SessionProperties = new Dictionary<string, SessionProperty>();
-
-                //string customCode = GenerateRandomSessionCode(6);
-                //options.SessionProperties["CustomSessionCode"] = new SessionProperty(customCode);
-                //UnityEngine.Debug.Log($"[SessionTransportHelper] Assigned custom session code: {customCode}");
-                // -----------------------------------------
+                Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
 
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
-                    UnityEngine.Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
+                    .Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
                     return connection;
                 }
 
                 connection.Session = hostSession;
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
-                UnityEngine.Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
+                Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
+                Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
 
-                // Retrieve connection endpoints.
                 connection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
                 connection.ListenEndpoint = await networkHandler.ListenEndpoint;
                 connection.SessionConnectionType = await networkHandler.SessionConnectionType;
-                UnityEngine.Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
+                Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
                     $"ConnectEndpoint={connection.ConnectEndpoint}, " +
                     $"ListenEndpoint={connection.ListenEndpoint}, " +
                     $"SessionConnectionType={connection.SessionConnectionType}");
@@ -127,7 +108,7 @@ namespace GameNetwork.Utils
         }
         public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionCode, CancellationToken cancellationToken)
         {
-            var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
+            var gameConnection = new ClientTransportHelper();
             //await StartServicesAsync();
             //gameConnection.State = ClientConnectionState.Matchmaking;
 
@@ -146,7 +127,7 @@ namespace GameNetwork.Utils
 
         public async Task<ClientTransportHelper> JoinOrCreateMatchmakerGameAsync(CancellationToken cancellationToken)
         {
-            var gameConnection = new ClientTransportHelper(IP, Port, IsClientLocal);
+            var gameConnection = new ClientTransportHelper();
             //await StartServicesAsync();
             //gameConnection.State = ClientConnectionState.Matchmaking;
 
@@ -259,7 +240,8 @@ namespace GameNetwork.Utils
                 );
             }
 
-            return options.WithDirectNetwork(IP, IP, Port);
+            Debug.Log($"Create sessions with IP {CurrentIP}, Port {CurrentPort}");
+            return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
         }
     }
 }

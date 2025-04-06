@@ -21,7 +21,7 @@ public class ServerSessionFactory
         try
         {
             SessionOptions options = new SessionOptions { MaxPlayers = ClientTransportHelper.MaxNbOfPlayers };
-            ClientTransportHelper transportHelper = new ClientTransportHelper(ip, port, isClientLocal);
+            ClientTransportHelper transportHelper = new ClientTransportHelper();
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
