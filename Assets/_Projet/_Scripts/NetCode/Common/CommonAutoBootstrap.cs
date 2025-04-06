@@ -23,13 +23,6 @@ public class CommonAutoConnect : ClientServerBootstrap
 
             return true;
         }
-
-        if (RequestedPlayType == PlayType.ClientAndServer)
-        {
-            AutoConnectPort = 0;
-            ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
-            return false;
-        }
         return true;
     }
 }

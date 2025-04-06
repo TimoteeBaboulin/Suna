@@ -47,11 +47,9 @@ public class GameManager : Singleton<GameManager>
     }
     public async Task Play()
     {
-
         await ClientTransportHelper.StartServicesAsync();
         await QuerySessionsAsync();
 
-        //SessionID = (RequestedPlayType == PlayType.ClientAndServer) ? "0" : SessionID;
         Debug.Log($"GameManager: Using session code: {SessionID}");
 
         clientConnectionSettings = await connectionHandler.Connect(loadingToken.Token, SessionID);
