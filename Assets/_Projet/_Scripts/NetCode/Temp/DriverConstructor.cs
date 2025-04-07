@@ -1,4 +1,4 @@
-using Unity.Collections;
+﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Networking.Transport.Relay;
@@ -18,8 +18,7 @@ namespace GameNetwork
     public class DriverConstructor : INetworkStreamDriverConstructor
     {
         private DriverConfiguration driverConfiguration;
-
-        private static NetCodeConfig netcodeConfig;
+        private NetCodeConfig netcodeConfig;
 
         public DriverConstructor(NetworkConfiguration configuration)
         {
@@ -40,11 +39,14 @@ namespace GameNetwork
                 Type = NetworkType.Direct,
             };
         }
+
         public void CreateClientDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug)
         {
+            InitNetcodeConfig();
             var networkSettings = GameNetworkSettings(
                 sendQueueCapacity: netcodeConfig.ClientSendQueueCapacity,
                 receiveQueueCapacity: netcodeConfig.ClientReceiveQueueCapacity);
+
 #if UNITY_EDITOR
             if (NetworkSimulatorSettings.Enabled)
             {
@@ -57,18 +59,22 @@ namespace GameNetwork
 
         public void CreateServerDriver(World world, ref NetworkDriverStore driverStore, NetDebug netDebug)
         {
-#if UNITY_EDITOR 
-            var networkSettings = GameNetworkSettings(sendQueueCapacity: netcodeConfig.ServerSendQueueCapacity, receiveQueueCapacity: netcodeConfig.ServerReceiveQueueCapacity);
+            InitNetcodeConfig();
+            var networkSettings = GameNetworkSettings(
+                sendQueueCapacity: netcodeConfig.ServerSendQueueCapacity,
+                receiveQueueCapacity: netcodeConfig.ServerReceiveQueueCapacity);
 
+#if UNITY_EDITOR
             if (driverConfiguration.Type == NetworkType.DistributedAuthority)
             {
                 networkSettings.WithRelayParameters(ref driverConfiguration.RelayServerData);
             }
-            DefaultDriverBuilder.RegisterServerUdpDriver(world, ref driverStore, netDebug, networkSettings);
 #endif
+
+            DefaultDriverBuilder.RegisterServerUdpDriver(world, ref driverStore, netDebug, networkSettings);
         }
 
-        static NetworkSettings GameNetworkSettings(int sendQueueCapacity, int receiveQueueCapacity)
+        private NetworkSettings GameNetworkSettings(int sendQueueCapacity, int receiveQueueCapacity)
         {
             var networkSettings = new NetworkSettings(Allocator.Temp);
             networkSettings.WithNetworkConfigParameters(
@@ -80,6 +86,17 @@ namespace GameNetwork
                 receiveQueueCapacity: receiveQueueCapacity
             );
             return networkSettings;
+        }
+
+        private void InitNetcodeConfig()
+        {
+            if (netcodeConfig != null) { return; }
+            netcodeConfig = Resources.Load<NetCodeConfig>("NetCodeConfig");
+
+            if (netcodeConfig == null)
+            {
+                Debug.LogError("NetCodeConfig asset not found in Resources/NetCodeConfig. Please create it via 'Create > Netcode > NetCodeConfig'.");
+            }
         }
     }
 }
