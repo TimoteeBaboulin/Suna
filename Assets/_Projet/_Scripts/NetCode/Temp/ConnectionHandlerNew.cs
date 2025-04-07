@@ -93,7 +93,7 @@ public class ConnectionHandlerNew : MonoBehaviour
             clientDriver.Connect(ClientTransportHelper.ClientWorld.EntityManager, sessionTransport.ConnectEndpoint);
         }
         await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
-        await LoadUtils.LoadSceneAsync(connectionSettings.sceneName, SessionData.LoadingSteps.LoadGameScene);
+        await LoadUtils.LoadSceneAsync((int)connectionSettings.sceneToLoad, SessionData.LoadingSteps.LoadGameScene);
         //await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
 
         //await WaitUntilSessionIsFullAsync(token, clientWorld);
