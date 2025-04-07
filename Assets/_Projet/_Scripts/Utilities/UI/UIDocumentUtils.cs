@@ -55,6 +55,12 @@ public class UIDocumentUtils
 
     static public void SetPosition<T>(ref T element, TextAnchor anchor, float xShift, float yShift) where T : VisualElement
     {
+        element.style.top = AutoLength();
+        element.style.left = AutoLength();
+        element.style.right = AutoLength();
+        element.style.bottom = AutoLength();
+        element.style.translate = new(new Translate(0f, 0f));
+
         switch (anchor)
         {
             case TextAnchor.UpperLeft:
