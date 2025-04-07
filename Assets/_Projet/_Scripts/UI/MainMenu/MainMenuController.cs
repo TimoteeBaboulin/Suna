@@ -7,7 +7,10 @@ using UnityEngine.UIElements;
 public class MainMenuController : MonoBehaviour
 {
     [Header("Main Menu Component")]
+    // Assets
     [SerializeField] private VisualTreeAsset _settingsMenuAsset;
+
+    // Main Elements
     private UIDocument _document;
     private VisualElement _root;
     private Button _playButton;
@@ -41,9 +44,11 @@ public class MainMenuController : MonoBehaviour
 
     private void Start()
     {
+        // Unlock Cursor at start
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         UnityEngine.Cursor.visible = true;
     }
+
     private async void OnPlayButton_Click()
     {
         _playButton.SetEnabled(false);
@@ -75,6 +80,7 @@ public class MainMenuController : MonoBehaviour
     {
         Application.Quit();
 #if UNITY_EDITOR
+        // If in Editor Mode, stop Play Mode
         EditorApplication.isPlaying = false;
 #endif
     }
