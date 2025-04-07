@@ -16,6 +16,7 @@ public class ConnectionSettings : MonoBehaviour
     [Tooltip("IP to reach/to connect on")]
     public string IP = "51.210.222.138"; 
     public ushort Port = ClientServerBootstrap.AutoConnectPort;
+    public string sceneName = "MultiplayerTest";
 }
 
 public class ConnectionSettingsBaker : Baker<ConnectionSettings>
