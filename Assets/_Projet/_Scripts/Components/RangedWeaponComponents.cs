@@ -34,6 +34,7 @@ public struct RangedWeaponCommonData
     public float range;
     public float firerate;
     public bool isAutomatic;
+    public uint roundsPerShot;
     public float spread;
     public float spreadAiming;
     public float coefSpray;

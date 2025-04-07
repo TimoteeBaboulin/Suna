@@ -33,6 +33,7 @@ public class RangedWeaponData : ScriptableObject
     public float firerate;
 
     public bool isAutomatic = false;
+    public uint roundsPerShot = 1;
 
     [Tooltip("in minutes of angle")]    
     public float spread;

@@ -94,54 +94,58 @@ public partial struct ShootSystem : ISystem
                         dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;
 
-                        // Apply spread on raycast
-                        float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
-                        quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
-                        recoilRotation = math.mul(input.shootRotation, recoilRotation);
+                        for (int i = 0; i < commonData.roundsPerShot; i++)
+                        {
+                            // Apply spread on raycast
+                            float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                            quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                            recoilRotation = math.mul(input.shootRotation, recoilRotation);
+
+                            dynamicData.patternBulletIndex++;
+
+                            RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
+
+                            // Apply damage to the target player
+                            if (state.World.IsServer())
+                            {
+                                if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                                {
+                                    RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                                    = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+
+                                    if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                                        && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                                        && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                                    {
+                                        SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                            = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+
+                                        ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                        {
+                                            Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                        });
+                                        ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                                    }
+                                }
+
+                                // === VISUEL ===
+                                HitCommand hc = new HitCommand()
+                                {
+                                    position = hit.Position,
+                                    normal = hit.SurfaceNormal,
+                                };
+
+                                if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                      // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                                {
+                                    RpcUtils.SendServerToClientRpc(ref hc);
+                                }
+
+                                // === FIN VISUEL ===
+                            }
+                        }
 
                         dynamicData.timeSinceLastFire = 0f;
-                        dynamicData.patternBulletIndex++;
-
-                        RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
-
-                        // Apply damage to the target player
-                        if (state.World.IsServer())
-                        {
-                            if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                            {
-                                RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
-
-                                if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                                    && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
-                                    && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
-                                {
-                                    SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
-                                        = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
-
-                                    ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
-                                    {
-                                        Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
-                                    });
-                                    ecb.SetComponent(owner, new HasHitComponent { Value = true });
-                                }
-                            }
-
-                            // === VISUEL ===
-                            HitCommand hc = new HitCommand()
-                            {
-                                position = hit.Position,
-                                normal = hit.SurfaceNormal,
-                            };
-
-                            if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                  // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
-                            {
-                                RpcUtils.SendServerToClientRpc(ref hc);
-                            }
-
-                            // === FIN VISUEL ===
-                        }
                     }
                     else
                     {

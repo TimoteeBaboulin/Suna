@@ -106,6 +106,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 rangedWeapons[i].coefSprayAiming = rangedWeaponSO.coefSprayAiming;
                 rangedWeapons[i].ergonomics = rangedWeaponSO.ergonomics;
                 rangedWeapons[i].isAutomatic = rangedWeaponSO.isAutomatic;
+                rangedWeapons[i].roundsPerShot = rangedWeaponSO.roundsPerShot;
                 rangedWeapons[i].dmgFallOff = rangedWeaponSO.dmgFallOff;
                 rangedWeapons[i].coefModifMoveSpeed = rangedWeaponSO.coefModifMoveSpeed;
                 rangedWeapons[i].coefModifMoveSpeedAiming = rangedWeaponSO.coefModifMoveSpeedAiming;

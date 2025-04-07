@@ -158,7 +158,7 @@ public class ShopController : MonoBehaviour
         RangedWeaponData weapon = weaponDict[button];
         statsElement.Add(UI.Label($"Name: {weapon.entityName}", 20, Color.white));
         statsElement.Add(UI.Label($"Damage: {weapon.damage}", 20, Color.white));
-        statsElement.Add(UI.Label($"Firerate: {weapon.firerate}", 20, Color.white));
+        statsElement.Add(UI.Label($"Firerate: {weapon.firerate} RPM", 20, Color.white));
     }
 
     private void OnShopButtonLeave()
