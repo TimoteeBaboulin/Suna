@@ -38,10 +38,10 @@ public sealed class CharacterAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            if (cca.side == TeamSideType.Corpo)
-                AddComponent(entity, new CorpoTeamTag { });
-            else
-                AddComponent(entity, new NatifTeamTag { });
+            //if (cca.side == TeamSideType.Corpo)
+            //    AddComponent(entity, new CorpoTeamTag { });
+            //else
+            //    AddComponent(entity, new NatifTeamTag { });
 
             AddComponent(entity, new CharacterComponent
             {
