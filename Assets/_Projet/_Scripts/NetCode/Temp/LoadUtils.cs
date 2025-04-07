@@ -17,6 +17,8 @@ namespace GameNetwork.Utils
             SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.CreateWorld);
             DestroySimulationWorld();
 
+            ClientTransportHelper.ClientWorld = null;
+            ClientTransportHelper.ServerWorld = null;
             switch (RequestedPlayType)
             {
                 case PlayType.ClientAndServer:
@@ -132,6 +134,15 @@ namespace GameNetwork.Utils
             if (SceneManager.GetSceneByName(sceneName).isLoaded)
                 return;
             var sceneLoading = SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Single);
+            UpdateLoadingStateAsync(step, sceneLoading);
+            await sceneLoading;
+        }
+
+        public static async Task LoadSceneAsync(int sceneID, SessionData.LoadingSteps step)
+        {
+            if (SceneManager.GetSceneByBuildIndex(sceneID).isLoaded)
+                return;
+            var sceneLoading = SceneManager.LoadSceneAsync(sceneID, LoadSceneMode.Single);
             UpdateLoadingStateAsync(step, sceneLoading);
             await sceneLoading;
         }
