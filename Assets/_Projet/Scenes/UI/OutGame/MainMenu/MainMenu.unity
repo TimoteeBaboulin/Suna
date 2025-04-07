@@ -11086,7 +11086,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2def36ae9007e984fa6b5aed1aadb5d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _settingsMenuAsset: {fileID: 0}
+  _settingsMenuAsset: {fileID: 9197481963319205126, guid: 557c017bc59903445b66d083fc317b9f, type: 3}
   connectionManager: {fileID: 0}
   _sceneLoadOnPlay: 1
 --- !u!4 &1032681953
@@ -24147,7 +24147,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isClientLocal
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7540693576825535764, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_LocalPosition.x
