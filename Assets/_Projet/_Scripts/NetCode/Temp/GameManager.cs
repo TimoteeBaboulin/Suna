@@ -44,6 +44,13 @@ public class GameManager : Singleton<GameManager>
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
             serverSession = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
         }
+
+
+    }
+
+    public void Update()
+    {
+
     }
     public async Task Play()
     {
@@ -57,8 +64,21 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
         GameState = GlobalGameState.InGame;
 
-        Debug.Log($"Nb of players{GetCurrentNbOfPlayersInSession()}");
+        Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
+
+
+        for (int i = 0; i < clientConnectionSettings.Session.Players.Count; i++)
+        {
+            var player = clientConnectionSettings.Session.Players[i];
+
+            foreach (var property in player.Properties)
+            {
+                Debug.Log($"Player {player.Id}, team {property.Value.Value}");
+            }
+        }
     }
+
+
 
     public bool IsSessionFull()
     {
@@ -99,9 +119,17 @@ public class GameManager : Singleton<GameManager>
 
     public int GetCurrentNbOfPlayersInSession()
     {
+
         if (clientConnectionSettings != null)
         {
-            return clientConnectionSettings.Session.Players.Count - 1;
+            if (RequestedPlayType == PlayType.Client)
+            {
+                return clientConnectionSettings.Session.Players.Count - 1;
+            }
+            else if (RequestedPlayType == PlayType.ClientAndServer)
+            {
+                return clientConnectionSettings.Session.Players.Count;
+            }
         }
         return 0;
     }

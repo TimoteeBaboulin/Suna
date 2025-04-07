@@ -94,14 +94,14 @@ public class ConnectionHandlerNew : MonoBehaviour
         }
         await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
         await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
+
         //await WaitUntilSessionIsFullAsync(token, clientWorld);
         if (ClientTransportHelper.ClientWorld != null)
         {
-            await WaitForPlayerConnectionAsync(token);
+            //await WaitForPlayerConnectionAsync(token);
             await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
             //await WaitForAttachedCameraAsync(clientWorld);
         }
-
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
         return sessionTransport;
     }
