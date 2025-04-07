@@ -97,6 +97,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         //await WaitUntilSessionIsFullAsync(token, clientWorld);
         if (ClientTransportHelper.ClientWorld != null)
         {
+            await WaitForPlayerConnectionAsync(token);
             await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
             //await WaitForAttachedCameraAsync(clientWorld);
         }
@@ -202,6 +203,17 @@ public class ConnectionHandlerNew : MonoBehaviour
         }
     }
 
+    static async Task WaitForPlayerConnectionAsync(CancellationToken cancellationToken = default)
+    {
+        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
+        // The GameManagerSystem is handling the connection/reconnection once the client world is created.
+        ClientTransportHelper.State = ClientConnectionState.Connecting;
+        while (ClientTransportHelper.State == ClientConnectionState.Connecting)
+        {
+            await Awaitable.NextFrameAsync(cancellationToken);
+        }
+    }
+
     private async Task WaitForAttachedCameraAsync(World world, CancellationToken cancellationToken = default)
     {
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingOnPlayer);
@@ -237,6 +249,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         foreach (var session in results.Sessions)
         {
             Debug.Log(session.Name);
+
             if (ClientTransportHelper.isClientLocal)
             {
                 sessionID = session.Id;

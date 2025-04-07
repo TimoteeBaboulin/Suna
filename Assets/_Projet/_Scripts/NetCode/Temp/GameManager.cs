@@ -18,7 +18,7 @@ using static Unity.NetCode.ClientServerBootstrap;
 public class GameManager : Singleton<GameManager>
 {
     public enum GlobalGameState { MainMenu, Loading, InGame }
-    public GlobalGameState GameState { get; private set; }
+    public GlobalGameState GameState { get; set; }
 
     public string SessionID { get; private set; }
 
@@ -210,5 +210,10 @@ public class GameManager : Singleton<GameManager>
                 world.Dispose();
             }
         }
+    }
+
+    private async void OnApplicationQuit()
+    {
+        await DisconnectAndUnloadWorlds();
     }
 }

@@ -10,6 +10,7 @@ using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.Matchmaker;
 using Unity.Services.Multiplayer;
+using Unity.Services.Vivox;
 using UnityEngine;
 
 namespace GameNetwork.Utils
@@ -125,6 +126,23 @@ namespace GameNetwork.Utils
             gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
 
             Debug.Log($"Client joined session with code: {gameConnection.Session.Id}");
+            return gameConnection;
+        }
+
+        public async Task<ClientTransportHelper> ReconnectByIdAsync(string sessionID, CancellationToken cancellationToken)
+        {
+            var gameConnection = new ClientTransportHelper();
+
+            var reconnectOptions = new ReconnectSessionOptions();
+            var networkHandler = new NetworkHandler();
+
+            reconnectOptions.WithNetworkHandler(networkHandler);
+            gameConnection.Session = await MultiplayerService.Instance.ReconnectToSessionAsync(sessionID);
+            gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
+            gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
+            gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
+
+            Debug.Log($"Client reconnected to session with id: {gameConnection.Session.Id}");
             return gameConnection;
         }
 
