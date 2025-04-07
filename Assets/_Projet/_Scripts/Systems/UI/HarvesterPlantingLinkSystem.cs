@@ -2,7 +2,7 @@ using System;
 using Unity.Entities;
 using Unity.NetCode;
 
-partial class HarvesterPlantingSystem : SystemBase
+partial class HarvesterPlantingLinkSystem : SystemBase
 {
     public class HarversterPlantRunning : EventArgs { public float time; public float maxTime; }
     public event EventHandler OnPlantStart;
