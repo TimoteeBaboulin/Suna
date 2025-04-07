@@ -200,7 +200,7 @@ public partial struct CharacterMovementJob : IJobEntity
             vel.Linear.z *= (1.0f - controller.drag);
         }
 
-        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * 9.81f * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * (-9.81f) * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
         if (onSlope && !isMoving && !controller.isJumping) //Prevents jumping when stopping on a slope
             vel.Linear.y = 0;

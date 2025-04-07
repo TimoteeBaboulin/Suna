@@ -38,7 +38,6 @@ partial struct HarvesterSystemServer : ISystem
         {
             if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstanciateStuffQueu>(out var queue))
             {
-                Debug.Log($"queue {queue}");
                 queue.Add(new GameResourcesInstanciateStuffQueu
                 {
                     StuffName = "Harvester",
