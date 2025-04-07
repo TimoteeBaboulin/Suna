@@ -140,7 +140,7 @@ public partial struct RespawnSystem : ISystem
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
-                SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
+                SpawnCharacter(clientEntity, networkId, ecb, buffer[random], teamSideType);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
             else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
@@ -157,13 +157,13 @@ public partial struct RespawnSystem : ISystem
         }
     }
 
-    public Entity SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position)
+    public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position, TeamSideType team)
     {
         ClientPrefabData prefabManager = SystemAPI.GetSingleton<ClientPrefabData>();
 
         if (prefabManager.Character == null)
         {
-            return Entity.Null;
+            return;
         }
 
         FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
@@ -186,8 +186,13 @@ public partial struct RespawnSystem : ISystem
 
         ecb.SetComponent(client, new ClientCharacterAttached { Value = character });
         ecb.SetComponent(character, new CharacterClientAttachedComponent { ClientEntity = client });
+        switch (team)
+        {
+            case TeamSideType.Corpo: ecb.AddComponent<CorpoTeamTag>(character); break;
+            case TeamSideType.Natif: ecb.AddComponent<NatifTeamTag>(character); break;
+            default:break;
+        }
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
-        return character;
     }
 }
