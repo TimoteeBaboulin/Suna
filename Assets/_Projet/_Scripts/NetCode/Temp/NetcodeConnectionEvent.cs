@@ -25,41 +25,41 @@ public partial struct NetcodeConnectionEvent : ISystem
         {
             Debug.Log($"[{state.WorldUnmanaged.Name}] {evt.State} for entity {evt.ConnectionEntity}!");
 
-            if (state.World.IsServer())
-            {
-                if (evt.State == ConnectionState.State.Handshake)
-                {
-                    Debug.Log("Handshake state");
+            //if (state.World.IsServer())
+            //{
+            //    if (evt.State == ConnectionState.State.Handshake)
+            //    {
+            //        Debug.Log("Handshake state");
 
-                    //if (!ClientConnection.AllowConnection)
-                    //{
-                    //    Debug.Log("Blocking connection during handshake");
-                    //    state.EntityManager.DestroyEntity(evt.ConnectionEntity);
-                    //}
-                }
-                else if (evt.State == ConnectionState.State.Disconnected)
-                {
-                    foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().
-                        WithAll<InitializedClient>().
-                        WithEntityAccess())
-                    {
-                        NetworkId networkId = SystemAPI.GetComponent<NetworkId>(entity);
-                        FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
-                        ServerConsole.Log(ServerConsole.LogType.Info, $"Client DISCONNECTED with NetworkId {networkId.Value}, in the world {worldName}");
-                    }
-                }
-                else if (evt.State == ConnectionState.State.Connected)
-                {
-                    foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().
-                    WithAll<InitializedClient>().
-                    WithEntityAccess())
-                    {
-                        NetworkId networkId = SystemAPI.GetComponent<NetworkId>(entity);
-                        FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
-                        ServerConsole.Log(ServerConsole.LogType.Info, $"Client DISCONNECTED with NetworkId {networkId.Value}, in the world {worldName}");
-                    }
-                }
-            }
+            //        //if (!ClientConnection.AllowConnection)
+            //        //{
+            //        //    Debug.Log("Blocking connection during handshake");
+            //        //    state.EntityManager.DestroyEntity(evt.ConnectionEntity);
+            //        //}
+            //    }
+            //    else if (evt.State == ConnectionState.State.Disconnected)
+            //    {
+            //        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().
+            //            WithAll<InitializedClient>().
+            //            WithEntityAccess())
+            //        {
+            //            NetworkId networkId = SystemAPI.GetComponent<NetworkId>(entity);
+            //            FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
+            //            ServerConsole.Log(ServerConsole.LogType.Info, $"Client DISCONNECTED with NetworkId {networkId.Value}, in the world {worldName}");
+            //        }
+            //    }
+            //    else if (evt.State == ConnectionState.State.Connected)
+            //    {
+            //        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().
+            //        WithAll<InitializedClient>().
+            //        WithEntityAccess())
+            //        {
+            //            NetworkId networkId = SystemAPI.GetComponent<NetworkId>(entity);
+            //            FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
+            //            ServerConsole.Log(ServerConsole.LogType.Info, $"Client DISCONNECTED with NetworkId {networkId.Value}, in the world {worldName}");
+            //        }
+            //    }
+            //}
 
             //if (state.World.IsClient())
             //{
