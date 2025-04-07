@@ -1,5 +1,4 @@
 using Unity.Entities;
-using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct CharacterInstantiateStuffSystem : ISystem
