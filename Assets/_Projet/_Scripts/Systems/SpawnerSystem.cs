@@ -101,6 +101,8 @@ public partial struct RespawnSystem : ISystem
             teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
         }
 
+        int[] teamSpawnIndexes = { 0, 0 };
+
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
 
@@ -128,7 +130,14 @@ public partial struct RespawnSystem : ISystem
             Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
 
             var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
-            int random = UnityEngine.Random.Range(0, buffer.Length);
+            int index;
+            if (teamSideType == TeamSideType.Neutre)
+                index = UnityEngine.Random.Range(0, buffer.Length);
+            else
+            {
+                index = teamSpawnIndexes[(int)teamSideType];
+                teamSpawnIndexes[(int)teamSideType]++;
+            }
 
             int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
 
@@ -140,14 +149,14 @@ public partial struct RespawnSystem : ISystem
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
-                SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
+                SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length]);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
             else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
             {
                 RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
                 RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
-                transform.ValueRW.Position = buffer[random];
+                transform.ValueRW.Position = buffer[index % buffer.Length];
                 currentHealth.ValueRW.Value = 100;
 
                 ecb.SetComponentEnabled<CharacterIsEnable>(characterEntity, true);
