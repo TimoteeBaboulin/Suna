@@ -17,7 +17,11 @@ public class ShopController : MonoBehaviour
     [SerializeField] private DefaultInputSystem input;
     bool inputFound = false;
 
-    [SerializeField] private RangedWeaponData m1a1;
+    [SerializeField] private RangedWeaponData skar18;
+    [SerializeField] private RangedWeaponData decimator;
+    [SerializeField] private RangedWeaponData lp17;
+    [SerializeField] private RangedWeaponData fakir;
+    [SerializeField] private RangedWeaponData banduka;
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
 
     private void Awake()
@@ -32,13 +36,13 @@ public class ShopController : MonoBehaviour
     private void Start()
     {
         CreateShopLine(out VisualElement line); shopmenu.Add(line);
-        CreateShopButton(out Button button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = m1a1;
-        CreateShopButton(out button, 30); line.Add(button);
+        CreateShopButton(out Button button, 30); line.Add(button); weaponDict[button] = lp17;
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = banduka;
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = skar18;
         CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button);
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = fakir;
+        CreateShopButton(out button, 30); line.Add(button); 
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = decimator;
         CreateShopLine(out line); shopmenu.Add(line);
         CreateShopButton(out button, 30); line.Add(button);
         CreateShopButton(out button, 30); line.Add(button);
@@ -52,9 +56,9 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
-                //AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
+                AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
 
-                btn.clicked += () => /*Debug.Log(weaponDict[btn].entityName);*/
+                btn.clicked += () =>
                 {
                     ShopCommand sc = new ShopCommand
                     {

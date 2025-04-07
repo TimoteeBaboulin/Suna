@@ -20,6 +20,8 @@ public struct RangedWeaponDynamicData : IComponentData
     [GhostField] public float firerateTimer;
     [GhostField] public float timeSinceLastFire;
 
+    [GhostField] public bool shotFired;
+
     [GhostField] public int currentAmmo;
     [GhostField] public int remainingAmmo;
     [GhostField] public int patternBulletIndex;
@@ -31,12 +33,12 @@ public struct RangedWeaponCommonData
 
     public float range;
     public float firerate;
+    public bool isAutomatic;
     public float spread;
     public float spreadAiming;
     public float coefSpray;
     public float coefSprayAiming;
     public float ergonomics;
-    public float roundsPerMin;
     public float dmgFallOff;
     public float coefModifMoveSpeed;
     public float coefModifMoveSpeedAiming;

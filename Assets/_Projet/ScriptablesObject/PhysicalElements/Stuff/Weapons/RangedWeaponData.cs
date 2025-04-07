@@ -29,8 +29,10 @@ public class RangedWeaponData : ScriptableObject
     [Tooltip("in meter")]
     public float range;
 
-    [Tooltip("in sec")]
+    [Tooltip("in rounds per minute (RPM)")]
     public float firerate;
+
+    public bool isAutomatic = false;
 
     [Tooltip("in minutes of angle")]    
     public float spread;
@@ -44,11 +46,8 @@ public class RangedWeaponData : ScriptableObject
     [Tooltip("scalar which allows you to amplify or reduce \nthe effects of the spray pattern on aiming")] 
     public float coefSprayAiming;
 
-    [Tooltip("aiming speed in milliseconds")] 
+    [Tooltip("aiming speed in milliseconds")]
     public float ergonomics;
-
-    [Tooltip("in rounds per minute")] 
-    public float roundsPerMin;
 
     [Tooltip("in damage per meter")] 
     public float dmgFallOff;
@@ -80,7 +79,7 @@ public class RangedWeaponData : ScriptableObject
     public SilencerData silencer;
     public MagazineData magazine;
 
-    [Header("Override Corps Dmg")]
+    [Header("Body Damage Overrides")]
     public float thorax;
     public float stomach;
     public float legs_Arms;

@@ -83,58 +83,75 @@ public partial struct ShootSystem : ISystem
 
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.attack.IsSet && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+                if (input.attack.IsSet)
                 {
-                    dynamicData.firerateTimer += commonData.firerate;
-                    dynamicData.state = RangedWeaponState.Shoot;
-                    dynamicData.currentAmmo--;
-
-                    // Apply spread on raycast
-                    float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
-                    quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
-                    recoilRotation = math.mul(input.shootRotation, recoilRotation);
-
-                    dynamicData.timeSinceLastFire = 0f;
-                    dynamicData.patternBulletIndex++;
-
-                    RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
-
-                    // Apply damage to the target player
-                    if (state.World.IsServer())
+                    if ((commonData.isAutomatic || (!commonData.isAutomatic && !dynamicData.shotFired))
+                    && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
                     {
-                        if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                        {
-                            RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                            = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                        dynamicData.shotFired = true;
+                        dynamicData.firerateTimer += 1.0f / (commonData.firerate / 60f); //turns RPM into RPS
+                        UnityEngine.Debug.Log("Firetimer: " + dynamicData.firerateTimer);
+                        dynamicData.state = RangedWeaponState.Shoot;
+                        dynamicData.currentAmmo--;
+                        dynamicData.shotFired = true;
 
-                            if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                                && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
-                                && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                        // Apply spread on raycast
+                        float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                        quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                        recoilRotation = math.mul(input.shootRotation, recoilRotation);
+
+                        dynamicData.timeSinceLastFire = 0f;
+                        dynamicData.patternBulletIndex++;
+
+                        RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
+
+                        // Apply damage to the target player
+                        if (state.World.IsServer())
+                        {
+                            if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                             {
-                                SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
-                                    = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+                                RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                                ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                                    && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                                    && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
                                 {
-                                    Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
-                                });
-                                ecb.SetComponent(owner, new HasHitComponent { Value = true });
-                            }
-                        }
+                                    SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                        = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
 
-                        // === VISUEL ===
-                        HitCommand hc = new HitCommand()
-                        {
-                            position = hit.Position,
-                            normal = hit.SurfaceNormal,
-                        };
-                        RpcUtils.SendServerToClientRpc(ref hc);
-                        // === FIN VISUEL ===
+                                    ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                    {
+                                        Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                    });
+                                    ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                                }
+                            }
+
+                            // === VISUEL ===
+                            HitCommand hc = new HitCommand()
+                            {
+                                position = hit.Position,
+                                normal = hit.SurfaceNormal,
+                            };
+
+                            if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                  // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                            {
+                                RpcUtils.SendServerToClientRpc(ref hc);
+                            }
+
+                            // === FIN VISUEL ===
+                        }
+                    }
+                    else
+                    {
+                        ecb.SetComponent(owner, new HasHitComponent { Value = false });
                     }
                 }
                 else
                 {
-                    ecb.SetComponent(owner, new HasHitComponent { Value = false });
+                    dynamicData.shotFired = false;
                 }
             }
         }
