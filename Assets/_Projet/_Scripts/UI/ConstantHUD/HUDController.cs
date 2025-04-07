@@ -41,7 +41,6 @@ public class HUDController : MonoBehaviour
     private VisualElement _weaponContainer;
     [SerializeField] private VisualTreeAsset _weaponAsset;
     [SerializeField] List<WeaponMap> _weaponMap;
-    [SerializeField] List<WeaponSlot> _weaponSlot;
     private WeaponListLinkSystem _weaponListLinkSystem;
 
     // Message Box
@@ -53,8 +52,8 @@ public class HUDController : MonoBehaviour
     private GameObject _errorWindowInstance;
 
     // Bomb Interaction
-    HarvesterPlantingSystem _harvesterPlantingSystem;
-    HarvesterDefusingSystem _harvesterDefusingSystem;
+    HarvesterPlantingLinkSystem _harvesterPlantingSystem;
+    HarvesterDefusingLinkSystem _harvesterDefusingSystem;
 
     // Bomb Interaction - Deffuse
     VisualElement _defuse;
@@ -134,7 +133,7 @@ public class HUDController : MonoBehaviour
 
         if (_harvesterPlantingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
-            _harvesterPlantingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterPlantingSystem>();
+            _harvesterPlantingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterPlantingLinkSystem>();
             _harvesterPlantingSystem.OnPlantStart += OnPlantStarts;
             _harvesterPlantingSystem.OnPlantRunning += OnPlantRunning;
             _harvesterPlantingSystem.OnPlantCancelOrEnd += OnPlantCancelOrEnd;
@@ -142,7 +141,7 @@ public class HUDController : MonoBehaviour
         
         if (_harvesterDefusingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
-            _harvesterDefusingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterDefusingSystem>();
+            _harvesterDefusingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterDefusingLinkSystem>();
             _harvesterDefusingSystem.OnDefuseStart += OnDefuseStarts;
             _harvesterDefusingSystem.OnDefuseRunning += OnDefuseRunning;
             _harvesterDefusingSystem.OnDefuseCancelOrEnd += OnDefuseCancelOrEnd;
@@ -240,7 +239,7 @@ public class HUDController : MonoBehaviour
     {
         _health.text = args.Health.ToString();
     }
-    private void System_OnArmorChange(object sender, TestPlayerDataSystem.ArmorArgs args)
+    private void System_OnArmorChange(object sender, EventArgs args)
     {
         //if (args is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
     }
@@ -253,7 +252,7 @@ public class HUDController : MonoBehaviour
     {
         _money.text = args.money.ToString();
     }
-    private void System_OnCapacityChange(object sender, TestPlayerDataSystem.CapacityArgs args)
+    private void System_OnCapacityChange(object sender, EventArgs args)
     {
         //if (args is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
     }
@@ -309,7 +308,7 @@ public class HUDController : MonoBehaviour
         SetActiveDefuse(true);
     }
 
-    private void OnDefuseRunning(object sender, HarvesterDefusingSystem.HarversterDefuseRunning args)
+    private void OnDefuseRunning(object sender, HarvesterDefusingLinkSystem.HarversterDefuseRunning args)
     {
         SetDefuseTime(args.time / args.maxTime);
     }
@@ -326,7 +325,7 @@ public class HUDController : MonoBehaviour
         SetActivePlant(true);
     }
 
-    private void OnPlantRunning(object sender, HarvesterPlantingSystem.HarversterPlantRunning args)
+    private void OnPlantRunning(object sender, HarvesterPlantingLinkSystem.HarversterPlantRunning args)
     {
         SetPlantTime(args.time / args.maxTime);
     }
@@ -336,13 +335,6 @@ public class HUDController : MonoBehaviour
         SetActivePlant(false);
         ResetPlant();
     }
-}
-
-[Serializable]
-public struct WeaponSlot
-{
-    public int SlotNumber;
-    public string Weapon;
 }
 
 [Serializable]
