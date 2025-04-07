@@ -56,6 +56,7 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
+                //btn.style.backgroundImage = weaponDict[btn].UIImage;
                 AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
 
                 btn.clicked += () =>
@@ -129,11 +130,13 @@ public class ShopController : MonoBehaviour
 
     private void AddWeaponIcon(ref Button button, Texture2D icon)
     {
-        Image image = new();
-        image.image = icon;
-        image.style.position = Position.Absolute;
-        UI.SetPosition(ref image, TextAnchor.MiddleCenter, 0, 0);
-        button.Add(image);
+        VisualElement iconElement = new();
+        iconElement.style.backgroundImage = icon;
+        iconElement.style.position = Position.Absolute;
+        UI.SetPosition(ref iconElement, TextAnchor.MiddleCenter, 0, 0);
+        float ratio = (float)icon.height / icon.width;
+        UI.SetSize(ref iconElement, new Length(80, LengthUnit.Percent), new Length(100 * ratio, LengthUnit.Percent));
+        button.Add(iconElement);
     }
 
     private void AddProductLabelsToShopButton(ref Button button, string productName, string productPrice)

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FAKIR
   m_EditorClassIdentifier: 
   viewPrefab: {fileID: 7705747212656276575, guid: bebd17aa636322f4cb99a690498b2ccd, type: 3}
-  UIImage: {fileID: 0}
+  UIImage: {fileID: 2800000, guid: 64abbe030a7398540a1716496f28facd, type: 3}
   location: 1
   type: 0
   side: 1
@@ -26,7 +26,7 @@ MonoBehaviour:
   recoil: {x: 0, y: 0}
   damage: 50
   range: 250
-  firerate: 20
+  firerate: 600
   isAutomatic: 0
   spread: 0
   spreadAiming: 0

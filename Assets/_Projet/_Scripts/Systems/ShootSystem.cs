@@ -90,7 +90,6 @@ public partial struct ShootSystem : ISystem
                     {
                         dynamicData.shotFired = true;
                         dynamicData.firerateTimer += 1.0f / (commonData.firerate / 60f); //turns RPM into RPS
-                        UnityEngine.Debug.Log("Firetimer: " + dynamicData.firerateTimer);
                         dynamicData.state = RangedWeaponState.Shoot;
                         dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;

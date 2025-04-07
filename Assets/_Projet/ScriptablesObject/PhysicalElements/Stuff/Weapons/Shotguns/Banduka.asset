@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
   m_Name: Banduka
   m_EditorClassIdentifier: 
-  viewPrefab: {fileID: 9077871864667713224, guid: 8dba0b4f06989b341a56d9b89f32e3ce, type: 3}
-  UIImage: {fileID: 0}
+  viewPrefab: {fileID: 3839436275311606518, guid: ce46008933e6e8b41aa447da007b0331, type: 3}
+  UIImage: {fileID: 2800000, guid: e3cf4253223c9a54caf096587cd19b44, type: 3}
   location: 0
   type: 0
   side: 2
@@ -26,18 +26,18 @@ MonoBehaviour:
   recoil: {x: 0, y: 0}
   damage: 101
   range: 250
-  firerate: 0
+  firerate: 60
+  isAutomatic: 0
   spread: 10
   spreadAiming: 10
   coefSpray: 0
   coefSprayAiming: 0
   ergonomics: 0
-  roundsPerMin: 0
   dmgFallOff: 0
   coefModifMoveSpeed: 0
   coefModifMoveSpeedAiming: 0
-  reloadSpeed: 0
-  fastReloadSpeed: 0
+  reloadSpeed: 1.5
+  fastReloadSpeed: 1
   knockbackForceOnKill: 0
   lastFireTimeMax: 0
   nbMagazine: 6
