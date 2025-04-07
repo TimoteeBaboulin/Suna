@@ -36,8 +36,7 @@ public partial class CharacterInputSystem : SystemBase
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
         bool isJumpPerfomered = actions.Jump.WasPressedThisFrame();
-        bool isWalkStarted = actions.Walk.phase == InputActionPhase.Started;
-        bool isWalkCanceled = actions.Walk.phase == InputActionPhase.Canceled;
+        bool isWalkPressed = actions.Walk.IsPressed();
 
         bool isShootPressed = actions.Attack.IsPressed();
         bool isReloadPressed = actions.Reload.WasPressedThisFrame();
@@ -69,7 +68,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.jump = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkStarted && !plantingOrDefusing)
+            if (isWalkPressed && !plantingOrDefusing)
             {
                 input.ValueRW.walkStarted.Set();
             }
@@ -78,7 +77,7 @@ public partial class CharacterInputSystem : SystemBase
                 input.ValueRW.walkStarted = default; //Important to unset or we will have issues down the line
             }
 
-            if (isWalkCanceled && !plantingOrDefusing)
+            if (!isWalkPressed && !plantingOrDefusing)
             {
                 input.ValueRW.walkCanceled.Set();
             }

@@ -169,7 +169,7 @@ public partial struct CharacterMovementJob : IJobEntity
             }
         }
 
-        vel.Linear += controller.direction * (controller.acceleration * dt);
+        vel.Linear += controller.direction * ((controller.isGrounded ? controller.acceleration : controller.acceleration * 0.1f) * dt);
 
         if(!isMoving)
         {
@@ -219,12 +219,12 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.isJumping = true;
         }
 
-        if (input.walkStarted.IsSet)
+        if (input.walkStarted.IsSet && controller.isGrounded && !controller.isJumping)
         {
             controller.isWalking = true;
         }
 
-        if (input.walkCanceled.IsSet)
+        if (input.walkCanceled.IsSet || !controller.isGrounded || controller.isJumping)
         {
             controller.isWalking = false;
         }
