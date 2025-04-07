@@ -72,8 +72,11 @@ public class ConnectionHandlerNew : MonoBehaviour
                 ClientTransportHelper.CurrentPort,
                 ClientTransportHelper.isClientLocal);
         }
-        await QuerySessionsAsync();
-        sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
+        else
+        {
+            await QuerySessionsAsync();
+            sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
+        }
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
         if (ClientTransportHelper.ServerWorld != null)
@@ -233,14 +236,16 @@ public class ConnectionHandlerNew : MonoBehaviour
 
         foreach (var session in results.Sessions)
         {
-
-            if (session.Name == "ClientServer")
+            Debug.Log(session.Name);
+            if (ClientTransportHelper.isClientLocal)
             {
                 sessionID = session.Id;
+                break;
             }
             else
             {
                 sessionID = session.Id;
+                break;
             }
 
             //if (session.AvailableSlots != 0)
