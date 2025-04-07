@@ -2,7 +2,7 @@ using System;
 using Unity.Entities;
 using Unity.NetCode;
 
-partial class HarvesterDefusingSystem : SystemBase
+partial class HarvesterDefusingLinkSystem : SystemBase
 {
     public class HarversterDefuseRunning : EventArgs { public float time; public float maxTime; }
     public event EventHandler OnDefuseStart;
