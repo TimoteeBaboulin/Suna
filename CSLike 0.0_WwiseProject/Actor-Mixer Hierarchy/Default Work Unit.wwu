@@ -3,53 +3,164 @@
 	<AudioObjects>
 		<WorkUnit Name="Default Work Unit" ID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}" PersistMode="Standalone">
 			<ChildrenList>
-				<Sound Name="That Person's Name Is   Bravely Default OST" ID="{5900C41B-8BB6-457C-AE06-CAAF40839D4A}" ShortID="458041589">
-					<ReferenceList>
-						<Reference Name="Conversion">
-							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
-						</Reference>
-						<Reference Name="OutputBus">
-							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
-						</Reference>
-					</ReferenceList>
+				<Folder Name="SFX" ID="{BA74B0CB-0B2C-488D-953A-ED9B6BCC94B0}" ShortID="566675749">
 					<ChildrenList>
-						<AudioFileSource Name="That Person's Name Is   Bravely Default OST" ID="{A04EAE6C-6017-4004-98AB-3A828AD3E27C}">
-							<Language>SFX</Language>
-							<AudioFile>That Person's Name Is   Bravely Default OST.wav</AudioFile>
-							<MediaIDList>
-								<MediaID ID="612258208"/>
-							</MediaIDList>
-						</AudioFileSource>
+						<Sound Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" ShortID="244587320">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="concrete1" ID="{319482E4-1056-4884-B91A-0F22A6A6D4D4}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\concrete1.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="698735216"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="concrete1" ID="{319482E4-1056-4884-B91A-0F22A6A6D4D4}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="pistol_clipin" ID="{4A2652A4-2209-47F6-ADC7-E6C8D3363D34}" ShortID="622105543">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="pistol_clipin" ID="{08E0F80C-3422-4695-8772-44C70D68F171}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\pistol_clipin.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="143169538"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="pistol_clipin" ID="{08E0F80C-3422-4695-8772-44C70D68F171}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="pistol_shoot" ID="{3B129407-21A2-4B2B-80A8-9726A4351553}" ShortID="88181631">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="pistol_shoot" ID="{855E8BDD-42B1-4B76-AAB9-A6D87DC54EC0}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\pistol_shoot.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="521724105"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="pistol_shoot" ID="{855E8BDD-42B1-4B76-AAB9-A6D87DC54EC0}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="pistol_worldreload" ID="{CC435951-8D78-420A-B240-2DA2D46AE172}" ShortID="468705036">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="pistol_worldreload" ID="{31CAB41D-1A39-4F22-8918-00A907780CBC}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\pistol_worldreload.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="905442807"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="pistol_worldreload" ID="{31CAB41D-1A39-4F22-8918-00A907780CBC}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="smg_clip_in" ID="{EB59BBA8-1FDE-477C-908B-03CFA1133451}" ShortID="688207109">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="smg_clip_in" ID="{FBB5F956-6E63-4919-B619-95DA7F9F5D1B}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\smg_clip_in.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="1044764746"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="smg_clip_in" ID="{FBB5F956-6E63-4919-B619-95DA7F9F5D1B}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="smg_clip_out" ID="{58A1F685-F522-4461-9FE4-4B25044421D2}" ShortID="219925906">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="smg_clip_out" ID="{6952D4F8-E430-42B4-9703-BD23F9BFAE80}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\smg_clip_out.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="846430684"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="smg_clip_out" ID="{6952D4F8-E430-42B4-9703-BD23F9BFAE80}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
+						<Sound Name="smg_shoot" ID="{9527AB01-F0DD-4FA4-B11B-A9AA3467E616}" ShortID="139084488">
+							<ReferenceList>
+								<Reference Name="Conversion">
+									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+								</Reference>
+								<Reference Name="OutputBus">
+									<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+								</Reference>
+							</ReferenceList>
+							<ChildrenList>
+								<AudioFileSource Name="smg_shoot" ID="{81694669-B323-416C-9A9B-39043DD50840}">
+									<Language>SFX</Language>
+									<AudioFile>SFX\smg_shoot.wav</AudioFile>
+									<MediaIDList>
+										<MediaID ID="700034105"/>
+									</MediaIDList>
+								</AudioFileSource>
+							</ChildrenList>
+							<ActiveSourceList>
+								<ActiveSource Name="smg_shoot" ID="{81694669-B323-416C-9A9B-39043DD50840}" Platform="Linked"/>
+							</ActiveSourceList>
+						</Sound>
 					</ChildrenList>
-					<ActiveSourceList>
-						<ActiveSource Name="That Person's Name Is   Bravely Default OST" ID="{A04EAE6C-6017-4004-98AB-3A828AD3E27C}" Platform="Linked"/>
-					</ActiveSourceList>
-				</Sound>
-				<Sound Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{B217BC1E-EF9B-47ED-91A3-61895CB2FF72}" ShortID="724668585">
-					<ReferenceList>
-						<Reference Name="Conversion">
-							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
-						</Reference>
-						<Reference Name="OutputBus">
-							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
-						</Reference>
-					</ReferenceList>
-					<ChildrenList>
-						<AudioFileSource Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{5F61AD2F-E939-467B-A658-2C49C4000F04}">
-							<PropertyList>
-								<Property Name="OverrideWavLoop" Type="bool" Value="True"/>
-							</PropertyList>
-							<Language>SFX</Language>
-							<AudioFile>GUNShotg_Saiga 12 Cal.12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo.wav</AudioFile>
-							<MediaIDList>
-								<MediaID ID="66276190"/>
-							</MediaIDList>
-						</AudioFileSource>
-					</ChildrenList>
-					<ActiveSourceList>
-						<ActiveSource Name="GUNShotg_Saiga 12 Cal_12 DESIGNED Single Shot Core Long_DRCA_SG12_Stereo" ID="{5F61AD2F-E939-467B-A658-2C49C4000F04}" Platform="Linked"/>
-					</ActiveSourceList>
-				</Sound>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</AudioObjects>
