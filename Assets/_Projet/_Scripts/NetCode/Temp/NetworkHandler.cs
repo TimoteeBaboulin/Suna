@@ -69,6 +69,16 @@ namespace GameNetwork
                 (NetworkType.Relay, _) => NetworkEndpoint.AnyIpv4,
                 _ => throw new InvalidOperationException($"Invalid configuration for listening: {configuration.Type}, {configuration.Role}")
             };
+            //switch (configuration.Type)
+            //{
+            //    case NetworkType.Direct:
+            //        return NetworkEndpoint.LoopbackIpv4.WithPort(ClientTransportHelper.CurrentPort);
+            //    case NetworkType.Relay:
+            //        return NetworkEndpoint.AnyIpv4;
+            //    default:
+            //        return default;
+            //}
+
         }
 
         public Task StopAsync() => Task.CompletedTask;
