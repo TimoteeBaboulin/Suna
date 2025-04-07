@@ -65,17 +65,6 @@ public class GameManager : Singleton<GameManager>
         GameState = GlobalGameState.InGame;
 
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
-
-
-        for (int i = 0; i < clientConnectionSettings.Session.Players.Count; i++)
-        {
-            var player = clientConnectionSettings.Session.Players[i];
-
-            foreach (var property in player.Properties)
-            {
-                Debug.Log($"Player {player.Id}, team {property.Value.Value}");
-            }
-        }
     }
 
 

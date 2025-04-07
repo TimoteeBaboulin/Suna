@@ -280,7 +280,5 @@ public class ConnectionHandlerNew : MonoBehaviour
         }
         //var firstSession = results.Sessions[0];
         //SessionID = firstSession.Id;
-
-        Debug.Log($"SessionId is {sessionID}");
     }
 }
