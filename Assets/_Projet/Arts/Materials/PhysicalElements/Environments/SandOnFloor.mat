@@ -28,19 +28,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FloorAlbedo:
-        m_Texture: {fileID: 2800000, guid: 1a0326a727e87bf469b42be246b90035, type: 3}
+        m_Texture: {fileID: 2800000, guid: 86c94ea6836c2f34fa208c1680035c7a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FloorHeight:
-        m_Texture: {fileID: 2800000, guid: ae347c514e2c82741bef9d8ed2b38514, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9c4910bcca8d28e48a263f715755c843, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FloorNormal:
-        m_Texture: {fileID: 2800000, guid: fdc34634f37f66c42aa3068a78d5e558, type: 3}
+        m_Texture: {fileID: 2800000, guid: b6d1f20f2cbe19247851eec1e51be46b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FloorRoughness:
-        m_Texture: {fileID: 2800000, guid: 6782750b910f4a04ea57f1fe2ded7554, type: 3}
+        m_Texture: {fileID: 2800000, guid: e808a8b25adae4c41a263b71daf84955, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NegativeNoise:
@@ -69,8 +69,8 @@ Material:
     - _BigNoiseTiling: 0.2
     - _BlendScale: 0.03
     - _HeightFactor: 0.54
-    - _NegativeNoiseScale: 1.5
-    - _SmallNoiseScale: 1
+    - _NegativeNoiseScale: 1.09
+    - _SmallNoiseScale: 0.97
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
