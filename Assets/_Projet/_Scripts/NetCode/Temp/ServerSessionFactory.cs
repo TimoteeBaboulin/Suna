@@ -9,7 +9,7 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
 {
-    public string SessionCode { get; private set; } = "DDDDDD";
+    private string SessionName ;
     private ClientTransportHelper serverConnectionSettings;
 
     static public ServerSessionFactory instance { get; private set; }
@@ -18,15 +18,17 @@ public class ServerSessionFactory
     public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
     {
         instance = new ServerSessionFactory();
+        instance.SessionName = RequestedPlayType == PlayType.ClientAndServer ? "ClientServer" : "Server";
         try
         {
-            SessionOptions options = new SessionOptions { MaxPlayers = ClientTransportHelper.MaxNbOfPlayers };
+            SessionOptions options = new SessionOptions { MaxPlayers = ClientTransportHelper.MaxNbOfPlayers , Name = instance.SessionName };
             ClientTransportHelper transportHelper = new ClientTransportHelper();
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
             Debug.Log($"[ServerSessionFactory] Created session with code: {serverSession.Session.Id}");
+            Debug.Log($"[ServerSessionFactory] Created session with name: {serverSession.Session.Name}");
             return serverSession;
 
         }
