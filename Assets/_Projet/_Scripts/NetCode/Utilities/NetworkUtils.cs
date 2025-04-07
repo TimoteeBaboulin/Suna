@@ -36,7 +36,7 @@ namespace GameNetwork.Utils
         public NetworkType SessionConnectionType { get; private set; }
 
         public static string SessionID { get; set; }
-        public static string CurrentIP { get; set; } = "51.210.222.138";
+        public static string CurrentIP { get; set; } /*= "51.210.222.138";*/
         public static ushort CurrentPort { get; set; } = 7979;
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
@@ -76,6 +76,7 @@ namespace GameNetwork.Utils
                 Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
 
                 options.MaxPlayers = sessionOptions.MaxPlayers;
+                options.Name = sessionOptions.Name;
 
                 var networkHandler = new NetworkHandler();
                 options.WithNetworkHandler(networkHandler);
@@ -108,22 +109,22 @@ namespace GameNetwork.Utils
                 throw;
             }
         }
-        public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionCode, CancellationToken cancellationToken)
+        public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionID, CancellationToken cancellationToken)
         {
             var gameConnection = new ClientTransportHelper();
-            //await StartServicesAsync();
+            await StartServicesAsync();
             //gameConnection.State = ClientConnectionState.Matchmaking;
 
             var joinOptions = new JoinSessionOptions();
             var networkHandler = new NetworkHandler();
             joinOptions.WithNetworkHandler(networkHandler);
 
-            gameConnection.Session = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionCode, joinOptions);
+            gameConnection.Session = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionID, joinOptions);
             gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
             gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
             gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
 
-            UnityEngine.Debug.Log($"Client joined session with code: {gameConnection.Session.Id}");
+            Debug.Log($"Client joined session with code: {gameConnection.Session.Id}");
             return gameConnection;
         }
 
@@ -244,14 +245,14 @@ namespace GameNetwork.Utils
 
             Debug.Log($"Create sessions with IP {CurrentIP}, Port {CurrentPort}");
 
-            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-            {
-                return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
-            }
-            else
-            {
+            //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
+            //{
+            //    return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
+            //}
+            //else
+            //{
+            //}
                 return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
-            }
         }
     }
 }

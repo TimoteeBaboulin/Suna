@@ -30,6 +30,7 @@ public class ConnectionHandlerNew : MonoBehaviour
     private string _localIp = "127.0.0.1";
     private ConnectionSettings connectionSettings;
 
+    private string sessionID = null;
     private ClientTransportHelper sessionTransport = null;
 
     private static readonly List<string> PlayerProcessingQueue = new List<string>();
@@ -58,7 +59,7 @@ public class ConnectionHandlerNew : MonoBehaviour
     }
 
 
-    public async Task<ClientTransportHelper> Connect(CancellationToken token, string sessionID)
+    public async Task<ClientTransportHelper> Connect(CancellationToken token)
     {
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.StartLoading);
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.InitializeConnection);
@@ -66,10 +67,14 @@ public class ConnectionHandlerNew : MonoBehaviour
         LoadUtils.CreateEntityWorlds();
         if (RequestedPlayType == PlayType.ClientAndServer)
         {
-            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
+            sessionTransport = await ServerSessionFactory.CreateServerSession(
+                ClientTransportHelper.CurrentIP,
+                ClientTransportHelper.CurrentPort,
+                ClientTransportHelper.isClientLocal);
         }
-
+        await QuerySessionsAsync();
         sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
+
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
         if (ClientTransportHelper.ServerWorld != null)
         {
@@ -208,5 +213,56 @@ public class ConnectionHandlerNew : MonoBehaviour
     private bool IsSessionFull(ISession session)
     {
         return session.AvailableSlots == 0;
+    }
+
+    private async Task QuerySessionsAsync()
+    {
+        var queryOptions = new QuerySessionsOptions
+        {
+        };
+
+        QuerySessionsResults results = await MultiplayerService.Instance.QuerySessionsAsync(queryOptions);
+
+        if (results == null || results.Sessions.Count == 0)
+        {
+            sessionID = "0";
+            Debug.Log("No sessions found.");
+            return;
+        }
+
+
+        foreach (var session in results.Sessions)
+        {
+
+            if (session.Name == "ClientServer")
+            {
+                sessionID = session.Id;
+            }
+            else
+            {
+                sessionID = session.Id;
+            }
+
+            //if (session.AvailableSlots != 0)
+            //{
+            //    SessionID = session.Id;
+            //    Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+            //    Debug.Log($"Found session ID: {session.Id}");
+            //    Debug.Log($"Session code: {session.Id}");
+            //}
+            //else
+            //{
+            //    ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
+            //    RpcUtils.SendClientToServerRpc(ref command);
+
+            //    Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
+            //    Debug.Log($"Found session ID: {session.Id}");
+            //    Debug.Log($"Session code: {session.Id}");
+            //}
+        }
+        //var firstSession = results.Sessions[0];
+        //SessionID = firstSession.Id;
+
+        Debug.Log($"SessionId is {sessionID}");
     }
 }
