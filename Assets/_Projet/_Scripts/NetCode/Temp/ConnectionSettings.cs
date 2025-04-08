@@ -11,12 +11,17 @@ public struct ConnectionInfo : IComponentData
 }
 public class ConnectionSettings : MonoBehaviour
 {
+    public enum SceneIDToLoad
+    {
+        MultiplayerTest = 1,
+        SceneTest,
+    }
     [Header("Connection Settings")]
     public bool isClientLocal = false;
     [Tooltip("IP to reach/to connect on")]
     public string IP = "51.210.222.138"; 
     public ushort Port = ClientServerBootstrap.AutoConnectPort;
-    public string MapName = "GameplayTestScene";
+    public SceneIDToLoad sceneToLoad = SceneIDToLoad.MultiplayerTest;
 }
 
 public class ConnectionSettingsBaker : Baker<ConnectionSettings>

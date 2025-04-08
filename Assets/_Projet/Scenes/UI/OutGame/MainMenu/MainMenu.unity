@@ -24158,6 +24158,14 @@ PrefabInstance:
       value: ConnectionManager
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+      propertyPath: sceneName
+      value: SceneTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+      propertyPath: sceneToLoad
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isClientLocal
       value: 0
       objectReference: {fileID: 0}
