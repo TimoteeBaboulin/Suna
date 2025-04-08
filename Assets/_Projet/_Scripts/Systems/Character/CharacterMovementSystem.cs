@@ -1,5 +1,3 @@
-using System.Globalization;
-using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -7,9 +5,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEditor.PackageManager;
-using UnityEngine;
-using static UnityEditor.Rendering.FilterWindow;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
