@@ -18,7 +18,7 @@ using static Unity.NetCode.ClientServerBootstrap;
 public class GameManager : Singleton<GameManager>
 {
     public enum GlobalGameState { MainMenu, Loading, InGame }
-    public GlobalGameState GameState { get; private set; }
+    public GlobalGameState GameState { get; set; }
 
     public string SessionID { get; private set; }
 
@@ -44,15 +44,18 @@ public class GameManager : Singleton<GameManager>
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
             serverSession = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
         }
+
+
+    }
+
+    public void Update()
+    {
+
     }
     public async Task Play()
     {
         await ClientTransportHelper.StartServicesAsync();
-        await QuerySessionsAsync();
-
-        Debug.Log($"GameManager: Using session code: {SessionID}");
-
-        clientConnectionSettings = await connectionHandler.Connect(loadingToken.Token, SessionID);
+        clientConnectionSettings = await connectionHandler.Connect(loadingToken.Token);
 
         GameState = GlobalGameState.InGame;
         Cursor.lockState = CursorLockMode.Locked;
@@ -61,23 +64,10 @@ public class GameManager : Singleton<GameManager>
         Debug.Log("GameManager: Session is full. Transitioning to gameplay.");
         GameState = GlobalGameState.InGame;
 
-        Debug.Log($"Nb of players{GetCurrentNbOfPlayersInSession()}");
-
-        foreach (var player in clientConnectionSettings.Session.Players)
-        {
-            foreach (var property in player.Properties)
-            {
-                if (property.Value.Value == "corpo")
-                {
-                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
-                }
-                else if (property.Value.Value == "natif")
-                {
-                    Debug.Log($"PlayerID: {player.Id} is assigned to team: {property.Value.Value}");
-                }
-            }
-        }
+        Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
     }
+
+
 
     public bool IsSessionFull()
     {
@@ -118,9 +108,17 @@ public class GameManager : Singleton<GameManager>
 
     public int GetCurrentNbOfPlayersInSession()
     {
+
         if (clientConnectionSettings != null)
         {
-            return clientConnectionSettings.Session.Players.Count - 1;
+            if (RequestedPlayType == PlayType.Client)
+            {
+                return clientConnectionSettings.Session.Players.Count - 1;
+            }
+            else if (RequestedPlayType == PlayType.ClientAndServer)
+            {
+                return clientConnectionSettings.Session.Players.Count;
+            }
         }
         return 0;
     }
@@ -171,49 +169,6 @@ public class GameManager : Singleton<GameManager>
         }
 
         Debug.Log($"Successfully quick-joined session: {result.Session.Id}");
-    }
-
-
-
-    private async Task QuerySessionsAsync()
-    {
-        var queryOptions = new QuerySessionsOptions
-        {
-        };
-
-        QuerySessionsResults results = await MultiplayerService.Instance.QuerySessionsAsync(queryOptions);
-
-        if (results == null || results.Sessions.Count == 0)
-        {
-            SessionID = "0";
-            Debug.Log("No sessions found.");
-            return;
-        }
-
-
-        //foreach (var session in results.Sessions)
-        //{
-        //    if (session.AvailableSlots != 0)
-        //    {
-        //        SessionID = session.Id;
-        //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-        //        Debug.Log($"Found session ID: {session.Id}");
-        //        Debug.Log($"Session code: {session.Id}");
-        //    }
-        //    else
-        //    {
-        //        ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
-        //        RpcUtils.SendClientToServerRpc(ref command);
-
-        //        Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-        //        Debug.Log($"Found session ID: {session.Id}");
-        //        Debug.Log($"Session code: {session.Id}");
-        //    }
-        //}
-        var firstSession = results.Sessions[0];
-        SessionID = firstSession.Id;
-
-        Debug.Log($"SessionId is {SessionID}");
     }
 
     public async Task DisconnectAndUnloadWorlds()
@@ -272,5 +227,10 @@ public class GameManager : Singleton<GameManager>
                 world.Dispose();
             }
         }
+    }
+
+    private async void OnApplicationQuit()
+    {
+        await DisconnectAndUnloadWorlds();
     }
 }
