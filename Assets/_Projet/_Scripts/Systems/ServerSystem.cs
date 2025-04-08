@@ -80,7 +80,7 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            ecb.AddComponent<InitializedClient>(ownerEntity);
+            ecb.AddComponent(ownerEntity, new InitializedClient { id = networkId.Value });
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
