@@ -14,7 +14,7 @@ public class ConnectionSettings : MonoBehaviour
     public enum SceneIDToLoad
     {
         MultiplayerTest = 1,
-        SceneTest,
+        GameplayTestScene = 2,
     }
     [Header("Connection Settings")]
     public bool isClientLocal = false;
