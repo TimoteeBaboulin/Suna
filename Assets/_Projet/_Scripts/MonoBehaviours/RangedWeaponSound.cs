@@ -1,6 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 
+#if! UNITY_SERVER
 public class RangedWeaponSound : MonoBehaviour
 {
     [SerializeField] AK.Wwise.Event shoot;
@@ -16,3 +17,4 @@ public class RangedWeaponSound : MonoBehaviour
         reload.Post(gameObject);
     }
 }
+#endif

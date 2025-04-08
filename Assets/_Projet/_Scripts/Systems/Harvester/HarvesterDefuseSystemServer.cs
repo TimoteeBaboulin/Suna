@@ -99,6 +99,12 @@ partial struct HarvesterDefuseSystemServer : ISystem
                 continue;
             }
 
+            if (!SystemAPI.HasComponent<NatifTeamTag>(rpc.character))
+            {
+                Debug.Log("[Server] Corpo player trying to defuse");
+                continue;
+            }
+
             if (currentTick.TicksSince(rpc.defuseStartTick) > 15)
             {
                 Debug.Log("[Server] Time difference too great, switching to server's current tick.");
@@ -113,7 +119,6 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             SystemAPI.SetComponentEnabled<HarvesterDefusing>(rpc.harvester, true);
             SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.DefuseStartedTick = defuseStartTick;
-            SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.Defuser = character;
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsDefusing = true;
             defuserEntity = character;
             defusingHarvesterEntity = rpc.harvester;
