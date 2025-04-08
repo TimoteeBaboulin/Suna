@@ -46,8 +46,8 @@ public partial class CharacterInputSystem : SystemBase
         selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
         selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
-        foreach (var (controller, input, characterCamera, harvesterActions) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>, RefRO<PlayerHarvesterActions>>()
+        foreach (var (controller, input, harvesterActions) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<PlayerHarvesterActions>>()
             .WithAll<CharacterIsEnable, GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             bool plantingOrDefusing = harvesterActions.ValueRO.IsDefusing || harvesterActions.ValueRO.IsPlanting;
