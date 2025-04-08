@@ -148,6 +148,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ADS",
+                    "type": "Button",
+                    "id": "231331f7-3ebe-4aed-b405-72e9453e117e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Shop",
+                    "type": "Button",
+                    "id": "cd6b9f2c-65ff-493d-9d12-215d6e528c71",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -561,10 +579,10 @@
                 {
                     "name": "",
                     "id": "836388b8-36fa-4db4-96c4-38c90172c8d5",
-                    "path": "<Mouse>/scroll/up",
+                    "path": "<Mouse>/scroll/down",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "SelectNext",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -572,10 +590,10 @@
                 {
                     "name": "",
                     "id": "dfcdb6f3-a643-437b-a6bd-2a0b4243059f",
-                    "path": "<Mouse>/scroll/down",
+                    "path": "<Mouse>/scroll/up",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Keyboard&Mouse",
                     "action": "SelectPrevious",
                     "isComposite": false,
                     "isPartOfComposite": false
@@ -610,6 +628,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "SelectMelee",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8e619a5e-65f5-4a2a-bb0c-9a17f21c4b7f",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "ADS",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b5ddb052-a9c5-4d77-9463-6a6e7fff3489",
+                    "path": "<Keyboard>/b",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "Shop",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -94,10 +94,13 @@ public partial struct ShootSystem : ISystem
                         dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;
 
+                        float2 directionalMovement = (float2) MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
+                        bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
+
                         for (int i = 0; i < commonData.roundsPerShot; i++)
                         {
                             // Apply spread on raycast
-                            float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                            float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                             recoilRotation = math.mul(input.shootRotation, recoilRotation);
 

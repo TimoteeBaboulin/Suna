@@ -28,14 +28,15 @@ MonoBehaviour:
   range: 250
   firerate: 600
   isAutomatic: 0
+  roundsPerShot: 1
   spread: 0
   spreadAiming: 0
   coefSpray: 0
   coefSprayAiming: 0
   ergonomics: 0
   dmgFallOff: 0
-  coefModifMoveSpeed: 0
-  coefModifMoveSpeedAiming: 0
+  coefModifMoveSpeed: 0.92
+  coefModifMoveSpeedAiming: 0.75
   reloadSpeed: 1
   fastReloadSpeed: 0.5
   knockbackForceOnKill: 0

@@ -40,6 +40,8 @@ public partial class CharacterInputSystem : SystemBase
         bool isSelectNext = actions.SelectNext.WasPressedThisFrame();
         bool isSelectPrevious = actions.SelectPrevious.WasPressedThisFrame();
 
+        bool isADSPressed = actions.ADS.IsPressed();
+
         int selectedLocation = 0;
         selectedLocation = actions.SelectMainWeapon.WasPressedThisFrame() ? 1: selectedLocation;
         selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
@@ -81,6 +83,24 @@ public partial class CharacterInputSystem : SystemBase
             else
             {
                 input.ValueRW.walkCanceled = default; //Important to unset or we will have issues down the line
+            }
+
+            if (isADSPressed && !plantingOrDefusing)
+            {
+                input.ValueRW.aimingStarted.Set();
+            }
+            else
+            {
+                input.ValueRW.aimingStarted = default; //Important to unset or we will have issues down the line
+            }
+
+            if (!isADSPressed && !plantingOrDefusing)
+            {
+                input.ValueRW.aimingCanceled.Set();
+            }
+            else
+            {
+                input.ValueRW.aimingCanceled = default; //Important to unset or we will have issues down the line
             }
 
             if (isShootPressed && !plantingOrDefusing)
