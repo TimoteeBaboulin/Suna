@@ -63,14 +63,11 @@ public partial struct RoundSystemServer : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        Debug.Log("[Debug] Start round system");
         //Check if the singleton exists to avoid crashes
         if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
         {
             return;
         }
-
-        Debug.Log("[Debug] RoundComponent singleton exists");
 
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -107,9 +104,7 @@ public partial struct RoundSystemServer : ISystem
         }
         else
         {
-            Debug.Log("[Debug] Recovering count");
             PlayerCounts playerCount = SystemAPI.GetComponent<PlayerCounts>(entity);
-            Debug.Log("[Debug] Player count recovered");
 
             var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
@@ -170,9 +165,6 @@ public partial struct RoundSystemServer : ISystem
         //Play the buffer back to remove/add entities as needed
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
-
-        Debug.Log("[Debug] Stop counting system");
-
         //Debug: Allow to fake a collector plant
     }
 
