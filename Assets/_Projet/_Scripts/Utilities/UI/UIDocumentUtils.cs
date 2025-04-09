@@ -158,4 +158,26 @@ public class UIDocumentUtils
         label.style.color = color;
         return label;
     }
+    static public void ToggleBold(ref Label label)
+    {
+        label.style.unityFontStyleAndWeight = label.resolvedStyle.unityFontStyleAndWeight switch
+        {
+            FontStyle.Normal => FontStyle.Bold,
+            FontStyle.Bold => FontStyle.Normal,
+            FontStyle.Italic => FontStyle.BoldAndItalic,
+            FontStyle.BoldAndItalic => FontStyle.Italic,
+            _ => FontStyle.Normal
+        };
+    }
+    static public void ToggleItalic(ref Label label)
+    {
+        label.style.unityFontStyleAndWeight = label.resolvedStyle.unityFontStyleAndWeight switch
+        {
+            FontStyle.Normal => FontStyle.Italic,
+            FontStyle.Bold => FontStyle.BoldAndItalic,
+            FontStyle.Italic => FontStyle.Normal,
+            FontStyle.BoldAndItalic => FontStyle.Bold,
+            _ => FontStyle.Normal
+        };
+    }
 }
