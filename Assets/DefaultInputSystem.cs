@@ -234,6 +234,24 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ADS"",
+                    ""type"": ""Button"",
+                    ""id"": ""231331f7-3ebe-4aed-b405-72e9453e117e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shop"",
+                    ""type"": ""Button"",
+                    ""id"": ""cd6b9f2c-65ff-493d-9d12-215d6e528c71"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -647,10 +665,10 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""836388b8-36fa-4db4-96c4-38c90172c8d5"",
-                    ""path"": ""<Mouse>/scroll/up"",
+                    ""path"": ""<Mouse>/scroll/down"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""SelectNext"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -658,10 +676,10 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""dfcdb6f3-a643-437b-a6bd-2a0b4243059f"",
-                    ""path"": ""<Mouse>/scroll/down"",
+                    ""path"": ""<Mouse>/scroll/up"",
                     ""interactions"": """",
                     ""processors"": """",
-                    ""groups"": """",
+                    ""groups"": "";Keyboard&Mouse"",
                     ""action"": ""SelectPrevious"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -696,6 +714,28 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""SelectMelee"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8e619a5e-65f5-4a2a-bb0c-9a17f21c4b7f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""ADS"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b5ddb052-a9c5-4d77-9463-6a6e7fff3489"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Shop"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1413,6 +1453,8 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         m_Player_SelectMainWeapon = m_Player.FindAction("SelectMainWeapon", throwIfNotFound: true);
         m_Player_SelectSecondWeapon = m_Player.FindAction("SelectSecondWeapon", throwIfNotFound: true);
         m_Player_SelectMelee = m_Player.FindAction("SelectMelee", throwIfNotFound: true);
+        m_Player_ADS = m_Player.FindAction("ADS", throwIfNotFound: true);
+        m_Player_Shop = m_Player.FindAction("Shop", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1527,6 +1569,8 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_SelectMainWeapon;
     private readonly InputAction m_Player_SelectSecondWeapon;
     private readonly InputAction m_Player_SelectMelee;
+    private readonly InputAction m_Player_ADS;
+    private readonly InputAction m_Player_Shop;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1603,6 +1647,14 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @SelectMelee => m_Wrapper.m_Player_SelectMelee;
         /// <summary>
+        /// Provides access to the underlying input action "Player/ADS".
+        /// </summary>
+        public InputAction @ADS => m_Wrapper.m_Player_ADS;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Shop".
+        /// </summary>
+        public InputAction @Shop => m_Wrapper.m_Player_Shop;
+        /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
         public InputActionMap Get() { return m_Wrapper.m_Player; }
@@ -1676,6 +1728,12 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
             @SelectMelee.started += instance.OnSelectMelee;
             @SelectMelee.performed += instance.OnSelectMelee;
             @SelectMelee.canceled += instance.OnSelectMelee;
+            @ADS.started += instance.OnADS;
+            @ADS.performed += instance.OnADS;
+            @ADS.canceled += instance.OnADS;
+            @Shop.started += instance.OnShop;
+            @Shop.performed += instance.OnShop;
+            @Shop.canceled += instance.OnShop;
         }
 
         /// <summary>
@@ -1735,6 +1793,12 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
             @SelectMelee.started -= instance.OnSelectMelee;
             @SelectMelee.performed -= instance.OnSelectMelee;
             @SelectMelee.canceled -= instance.OnSelectMelee;
+            @ADS.started -= instance.OnADS;
+            @ADS.performed -= instance.OnADS;
+            @ADS.canceled -= instance.OnADS;
+            @Shop.started -= instance.OnShop;
+            @Shop.performed -= instance.OnShop;
+            @Shop.canceled -= instance.OnShop;
         }
 
         /// <summary>
@@ -2254,6 +2318,20 @@ public partial class @DefaultInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnSelectMelee(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ADS" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnADS(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Shop" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShop(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

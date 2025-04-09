@@ -1,5 +1,9 @@
 List of new features, bug fixes and improvements
 
+# Version 1.4.12
+* Additional properties options added for gpt requests
+* Version number mistype fix for Unity asset package
+
 # Version 1.4.11
 * Hotfix for gpt options page
 * Fix for applying transformers for newer versions of Visual Studio

@@ -19,7 +19,7 @@ namespace Meryel.UnityCodeAssist.Editor
 {
     public class Assister
     {
-        public const string Version = "1.4.11"; //do NOT modify this line, except the number value, its being used by VSCode/Typescript for version detection (in exporter.ts.getVersionOfUnitySide())
+        public const string Version = "1.4.13"; //do NOT modify this line, except the number value, its being used by VSCode/Typescript for version detection (in exporter.ts.getVersionOfUnitySide())
 
 #if MERYEL_UCA_LITE_VERSION
         public const string Title = "Code Assist Lite";
