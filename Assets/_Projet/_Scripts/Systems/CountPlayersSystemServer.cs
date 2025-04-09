@@ -14,13 +14,14 @@ public partial class CountPlayersSystemServer : SystemBase
 
     protected override void OnUpdate()
     {
-        return;
+        
         Debug.Log("[Debug] Start counting system");
         if (!SystemAPI.TryGetSingletonEntity<RoundComponent>(out var entity))
         {
             return;
         }
 
+        return;
         RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
 
         playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
