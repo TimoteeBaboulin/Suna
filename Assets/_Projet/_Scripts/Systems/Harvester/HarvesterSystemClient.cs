@@ -158,20 +158,9 @@ partial class HarvesterSystemClient : SystemBase
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
         {
-            //ecb.RemoveComponent<TemporaryOverrideGameObjectActive>(rpc.harvester);
-
-            //StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
-            //CommonCharacterModelBonesTransform charaBones = EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(rpc.character);
-            //StuffCommonData commonData = EntityManager.GetSharedComponent<StuffCommonData>(rpc.harvester);
-
-            //goRef.Value.transform.SetParent(charaBones.WeaponSlotTransform);
-            //goRef.Value.transform.localPosition = commonData._stuffLocalOffsetView;
-
-            //SystemAPI.GetComponentRW<HarvesterComponent>(rpc.harvester).ValueRW.Owner = rpc.newOwner;
-
             ecb.DestroyEntity(entity);
 
-            if (rpc.character == Entity.Null)
+            if (rpc.harvester == Entity.Null)
             {
                 Entity responseEntity = ecb.CreateEntity();
                 ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
@@ -180,16 +169,64 @@ partial class HarvesterSystemClient : SystemBase
                 continue;
             }
 
+            if (SystemAPI.HasComponent<StuffOwner>(rpc.harvester))
+            {
+                StuffOwner stuffOwner = SystemAPI.GetComponent<StuffOwner>(rpc.harvester);
+
+                if (stuffOwner.Value != Entity.Null)
+                {
+                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    {
+                        Stuff = rpc.harvester,
+                        Owner = stuffOwner.Value
+                    });
+                }
+            }
+
             equipStuffQueu.Add(new EquipStuffQueu
             {
                 Stuff = rpc.harvester,
                 Owner = rpc.character
             });
-
-            
         }
 
-        ecb.Playback(EntityManager);
+        foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterDropped rpc, Entity entity)
+            in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterDropped>().WithEntityAccess())
+        {
+            ecb.DestroyEntity(entity);
+            Debug.Log("RPC Harvester Dropped message received");
+
+            if (rpc.harvester == Entity.Null)
+            {
+                Entity responseEntity = ecb.CreateEntity();
+                ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
+                ecb.AddComponent<SendRpcCommandRequest>(responseEntity);
+
+                continue;
+            }
+
+            if (SystemAPI.HasComponent<StuffOwner>(rpc.harvester))
+            {
+                StuffOwner stuffOwner = SystemAPI.GetComponent<StuffOwner>(rpc.harvester);
+
+                if (stuffOwner.Value != Entity.Null)
+                {
+                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    {
+                        Stuff = rpc.harvester,
+                        Owner = stuffOwner.Value,
+                        Position = rpc.position
+                    });
+                }
+                else
+                {
+                    SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
+                    EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).Value.transform.position = rpc.position;
+                }
+            }
+        }
+
+            ecb.Playback(EntityManager);
         ecb.Dispose();
     }
 }
