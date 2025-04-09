@@ -100,7 +100,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         if (ClientTransportHelper.ClientWorld != null)
         {
             //await WaitForPlayerConnectionAsync(token);
-            await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
+           // await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
             //await WaitForAttachedCameraAsync(clientWorld);
         }
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
@@ -250,17 +250,28 @@ public class ConnectionHandlerNew : MonoBehaviour
         foreach (var session in results.Sessions)
         {
             Debug.Log(session.Name);
+            if (session.Name == "ClientServer")
+            {
+                Debug.Log($"ClientServer session found {session.Name}.");
+                sessionID = session.Id;
+                break;
+            }
+            else if (session.Name == "Server")
+            {
+                sessionID = session.Id;
+                break;
+            }
 
-            if (ClientTransportHelper.isClientLocal)
-            {
-                sessionID = session.Id;
-                break;
-            }
-            else
-            {
-                sessionID = session.Id;
-                break;
-            }
+            //if (ClientTransportHelper.isClientLocal)
+            //{
+            //    sessionID = session.Id;
+            //    break;
+            //}
+            //else
+            //{
+            //    sessionID = session.Id;
+            //    break;
+            //}
 
             //if (session.AvailableSlots != 0)
             //{
