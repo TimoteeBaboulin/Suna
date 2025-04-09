@@ -14,6 +14,7 @@ public partial class CountPlayersSystemServer : SystemBase
 
     protected override void OnUpdate()
     {
+        return;
         Debug.Log("[Debug] Start counting system");
         if (!SystemAPI.TryGetSingletonEntity<RoundComponent>(out var entity))
         {
