@@ -3,14 +3,11 @@ using UnityEngine;
 
 public class CommonCharacterAnimationUtils
 {
-    public static void AddAnimatorReferenceComponent(GameObject gameObject, in Entity characterEntity, in EntityCommandBuffer ecb)
+    public static void SetAnimatorReference(GameObject gameObject, in Entity characterEntity, in EntityCommandBuffer ecb, in EntityManager entityManager)
     {
         if (gameObject.TryGetComponent(out Animator animator))
         {
-            ecb.AddComponent(characterEntity, new CharacterAnimatorReference
-            {
-                Animator = animator,
-            });
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, entityManager);
         }
     }
 

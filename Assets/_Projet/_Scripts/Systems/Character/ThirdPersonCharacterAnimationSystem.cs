@@ -19,7 +19,7 @@ partial struct ServerThirdPersonCharacterAnimationSystem : ISystem
             .WithNone<CharacterAnimatorReference>()
             .WithEntityAccess())
         {
-            CommonCharacterAnimationUtils.AddAnimatorReferenceComponent(modelReference.ModelGameObject, characterEntity, ecb);
+            CommonCharacterAnimationUtils.SetAnimatorReference(modelReference.ModelGameObject, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (animatorReference, thirdPersonAnimationState, commonAnimationState) in SystemAPI
@@ -51,7 +51,7 @@ partial struct ClientThirdPersonCharacterAnimationSystem : ISystem
             .WithNone<CharacterAnimatorReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
-            CommonCharacterAnimationUtils.AddAnimatorReferenceComponent(modelReference.ModelGameObject, characterEntity, ecb);
+            CommonCharacterAnimationUtils.SetAnimatorReference(modelReference.ModelGameObject, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (animatorReference, animationState, commonAnimationState) in SystemAPI

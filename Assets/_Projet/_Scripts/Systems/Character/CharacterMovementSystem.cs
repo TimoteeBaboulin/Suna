@@ -26,14 +26,21 @@ public partial struct CharacterMovementSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+
         CharacterMovementJob job = new CharacterMovementJob
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
+            ecb = ecb.AsParallelWriter(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
             ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
+        state.Dependency.Complete();
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }
 
@@ -43,6 +50,7 @@ public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
+    public EntityCommandBuffer.ParallelWriter ecb;
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
 
@@ -67,8 +75,8 @@ public partial struct CharacterMovementJob : IJobEntity
         return angle != 0f && angle <= maxSlopeAngle;
     }
 
-    public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<CommonCharacterAnimationState> commonAnimationState)
+    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -88,7 +96,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (isMoving)
         {
-            commonAnimationState.ValueRW.IsWalking = true;
+            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -113,7 +121,7 @@ public partial struct CharacterMovementJob : IJobEntity
         }
         else
         {
-            commonAnimationState.ValueRW.IsWalking = false;
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey);
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
@@ -135,7 +143,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         bool onSlope = OnSlope(groundNormal, controller.maxSlopeAngle) && controller.isGrounded;
 
-        if(controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
+        if (controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
         {
             controller.isGrounded = false;
         }
@@ -169,15 +177,15 @@ public partial struct CharacterMovementJob : IJobEntity
 
         vel.Linear += controller.direction * (controller.acceleration * dt);
 
-        if(!isMoving)
+        if (!isMoving)
         {
             vel.Linear.x *= (1.0f - controller.linearDampingXZ);
             vel.Linear.z *= (1.0f - controller.linearDampingXZ);
         }
 
-        if(onSlope && !controller.isJumping)
+        if (onSlope && !controller.isJumping)
         {
-            if(math.length(vel.Linear) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
+            if (math.length(vel.Linear) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
             {
                 vel.Linear = math.normalize(vel.Linear) * controller.currentSpeed;
             }

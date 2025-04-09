@@ -45,54 +45,90 @@ public class AnimationUtils
         triggerBuffer.Clear();
     }
 
-    [BurstCompile]
-    public static void AddFloatCommand(in FixedString32Bytes name, in float value, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
+    public static void SetAnimator(in Animator animator, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
     {
-        if (entityManager.HasComponent<AnimationFloatBufferElement>(entity))
+        if (entityManager.HasComponent<AnimatorReference>(entity))
         {
-            ecb.AppendToBuffer(entity, new AnimationFloatBufferElement
-            {
-                Parameter = name,
-                Value = value,
-            });
+            AnimatorReference animatorRef = entityManager.GetComponentObject<AnimatorReference>(entity);
+            animatorRef.Animator = animator;
         }
     }
 
     [BurstCompile]
-    public static void AddIntCommand(in FixedString32Bytes name, in int value, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
+    public static void AddFloatCommand(in FixedString32Bytes name, in float value, in Entity entity, in EntityCommandBuffer ecb)
     {
-        if (entityManager.HasComponent<AnimationIntBufferElement>(entity))
+        ecb.AppendToBuffer(entity, new AnimationFloatBufferElement
         {
-            ecb.AppendToBuffer(entity, new AnimationIntBufferElement
-            {
-                Parameter = name,
-                Value = value,
-            });
-        }
+            Parameter = name,
+            Value = value,
+        });
     }
 
     [BurstCompile]
-    public static void AddBoolCommand(in FixedString32Bytes name, in bool value, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
+    public static void AddFloatCommandJob(in FixedString32Bytes name, in float value, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
     {
-        if (entityManager.HasComponent<AnimationBoolBufferElement>(entity))
+        ecb.AppendToBuffer(sortKey, entity, new AnimationFloatBufferElement
         {
-            ecb.AppendToBuffer(entity, new AnimationBoolBufferElement
-            {
-                Parameter = name,
-                Value = value,
-            });
-        }
+            Parameter = name,
+            Value = value,
+        });
     }
 
     [BurstCompile]
-    public static void AddTriggerCommand(in FixedString32Bytes name, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
+    public static void AddIntCommand(in FixedString32Bytes name, in int value, in Entity entity, in EntityCommandBuffer ecb)
     {
-        if (entityManager.HasComponent<AnimationTriggerBufferElement>(entity))
+        ecb.AppendToBuffer(entity, new AnimationIntBufferElement
         {
-            ecb.AppendToBuffer(entity, new AnimationTriggerBufferElement
-            {
-                Parameter = name,
-            });
-        }
+            Parameter = name,
+            Value = value,
+        });
+    }
+
+    [BurstCompile]
+    public static void AddIntCommandJob(in FixedString32Bytes name, in int value, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
+    {
+        ecb.AppendToBuffer(sortKey, entity, new AnimationIntBufferElement
+        {
+            Parameter = name,
+            Value = value,
+        });
+    }
+
+    [BurstCompile]
+    public static void AddBoolCommand(in FixedString32Bytes name, in bool value, in Entity entity, in EntityCommandBuffer ecb)
+    {
+        ecb.AppendToBuffer(entity, new AnimationBoolBufferElement
+        {
+            Parameter = name,
+            Value = value,
+        });
+    }
+
+    [BurstCompile]
+    public static void AddBoolCommandJob(in FixedString32Bytes name, in bool value, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
+    {
+        ecb.AppendToBuffer(sortKey, entity, new AnimationBoolBufferElement
+        {
+            Parameter = name,
+            Value = value,
+        });
+    }
+
+    [BurstCompile]
+    public static void AddTriggerCommand(in FixedString32Bytes name, in Entity entity, in EntityCommandBuffer ecb)
+    {
+        ecb.AppendToBuffer(entity, new AnimationTriggerBufferElement
+        {
+            Parameter = name,
+        });
+    }
+
+    [BurstCompile]
+    public static void AddTriggerCommandJob(in FixedString32Bytes name, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
+    {
+        ecb.AppendToBuffer(sortKey, entity, new AnimationTriggerBufferElement
+        {
+            Parameter = name,
+        });
     }
 }

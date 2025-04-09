@@ -24,6 +24,9 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+
+            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation) in SystemAPI
@@ -67,6 +70,9 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+
+            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
