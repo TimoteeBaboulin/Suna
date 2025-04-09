@@ -4,6 +4,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using Unity.Transforms;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
@@ -47,10 +48,6 @@ public partial class ServerSystem : SystemBase
             InstantiateClient(entity, commandBuffer);
         }
 
-        foreach (var entity in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
-        {
-        }
-
         //if (Keyboard.current.oKey.wasPressedThisFrame)
         //{
         //    ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
@@ -90,64 +87,6 @@ public partial class ServerSystem : SystemBase
         }
     }
     #endregion
-
-    //Broadcast message to a target/client or to all clients if no target
-    public void SendMessageRpc<T>(World world, ref T command, Entity target = default) where T : unmanaged, IRpcCommand
-    {
-        if (world == null || !world.IsCreated)
-        {
-            return;
-        }
-
-        Entity entity = world.EntityManager.CreateEntity(typeof(SendRpcCommandRequest), typeof(T));
-        world.EntityManager.SetComponentData(entity, command);
-
-
-        if (target != Entity.Null)
-        {
-            world.EntityManager.SetComponentData(entity, new SendRpcCommandRequest()
-            {
-                TargetConnection = target
-            });
-        }
-    }
-
-    #region Private Methods
-
-    private void UpdateClient(ref EntityCommandBuffer commandBuffer, ref FixedString128Bytes worldName)
-    {
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
-        {
-            commandBuffer.AddComponent<InitializedClient>(entity);
-            ClientPrefabData prefabManager = SystemAPI.GetSingleton<ClientPrefabData>();
-
-            //Instantiate player at connection
-            if (prefabManager.Client != null)
-            {
-                Entity client = commandBuffer.Instantiate(prefabManager.Client);
-                LocalTransform clientTransform = prefabManager.TransformCompData;
-
-                commandBuffer.SetComponent(client, new LocalTransform() //Set position
-                {
-                    Position = clientTransform.Position,
-                    Rotation = clientTransform.Rotation,
-                    Scale = 1.0f
-                });
-                commandBuffer.SetComponent(client, new GhostOwner() //Set owner of player to connection
-                {
-                    NetworkId = id.ValueRO.Value,
-                });
-                commandBuffer.AppendToBuffer(entity, new LinkedEntityGroup() //Link it to connection
-                {
-                    Value = client
-                });
-            }
-            ServerConsole.Log(ServerConsole.LogType.Info, $"Client with id : {id.ValueRO}, connected to {worldName}");
-        }
-        commandBuffer.Playback(EntityManager);
-        commandBuffer.Dispose();
-    }
-    #endregion
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -169,7 +108,7 @@ public partial class SessionStatusSystem : SystemBase
     protected override void OnUpdate()
     {
         // First, check if we haven't subscribed and a session is available.
-        if (ClientTransportHelper.ServerWorld.IsCreated && ServerSessionFactory.instance != null)
+        if (!didSubscribe && ServerSessionFactory.instance != null)
         {
             var session = ServerSessionFactory.instance.Session;
             session.PlayerLeaving += OnPlayerLeaving;
@@ -193,6 +132,10 @@ public partial class SessionStatusSystem : SystemBase
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ServerSessionFactory.instance.Session.Name}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ServerSessionFactory.instance.Session.PlayerCount}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ServerSessionFactory.instance.Session.IsHost} ");
+
+                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ServerSessionFactory.instance.Session.Name}");
+                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ServerSessionFactory.instance.Session.PlayerCount}");
+                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ServerSessionFactory.instance.Session.IsHost} ");
             }
             else
             {
