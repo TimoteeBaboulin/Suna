@@ -187,20 +187,18 @@ public partial struct ShootSystem : ISystem
         }
     }
 
-    quaternion WeaponKick(float kick, Entity owner)
+    bool TryGetCharacterRO(Entity owner, ref SystemState state, out RefRO<CharacterComponent> controller)
     {
-        float yaw = UnityEngine.Random.Range(-kick, kick);
-        float pitch = UnityEngine.Random.Range(-kick, kick);
-
-        quaternion q = quaternion.Euler(math.radians(pitch), math.radians(yaw), 0);
-
-        //ShootKickCommand shootKickCommand = new ShootKickCommand()
-        //{
-        //    kickValue = q
-        //};
-
-        //RpcUtils.SendServerToClientRpc(ref shootKickCommand, owner);
-        return q;
+        if (state.EntityManager.HasComponent<CharacterComponent>(owner))
+        {
+            controller = SystemAPI.GetComponentRO<CharacterComponent>(owner);
+            return true;
+        }
+        else
+        {
+            controller = default;
+            return false;
+        }
     }
 
     bool TryGetOwnerBones(Entity owner, ref SystemState state, out ThirdPersonCharacterModelBonesTransform modelBones)
