@@ -100,7 +100,20 @@ public partial struct ShootSystem : ISystem
                         for (int i = 0; i < commonData.roundsPerShot; i++)
                         {
                             // Apply spread on raycast
-                            float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+
+                            if (!TryGetCharacterRO(owner, ref state, out var character)) return;
+
+                            float2 recoil = float2.zero;
+
+                            if (character.ValueRO.isAiming)
+                            {
+                                recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spreadAiming * (isShooterMoving ? 20 : 1), commonData.coefSprayAiming, commonData.range) * dt;
+                            }
+                            else
+                            {
+                                recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                            }
+                            
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                             recoilRotation = math.mul(input.shootRotation, recoilRotation);
 
@@ -174,6 +187,20 @@ public partial struct ShootSystem : ISystem
         {
             //Debug.LogError("CharacterInput not found");
             Input = default;
+            return false;
+        }
+    }
+
+    bool TryGetCharacterRO(Entity owner, ref SystemState state, out RefRO<CharacterComponent> controller)
+    {
+        if (state.EntityManager.HasComponent<CharacterComponent>(owner))
+        {
+            controller = SystemAPI.GetComponentRO<CharacterComponent>(owner);
+            return true;
+        }
+        else
+        {
+            controller = default;
             return false;
         }
     }
