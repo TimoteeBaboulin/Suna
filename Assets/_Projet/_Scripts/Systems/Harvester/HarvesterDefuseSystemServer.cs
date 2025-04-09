@@ -30,7 +30,10 @@ partial struct HarvesterDefuseSystemServer : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         //Prepare the current tick since it's used in multiple branches
-        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        if (!SystemAPI.TryGetSingleton<NetworkTime>(out NetworkTime networkTime))
+        {
+            return;
+        }
         NetworkTick currentTick = networkTime.InterpolationTick;
 
         RoundPhase currentPhase;
