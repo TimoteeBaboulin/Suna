@@ -63,6 +63,7 @@ public partial struct RoundSystemServer : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        Debug.Log("[Debug] Start round system");
         //Check if the singleton exists to avoid crashes
         if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
         {
@@ -166,6 +167,8 @@ public partial struct RoundSystemServer : ISystem
         //Play the buffer back to remove/add entities as needed
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+
+        Debug.Log("[Debug] Stop counting system");
 
         //Debug: Allow to fake a collector plant
     }
