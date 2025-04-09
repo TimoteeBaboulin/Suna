@@ -21,11 +21,13 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
 
-        RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
+        PlayerCounts playersAlive = SystemAPI.GetComponent<PlayerCounts>(entity);
 
-        return;
-        playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
-        playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+        
+        playersAlive.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
+        playersAlive.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+
+        SystemAPI.SetComponent(entity, playersAlive);
         Debug.Log("[Debug] Stop counting system");
     }
 }
