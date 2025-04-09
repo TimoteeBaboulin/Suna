@@ -23,6 +23,7 @@ public class ServerSessionFactory
 
         try
         {
+            AutoConnectPort = port;
             SessionOptions options = new SessionOptions
             {
                 MaxPlayers = ClientTransportHelper.MaxNbOfPlayers,

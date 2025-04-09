@@ -42,17 +42,8 @@ public class ConnectionHandlerNew : MonoBehaviour
         ClientTransportHelper.isClientLocal = connectionSettings.isClientLocal;
         _ip = connectionSettings.IP;
         ClientTransportHelper.CurrentIP = (RequestedPlayType == PlayType.ClientAndServer || ClientTransportHelper.isClientLocal) ? _localIp : _ip;
-        ClientTransportHelper.CurrentPort = connectionSettings.Port;
+        ClientTransportHelper.CurrentPort = (ushort)connectionSettings.Port;
     }
-
-    //public ushort GetAvailablePort()
-    //{
-    //    TcpListener listener = new TcpListener(IPAddress.Any, 0);
-    //    listener.Start();
-    //    ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
-    //    listener.Stop();
-    //    return port;
-    //}
 
     public async Task<ClientTransportHelper> Connect(CancellationToken token)
     {
@@ -79,7 +70,6 @@ public class ConnectionHandlerNew : MonoBehaviour
         if (ClientTransportHelper.ServerWorld != null)
         {
             using var drvQuery = ClientTransportHelper.ServerWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            //var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
 
             if (drvQuery.TryGetSingletonRW<NetworkStreamDriver>(out var serverDriver))
             {
@@ -94,7 +84,6 @@ public class ConnectionHandlerNew : MonoBehaviour
         if (ClientTransportHelper.ClientWorld != null)
         {
             using var drvQuery = ClientTransportHelper.ClientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            //var clientDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
             
             if (drvQuery.TryGetSingletonRW<NetworkStreamDriver>(out var clientDriver))
             {
@@ -258,7 +247,7 @@ public class ConnectionHandlerNew : MonoBehaviour
             return;
         }
 
-        Debug.Log($"Session count {results.Sessions.Count}.");
+        Debug.Log($"TOTAL Session count : {results.Sessions.Count}.");
         foreach (var session in results.Sessions)
         {
             Debug.Log(session.Name);
@@ -268,36 +257,6 @@ public class ConnectionHandlerNew : MonoBehaviour
                 sessionID = session.Id;
                 break;
             }
-
-            //if (ClientTransportHelper.isClientLocal)
-            //{
-            //    sessionID = session.Id;
-            //    break;
-            //}
-            //else
-            //{
-            //    sessionID = session.Id;
-            //    break;
-            //}
-
-            //if (session.AvailableSlots != 0)
-            //{
-            //    SessionID = session.Id;
-            //    Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-            //    Debug.Log($"Found session ID: {session.Id}");
-            //    Debug.Log($"Session code: {session.Id}");
-            //}
-            //else
-            //{
-            //    ClientSessionCreationCommand command = new ClientSessionCreationCommand() { createNewSession = true };
-            //    RpcUtils.SendClientToServerRpc(ref command);
-
-            //    Debug.Log($"Players: {session.AvailableSlots}/{session.MaxPlayers}");
-            //    Debug.Log($"Found session ID: {session.Id}");
-            //    Debug.Log($"Session code: {session.Id}");
-            //}
         }
-        //var firstSession = results.Sessions[0];
-        //sessionID = firstSession.Id;
     }
 }

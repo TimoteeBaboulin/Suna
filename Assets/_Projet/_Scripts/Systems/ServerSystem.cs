@@ -168,42 +168,42 @@ public partial class SessionStatusSystem : SystemBase
     {
         Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} is leaving the session.");
 
-        if (int.TryParse(playerId, out int targetId))
-        {
-            foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
-            {
-                if (clientData.ValueRO.id == targetId)
-                {
-                    EntityManager.DestroyEntity(entity);
-                    Debug.Log($"[SessionStatusSystem] Destroyed client entity with NetworkId {playerId}");
-                }
-            }
-        }
-        else
-        {
-            Debug.LogError($"[SessionStatusSystem] Unable to parse playerId {playerId} to an integer.");
-        }
+        //if (int.TryParse(playerId, out int targetId))
+        //{
+        //    foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
+        //    {
+        //        if (clientData.ValueRO.id == targetId)
+        //        {
+        //            EntityManager.DestroyEntity(entity);
+        //            Debug.Log($"[SessionStatusSystem] Destroyed client entity with NetworkId {playerId}");
+        //        }
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.LogError($"[SessionStatusSystem] Unable to parse playerId {playerId} to an integer.");
+        //}
     }
 
     // Event handler for when a player has left.
     private void OnPlayerHasLeft(string playerId)
     {
         Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} has left the session.");
-        if (int.TryParse(playerId, out int targetId))
-        {
-            foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
-            {
-                if (clientData.ValueRO.id == targetId)
-                {
-                    EntityManager.DestroyEntity(entity);
-                    Debug.Log($"[SessionStatusSystem] Destroyed client entity with NetworkId {playerId}");
-                }
-            }
-        }
-        else
-        {
-            Debug.LogError($"[SessionStatusSystem] Unable to parse playerId {playerId} to an integer.");
-        }
+        //if (int.TryParse(playerId, out int targetId))
+        //{
+        //    foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
+        //    {
+        //        if (clientData.ValueRO.id == targetId)
+        //        {
+        //            EntityManager.DestroyEntity(entity);
+        //            Debug.Log($"[SessionStatusSystem] Destroyed client entity with NetworkId {playerId}");
+        //        }
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.LogError($"[SessionStatusSystem] Unable to parse playerId {playerId} to an integer.");
+        //}
     }
 
     // Event handler for when the current client is removed.

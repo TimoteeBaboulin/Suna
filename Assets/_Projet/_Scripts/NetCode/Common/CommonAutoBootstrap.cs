@@ -5,24 +5,35 @@ using Unity.Entities;
 using Unity.Services.Multiplayer;
 using GameNetwork;
 using GameNetwork.Utils;
+using System.Net.Sockets;
+using System.Net;
 public class CommonAutoConnect : ClientServerBootstrap
 {
     public override bool Initialize(string defaultWorldName)
     {
-        if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer 
+        if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer
             || RequestedPlayType == PlayType.ClientAndServer)
         {
-            AutoConnectPort = 0;
+              AutoConnectPort = 0;
             return false;
         }
         else if (Application.platform == RuntimePlatform.WindowsServer)
         {
-            AutoConnectPort = 53959;
+            AutoConnectPort = 7979; //Votre port ici
             ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
 
             return true;
         }
         return true;
+    }
+
+    public ushort GetAvailablePort()
+    {
+        TcpListener listener = new TcpListener(IPAddress.Any, 0);
+        listener.Start();
+        ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
+        listener.Stop();
+        return port;
     }
 }
 
