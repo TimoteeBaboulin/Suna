@@ -58,7 +58,7 @@ MonoBehaviour:
     m_IrrelevantImportanceDownScale: 1
     m_TempStreamSize: 8192
     m_UseCustomSerializer: 0
-  ConnectTimeoutMS: 10000
+  ConnectTimeoutMS: 30000
   MaxConnectAttempts: 60
   DisconnectTimeoutMS: 10000
   HeartbeatTimeoutMS: 500

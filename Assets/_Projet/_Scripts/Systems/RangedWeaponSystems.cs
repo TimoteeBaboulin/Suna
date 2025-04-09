@@ -28,14 +28,24 @@ partial struct RangedWeaponViewSystem : ISystem
                 case RangedWeaponState.Idle:
                     break;
                 case RangedWeaponState.Shoot:
-                    //goRef.Value.GetComponent<Animator>().SetTrigger("Fire");
-                    //goRef.Value.GetComponent<RangedWeaponSound>().Shoot();
+#if !UNITY_SERVER
+                    if (goRef.Value.TryGetComponent(out RangedWeaponSound rws))
+                    {
+                        rws.Shoot();
+                    }
+#endif
                     data.ValueRW.state = RangedWeaponState.Idle;
                     break;
                 case RangedWeaponState.Reload:
                     if (!alreadyReload)
                     {
-                        //goRef.Value.GetComponent<RangedWeaponSound>().Reload();
+#if !UNITY_SERVER
+                        if (goRef.Value.TryGetComponent(out rws))
+                        {
+                            rws.Reload();
+                        }
+#endif
+
                         alreadyReload = true;
                     }
 

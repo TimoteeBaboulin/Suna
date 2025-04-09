@@ -7,22 +7,22 @@
   "targets": {
     ".NETStandard,Version=v2.0": {},
     ".NETStandard,Version=v2.0/": {
-      "Meryel.UnityCodeAssist.RoslynAnalyzerManager/1.4.11": {
+      "Meryel.UnityCodeAssist.RoslynAnalyzerManager/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.AnalyzersLite": "1.4.11",
-          "Meryel.UnityCodeAssist.Completion": "1.4.11",
-          "Meryel.UnityCodeAssist.Synchronizer": "1.4.11",
-          "Meryel.UnityCodeAssist.VSIXLibrary": "1.4.11",
+          "Meryel.UnityCodeAssist.AnalyzersLite": "1.4.13",
+          "Meryel.UnityCodeAssist.Completion": "1.4.13",
+          "Meryel.UnityCodeAssist.Synchronizer": "1.4.13",
+          "Meryel.UnityCodeAssist.VSIXLibrary": "1.4.13",
           "NETStandard.Library": "2.0.3",
-          "Meryel.UnityCodeAssist.AnalyzersLite.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.Common.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.Completion.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.CompletionInternals.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.Logger.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.ProjectData.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.Synchronizer.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.SynchronizerModel.Reference": "1.4.11.0",
-          "Meryel.UnityCodeAssist.VSIXLibrary.Reference": "1.4.11.0"
+          "Meryel.UnityCodeAssist.AnalyzersLite.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.Common.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.Completion.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.CompletionInternals.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.Logger.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.ProjectData.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.Synchronizer.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.SynchronizerModel.Reference": "1.4.13.0",
+          "Meryel.UnityCodeAssist.VSIXLibrary.Reference": "1.4.13.0"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.RoslynAnalyzerManager.dll": {}
@@ -761,7 +761,7 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.AnalyzersLite/1.4.11": {
+      "Meryel.UnityCodeAssist.AnalyzersLite/1.4.13": {
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "3.8.0"
         },
@@ -771,10 +771,10 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.Common/1.4.11": {
+      "Meryel.UnityCodeAssist.Common/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.Logger": "1.4.11",
-          "Meryel.UnityCodeAssist.ProjectData": "1.4.11",
+          "Meryel.UnityCodeAssist.Logger": "1.4.13",
+          "Meryel.UnityCodeAssist.ProjectData": "1.4.13",
           "Microsoft.CodeAnalysis.CSharp": "3.8.0",
           "Microsoft.CodeAnalysis.Features": "3.8.0"
         },
@@ -784,9 +784,9 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.Completion/1.4.11": {
+      "Meryel.UnityCodeAssist.Completion/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.CompletionInternals": "1.4.11"
+          "Meryel.UnityCodeAssist.CompletionInternals": "1.4.13"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.Completion.dll": {
@@ -794,9 +794,9 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.CompletionInternals/1.4.11": {
+      "Meryel.UnityCodeAssist.CompletionInternals/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.Common": "1.4.11"
+          "Meryel.UnityCodeAssist.Common": "1.4.13"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.CompletionInternals.dll": {
@@ -804,9 +804,9 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.Logger/1.4.11": {
+      "Meryel.UnityCodeAssist.Logger/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.ProjectData": "1.4.11"
+          "Meryel.UnityCodeAssist.ProjectData": "1.4.13"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.Logger.dll": {
@@ -814,9 +814,9 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.ProjectData/1.4.11": {
+      "Meryel.UnityCodeAssist.ProjectData/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.SynchronizerModel": "1.4.11"
+          "Meryel.UnityCodeAssist.SynchronizerModel": "1.4.13"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.ProjectData.dll": {
@@ -824,11 +824,11 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.Synchronizer/1.4.11": {
+      "Meryel.UnityCodeAssist.Synchronizer/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.Common": "1.4.11",
-          "Meryel.UnityCodeAssist.ProjectData": "1.4.11",
-          "Meryel.UnityCodeAssist.SynchronizerModel": "1.4.11"
+          "Meryel.UnityCodeAssist.Common": "1.4.13",
+          "Meryel.UnityCodeAssist.ProjectData": "1.4.13",
+          "Meryel.UnityCodeAssist.SynchronizerModel": "1.4.13"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.Synchronizer.dll": {
@@ -836,17 +836,17 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.SynchronizerModel/1.4.11": {
+      "Meryel.UnityCodeAssist.SynchronizerModel/1.4.13": {
         "runtime": {
           "Meryel.UnityCodeAssist.SynchronizerModel.dll": {
             "fileVersion": "0.0.0.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.VSIXLibrary/1.4.11": {
+      "Meryel.UnityCodeAssist.VSIXLibrary/1.4.13": {
         "dependencies": {
-          "Meryel.UnityCodeAssist.Common": "1.4.11",
-          "Meryel.UnityCodeAssist.Synchronizer": "1.4.11"
+          "Meryel.UnityCodeAssist.Common": "1.4.13",
+          "Meryel.UnityCodeAssist.Synchronizer": "1.4.13"
         },
         "runtime": {
           "Meryel.UnityCodeAssist.VSIXLibrary.dll": {
@@ -854,75 +854,75 @@
           }
         }
       },
-      "Meryel.UnityCodeAssist.AnalyzersLite.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.AnalyzersLite.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.AnalyzersLite.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.Common.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.Common.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.Common.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.Completion.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.Completion.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.Completion.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.CompletionInternals.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.CompletionInternals.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.CompletionInternals.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.Logger.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.Logger.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.Logger.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.ProjectData.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.ProjectData.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.ProjectData.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.Synchronizer.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.Synchronizer.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.Synchronizer.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.SynchronizerModel.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.SynchronizerModel.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.SynchronizerModel.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
-      "Meryel.UnityCodeAssist.VSIXLibrary.Reference/1.4.11.0": {
+      "Meryel.UnityCodeAssist.VSIXLibrary.Reference/1.4.13.0": {
         "runtime": {
           "Meryel.UnityCodeAssist.VSIXLibrary.dll": {
-            "assemblyVersion": "1.4.11.0",
-            "fileVersion": "1.4.11.0"
+            "assemblyVersion": "1.4.13.0",
+            "fileVersion": "1.4.13.0"
           }
         }
       },
@@ -945,7 +945,7 @@
     }
   },
   "libraries": {
-    "Meryel.UnityCodeAssist.RoslynAnalyzerManager/1.4.11": {
+    "Meryel.UnityCodeAssist.RoslynAnalyzerManager/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
@@ -1286,92 +1286,92 @@
       "path": "system.threading.tasks.extensions/4.5.4",
       "hashPath": "system.threading.tasks.extensions.4.5.4.nupkg.sha512"
     },
-    "Meryel.UnityCodeAssist.AnalyzersLite/1.4.11": {
+    "Meryel.UnityCodeAssist.AnalyzersLite/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Common/1.4.11": {
+    "Meryel.UnityCodeAssist.Common/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Completion/1.4.11": {
+    "Meryel.UnityCodeAssist.Completion/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.CompletionInternals/1.4.11": {
+    "Meryel.UnityCodeAssist.CompletionInternals/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Logger/1.4.11": {
+    "Meryel.UnityCodeAssist.Logger/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.ProjectData/1.4.11": {
+    "Meryel.UnityCodeAssist.ProjectData/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Synchronizer/1.4.11": {
+    "Meryel.UnityCodeAssist.Synchronizer/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.SynchronizerModel/1.4.11": {
+    "Meryel.UnityCodeAssist.SynchronizerModel/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.VSIXLibrary/1.4.11": {
+    "Meryel.UnityCodeAssist.VSIXLibrary/1.4.13": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.AnalyzersLite.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.AnalyzersLite.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Common.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.Common.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Completion.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.Completion.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.CompletionInternals.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.CompletionInternals.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Logger.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.Logger.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.ProjectData.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.ProjectData.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.Synchronizer.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.Synchronizer.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.SynchronizerModel.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.SynchronizerModel.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
     },
-    "Meryel.UnityCodeAssist.VSIXLibrary.Reference/1.4.11.0": {
+    "Meryel.UnityCodeAssist.VSIXLibrary.Reference/1.4.13.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""

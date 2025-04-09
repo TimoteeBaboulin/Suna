@@ -1,6 +1,6 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <Style src="project://database/Assets/_Projet/_Code/_Scripts/UI/InGame/StuffShop/shop-style.uss?fileID=7433441132597879392&amp;guid=738c7005ed4f6cc45aac3b5da323b218&amp;type=3#shop-style" />
-    <engine:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.77); align-items: center; justify-content: center;">
+    <Style src="project://database/Assets/_Projet/_Scripts/UI/StuffShop/shop-style.uss?fileID=7433441132597879392&amp;guid=738c7005ed4f6cc45aac3b5da323b218&amp;type=3#shop-style" />
+    <engine:VisualElement name="Background" style="flex-grow: 1; background-color: rgba(0, 0, 0, 0.77); align-items: center; justify-content: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;);">
         <engine:VisualElement name="Shop" style="flex-grow: 0; position: absolute; width: 80%; height: 80%; top: auto; left: auto; right: auto; bottom: auto; flex-shrink: 0;">
             <engine:VisualElement name="ShopMenu" style="flex-grow: 1; align-items: center; justify-content: center; align-self: center; align-content: center; width: 70%; height: 100%;" />
             <engine:VisualElement name="ShopMenuSelector" style="flex-grow: 0; width: 60%; height: 60px; flex-shrink: 0; flex-direction: row; justify-content: space-between; align-self: center;">
