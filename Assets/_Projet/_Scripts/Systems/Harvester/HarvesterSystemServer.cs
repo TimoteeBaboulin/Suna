@@ -177,7 +177,7 @@ partial struct HarvesterSystemServer : ISystem
 
                                     foreach ((LocalTransform playerTransform, RefRW<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
                                     in SystemAPI.Query<LocalTransform, RefRW<CharacterStuffList>, CharacterClientAttachedComponent>()
-                                    .WithAll<CharacterComponent>()
+                                    .WithAll<CharacterComponent, CorpoTeamTag>()
                                     .WithEntityAccess())
                                     {
                                         if (math.distance(playerTransform.Position, harvesterPosition) <= harvesterRW.ValueRO.pickupDistance)
@@ -238,7 +238,7 @@ partial struct HarvesterSystemServer : ISystem
 
                                     foreach ((LocalTransform playerTransform, RefRW<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
                                     in SystemAPI.Query<LocalTransform, RefRW<CharacterStuffList>, CharacterClientAttachedComponent>()
-                                    .WithAll<CharacterComponent>()
+                                    .WithAll<CharacterComponent, CorpoTeamTag>()
                                     .WithEntityAccess())
                                     {
                                         if (math.distance(playerTransform.Position, harvesterPosition) <= 5)
@@ -284,6 +284,7 @@ partial struct HarvesterSystemServer : ISystem
                         break;
                 }
             }
+
             foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcRequestHarvesterOwners rpc, Entity entity)
         in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcRequestHarvesterOwners>().WithEntityAccess())
             {
