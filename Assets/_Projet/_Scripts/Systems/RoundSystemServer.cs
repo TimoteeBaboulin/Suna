@@ -107,6 +107,8 @@ public partial struct RoundSystemServer : ISystem
             PlayerCounts playerCount = SystemAPI.GetComponent<PlayerCounts>(entity);
             Debug.Log("Recovering count");
 
+            var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
+
             //Update the timer and change to next phase in case the timer runs out
             switch (roundComponent.ValueRO.currentPhase)
             {
@@ -115,12 +117,14 @@ public partial struct RoundSystemServer : ISystem
                     {
                         Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
                         roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
                         SendCurrentPhase(ref state, entity, roundComponent, ecb);
                     }
                     else if(playerCount.corpoPlayersAlive == 0)
                     {
                         Victory(ref state, entity, roundComponent, TeamSideType.Natif, ecb);
                         roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
                         SendCurrentPhase(ref state, entity, roundComponent, ecb);
                     }
                     break;
@@ -129,6 +133,7 @@ public partial struct RoundSystemServer : ISystem
                     {
                         Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
                         roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
                         SendCurrentPhase(ref state, entity, roundComponent, ecb);
                     }
                     break;
