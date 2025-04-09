@@ -27,8 +27,6 @@ partial class HarvesterPlantingLinkSystem : SystemBase
             .WithAll<HarvesterPlanting>()
             .WithEntityAccess())
         {
-            if (owner.ValueRO.Value == Entity.Null) continue;
-            if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(owner.ValueRO.Value)) continue;
             if (timeSpent == 0f)
             {
                 OnPlantStart?.Invoke(this, EventArgs.Empty);
