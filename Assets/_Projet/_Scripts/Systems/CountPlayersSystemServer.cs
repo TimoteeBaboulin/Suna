@@ -21,9 +21,9 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
 
-        return;
         RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
 
+        return;
         playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
         playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
         Debug.Log("[Debug] Stop counting system");
