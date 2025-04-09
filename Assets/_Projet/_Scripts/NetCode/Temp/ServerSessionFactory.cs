@@ -19,7 +19,7 @@ public class ServerSessionFactory
     public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
     {
         instance = new ServerSessionFactory();
-        instance.SessionName = (RequestedPlayType == PlayType.ClientAndServer) ? "ClientServer" : "Server";
+        instance.SessionName = ClientTransportHelper.CurrentPort.ToString();
 
         try
         {

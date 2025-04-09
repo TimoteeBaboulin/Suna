@@ -13,6 +13,7 @@ using Unity.NetCode;
 using Unity.Networking.Transport;
 using Unity.Scenes;
 using Unity.Services.Multiplayer;
+using Unity.VisualScripting;
 using Unity_NetCode_Generated_Unity_Transforms;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -44,20 +45,14 @@ public class ConnectionHandlerNew : MonoBehaviour
         ClientTransportHelper.CurrentPort = connectionSettings.Port;
     }
 
-    public ushort GetAvailablePort()
-    {
-        TcpListener listener = new TcpListener(IPAddress.Any, 0);
-        listener.Start();
-        ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
-        listener.Stop();
-        return port;
-    }
-
-    private void Start()
-    {
-        Debug.Log($"ConnectionHandlerNew: Role is {RequestedPlayType}");
-    }
-
+    //public ushort GetAvailablePort()
+    //{
+    //    TcpListener listener = new TcpListener(IPAddress.Any, 0);
+    //    listener.Start();
+    //    ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
+    //    listener.Stop();
+    //    return port;
+    //}
 
     public async Task<ClientTransportHelper> Connect(CancellationToken token)
     {
@@ -79,28 +74,45 @@ public class ConnectionHandlerNew : MonoBehaviour
         }
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
+        await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
+        await LoadUtils.LoadSceneAsync((int)connectionSettings.sceneToLoad, SessionData.LoadingSteps.LoadGameScene);
         if (ClientTransportHelper.ServerWorld != null)
         {
             using var drvQuery = ClientTransportHelper.ServerWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            serverDriver.Listen(sessionTransport.ListenEndpoint);
+            //var serverDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
+
+            if (drvQuery.TryGetSingletonRW<NetworkStreamDriver>(out var serverDriver))
+            {
+                serverDriver.ValueRW.Listen(sessionTransport.ListenEndpoint);
+            }
+            else
+            {
+                Debug.LogError("NetworkStreamDriver entity not found. Ensure the subscene is loaded and instantiated correctly.");
+            }
         }
 
         if (ClientTransportHelper.ClientWorld != null)
         {
             using var drvQuery = ClientTransportHelper.ClientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            var clientDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
-            clientDriver.Connect(ClientTransportHelper.ClientWorld.EntityManager, sessionTransport.ConnectEndpoint);
+            //var clientDriver = drvQuery.GetSingletonRW<NetworkStreamDriver>().ValueRW;
+            
+            if (drvQuery.TryGetSingletonRW<NetworkStreamDriver>(out var clientDriver))
+            {
+                clientDriver.ValueRW.Connect(ClientTransportHelper.ClientWorld.EntityManager, sessionTransport.ConnectEndpoint);
+            }
+            else
+            {
+                Debug.LogError("NetworkStreamDriver entity not found. Ensure the subscene is loaded and instantiated correctly.");
+            }
         }
-        await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
-        await LoadUtils.LoadSceneAsync((int)connectionSettings.sceneToLoad, SessionData.LoadingSteps.LoadGameScene);
+
         //await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
 
         //await WaitUntilSessionIsFullAsync(token, clientWorld);
         if (ClientTransportHelper.ClientWorld != null)
         {
             //await WaitForPlayerConnectionAsync(token);
-           // await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
+            await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
             //await WaitForAttachedCameraAsync(clientWorld);
         }
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
@@ -246,18 +258,13 @@ public class ConnectionHandlerNew : MonoBehaviour
             return;
         }
 
-
+        Debug.Log($"Session count {results.Sessions.Count}.");
         foreach (var session in results.Sessions)
         {
             Debug.Log(session.Name);
-            if (session.Name == "ClientServer")
+            if (session.Name == ClientTransportHelper.CurrentPort.ToString())
             {
-                Debug.Log($"ClientServer session found {session.Name}.");
-                sessionID = session.Id;
-                break;
-            }
-            else if (session.Name == "Server")
-            {
+                Debug.Log($"Session match found {session.Name}.");
                 sessionID = session.Id;
                 break;
             }
@@ -291,6 +298,6 @@ public class ConnectionHandlerNew : MonoBehaviour
             //}
         }
         //var firstSession = results.Sessions[0];
-        //SessionID = firstSession.Id;
+        //sessionID = firstSession.Id;
     }
 }
