@@ -70,6 +70,8 @@ public partial struct RoundSystemServer : ISystem
             return;
         }
 
+        Debug.Log("[Debug] RoundComponent singleton exists");
+
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
@@ -105,8 +107,9 @@ public partial struct RoundSystemServer : ISystem
         }
         else
         {
+            Debug.Log("[Debug] Recovering count");
             PlayerCounts playerCount = SystemAPI.GetComponent<PlayerCounts>(entity);
-            Debug.Log("Recovering count");
+            Debug.Log("[Debug] Player count recovered");
 
             var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
