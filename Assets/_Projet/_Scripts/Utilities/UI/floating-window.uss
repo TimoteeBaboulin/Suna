@@ -29,6 +29,14 @@
 	background-color: rgba(188, 0, 0, 1);
 }
 
+.floating-window-close-button:hover {
+	background-color: rgba(235, 0, 0, 1);
+}
+
+.floating-window-close-button:active {
+	background-color: rgba(147, 0, 0, 1);
+}
+
 .floating-window-scrollview {
 	flex-grow: 1;
 	min-height: 40px;
@@ -38,4 +46,12 @@
 	min-height: 30px;
 	background-color: rgba(0, 188, 16, 1);
 	color: rgb(0, 0, 0);
+}
+
+.floating-window-validate-button:hover {
+	background-color: rgba(0, 223, 19, 1);
+}
+
+.floating-window-validate-button:active {
+	background-color: rgba(0, 147, 13, 1);
 }

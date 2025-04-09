@@ -1,5 +1,4 @@
 using System;
-using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
@@ -92,6 +91,8 @@ public partial class FloatingWindow : SafeVisualElement
         };
         _scrollView.AddToClassList(_scrollView.name);
         Add(_scrollView);
+        _scrollView.mode = ScrollViewMode.Vertical;
+        _scrollView.horizontalScrollerVisibility = ScrollerVisibility.Hidden;
 
         // Set up the Validate Button
         _validateButton = new()

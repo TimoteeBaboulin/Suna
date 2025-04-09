@@ -118,6 +118,18 @@ public class UIDocumentUtils
     {
         SetPosition(ref element, anchor, shiftPosition.x, shiftPosition.y);
     }
+    static public void SetSimplePosition<T>(ref T element, float xShift, float yShift) where T : VisualElement
+    {
+        element.style.top = yShift;
+        element.style.left = xShift;
+        element.style.right = AutoLength();
+        element.style.bottom = AutoLength();
+        element.style.translate = new(new Translate(0f, 0f));
+    }
+    static public void SetSimplePosition<T>(ref T element, Vector2 shiftPosition) where T : VisualElement
+    {
+        SetSimplePosition(ref element, shiftPosition.x, shiftPosition.y);
+    }
 
     static public void SetBorderWidth<T>(ref T element, float value) where T : VisualElement
     {
