@@ -11,36 +11,40 @@ partial struct InstanciateEntityStuffSystem : ISystem
         state.RequireForUpdate<GameResourcesStuffEntityPrefabs>();
         state.RequireForUpdate<GameResourcesDatabase>();
 
-        EntityQuery query = state.GetEntityQuery(typeof(GameResourcesInstanciateStuffQueu));
-        query.SetChangedVersionFilter(typeof(GameResourcesInstanciateStuffQueu));
+        EntityQuery query = state.GetEntityQuery(typeof(GameResourcesInstantiateStuffQueu));
+        query.SetChangedVersionFilter(typeof(GameResourcesInstantiateStuffQueu));
         state.RequireForUpdate(query);
     }
 
     public void OnUpdate(ref SystemState state)
     {
+        //Get ECB
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-
-        foreach (var (prefabsRO, database, stuffQueu) in SystemAPI.Query<
+        //
+        foreach (var (prefabsRO, database, instantiateStuffQueu) in SystemAPI.Query<
             RefRO<GameResourcesStuffEntityPrefabs>,
             RefRO<GameResourcesDatabase>,
-            DynamicBuffer<GameResourcesInstanciateStuffQueu>>())
+            DynamicBuffer<GameResourcesInstantiateStuffQueu>>())
         {
             ref var stuffCommonDataArray = ref database.ValueRO.StuffDatabaseRef.Value.StuffCommonData;
             ref readonly var prefabs = ref prefabsRO.ValueRO;
             FixedString128Bytes Name;
 
-            foreach (var item in stuffQueu)
+            //Explore Stuff Infos queue
+            foreach (var stuffInfos in instantiateStuffQueu)
             {
+                //Retrieve stuff in database
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
-                    Name = item.StuffName;
+                    Name = stuffInfos.StuffName;
 
                     if (stuffCommonDataArray[i].Name.ToString() == Name.Value)
                     {
                         ref StuffCommonData stuffData = ref stuffCommonDataArray[i];
 
+                        //Load entity prefab depending on stuff type
                         Entity prefab = Entity.Null;
                         switch (stuffData.type)
                         {
@@ -59,8 +63,10 @@ partial struct InstanciateEntityStuffSystem : ISystem
 
                         if (prefab != Entity.Null)
                         {
+                            //Instantiate the Entity prefab
                             Entity stuff = ecb.Instantiate(prefab);
 
+                            //Define database access for this new stuff
                             ecb.SetComponent(stuff, new StuffDatabaseAccess
                             {
                                 ID = i,
@@ -68,13 +74,24 @@ partial struct InstanciateEntityStuffSystem : ISystem
                                 NameInDatabase = stuffData.Name.ToString()
                             });
 
-                            if (item.Owner != Entity.Null)
+                            //If the queue specified an owner :
+                            if (stuffInfos.Owner != Entity.Null)
                             {
-                                ecb.SetComponent(stuff, new StuffOwner { Value = item.Owner });
+                                var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
 
-                                int networkId = state.EntityManager.GetComponentData<GhostOwner>(item.Owner).NetworkId;
-                                ecb.SetComponent(stuff, new GhostOwner { NetworkId = networkId }); //Set owner of player to connection
-                                ecb.AppendToBuffer(item.Owner, new LinkedEntityGroup { Value = stuff }); //Link it to connection
+                                equipStuffQueu.Add(new EquipStuffQueu
+                                {
+                                    Stuff = stuff,
+                                    Owner = stuffInfos.Owner
+                                });
+
+                                //TODO : Tu t'es arretter ici
+
+                                //ecb.SetComponent(stuff, new StuffOwner { Value = stuffInfos.Owner });
+
+                                //int networkId = state.EntityManager.GetComponentData<GhostOwner>(stuffInfos.Owner).NetworkId;
+                                //ecb.SetComponent(stuff, new GhostOwner { NetworkId = networkId }); //Set owner of player to connection
+                                //ecb.AppendToBuffer(stuffInfos.Owner, new LinkedEntityGroup { Value = stuff }); //Link it to connection
                             }
                         }
                         break;
@@ -82,7 +99,7 @@ partial struct InstanciateEntityStuffSystem : ISystem
                     else continue;
                 }
             }
-            stuffQueu.Clear();
+            instantiateStuffQueu.Clear();
         }
     }
 }

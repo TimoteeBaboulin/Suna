@@ -21,7 +21,7 @@ public struct StuffDatabase
     public BlobArray<MeleeWeaponCommonData> MeleeWeaponsCommonData;
 }
 
-public struct GameResourcesInstanciateStuffQueu : IBufferElementData
+public struct GameResourcesInstantiateStuffQueu : IBufferElementData
 {
     public FixedString128Bytes StuffName;
     public Entity Owner;

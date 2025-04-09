@@ -75,7 +75,9 @@ public partial struct EquipStuffSystem : ISystem
     }
 }
 
+
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateBefore(typeof(EquipStuffSystem))]
 public partial struct UnequipStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
