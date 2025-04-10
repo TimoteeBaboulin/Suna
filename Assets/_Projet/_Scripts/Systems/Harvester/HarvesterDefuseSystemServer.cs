@@ -122,6 +122,8 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             SystemAPI.SetComponentEnabled<HarvesterDefusing>(rpc.harvester, true);
             SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.DefuseStartedTick = defuseStartTick;
+            SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.Defuser = character;
+
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsDefusing = true;
             defuserEntity = character;
             defusingHarvesterEntity = rpc.harvester;

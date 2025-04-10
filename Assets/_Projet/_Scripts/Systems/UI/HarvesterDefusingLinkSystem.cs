@@ -4,6 +4,7 @@ using Unity.NetCode;
 
 partial class HarvesterDefusingLinkSystem : SystemBase
 {
+    // Events and Timer
     public class HarversterDefuseRunning : EventArgs { public float time; public float maxTime; }
     public event EventHandler OnDefuseStart;
     public event EventHandler<HarversterDefuseRunning> OnDefuseRunning;
@@ -14,11 +15,14 @@ partial class HarvesterDefusingLinkSystem : SystemBase
     {
         RequireForUpdate<NetworkTime>();
     }
+
     protected override void OnUpdate()
     {
+        // Get Current Tick
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.InterpolationTick;
 
+        // On Harvester Defusing Start and Running
         foreach (var (harvester, entity) in SystemAPI
             .Query<RefRO<HarvesterComponent>>()
             .WithAll<HarvesterDefusing>()
@@ -32,7 +36,6 @@ partial class HarvesterDefusingLinkSystem : SystemBase
                 OnDefuseStart?.Invoke(this, EventArgs.Empty);
             }
 
-
             timeSpent = currentTick.TicksSince(defusing.ValueRO.DefuseStartedTick);
             if (timeSpent < 0f)
             {
@@ -42,6 +45,7 @@ partial class HarvesterDefusingLinkSystem : SystemBase
             OnDefuseRunning?.Invoke(this, new HarversterDefuseRunning() { time = timeSpent, maxTime = 60 * 4 });
         }
 
+        // On Harvester Defusing Cancel or End
         foreach (var (harvester, entity) in SystemAPI
             .Query<RefRO<HarvesterComponent>>()
             .WithDisabled<HarvesterDefusing>()

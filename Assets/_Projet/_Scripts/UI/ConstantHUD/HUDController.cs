@@ -3,22 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
 
 public class HUDController : MonoBehaviour
 {
-    // Main Features
+    // Main Objects
     private UIDocument _HUDDocument;
-
     private VisualElement _HUD;
 
+    // Main HUD
     private VisualElement _crosshairElement;
 
     private Label _health;
-    private Label _armor;
+    //private Label _armor; // Should be uncommented when Armor in working
     private Label _ammo;
     private Label _capacity;
     private Label _money;
@@ -29,13 +28,15 @@ public class HUDController : MonoBehaviour
     private Label _minute;
     private Label _second;
 
-    private bool _hitRegistered = false;
-
+    // Main Value Getter Systems
     private InGameHUDSystem _inGameHUDSystem = null;
-    private RoundManagerLinkSystem _roundManagerLinkSystem = null;
-    private ErrorWindowCallerSystem _errorWindowCallerSystem = null;
-
+    private bool _hitRegistered = false;
     private StyleColor _crosshairBaseColor;
+
+    private RoundManagerLinkSystem _roundManagerLinkSystem = null;
+
+    // Error Window
+    private ErrorWindowCallerSystem _errorWindowCallerSystem = null;
 
     // Weapon List
     private VisualElement _weaponContainer;
@@ -43,7 +44,7 @@ public class HUDController : MonoBehaviour
     [SerializeField] List<WeaponMap> _weaponMap;
     private WeaponListLinkSystem _weaponListLinkSystem;
 
-    // Message Box
+    // Message Box // Should be uncommented when Message Box is fully implemented
     //private VisualElement _messageBox;
     //private ScrollView _messageBoxScrollView;
 
@@ -70,7 +71,7 @@ public class HUDController : MonoBehaviour
         _HUD = _HUDDocument.rootVisualElement;
 
         _health = _HUD.Q<Label>("HealthLabel");
-        _armor = _HUD.Q<Label>("ArmorLabel");
+        //_armor = _HUD.Q<Label>("ArmorLabel");
 
         _ammo = _HUD.Q<Label>("AmmoLeftLabel");
         _capacity = _HUD.Q<Label>("AmmoCapacityLabel");
@@ -97,9 +98,10 @@ public class HUDController : MonoBehaviour
         _plant = _HUD.Q<VisualElement>("Plant");
         _plantFill = _plant.Q<VisualElement>("PlantFill");
 
-        // Hide Message Box at start
+        // Hide Message Box element at start
         //UI.SetActive(ref _messageBox, false);
 
+        // Hide Defuse and Plant elements at start
         UI.SetActive(ref _defuse, false);
         UI.SetActive(ref _plant, false);
     }
@@ -109,7 +111,7 @@ public class HUDController : MonoBehaviour
         // If too much message, delete previous ones
         //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
-        // Initialize InGameHUDSystem in Update because need to be in the right world
+        //----------System registering, all need to be in the right world
         if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
@@ -119,7 +121,6 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
         }
 
-        // Initialize RoundManagerLinkSystem in Update because need to be in the right world
         if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _roundManagerLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RoundManagerLinkSystem>();
@@ -153,6 +154,7 @@ public class HUDController : MonoBehaviour
             _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
+        //---------- End of System Registering
 
         if (_hitRegistered)
         {
@@ -181,6 +183,7 @@ public class HUDController : MonoBehaviour
         //}
     }
 
+    //----------Start of Weapon List Link System
     private void OnStuffIdChange(object sender, WeaponListLinkSystem.StuffIdEventArgs args)
     {
         foreach (VisualElement weapon in _weaponContainer.Children())
@@ -203,7 +206,9 @@ public class HUDController : MonoBehaviour
             count++;
         }
     }
+    //----------End of Weapon List Link System
 
+    //----------Start of Error Window System
     private void OnErrorMessageReceived(object sender, ErrorWindowCallerSystem.ErrorMessage args)
     {
         if (args.Messages.Count > 0)
@@ -227,7 +232,9 @@ public class HUDController : MonoBehaviour
             }
         }
     }
+    //----------End of Error Window System
 
+    //----------Start of Main HUD Elements System
     IEnumerator HitRegistered()
     {
         yield return new WaitForSeconds(1f);
@@ -241,7 +248,7 @@ public class HUDController : MonoBehaviour
     }
     private void System_OnArmorChange(object sender, EventArgs args)
     {
-        //if (args is TestPlayerDataSystem.ArmorArgs arg) armor.text = arg.Armor.ToString();
+        //armor.text = args.Armor.ToString();
     }
     private void System_OnAmmoChange(object sender, InGameHUDSystem.AmmoArgs args)
     {
@@ -252,17 +259,15 @@ public class HUDController : MonoBehaviour
     {
         _money.text = args.money.ToString();
     }
-    private void System_OnCapacityChange(object sender, EventArgs args)
-    {
-        //if (args is TestPlayerDataSystem.CapacityArgs arg) capacity.text = arg.Capacity.ToString();
-    }
 
     private void System_OnHitRegistered(object sender, EventArgs args)
     {
         _hitRegistered = true;
         _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
+    //----------End of Main HUD Elements System
 
+    //----------Start of Message Box Element System
     //public void SendMessageToTchat(string message, Color messageColor)
     //{
     //    if (message == null) return;
@@ -271,7 +276,9 @@ public class HUDController : MonoBehaviour
     //    label.style.fontSize = 20;
     //    _messageBoxScrollView.contentContainer.Add(label);
     //}
+    //----------End of Message Box Element System
 
+    //----------Start of Defuse and Plant Elements System
     public void SetActiveDefuse(bool value)
     {
         UI.SetActive(ref _defuse, value);
@@ -335,6 +342,7 @@ public class HUDController : MonoBehaviour
         SetActivePlant(false);
         ResetPlant();
     }
+    //----------End of Defuse and Plant Elements System
 }
 
 [Serializable]

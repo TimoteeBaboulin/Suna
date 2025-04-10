@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
@@ -8,26 +9,30 @@ using UnityEngine.UIElements;
 
 public class ErrorWindowController : MonoBehaviour
 {
+    // Main Objects
     private UIDocument _document;
     private VisualElement _root;
 
+    // Main Features
     private VisualElement _window;
     private VisualElement _tab;
     private ScrollView _content;
     private Button _closeButton;
 
+    // Window Movement
     private bool _mouseOverTab = false;
     private Vector2 _windowPosition;
     private bool _movementEngaged = false;
     private Vector2 _mouseToWindowPosition = Vector2.zero;
 
+    // To initialize values on first frame
     private bool _firstFrame = true;
-    //private int _count = 0;
 
     [HideInInspector] public List<string> ErrorsOnStart = new();
 
     private void Start()
     {
+        // Initialize the Window elements
         _document = GetComponent<UIDocument>();
         _root = _document.rootVisualElement;
 
@@ -36,6 +41,7 @@ public class ErrorWindowController : MonoBehaviour
         _content = _root.Q<ScrollView>();
         _closeButton = _root.Q<Button>("Close");
 
+        // Register Callbacks for Window Movement
         _tab.RegisterCallback<MouseEnterEvent>((x) => { _mouseOverTab = true; });
         _tab.RegisterCallback<MouseLeaveEvent>((x) => { _mouseOverTab = false; });
         _tab.RegisterCallback<MouseDownEvent>((x) =>
@@ -45,8 +51,10 @@ public class ErrorWindowController : MonoBehaviour
         });
         _tab.RegisterCallback<MouseUpEvent>((x) => { OnCloseButtonClick(); });
 
+        // Close Button
         _closeButton.clicked += () => { Destroy(gameObject); };
 
+        // Messages to show up on starts
         if (ErrorsOnStart.Count > 0)
         {
             for (int i = 0; i < ErrorsOnStart.Count; i++)
@@ -86,22 +94,23 @@ public class ErrorWindowController : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnValidateButtonClick()
+    private async void OnValidateButtonClick()
     {
-        SceneManager.LoadScene(0);
+        if (GameManager.Instance != null)
+        {
+            await GameManager.Instance.DisconnectAndUnloadWorlds();
+            await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
+        }
     }
 
     private void DisengageWindowMovement()
     {
         _movementEngaged = false;
-        if (_windowPosition.x < -(Screen.width - _window.resolvedStyle.width) / 2)
-            _windowPosition.x = -(Screen.width - _window.resolvedStyle.width) / 2;
-        if (_windowPosition.y < -(Screen.height - _window.resolvedStyle.height) / 2)
-            _windowPosition.y = -(Screen.height - _window.resolvedStyle.height) / 2;
-        if (_windowPosition.x > (Screen.width - _window.resolvedStyle.width) / 2)
-            _windowPosition.x = (Screen.width - _window.resolvedStyle.width) / 2;
-        if (_windowPosition.y > (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2)
-            _windowPosition.y = (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2;
+
+        // In case the window is outside the screen, put it back in
+        _windowPosition.x = Mathf.Clamp(_windowPosition.x, -(Screen.width - _window.resolvedStyle.width) / 2, (Screen.width - _window.resolvedStyle.width) / 2);
+        _windowPosition.y = Mathf.Clamp(_windowPosition.y, -(Screen.height - _window.resolvedStyle.height) / 2, (Screen.height - _tab.resolvedStyle.height * 2 + _window.resolvedStyle.height) / 2);
+
         _window.transform.position = _windowPosition;
     }
 

@@ -44,7 +44,6 @@ GameObject:
   - component: {fileID: 1715078069933390235}
   - component: {fileID: 2672285872950473007}
   - component: {fileID: 2717752743986560582}
-  - component: {fileID: 7914458545506051013}
   - component: {fileID: -5565830434860651292}
   - component: {fileID: 9007531882848270444}
   - component: {fileID: 7747839720245098777}
@@ -183,19 +182,6 @@ MonoBehaviour:
   meleeWeapon: {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
   harvester: {fileID: 0}
   shootStartpos: {fileID: 3110814641794125789}
---- !u!114 &7914458545506051013
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2584918407947073280}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bb9cac13295e8d448b410e5a5e74bbd6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DeltaPosition: {fileID: 990870971847688849}
 --- !u!114 &-5565830434860651292
 MonoBehaviour:
   m_ObjectHideFlags: 0
