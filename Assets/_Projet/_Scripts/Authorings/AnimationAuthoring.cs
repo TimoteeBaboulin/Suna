@@ -17,9 +17,6 @@ class AnimationAuthoringBaker : Baker<AnimationAuthoring>
             Animator = null,
         });
 
-        AddComponent<AnimationNeadUpdate>(entity);
-        SetComponentEnabled<AnimationNeadUpdate>(entity, false);
-
         AddComponent<AnimationFloatBufferElement>(entity);
         AddComponent<AnimationIntBufferElement>(entity);
         AddComponent<AnimationBoolBufferElement>(entity);

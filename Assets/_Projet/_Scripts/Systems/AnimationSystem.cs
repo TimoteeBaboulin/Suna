@@ -3,38 +3,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
-
-//[UpdateInGroup(typeof(LateSimulationSystemGroup))]
-//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
-//partial class CommonAnimationSystem : SystemBase
-//{
-//    protected override void OnCreate()
-//    {
-//        RequireForUpdate<AnimatorReference>();
-//    }
-
-//    protected override void OnUpdate()
-//    {
-//        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-
-//        foreach (var (animatorRef, floatBuffer, intBuffer, boolBuffer, triggerBuffer, entity) in SystemAPI
-//            .Query<AnimatorReference, DynamicBuffer<AnimationFloatBufferElement>, DynamicBuffer<AnimationIntBufferElement>,
-//            DynamicBuffer<AnimationBoolBufferElement>, DynamicBuffer<AnimationTriggerBufferElement>>()
-//            .WithEntityAccess())
-//        {
-//            if (animatorRef.Animator == null) continue;
-
-//            AnimationUtils.UpdateFloatParameter(animatorRef.Animator, floatBuffer);
-//            AnimationUtils.UpdateIntParameter(animatorRef.Animator, intBuffer);
-//            AnimationUtils.UpdateBoolParameter(animatorRef.Animator, boolBuffer);
-//            AnimationUtils.UpdateTriggerParameter(animatorRef.Animator, triggerBuffer);
-//        }
-
-//        ecb.Playback(EntityManager);
-//        ecb.Dispose();
-//    }
-//}
-
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial struct ServerClearAnimationBufferSystem : ISystem

@@ -8,9 +8,6 @@ public class AnimatorReference : IComponentData
     public Animator Animator;
 }
 
-[GhostEnabledBit]
-public struct AnimationNeadUpdate : IEnableableComponent, IComponentData { }
-
 [GhostComponent]
 public struct AnimationFloatBufferElement : IBufferElementData
 {
