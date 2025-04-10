@@ -1,17 +1,18 @@
 using GameNetwork.Utils;
 using System.Linq;
 using Unity.Entities;
-using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
+
+using UI = UIDocumentUtils;
 
 public class PauseMenuController : MonoBehaviour
 {
+    // Assets
     [SerializeField] private VisualTreeAsset _settingsMenuAsset;
 
-    // Pause Menu UI Elements
+    // Main Elements
     private UIDocument _document;
     private VisualElement _root;
     private VisualElement _background;
@@ -20,11 +21,12 @@ public class PauseMenuController : MonoBehaviour
     private Button _playButton;
     private Button _settingsButton;
 
+    // Input enabling variables
     [SerializeField] private DefaultInputSystem input;
-    bool inputFound = false;
 
     private void Awake()
     {
+        // Initializing elements
         _document = GetComponent<UIDocument>();
         _root = _document.rootVisualElement;
         _background = _root.Q<VisualElement>("Background");
@@ -33,21 +35,21 @@ public class PauseMenuController : MonoBehaviour
         _playButton = _tabBar.Q<Button>("PlayButton");
         _settingsButton = _tabBar.Q<Button>("SettingsButton");
 
-        UIDocumentUtils.SetActive(ref _root, false);
+        UI.SetActive(ref _root, false);
     }
 
     private void Update()
     {
+        // For now forced to search it every frame, apparently changes every frame
         CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
         if (system != null)
         {
             input = system.input;
-            inputFound = true;
         }
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            UIDocumentUtils.ToggleActive(ref _root);
-            ActivateUIInput(UIDocumentUtils.IsActive(ref _root));
+            UI.ToggleActive(ref _root);
+            ActivateUIInput(UI.IsActive(ref _root));
         }
     }
 
@@ -100,7 +102,7 @@ public class PauseMenuController : MonoBehaviour
 
     private void OnPlayButtonClicked()
     {
-        UIDocumentUtils.SetActive(ref _root, false);
+        UI.SetActive(ref _root, false);
         ActivateUIInput(false);
     }
 

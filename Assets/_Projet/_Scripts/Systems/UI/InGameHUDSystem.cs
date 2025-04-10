@@ -9,6 +9,7 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class InGameHUDSystem : SystemBase
 {
+    // Events and Args
     public class HealthArgs : EventArgs { public int Health; }
     public class AmmoArgs : EventArgs { public int ammo; public int remainingAmmo; }
     public class MoneyArgs : EventArgs { public uint money; }
@@ -31,7 +32,7 @@ partial class InGameHUDSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-
+        // Health, Money and Hit indicator
         foreach (var (currentHealth, client, hasHit, stuffInHandTypeRef, stuffListRef) in SystemAPI
             .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterClientAttachedComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandLocation>, RefRO<CharacterStuffList>>()
             .WithAll<GhostOwnerIsLocal>())
@@ -46,6 +47,7 @@ partial class InGameHUDSystem : SystemBase
             }
         }
 
+        // Ammo for firearms
         foreach (var (weaponDataRef, stuff) in SystemAPI
             .Query<RefRO<RangedWeaponDynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
@@ -55,6 +57,7 @@ partial class InGameHUDSystem : SystemBase
             AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
         }
 
+        // Ammo for melee weapons
         foreach (var (stuffOwner, stuff) in SystemAPI
             .Query<RefRO<StuffOwner>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
