@@ -179,7 +179,16 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.direction = float3.zero;
         }
 
-        float weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
+        float weaponSpeedModifier = 1.0f;
+
+        if (controller.isAiming)
+        {
+            weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeedAiming : 1.0f;
+        }
+        else
+        {
+            weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
+        }
 
         float decelerationFactor = math.dot(controller.direction, vel.Linear) < 0 ? controller.decelerationFactor : 1.0f;
 
@@ -259,12 +268,12 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.isWalking = false;
         }
 
-        if(input.aimingStarted.IsSet)
+        if (input.aimingStarted.IsSet)
         {
             controller.isAiming = true;
         }
 
-        if(input.aimingCanceled.IsSet)
+        if (input.aimingCanceled.IsSet)
         {
             controller.isAiming = false;
         }

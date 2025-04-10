@@ -1,11 +1,14 @@
+using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using Unity.Physics;
-using Unity.Rendering;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 using static RoundSystemClient;
+
+
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RoundSystemServer : ISystem
@@ -101,8 +104,42 @@ public partial struct RoundSystemServer : ISystem
         }
         else
         {
+            PlayerCounts playerCount = SystemAPI.GetComponent<PlayerCounts>(entity);
+
+            var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
+
             //Update the timer and change to next phase in case the timer runs out
+            switch (roundComponent.ValueRO.currentPhase)
+            {
+                case RoundPhase.ActionPhase:
+                    if (playerCount.nativePlayersAlive == 0)
+                    {
+                        Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
+                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
+                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                    }
+                    else if(playerCount.corpoPlayersAlive == 0)
+                    {
+                        Victory(ref state, entity, roundComponent, TeamSideType.Natif, ecb);
+                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
+                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                    }
+                    break;
+                case RoundPhase.PostPlantPhase:
+                    if (playerCount.nativePlayersAlive == 0)
+                    {
+                        Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
+                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
+                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
+                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                    }
+                    break;
+            }
+
             roundComponent.ValueRW.timer -= SystemAPI.Time.DeltaTime;
+
             if (roundComponent.ValueRO.timer < 0)
             {
                 TimeOutPhase(ref state, entity, roundComponent, ecb);
@@ -128,7 +165,6 @@ public partial struct RoundSystemServer : ISystem
         //Play the buffer back to remove/add entities as needed
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
-
         //Debug: Allow to fake a collector plant
     }
 

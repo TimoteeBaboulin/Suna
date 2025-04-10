@@ -30,7 +30,10 @@ partial struct HarvesterDefuseSystemServer : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         //Prepare the current tick since it's used in multiple branches
-        var networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        if (!SystemAPI.TryGetSingleton<NetworkTime>(out NetworkTime networkTime))
+        {
+            return;
+        }
         NetworkTick currentTick = networkTime.InterpolationTick;
 
         RoundPhase currentPhase;
@@ -119,6 +122,8 @@ partial struct HarvesterDefuseSystemServer : ISystem
 
             SystemAPI.SetComponentEnabled<HarvesterDefusing>(rpc.harvester, true);
             SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.DefuseStartedTick = defuseStartTick;
+            SystemAPI.GetComponentRW<HarvesterDefusing>(rpc.harvester).ValueRW.Defuser = character;
+
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(rpc.character).ValueRW.IsDefusing = true;
             defuserEntity = character;
             defusingHarvesterEntity = rpc.harvester;
