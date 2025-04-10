@@ -63,7 +63,7 @@ public partial struct EquipStuffSystem : ISystem
             stuffOwner.ValueRW.Value = duo.Owner;
 
             //Attach to Camera View
-            if (state.World.IsClient())
+            if (state.World.IsClient()) //Probléme IsClient ne s'actualise pas corectement, à deplacer dans un system dédié
             {
                 Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(duo.Owner).WeaponSlotTransform;
                 Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
@@ -104,7 +104,7 @@ public partial struct UnequipStuffSystem : ISystem
             stuffOwner.ValueRW.Value = Entity.Null;
 
             //Untie Camera View
-            if (state.World.IsClient())
+            if (state.World.IsClient()) //Probléme IsClient ne s'actualise pas corectement, à deplacer dans un system dédié
             {
                 Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
                 stuffTrasform.SetParent(null);

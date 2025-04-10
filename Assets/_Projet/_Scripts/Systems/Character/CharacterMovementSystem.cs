@@ -27,6 +27,20 @@ public partial struct CharacterMovementSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+		
+        GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+        NativeHashMap<Entity, RangedWeaponCommonData> weaponData = new(10, Allocator.TempJob); //Do I need more than 10 ? Since there's 10 players playing top
+
+        foreach (var (databaseAccessRO, ownerRef, weapon) in SystemAPI
+        .Query<RefRO<RangedWeaponDatabaseAccess>, RefRW<StuffOwner>>()
+        .WithAll<IsStuffInHand>()
+        .WithEntityAccess())
+        {
+            ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref database);
+            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+
+            weaponData[owner] = commonData;
+        }
 
         CharacterMovementJob job = new CharacterMovementJob
         {
@@ -35,12 +49,17 @@ public partial struct CharacterMovementSystem : ISystem
             ecb = ecb.AsParallelWriter(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
             ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
+            StuffListLookup = state.GetComponentLookup<CharacterStuffList>(),
+            InHandLookup = state.GetComponentLookup<IsStuffInHand>(),
+            CommonDataMap = weaponData,
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
         state.Dependency.Complete();
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+
+        weaponData.Dispose();
     }
 }
 
@@ -53,6 +72,9 @@ public partial struct CharacterMovementJob : IJobEntity
     public EntityCommandBuffer.ParallelWriter ecb;
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
+    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
+    [ReadOnly] public NativeHashMap<Entity, RangedWeaponCommonData> CommonDataMap;
 
     private static float3 ProjectOnPlan(float3 vec, float3 normal)
     {
@@ -157,6 +179,8 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.direction = float3.zero;
         }
 
+        float weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
+
         float decelerationFactor = math.dot(controller.direction, vel.Linear) < 0 ? controller.decelerationFactor : 1.0f;
 
         if (!isMoving)
@@ -171,11 +195,11 @@ public partial struct CharacterMovementJob : IJobEntity
             }
             else
             {
-                controller.currentSpeed = math.min(controller.maxRunningSpeed, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
+                controller.currentSpeed = math.min(controller.maxRunningSpeed * weaponSpeedModifier, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
             }
         }
 
-        vel.Linear += controller.direction * (controller.acceleration * dt);
+        vel.Linear += controller.direction * ((controller.isGrounded ? controller.acceleration : controller.acceleration * 0.1f) * dt);
 
         if (!isMoving)
         {
@@ -225,14 +249,24 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.isJumping = true;
         }
 
-        if (input.walkStarted.IsSet)
+        if (input.walkStarted.IsSet && controller.isGrounded && !controller.isJumping)
         {
             controller.isWalking = true;
         }
 
-        if (input.walkCanceled.IsSet)
+        if (input.walkCanceled.IsSet || !controller.isGrounded || controller.isJumping)
         {
             controller.isWalking = false;
+        }
+
+        if(input.aimingStarted.IsSet)
+        {
+            controller.isAiming = true;
+        }
+
+        if(input.aimingCanceled.IsSet)
+        {
+            controller.isAiming = false;
         }
     }
 }
