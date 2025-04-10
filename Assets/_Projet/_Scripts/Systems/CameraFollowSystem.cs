@@ -102,7 +102,7 @@ partial class CameraSystem : SystemBase
                     Camera.main.transform.position = localTransform.ValueRO.Position + tpsOffset;
                 }
                 
-                Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
+                Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }
     }

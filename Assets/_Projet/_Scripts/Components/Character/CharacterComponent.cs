@@ -66,6 +66,7 @@ public struct CharacterShootStartPositionDelta : IComponentData
 public struct CharacterLocalViewRotation : IComponentData
 {
     public quaternion ViewRotation;
+    [GhostField] public quaternion ShootingModifier;
 }
 
 // To be used for updating the character's rotation and its view from the client to the server.

@@ -159,7 +159,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         bool onSlope = OnSlope(groundNormal, controller.maxSlopeAngle) && controller.isGrounded;
 
-        if(controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
+        if (controller.isGrounded && controller.isJumping && vel.Linear.y > 0)
         {
             controller.isGrounded = false;
         }
@@ -173,7 +173,16 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.direction = float3.zero;
         }
 
-        float weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
+        float weaponSpeedModifier = 1.0f;
+
+        if (controller.isAiming)
+        {
+            weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeedAiming : 1.0f;
+        }
+        else
+        {
+            weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
+        }
 
         float decelerationFactor = math.dot(controller.direction, vel.Linear) < 0 ? controller.decelerationFactor : 1.0f;
 
@@ -195,15 +204,15 @@ public partial struct CharacterMovementJob : IJobEntity
 
         vel.Linear += controller.direction * ((controller.isGrounded ? controller.acceleration : controller.acceleration * 0.1f) * dt);
 
-        if(!isMoving)
+        if (!isMoving)
         {
             vel.Linear.x *= (1.0f - controller.linearDampingXZ);
             vel.Linear.z *= (1.0f - controller.linearDampingXZ);
         }
 
-        if(onSlope && !controller.isJumping)
+        if (onSlope && !controller.isJumping)
         {
-            if(math.length(vel.Linear) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
+            if (math.length(vel.Linear) > (controller.isWalking ? controller.maxWalkingSpeed : controller.maxRunningSpeed))
             {
                 vel.Linear = math.normalize(vel.Linear) * controller.currentSpeed;
             }
@@ -253,12 +262,12 @@ public partial struct CharacterMovementJob : IJobEntity
             controller.isWalking = false;
         }
 
-        if(input.aimingStarted.IsSet)
+        if (input.aimingStarted.IsSet)
         {
             controller.isAiming = true;
         }
 
-        if(input.aimingCanceled.IsSet)
+        if (input.aimingCanceled.IsSet)
         {
             controller.isAiming = false;
         }
