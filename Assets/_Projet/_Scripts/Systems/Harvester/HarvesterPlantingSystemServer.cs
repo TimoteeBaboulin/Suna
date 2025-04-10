@@ -53,23 +53,23 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     Entity characterEntity = ownerRW.ValueRO.Value;
 
                     
-                    StuffInventoryLocation switchToLocation = StuffInventoryLocation.MainWeapon;
+                    StuffSlot switchToLocation = StuffSlot.MainWeapon;
                     Entity targetWeaponEntity = Entity.Null;
                     RefRW<CharacterStuffList> stuffListRW = SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity);
-                    if (stuffListRW.ValueRO.Value[(int)StuffInventoryLocation.MainWeapon] == Entity.Null)
+                    if (stuffListRW.ValueRO.List[(int)StuffSlot.MainWeapon] == Entity.Null)
                     {
-                        if (stuffListRW.ValueRO.Value[(int)StuffInventoryLocation.SecondaryWeapon] == Entity.Null)
+                        if (stuffListRW.ValueRO.List[(int)StuffSlot.SecondaryWeapon] == Entity.Null)
                         {
-                            switchToLocation = StuffInventoryLocation.Melee;
+                            switchToLocation = StuffSlot.Melee;
                         }
                         else
                         {
-                            switchToLocation = StuffInventoryLocation.Melee;
+                            switchToLocation = StuffSlot.Melee;
                         }
                     }
-                    targetWeaponEntity = stuffListRW.ValueRO.Value[(int)switchToLocation];
+                    targetWeaponEntity = stuffListRW.ValueRO.List[(int)switchToLocation];
 
-                    SystemAPI.GetComponentRW<CharacterStuffInHandLocation>(characterEntity).ValueRW.Value = StuffInventoryLocation.Melee;
+                    SystemAPI.GetComponentRW<CharacterStuffInHandLocation>(characterEntity).ValueRW.Value = StuffSlot.Melee;
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
                     var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();

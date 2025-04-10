@@ -29,20 +29,20 @@ public partial struct SwitchStuffSystem : ISystem
 
             int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
 
-            if (dir != 0 && stuffList.Value.Length > 1)
+            if (dir != 0 && stuffList.List.Length > 1)
             {
                 ref CharacterStuffInHandLocation stuffInHandLocation = ref activeStuffRef.ValueRW;
 
-                Entity previousStuff = stuffList.Value[(int)stuffInHandLocation.Value];
+                Entity previousStuff = stuffList.List[(int)stuffInHandLocation.Value];
                 Entity nextStuff = Entity.Null;
 
-                for (int i = 0; i < stuffList.Value.Length; i++)
+                for (int i = 0; i < stuffList.List.Length; i++)
                 {
                     stuffInHandLocation.Value += dir;
 
-                    stuffInHandLocation.Value = (StuffInventoryLocation)((stuffList.Value.Length + (int)stuffInHandLocation.Value) % stuffList.Value.Length);
+                    stuffInHandLocation.Value = (StuffSlot)((stuffList.List.Length + (int)stuffInHandLocation.Value) % stuffList.List.Length);
 
-                    nextStuff = stuffList.Value[(int)stuffInHandLocation.Value];
+                    nextStuff = stuffList.List[(int)stuffInHandLocation.Value];
 
                     if (nextStuff != Entity.Null) break;
                 }
@@ -68,17 +68,17 @@ public partial struct SwitchStuffSystem : ISystem
                 ref CharacterStuffInHandLocation stuffInHandLocation = ref stuffInHandTypeRef.ValueRW;
                 int nextLocation = input.stuffLocation - 1;
 
-                if ((int)stuffInHandLocation.Value != input.stuffLocation && stuffList.Value.Length > 1)
+                if ((int)stuffInHandLocation.Value != input.stuffLocation && stuffList.List.Length > 1)
                 {
-                    Entity previousStuff = stuffList.Value[(int)stuffInHandLocation.Value];
-                    Entity nextStuff = stuffList.Value[nextLocation];
+                    Entity previousStuff = stuffList.List[(int)stuffInHandLocation.Value];
+                    Entity nextStuff = stuffList.List[nextLocation];
 
                     if (nextStuff != Entity.Null)
                     {
                         state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
                         state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true); //Conaard
 
-                        stuffInHandLocation.Value = (StuffInventoryLocation)nextLocation;
+                        stuffInHandLocation.Value = (StuffSlot)nextLocation;
                     }
                 }
             }
@@ -91,19 +91,19 @@ public partial struct SwitchStuffSystem : ISystem
         {
             ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
 
-            if (stuffList.Value.Length > 0)
+            if (stuffList.List.Length > 0)
             {
                 ref CharacterStuffInHandLocation stuffInHandLocation = ref stuffInHandTypeRef.ValueRW;
 
-                Entity previousStuff = stuffList.Value[(int)stuffInHandLocation.Value];
+                Entity previousStuff = stuffList.List[(int)stuffInHandLocation.Value];
                 Entity nextStuff = Entity.Null;
 
                 if (previousStuff == Entity.Null)
                 {
-                    for (int i = 0; i < stuffList.Value.Length; i++)
+                    for (int i = 0; i < stuffList.List.Length; i++)
                     {
-                        nextStuff = stuffList.Value[i];
-                        stuffInHandLocation.Value = (StuffInventoryLocation)i;
+                        nextStuff = stuffList.List[i];
+                        stuffInHandLocation.Value = (StuffSlot)i;
 
                         if (nextStuff != Entity.Null)
                         {

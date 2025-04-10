@@ -7,7 +7,7 @@ public class RangedWeaponData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject viewPrefab;
     public Texture2D UIImage;
-    public StuffInventoryLocation location;
+    public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
     public string entityName;

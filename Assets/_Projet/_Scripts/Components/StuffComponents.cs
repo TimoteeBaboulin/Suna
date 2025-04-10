@@ -6,7 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum StuffInventoryLocation
+public enum StuffSlot
 {
     MainWeapon,
     SecondaryWeapon,
@@ -51,9 +51,11 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 {
 }
 
-
+[GhostEnabledBit]
+[GhostComponent]
 public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
+    [GhostField] public Entity Owner;
 }
 
 public struct StuffCommonData
@@ -61,7 +63,7 @@ public struct StuffCommonData
     public BlobString Name;
     public UnityObjectRef<GameObject> viewPrefab;
     //public UnityObjectRef<GameObject> UIPrefab;
-    public StuffInventoryLocation location;
+    public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
     public float deploymentSpeed;

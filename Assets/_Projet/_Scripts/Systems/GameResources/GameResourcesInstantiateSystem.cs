@@ -74,24 +74,11 @@ partial struct InstanciateEntityStuffSystem : ISystem
                                 NameInDatabase = stuffData.Name.ToString()
                             });
 
-                            //If the queue specified an owner :
+                            //If the queue specified an owner, we equip them
                             if (stuffInfos.Owner != Entity.Null)
                             {
-                                var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
-
-                                equipStuffQueu.Add(new EquipStuffQueu
-                                {
-                                    Stuff = stuff,
-                                    Owner = stuffInfos.Owner
-                                });
-
-                                //TODO : Tu t'es arretter ici
-
-                                //ecb.SetComponent(stuff, new StuffOwner { Value = stuffInfos.Owner });
-
-                                //int networkId = state.EntityManager.GetComponentData<GhostOwner>(stuffInfos.Owner).NetworkId;
-                                //ecb.SetComponent(stuff, new GhostOwner { NetworkId = networkId }); //Set owner of player to connection
-                                //ecb.AppendToBuffer(stuffInfos.Owner, new LinkedEntityGroup { Value = stuff }); //Link it to connection
+                                ecb.SetComponentEnabled<StuffProcessPending>(stuff, true);
+                                ecb.SetComponent(stuff, new StuffProcessPending { Owner = stuffInfos.Owner });
                             }
                         }
                         break;
@@ -119,8 +106,8 @@ partial struct ProcessPendingStuffSystem : ISystem
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         ref var stuffCommonDataArray = ref database.StuffDatabaseRef.Value.StuffCommonData;
 
-        foreach (var (ownerRO, dataAccessRW, stuff) in SystemAPI
-            .Query<RefRO<StuffOwner>, RefRW<StuffDatabaseAccess>>()
+        foreach (var (ownerRO, dataAccessRW, processRO, stuff) in SystemAPI
+            .Query<RefRO<StuffOwner>, RefRW<StuffDatabaseAccess>, RefRO<StuffProcessPending>>()
             .WithAll<StuffProcessPending>()
             .WithEntityAccess())
         {
@@ -129,7 +116,6 @@ partial struct ProcessPendingStuffSystem : ISystem
             {
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
-
                     if (stuffCommonDataArray[i].Name.ToString() == dataAccessRW.ValueRO.NameInDatabase)
                     {
                         dataAccessRW.ValueRW.ID = i;
@@ -144,15 +130,19 @@ partial struct ProcessPendingStuffSystem : ISystem
             //Rename Entity in hierarchy
             state.EntityManager.SetName(stuff, stuffData.Name.ToString());
 
+            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value);
+
             //Add stuff on player inventory
-            if (ownerRO.ValueRO.Value != Entity.Null)
+            if (processRO.ValueRO.Owner != Entity.Null)
             {
-                var charaStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(ownerRO.ValueRO.Value);
-                charaStuffList.ValueRW.Value[(int)stuffData.location] = stuff;
+                var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
+                equipStuffQueu.Add(new EquipStuffQueu
+                {
+                    Stuff = stuff,
+                    Owner = processRO.ValueRO.Owner,
+                });
             }
 
-            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value);
-            
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);
         }
     }

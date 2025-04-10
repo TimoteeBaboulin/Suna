@@ -88,14 +88,8 @@ public struct CharacterDefaultStuffName : IBufferElementData
 [GhostComponent]
 public struct CharacterStuffList : IComponentData
 {
-    [GhostField] public FixedList128Bytes<Entity> Value;
-}
-
-[GhostComponent]
-
-public struct CharacterStuffInHandLocation : IComponentData 
-{
-    [GhostField] public StuffInventoryLocation Value;
+    [GhostField] public FixedList128Bytes<Entity> List;
+    [GhostField] public StuffSlot StuffInHandSlot;
 }
 
 [GhostEnabledBit]

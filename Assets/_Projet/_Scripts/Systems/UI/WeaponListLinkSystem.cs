@@ -32,7 +32,7 @@ partial class WeaponListLinkSystem : SystemBase
             {
                 List<string> names = new();
                 List<int> ids = new();
-                foreach (var stuffEntity in stuffList.ValueRO.Value)
+                foreach (var stuffEntity in stuffList.ValueRO.List)
                 {
                     if (stuffEntity != Entity.Null)
                     {

@@ -6,6 +6,7 @@ using UnityEngine;
 using Unity.Mathematics;
 using Unity.Rendering;
 using Unity.Transforms;
+using System;
 
 [GhostComponent]
 public struct EquipStuffQueu : IBufferElementData
@@ -23,6 +24,7 @@ public struct UnequipStuffQueu : IBufferElementData
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateAfter(typeof(UnequipStuffSystem))]
 public partial struct EquipStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -47,20 +49,30 @@ public partial struct EquipStuffSystem : ISystem
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
-            ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
+            ref var stuffData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
-            if (ownerStuffList.ValueRW.Value[(int)stufData.location] != Entity.Null)
+            //If inventory slot is already have stuff, we unequip them
+            if (ownerStuffList.ValueRW.List[(int)stuffData.location] != Entity.Null)
             {
                 unequipStuffQueu.Add(new UnequipStuffQueu
                 {
-                    Stuff = ownerStuffList.ValueRW.Value[(int)stufData.location],
+                    Stuff = ownerStuffList.ValueRW.List[(int)stuffData.location],
                     Owner = duo.Owner,
                     Position = ownerPos
                 });
             }
 
-            ownerStuffList.ValueRW.Value[(int)stufData.location] = duo.Stuff;
+            //Add the stuff in player inventory
+            ownerStuffList.ValueRW.List[(int)stuffData.location] = duo.Stuff;
+
+            //Set owner of stuff
             stuffOwner.ValueRW.Value = duo.Owner;
+
+            //Network
+            //int networkId = state.EntityManager.GetComponentData<GhostOwner>(duo.Owner).NetworkId;
+            //SystemAPI.SetComponent(duo.Stuff, new GhostOwner { NetworkId = networkId }); //Set owner of player to connection
+            var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
+            buffer.Add(new LinkedEntityGroup { Value = duo.Stuff });
 
             //Attach to Camera View
             if (state.World.IsClient()) //Probléme IsClient ne s'actualise pas corectement, à deplacer dans un system dédié
@@ -68,7 +80,7 @@ public partial struct EquipStuffSystem : ISystem
                 Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(duo.Owner).WeaponSlotTransform;
                 Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
                 stuffTrasform.SetParent(viewTransform);
-                stuffTrasform.localPosition = stufData._stuffLocalOffsetView;
+                stuffTrasform.localPosition = stuffData._stuffLocalOffsetView;
             }
         }
         equipStuffQueu.Clear();
@@ -101,9 +113,9 @@ public partial struct UnequipStuffSystem : ISystem
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
-
-            ownerStuffList.ValueRW.Value[(int)stufData.location] = Entity.Null;
+            ownerStuffList.ValueRW.List[(int)stufData.location] = Entity.Null;
             stuffOwner.ValueRW.Value = Entity.Null;
+            SystemAPI.SetComponentEnabled<IsStuffInHand>(duo.Stuff, false);
 
             //Untie Camera View
             if (state.World.IsClient()) //Probléme IsClient ne s'actualise pas corectement, à deplacer dans un system dédié
@@ -130,7 +142,7 @@ public partial struct StuffOwnershipSystem : ISystem
         //Fixes the stuff owner if it doesn't match the player who actually owns it
         foreach (var (charaStuffList, chara) in SystemAPI.Query<CharacterStuffList>().WithEntityAccess())
         {
-            foreach (var stuff in charaStuffList.Value)
+            foreach (var stuff in charaStuffList.List)
             {
                 if (SystemAPI.Exists(stuff) && SystemAPI.HasComponent<StuffOwner>(stuff))
                 {
@@ -151,7 +163,7 @@ public partial struct StuffOwnershipSystem : ISystem
 
             foreach (var CharacterStuffList in SystemAPI.Query<CharacterStuffList>())
             {
-                foreach (var charaStuff in CharacterStuffList.Value)
+                foreach (var charaStuff in CharacterStuffList.List)
                 {
                     if (charaStuff == stuff)
                     {

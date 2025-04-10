@@ -7,7 +7,7 @@ public class HarvesterData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject viewPrefab;
     public Image UIImage;
-    public StuffInventoryLocation location;
+    public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
     public string entityName;

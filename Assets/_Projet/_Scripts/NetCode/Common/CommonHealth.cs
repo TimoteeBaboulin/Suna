@@ -198,7 +198,7 @@ public partial struct ApplyDamageJob : IJobEntity
                 {
                     if(StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
                     {
-                        foreach(var element in stuffList.Value)
+                        foreach(var element in stuffList.List)
                         {
                             if (element == Entity.Null) continue;
 
