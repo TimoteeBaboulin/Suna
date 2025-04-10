@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
 public class AnimatorReference : IComponentData
@@ -7,26 +8,33 @@ public class AnimatorReference : IComponentData
     public Animator Animator;
 }
 
+[GhostEnabledBit]
+public struct AnimationNeadUpdate : IEnableableComponent, IComponentData { }
+
+[GhostComponent]
 public struct AnimationFloatBufferElement : IBufferElementData
 {
-    public FixedString32Bytes Parameter;
-    public float Value;
+    [GhostField] public FixedString32Bytes Parameter;
+    [GhostField] public float Value;
 }
 
+[GhostComponent]
 public struct AnimationIntBufferElement : IBufferElementData
 {
-    public FixedString32Bytes Parameter;
-    public int Value;
+    [GhostField] public FixedString32Bytes Parameter;
+    [GhostField] public int Value;
 }
 
+[GhostComponent]
 public struct AnimationBoolBufferElement : IBufferElementData
 {
-    public FixedString32Bytes Parameter;
-    public bool Value;
+    [GhostField] public FixedString32Bytes Parameter;
+    [GhostField] public bool Value;
 }
 
+[GhostComponent]
 public struct AnimationTriggerBufferElement : IBufferElementData
 {
-    public FixedString32Bytes Parameter;
+    [GhostField] public FixedString32Bytes Parameter;
 }
 

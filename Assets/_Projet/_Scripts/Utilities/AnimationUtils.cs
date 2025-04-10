@@ -11,8 +11,6 @@ public class AnimationUtils
         {
             animator.SetFloat(floatElement.Parameter.ToString(), floatElement.Value);
         }
-
-        floatBuffer.Clear();
     }
 
     public static void UpdateIntParameter(in Animator animator, DynamicBuffer<AnimationIntBufferElement> intBuffer)
@@ -21,8 +19,6 @@ public class AnimationUtils
         {
             animator.SetInteger(intElement.Parameter.ToString(), intElement.Value);
         }
-
-        intBuffer.Clear();
     }
 
     public static void UpdateBoolParameter(in Animator animator, DynamicBuffer<AnimationBoolBufferElement> boolBuffer)
@@ -31,8 +27,6 @@ public class AnimationUtils
         {
             animator.SetBool(boolElement.Parameter.ToString(), boolElement.Value);
         }
-
-        boolBuffer.Clear();
     }
 
     public static void UpdateTriggerParameter(in Animator animator, DynamicBuffer<AnimationTriggerBufferElement> triggerBuffer)
@@ -41,8 +35,6 @@ public class AnimationUtils
         {
             animator.SetTrigger(triggerElement.Parameter.ToString());
         }
-
-        triggerBuffer.Clear();
     }
 
     public static void SetAnimator(in Animator animator, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
