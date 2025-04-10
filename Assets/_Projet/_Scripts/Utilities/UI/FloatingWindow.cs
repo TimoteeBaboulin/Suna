@@ -139,6 +139,7 @@ public partial class FloatingWindow : SafeVisualElement
     }
     private void OnMouseDownTab(MouseDownEvent evt)
     {
+        BringToFront();
         _movementEngaged = true;
         _mouseToWindowPosition = new Vector2(resolvedStyle.left, resolvedStyle.top) - evt.mousePosition;
     }
