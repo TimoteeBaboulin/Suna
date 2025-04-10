@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -12,6 +11,7 @@ public class SettingsMenuController : MonoBehaviour
 
     private void Start()
     {
+        // Initialize Elements and Callbacks
         _sensitivitySlider = root.Q<Slider>("SensitivitySlider");
         _sensitivitySlider.RegisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
 

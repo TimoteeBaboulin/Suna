@@ -38,10 +38,10 @@ public sealed class CharacterAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            if (cca.side == TeamSideType.Corpo)
-                AddComponent(entity, new CorpoTeamTag { });
-            else
-                AddComponent(entity, new NatifTeamTag { });
+            //if (cca.side == TeamSideType.Corpo)
+            //    AddComponent(entity, new CorpoTeamTag { });
+            //else
+            //    AddComponent(entity, new NatifTeamTag { });
 
             AddComponent(entity, new CharacterComponent
             {
@@ -90,7 +90,11 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 CharacterRotation = quaternion.identity,
                 ViewRotation = quaternion.identity,
             });
-            AddComponent(entity, new CharacterLocalViewRotation { ViewRotation = quaternion.identity });
+            AddComponent(entity, new CharacterLocalViewRotation 
+            { 
+                ViewRotation = quaternion.identity,
+                ShootingModifier = quaternion.identity
+            });
 
             CharacterStuffList stuff = new CharacterStuffList();
             for (int i = 0; i < (int)StuffInventoryLocation.nbLocation; i++) stuff.Value.Add(Entity.Null);

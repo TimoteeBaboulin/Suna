@@ -41,6 +41,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public bool isGrounded;
     [GhostField] public bool isWalking;
     [GhostField] public bool isOnSite;
+    [GhostField] public bool isAiming;
 
     [GhostField] public float verticalCameraAngle;
 
@@ -65,6 +66,7 @@ public struct CharacterShootStartPositionDelta : IComponentData
 public struct CharacterLocalViewRotation : IComponentData
 {
     public quaternion ViewRotation;
+    [GhostField] public quaternion ShootingModifier;
 }
 
 // To be used for updating the character's rotation and its view from the client to the server.

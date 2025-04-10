@@ -65,17 +65,6 @@ public class GameManager : Singleton<GameManager>
         GameState = GlobalGameState.InGame;
 
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
-
-
-        for (int i = 0; i < clientConnectionSettings.Session.Players.Count; i++)
-        {
-            var player = clientConnectionSettings.Session.Players[i];
-
-            foreach (var property in player.Properties)
-            {
-                Debug.Log($"Player {player.Id}, team {property.Value.Value}");
-            }
-        }
     }
 
 
@@ -184,34 +173,62 @@ public class GameManager : Singleton<GameManager>
 
     public async Task DisconnectAndUnloadWorlds()
     {
+        // Mark the connection state as not connected.
         ClientTransportHelper.State = ClientConnectionState.NotConnected;
 
-        bool requestedDisconnect = false;
+       // bool requestedDisconnect = false;
+
+        // Loop over all worlds that are client worlds.
         foreach (var world in World.All)
         {
             if (world.IsClient())
             {
-                using var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
-                if (query.TryGetSingletonEntity<NetworkId>(out var networkId))
+                // Instead of trying to get a singleton, get all entities with NetworkId.
+                using (var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>()))
                 {
-                    requestedDisconnect = true;
-                    world.EntityManager.AddComponentData(networkId, new NetworkStreamRequestDisconnect());
+                    var entities = query.ToEntityArray(Allocator.Temp);
+                    foreach (var entity in entities)
+                    {
+                        // Log which entity is getting the disconnect request.
+                        Debug.Log($"[Disconnect] Adding disconnect request to entity: {entity}");
+                        world.EntityManager.AddComponentData(entity, new NetworkStreamRequestDisconnect());
+                       // requestedDisconnect = true;
+                    }
+                    entities.Dispose();
                 }
             }
         }
 
-        if (requestedDisconnect)
-            await Awaitable.NextFrameAsync();
+        //// If we sent any disconnect request, wait a few frames or a short period to let the network system process it.
+        //if (requestedDisconnect)
+        //{
+        //    // You might try waiting for two frames or a fixed time delay instead of just the next frame.
+        //    await Awaitable.NextFrameAsync();
+        //    // Alternatively, await a delay: await Awaitable.WaitForSeconds(0.5f);
+        //}
 
+        // Proceed with leaving the session.
         await LeaveSessionAsync();
-        await DestroyGameSessionWorlds();
-        await LoadUtils.UnloadScenesAsync("MultiplayerTest");
+
+        //// Optionally, wait a bit more to ensure the disconnection is fully processed.
+        //// For example, wait until clientConnectionSettings gets cleared by the callback.
+        //int attempts = 0;
+        //while (clientConnectionSettings != null && attempts < 10)
+        //{
+        //    await Awaitable.NextFrameAsync();
+        //    attempts++;
+        //}
+
+        //await DestroyGameSessionWorlds();
+        //await LoadUtils.UnloadScenesAsync("MultiplayerTest");
     }
 
     public async Task LeaveSessionAsync()
     {
         if (clientConnectionSettings != null)
         {
+            // Log that we are initiating session leave.
+            Debug.Log("[LeaveSessionAsync] Initiating leave process for session.");
             clientConnectionSettings.Session.RemovedFromSession += OnSessionLeft;
             await clientConnectionSettings.Session.LeaveAsync();
         }
@@ -219,22 +236,26 @@ public class GameManager : Singleton<GameManager>
 
     public void OnSessionLeft()
     {
+        Debug.Log("[OnSessionLeft] Session left successfully.");
         clientConnectionSettings = null;
     }
 
     static async Task DestroyGameSessionWorlds()
     {
+        // Ensure the network systems have time to process all disconnects.
         await Awaitable.EndOfFrameAsync();
-
 
         for (var i = World.All.Count - 1; i >= 0; i--)
         {
             var world = World.All[i];
 
-            if (world == World.DefaultGameObjectInjectionWorld) { continue; }
+            // Do not dispose the default world.
+            if (world == World.DefaultGameObjectInjectionWorld)
+                continue;
 
             if (world.IsClient())
             {
+                Debug.Log($"[DestroyGameSessionWorlds] Disposing world: {world.Name}");
                 world.Dispose();
             }
         }
@@ -242,6 +263,8 @@ public class GameManager : Singleton<GameManager>
 
     private async void OnApplicationQuit()
     {
+        // Log that the application is quitting.
+        Debug.Log("[OnApplicationQuit] Application is quitting – disconnecting and unloading worlds.");
         await DisconnectAndUnloadWorlds();
     }
 }

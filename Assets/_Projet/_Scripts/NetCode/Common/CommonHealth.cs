@@ -2,9 +2,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Services.Multiplayer;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 public struct MaxHealthComponent : IComponentData
 {

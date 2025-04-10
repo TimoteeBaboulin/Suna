@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.Entities;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UIElements;
 
 using UI = UIDocumentUtils;
@@ -12,7 +14,14 @@ public class ShopController : MonoBehaviour
     private VisualElement shop;
     private VisualElement shopmenu;
 
-    [SerializeField] private RangedWeaponData m1a1;
+    [SerializeField] private DefaultInputSystem input;
+    bool inputFound = false;
+
+    [SerializeField] private RangedWeaponData skar18;
+    [SerializeField] private RangedWeaponData decimator;
+    [SerializeField] private RangedWeaponData lp17;
+    [SerializeField] private RangedWeaponData fakir;
+    [SerializeField] private RangedWeaponData banduka;
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
 
     private void Awake()
@@ -27,13 +36,13 @@ public class ShopController : MonoBehaviour
     private void Start()
     {
         CreateShopLine(out VisualElement line); shopmenu.Add(line);
-        CreateShopButton(out Button button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = m1a1;
-        CreateShopButton(out button, 30); line.Add(button);
+        CreateShopButton(out Button button, 30); line.Add(button); weaponDict[button] = lp17;
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = banduka;
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = skar18;
         CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button);
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = fakir;
+        CreateShopButton(out button, 30); line.Add(button); 
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = decimator;
         CreateShopLine(out line); shopmenu.Add(line);
         CreateShopButton(out button, 30); line.Add(button);
         CreateShopButton(out button, 30); line.Add(button);
@@ -47,22 +56,42 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
-                btn.clicked += () => Debug.Log(weaponDict[btn].entityName);
+                //btn.style.backgroundImage = weaponDict[btn].UIImage;
+                AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
+
+                btn.clicked += () =>
+                {
+                    ShopCommand sc = new ShopCommand
+                    {
+                        weaponData = weaponDict[btn].entityName,
+                    };
+
+                    RpcUtils.SendClientToServerRpc(ref sc);
+                    UI.SetActive(ref root, false);
+                    ActivateUIInput(false);
+                };
+
                 // On hover Debug Log entity name
                 btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
                 btn.RegisterCallback<PointerLeaveEvent>(evt => OnShopButtonLeave());
-            }
-            else
-            {
             }
         }
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab))
+        CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
+
+        if (system != null)
+        {
+            input = system.input;
+            inputFound = true;
+        }
+
+        if (Keyboard.current.bKey.wasPressedThisFrame)
         {
             UI.ToggleActive(ref root);
+            ActivateUIInput(UI.IsActive(ref root));
         }
     }
 
@@ -99,6 +128,17 @@ public class ShopController : MonoBehaviour
         button.Add(label);
     }
 
+    private void AddWeaponIcon(ref Button button, Texture2D icon)
+    {
+        VisualElement iconElement = new();
+        iconElement.style.backgroundImage = icon;
+        iconElement.style.position = Position.Absolute;
+        UI.SetPosition(ref iconElement, TextAnchor.MiddleCenter, 0, 0);
+        float ratio = (float)icon.height / icon.width;
+        UI.SetSize(ref iconElement, new Length(80, LengthUnit.Percent), new Length(100 * ratio, LengthUnit.Percent));
+        button.Add(iconElement);
+    }
+
     private void AddProductLabelsToShopButton(ref Button button, string productName, string productPrice)
     {
         AddLabelToShopButton(ref button, productName, 30, TextAnchor.UpperRight, new(5, 5));
@@ -118,11 +158,27 @@ public class ShopController : MonoBehaviour
         RangedWeaponData weapon = weaponDict[button];
         statsElement.Add(UI.Label($"Name: {weapon.entityName}", 20, Color.white));
         statsElement.Add(UI.Label($"Damage: {weapon.damage}", 20, Color.white));
-        statsElement.Add(UI.Label($"Firerate: {weapon.firerate}", 20, Color.white));
+        statsElement.Add(UI.Label($"Firerate: {weapon.firerate} RPM", 20, Color.white));
     }
 
     private void OnShopButtonLeave()
     {
         root.Q<VisualElement>("StatsElement")?.RemoveFromHierarchy();
+    }
+
+    private void ActivateUIInput(bool value)
+    {
+        if (value)
+        {
+            input.Player.Disable();
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            UnityEngine.Cursor.visible = true;
+        }
+        else
+        {
+            input.Player.Enable();
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+            UnityEngine.Cursor.visible = false;
+        }
     }
 }

@@ -10,7 +10,6 @@ public class NetcodePrefabsConverter : MonoBehaviour
 
     [Header("Character Prefabs")]
     public GameObject Character = null;
-    public GameObject CharacterCamera = null;
 
     [Header("Character Collider Prefabs")]
     public GameObject CharacterHeadCollider = null;
@@ -34,7 +33,6 @@ public struct ClientPrefabData : IComponentData
     public Entity Client;
 
     public Entity Character;
-    public Entity CharacterCamera;
 
     public Entity CharacterHeadCollider;
     public Entity CharacterArmCollider0;
@@ -63,7 +61,6 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity clientPrefab = default;
 
         Entity characterPrefab = default;
-        Entity characterCameraPrefab = default;
 
         Entity characterHeadCollider = default;
         Entity characterArmCollider0 = default;
@@ -94,10 +91,6 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             characterPrefab = GetEntity(authoring.Character, TransformUsageFlags.Dynamic);
             transformPrefab.Position = authoring.Character.transform.position;
             transformPrefab.Rotation = authoring.Character.transform.rotation;
-        }
-        if (authoring.CharacterCamera != null)
-        {
-            characterCameraPrefab = GetEntity(authoring.CharacterCamera, TransformUsageFlags.Dynamic);
         }
 
         if (authoring.CharacterHeadCollider != null)
@@ -148,7 +141,6 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             Client = clientPrefab,
 
             Character = characterPrefab,
-            CharacterCamera = characterCameraPrefab,
             
             CharacterHeadCollider = characterHeadCollider,
             CharacterArmCollider0 = characterArmCollider0,

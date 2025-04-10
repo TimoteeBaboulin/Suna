@@ -19,8 +19,6 @@ partial class HarvesterPlantingLinkSystem : SystemBase
         var networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.InterpolationTick;
 
-        
-
         foreach (var (harvester, owner, entity) in SystemAPI
             .Query<RefRO<HarvesterComponent>, RefRO<StuffOwner>>()
             .WithAll<HarvesterPlanting>()
