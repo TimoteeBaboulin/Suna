@@ -2465,6 +2465,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MAP_Build1_uncombined
       objectReference: {fileID: 0}
+    - target: {fileID: 3612446833285866468, guid: 88fa28c830dbef8429ed7b3e0d605cb8, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3632987541975214938, guid: 88fa28c830dbef8429ed7b3e0d605cb8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
