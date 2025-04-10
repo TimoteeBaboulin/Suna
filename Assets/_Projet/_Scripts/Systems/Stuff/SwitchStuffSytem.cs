@@ -20,29 +20,28 @@ public partial struct SwitchStuffSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Switch with mouseScroll
-        foreach (var (stuffListRef, activeStuffRef, inputRef, chara) in SystemAPI
-        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>, RefRO<CharacterInput>>()
+        foreach (var (stuffListRef, inputRef, chara) in SystemAPI
+        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRef.ValueRO;
-            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
+            ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
 
             int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
 
             if (dir != 0 && stuffList.List.Length > 1)
             {
-                ref CharacterStuffInHandLocation stuffInHandLocation = ref activeStuffRef.ValueRW;
-
-                Entity previousStuff = stuffList.List[(int)stuffInHandLocation.Value];
+                
+                Entity previousStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
                 Entity nextStuff = Entity.Null;
 
                 for (int i = 0; i < stuffList.List.Length; i++)
                 {
-                    stuffInHandLocation.Value += dir;
+                    stuffList.StuffInHandSlot += dir;
 
-                    stuffInHandLocation.Value = (StuffSlot)((stuffList.List.Length + (int)stuffInHandLocation.Value) % stuffList.List.Length);
+                    stuffList.StuffInHandSlot = (StuffSlot)((stuffList.List.Length + (int)stuffList.StuffInHandSlot) % stuffList.List.Length);
 
-                    nextStuff = stuffList.List[(int)stuffInHandLocation.Value];
+                    nextStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
 
                     if (nextStuff != Entity.Null) break;
                 }
@@ -56,21 +55,19 @@ public partial struct SwitchStuffSystem : ISystem
         }
 
         ////Switch with shortcut
-        foreach (var (stuffListRef, stuffInHandTypeRef, inputRef, chara) in SystemAPI
-        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>, RefRO<CharacterInput>>()
+        foreach (var (stuffListRef, inputRef, chara) in SystemAPI
+        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRef.ValueRO;
-            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
-
+            ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
             if (input.stuffLocation > 0)
             {
-                ref CharacterStuffInHandLocation stuffInHandLocation = ref stuffInHandTypeRef.ValueRW;
                 int nextLocation = input.stuffLocation - 1;
 
-                if ((int)stuffInHandLocation.Value != input.stuffLocation && stuffList.List.Length > 1)
+                if ((int)stuffList.StuffInHandSlot != input.stuffLocation && stuffList.List.Length > 1)
                 {
-                    Entity previousStuff = stuffList.List[(int)stuffInHandLocation.Value];
+                    Entity previousStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
                     Entity nextStuff = stuffList.List[nextLocation];
 
                     if (nextStuff != Entity.Null)
@@ -78,24 +75,22 @@ public partial struct SwitchStuffSystem : ISystem
                         state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
                         state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true); //Conaard
 
-                        stuffInHandLocation.Value = (StuffSlot)nextLocation;
+                        stuffList.StuffInHandSlot = (StuffSlot)nextLocation;
                     }
                 }
             }
         }
 
         //Auto Switch if Hands empty
-        foreach (var (stuffListRef, stuffInHandTypeRef, chara) in SystemAPI
-        .Query<RefRO<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>>()
+        foreach (var (stuffListRef, chara) in SystemAPI
+        .Query<RefRO<CharacterStuffList>>()
         .WithEntityAccess())
         {
             ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
 
             if (stuffList.List.Length > 0)
             {
-                ref CharacterStuffInHandLocation stuffInHandLocation = ref stuffInHandTypeRef.ValueRW;
-
-                Entity previousStuff = stuffList.List[(int)stuffInHandLocation.Value];
+                Entity previousStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
                 Entity nextStuff = Entity.Null;
 
                 if (previousStuff == Entity.Null)
@@ -103,7 +98,7 @@ public partial struct SwitchStuffSystem : ISystem
                     for (int i = 0; i < stuffList.List.Length; i++)
                     {
                         nextStuff = stuffList.List[i];
-                        stuffInHandLocation.Value = (StuffSlot)i;
+                        stuffList.StuffInHandSlot = (StuffSlot)i;
 
                         if (nextStuff != Entity.Null)
                         {

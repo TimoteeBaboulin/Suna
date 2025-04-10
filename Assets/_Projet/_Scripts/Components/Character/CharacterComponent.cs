@@ -90,6 +90,11 @@ public struct CharacterStuffList : IComponentData
 {
     [GhostField] public FixedList128Bytes<Entity> List;
     [GhostField] public StuffSlot StuffInHandSlot;
+
+    public Entity GetStuffInHand()
+    {
+        return List[(int)StuffInHandSlot];
+    }
 }
 
 [GhostEnabledBit]
