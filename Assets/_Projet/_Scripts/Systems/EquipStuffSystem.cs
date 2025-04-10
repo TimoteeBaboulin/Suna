@@ -69,6 +69,7 @@ public partial struct EquipStuffSystem : ISystem
                 Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
                 stuffTrasform.SetParent(viewTransform);
                 stuffTrasform.localPosition = stufData._stuffLocalOffsetView;
+                //state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.SetActive(false);
             }
         }
         equipStuffQueu.Clear();
@@ -76,6 +77,7 @@ public partial struct EquipStuffSystem : ISystem
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[UpdateBefore(typeof(EquipStuffSystem))]
 public partial struct UnequipStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
