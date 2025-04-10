@@ -6,16 +6,9 @@ using Unity.NetCode;
 
 partial class WeaponListLinkSystem : SystemBase
 {
-    public class StuffListChangeEventArgs : EventArgs
-    {
-        public List<string> StuffListNames;
-        public List<int> StuffListIds;
-    }
-
-    public class StuffIdEventArgs : EventArgs
-    {
-        public int StuffId;
-    }
+    // Events and Args
+    public class StuffListChangeEventArgs : EventArgs { public List<string> StuffListNames; public List<int> StuffListIds; }
+    public class StuffIdEventArgs : EventArgs { public int StuffId; }
 
     public event EventHandler<StuffListChangeEventArgs> OnStuffListChange;
     public event EventHandler<StuffIdEventArgs> OnStuffIdChange;
@@ -30,8 +23,11 @@ partial class WeaponListLinkSystem : SystemBase
             .Query<RefRO<CharacterStuffList>, RefRO<CharacterStuffInHandLocation>>()
             .WithAll<GhostOwnerIsLocal>())
             {
+                // For now these events are fired every frame, but we could optimize this by checking if the list has changed or (better and simpler) by add ing a flag to the entity
+                // List and ids of all weapons in character
                 List<string> names = new();
                 List<int> ids = new();
+
                 foreach (var stuffEntity in stuffList.ValueRO.Value)
                 {
                     if (stuffEntity != Entity.Null)
@@ -41,7 +37,7 @@ partial class WeaponListLinkSystem : SystemBase
                         ids.Add((int)dbAccess.GetData(ref database).location);
                     }
                 }
-                if (names.Count > 0)
+                if (names.Count > 0) // Check if there are any weapons
                 {
                     OnStuffListChange?.Invoke(this, new StuffListChangeEventArgs()
                     {
@@ -50,6 +46,7 @@ partial class WeaponListLinkSystem : SystemBase
                     });
                 }
 
+                // Held weapon id
                 stuffInHandIndex = (int)stuffInHand.ValueRO.Value;
                 OnStuffIdChange?.Invoke(this, new StuffIdEventArgs()
                 {
