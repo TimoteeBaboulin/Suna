@@ -64,6 +64,15 @@ public class HUDController : MonoBehaviour
     VisualElement _plant;
     VisualElement _plantFill;
 
+    // Round Information
+    VisualElement _roundElement;
+    Label _roundNumber;
+    Label _roundPhase;
+    VisualElement _roundBuyPhaseText;
+    readonly float _roundPhaseTimer = 1f;
+    float _roundPhaseTime = 0f;
+    
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -98,12 +107,23 @@ public class HUDController : MonoBehaviour
         _plant = _HUD.Q<VisualElement>("Plant");
         _plantFill = _plant.Q<VisualElement>("PlantFill");
 
+        _roundElement = _HUD.Q<VisualElement>("RoundPhaseElement");
+        _roundNumber = _roundElement.Q<Label>("RoundNumber");
+        _roundPhase = _roundElement.Q<Label>("RoundPhaseLabel");
+        _roundBuyPhaseText = _roundElement.Q<VisualElement>("RoundBuyText");
+        _roundPhaseTime = _roundPhaseTimer;
+
         // Hide Message Box element at start
         //UI.SetActive(ref _messageBox, false);
 
         // Hide Defuse and Plant elements at start
         UI.SetActive(ref _defuse, false);
         UI.SetActive(ref _plant, false);
+
+        // Hide Round Information elements at start
+        UI.SetOpacity(ref _roundElement, 0f);
+        UI.SetOpacity(ref _roundBuyPhaseText, 0f);
+        UI.SetActive(ref _roundElement, false);
     }
 
     private void Update()
