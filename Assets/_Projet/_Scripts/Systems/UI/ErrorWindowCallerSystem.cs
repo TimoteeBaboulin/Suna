@@ -18,13 +18,13 @@ partial class ErrorWindowCallerSystem : SystemBase
     public class ErrorMessage : EventArgs { public List<string> Messages = new(); }
     public event EventHandler<ErrorMessage> OnErrorMessageSent;
 
-    //readonly private float spawnTimerMax = 1f;
-    //private float spawnTimer = 0f;
+    readonly private float spawnTimerMax = 1f;
+    private float spawnTimer = 0f;
 
-    //protected override void OnCreate()
-    //{
-    //    spawnTimer = spawnTimerMax;
-    //}
+    protected override void OnCreate()
+    {
+        spawnTimer = spawnTimerMax;
+    }
 
     protected override void OnUpdate()
     {
@@ -40,12 +40,12 @@ partial class ErrorWindowCallerSystem : SystemBase
 
         OnErrorMessageSent?.Invoke(this, new() { Messages = messages });
 
-        //spawnTimer -= SystemAPI.Time.DeltaTime;
-        //if (spawnTimer < 0f)
-        //{
-        //    Entity entity = World.EntityManager.CreateEntity(typeof(ErrorMessageComponent));
-        //    World.EntityManager.AddComponentData(entity, new ErrorMessageComponent { Message = "hehe" });
-        //    spawnTimer = spawnTimerMax;
-        //}
+        spawnTimer -= SystemAPI.Time.DeltaTime;
+        if (spawnTimer < 0f)
+        {
+            Entity entity = World.EntityManager.CreateEntity(typeof(ErrorMessageComponent));
+            World.EntityManager.AddComponentData(entity, new ErrorMessageComponent { Message = "hehe" });
+            spawnTimer = spawnTimerMax;
+        }
     }
 }
