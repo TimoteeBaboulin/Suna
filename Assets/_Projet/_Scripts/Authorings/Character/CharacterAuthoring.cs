@@ -90,7 +90,11 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 CharacterRotation = quaternion.identity,
                 ViewRotation = quaternion.identity,
             });
-            AddComponent(entity, new CharacterLocalViewRotation { ViewRotation = quaternion.identity });
+            AddComponent(entity, new CharacterLocalViewRotation 
+            { 
+                ViewRotation = quaternion.identity,
+                ShootingModifier = quaternion.identity
+            });
 
             CharacterStuffList stuff = new CharacterStuffList();
             for (int i = 0; i < (int)StuffInventoryLocation.nbLocation; i++) stuff.Value.Add(Entity.Null);
