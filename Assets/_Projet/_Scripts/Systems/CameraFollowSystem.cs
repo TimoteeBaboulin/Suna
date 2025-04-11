@@ -17,6 +17,8 @@ partial class CameraSystem : SystemBase
     private static quaternion currentRotation;
     private static float3 fpsOffset = new float3(0f, 0.9f, 0f);
     private static float3 tpsOffset = new float3(0, 1f, -1f);
+    private static int defaultFov = 60;
+    private static int aimingFov = 50;
 
 
     [BurstCompile]
@@ -96,12 +98,26 @@ partial class CameraSystem : SystemBase
                 && EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(currentTarget))
                 {
                     Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
+
+                    if (EntityManager.HasComponent<CharacterComponent>(currentTarget))
+                    {
+                        CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
+
+                        if (character.isAiming)
+                        {
+                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, aimingFov, 0.1f);
+                        }
+                        else
+                        {
+                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                        }
+                    }
                 }
                 else
                 {
                     Camera.main.transform.position = localTransform.ValueRO.Position + tpsOffset;
                 }
-                
+
                 Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }
