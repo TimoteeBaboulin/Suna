@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -15,12 +16,16 @@ public static class PlayerHelpers
     static public int CountPlayersAliveManaged(TeamSideType team, World world)
     {
 	string teamName = "";
-	if (team == TeamSideType.Corpo)
-		teamName = "corpo";
-	else if (team == TeamSideType.Natif)
-		teamName = "natif";
-        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(teamName);
-        List<int> totalPlayerIDs = new List<int>();
+        if (team == TeamSideType.Corpo)
+            teamName = "Corpo";
+        else if (team == TeamSideType.Natif)
+            teamName = "Natif";
+
+        List<IReadOnlyPlayer> teamList = GetPlayersByTeam(teamName.ToString());
+
+        Debug.Log($"Count {teamName.ToString()} : {teamList.Count}");
+
+        ////       List<int> totalPlayerIDs = new List<int>();
 
         int count = 0;
 
@@ -33,32 +38,52 @@ public static class PlayerHelpers
         NativeArray<Entity> clients = query.ToEntityArray(Allocator.Temp);
         NativeArray<GhostInstance> ghosts = query.ToComponentDataArray<GhostInstance>(Allocator.Temp);
 
-        for (int i = 0; i < clients.Length; i++)
-        {
-            bool foundPlayerId = players.Exists(
-                (obj) =>
-                {
-                    return int.Parse(obj.Id) == ghosts[i].ghostId;
-                });
 
-            if (!foundPlayerId)
-                continue;
 
-            //Debug.Log($"Found player with id {ghosts[i].ghostId}");
+        //for (int i = 0; i < clients.Length; i++)
+        //{
+        //    bool foundPlayerId = teamList.Exists(
+        //        (obj) =>
+        //        {
+        //            return int.Parse(obj.Id) == ghosts[i].ghostId;
+        //        });
 
-            if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
-            {
-                count++;
-            }
-        }
+        //    if (!foundPlayerId)
+        //        continue;
 
-        foreach (IReadOnlyPlayer player in players)
-        {
-            Debug.Log(player.Id);
-        }
+        //    //Debug.Log($"Found player with id {ghosts[i].ghostId}");
+
+        //    if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
+        //    {
+        //        count++;
+        //    }
+        //}
+
+        //foreach (IReadOnlyPlayer player in teamList)
+        //{
+        //    Debug.Log(player.Id);
+        //}
 
         //Debug.Log($"{count} players alive in {team.ToString()}");
 
         return count;
+    }
+
+    static public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    {
+        var teamPlayers = new List<IReadOnlyPlayer>();
+        var session = ServerSessionFactory.instance.Session;
+        var players = session.Players;
+        foreach (var player in players)
+        {
+            if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
+            {
+                if (teamProp.Value.Equals(teamName, StringComparison.OrdinalIgnoreCase))
+                {
+                    teamPlayers.Add(player);
+                }
+            }
+        }
+        return teamPlayers;
     }
 }

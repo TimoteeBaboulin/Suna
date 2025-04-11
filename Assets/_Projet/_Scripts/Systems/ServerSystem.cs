@@ -134,8 +134,8 @@ public partial class SessionStatusSystem : SystemBase
 
                 var players = session.Players;
 
-                Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
-                Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
+                //Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
+                //Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
 
                 foreach (var player in players)
                 {

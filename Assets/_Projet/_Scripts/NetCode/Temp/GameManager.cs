@@ -83,18 +83,6 @@ public class GameManager : Singleton<GameManager>
         {
             Debug.Log($"[Play] Local player team: {localTeam.Value}");
         }
-
-        //CurrentSession.CurrentPlayer.SetProperty("team", new PlayerProperty("Corpo", VisibilityPropertyOptions.Public));
-        //foreach (var item in CurrentSession.CurrentPlayer.Properties)
-        //{
-        //    Debug.Log($"Player PROPERTIES {item.Key} values: {item.Value.Value}");
-        //}
-
-        //foreach (var item in CurrentSession.Properties)
-        //{
-        //    Debug.Log($"Session PROPERTIES {item.Key} values: {item.Value.Value}");
-        //}
-
     }
 
     private void AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
@@ -159,6 +147,54 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    //public Dictionary<string, List<IReadOnlyPlayer>> GetPlayersByTeam()
+    //{
+    //    var playersByTeam = new Dictionary<string, List<IReadOnlyPlayer>>();
+
+    //    foreach (var player in CurrentSession.Players)
+    //    {
+    //        if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
+    //        {
+    //            string team = teamProp.Value;
+    //            if (!playersByTeam.ContainsKey(team))
+    //            {
+    //                playersByTeam[team] = new List<IReadOnlyPlayer>();
+    //            }
+
+    //            playersByTeam[team].Add(player);
+    //        }
+    //    }
+
+    //    return playersByTeam;
+
+    //    //var playersByTeam = GetPlayersByTeam();
+    //    //foreach (var kvp in playersByTeam)
+    //    //{
+    //    //    Debug.Log($"Team {kvp.Key} players:");
+    //    //    foreach (var player in kvp.Value)
+    //    //    {
+    //    //        Debug.Log($" - Player ID: {player.Id}");
+    //    //    }
+    //    //}
+    //}
+
+    //public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    //{
+    //    var teamPlayers = new List<IReadOnlyPlayer>();
+
+    //    foreach (var player in CurrentSession.Players)
+    //    {
+    //        if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
+    //        {
+    //            if (teamProp.Value.Equals(teamName, StringComparison.OrdinalIgnoreCase))
+    //            {
+    //                teamPlayers.Add(player);
+    //            }
+    //        }
+    //    }
+    //    return teamPlayers;
+    //}
+
     public bool IsSessionFull()
     {
         if (sessionTransport != null)
@@ -166,24 +202,6 @@ public class GameManager : Singleton<GameManager>
             return CurrentSession.AvailableSlots == 0;
         }
         return false;
-    }
-    public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
-    {
-        List<IReadOnlyPlayer> playersInTeam = new List<IReadOnlyPlayer>();
-        for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
-        {
-            var player = CurrentSession.Players[i];
-
-            foreach (var property in player.Properties)
-            {
-                if (property.Value.Value == teamName)
-                {
-                    playersInTeam.Add(player);
-                    break;
-                }
-            }
-        }
-        return playersInTeam;
     }
 
     public List<IReadOnlyPlayer> GetAllPlayers()
@@ -266,7 +284,7 @@ public class GameManager : Singleton<GameManager>
         // Mark the connection state as not connected.
         ClientTransportHelper.State = ClientConnectionState.NotConnected;
 
-       // bool requestedDisconnect = false;
+        // bool requestedDisconnect = false;
 
         // Loop over all worlds that are client worlds.
         foreach (var world in World.All)
@@ -282,7 +300,7 @@ public class GameManager : Singleton<GameManager>
                         // Log which entity is getting the disconnect request.
                         Debug.Log($"[Disconnect] Adding disconnect request to entity: {entity}");
                         world.EntityManager.AddComponentData(entity, new NetworkStreamRequestDisconnect());
-                       // requestedDisconnect = true;
+                        // requestedDisconnect = true;
                     }
                     entities.Dispose();
                 }
