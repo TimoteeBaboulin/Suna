@@ -27,7 +27,7 @@ partial struct HarvesterSystemServer : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueu>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueu>(out var unequipStuffQueu))
+        if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueue>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueue>(out var unequipStuffQueu))
         {
             // Debug.Log("Can't handle harvester spawn since equip and unequip queues are not loaded yet");
             return;
@@ -36,9 +36,9 @@ partial struct HarvesterSystemServer : ISystem
 
         if (!harvesterIsInstantiated)
         {
-            if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstanciateStuffQueu>(out var queue))
+            if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue))
             {
-                queue.Add(new GameResourcesInstanciateStuffQueu
+                queue.Add(new GameResourcesInstantiateStuffQueue
                 {
                     StuffName = "Harvester",
                     Owner = Entity.Null
@@ -110,13 +110,13 @@ partial struct HarvesterSystemServer : ISystem
 
                 if (ownerRO.ValueRO.Value != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    unequipStuffQueu.Add(new UnequipStuffQueue
                     {
                         Owner = ownerRO.ValueRO.Value,
                         Stuff = harvesterEntity
                     });
                 }
-                equipStuffQueu.Add(new EquipStuffQueu
+                equipStuffQueu.Add(new EquipStuffQueue
                 {
                     Stuff = harvesterEntity,
                     Owner = characterEntity
@@ -139,7 +139,7 @@ partial struct HarvesterSystemServer : ISystem
             {
                 if (ownerRO.ValueRO.Value != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    unequipStuffQueu.Add(new UnequipStuffQueue
                     {
                         Owner = ownerRO.ValueRO.Value,
                         Stuff = harvesterEntity,
@@ -198,7 +198,7 @@ partial struct HarvesterSystemServer : ISystem
                                     //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-                                    equipStuffQueu.Add(new EquipStuffQueu
+                                    equipStuffQueu.Add(new EquipStuffQueue
                                     {
                                         Stuff = harvesterEntity,
                                         Owner = characterEntity
@@ -259,7 +259,7 @@ partial struct HarvesterSystemServer : ISystem
                                     //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-                                    equipStuffQueu.Add(new EquipStuffQueu
+                                    equipStuffQueu.Add(new EquipStuffQueue
                                     {
                                         Stuff = harvesterEntity,
                                         Owner = characterEntity

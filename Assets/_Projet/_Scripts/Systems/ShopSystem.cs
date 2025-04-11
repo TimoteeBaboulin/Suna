@@ -34,9 +34,9 @@ partial class ShopSystem : SystemBase
                     continue;
                 }
 
-                if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueu>(out var queue) && money.ValueRW.money >= dataReceived)
+                if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue) && money.ValueRW.money >= dataReceived)
                 {
-                    queue.Add(new GameResourcesInstantiateStuffQueu
+                    queue.Add(new GameResourcesInstantiateStuffQueue
                     {
                         StuffName = command.ValueRO.weaponData,
                         Owner = characterAttached.ValueRO.Value

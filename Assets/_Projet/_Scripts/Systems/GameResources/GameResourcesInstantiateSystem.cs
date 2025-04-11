@@ -11,8 +11,8 @@ partial struct InstanciateEntityStuffSystem : ISystem
         state.RequireForUpdate<GameResourcesStuffEntityPrefabs>();
         state.RequireForUpdate<GameResourcesDatabase>();
 
-        EntityQuery query = state.GetEntityQuery(typeof(GameResourcesInstantiateStuffQueu));
-        query.SetChangedVersionFilter(typeof(GameResourcesInstantiateStuffQueu));
+        EntityQuery query = state.GetEntityQuery(typeof(GameResourcesInstantiateStuffQueue));
+        query.SetChangedVersionFilter(typeof(GameResourcesInstantiateStuffQueue));
         state.RequireForUpdate(query);
     }
 
@@ -26,7 +26,7 @@ partial struct InstanciateEntityStuffSystem : ISystem
         foreach (var (prefabsRO, database, instantiateStuffQueu) in SystemAPI.Query<
             RefRO<GameResourcesStuffEntityPrefabs>,
             RefRO<GameResourcesDatabase>,
-            DynamicBuffer<GameResourcesInstantiateStuffQueu>>())
+            DynamicBuffer<GameResourcesInstantiateStuffQueue>>())
         {
             ref var stuffCommonDataArray = ref database.ValueRO.StuffDatabaseRef.Value.StuffCommonData;
             ref readonly var prefabs = ref prefabsRO.ValueRO;

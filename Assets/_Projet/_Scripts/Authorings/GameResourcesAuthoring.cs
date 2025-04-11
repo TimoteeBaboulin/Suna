@@ -143,7 +143,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             AddBlobAsset(ref blobRef, out _);
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
-            AddBuffer<GameResourcesInstantiateStuffQueu>(entity);
+            AddBuffer<GameResourcesInstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);
             AddBuffer<UnequipStuffQueue>(entity);
         }
