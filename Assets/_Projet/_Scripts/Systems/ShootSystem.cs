@@ -99,11 +99,13 @@ public partial struct ShootSystem : ISystem
                         float2 directionalMovement = (float2) MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
                         bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
 
+                        SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
+
                         for (int i = 0; i < commonData.roundsPerShot; i++)
                         {
                             // Apply spread on raycast
                             float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                            float2 visualRecoil = recoil / 5f;
+                            float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                             quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
                             recoilRotation = math.mul(input.shootRotation, recoilRotation);
@@ -164,11 +166,11 @@ public partial struct ShootSystem : ISystem
                 else
                 {
                     dynamicData.shotFired = false;
-
                 }
             }
 
             localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
+            SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
     }
 

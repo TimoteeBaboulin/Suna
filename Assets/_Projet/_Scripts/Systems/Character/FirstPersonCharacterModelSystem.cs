@@ -40,8 +40,9 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
                 modelReference.ModelGameObject.SetActive(true);
             }
 
-            float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = math.mul(characterTransform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
+            float3 sd = math.rotate(newRotation, modelReference.ShootDelta);
+            float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition + sd; //TODO : remove +ShootDelta once we have animations
             CommonCharacterModelUtils.UpdateModelPositionAndRotation(modelReference.ModelGameObject.transform, newPosition, newRotation);
         }
 

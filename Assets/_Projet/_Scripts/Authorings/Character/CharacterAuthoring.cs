@@ -109,6 +109,11 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 IsDefusing = false,
                 IsPlanting = false
             });
+
+            AddComponent(entity, new FPVVisualRecoil
+            {
+                timeSinceLastShoot = 1.0f
+            });
         }
     }
 }
