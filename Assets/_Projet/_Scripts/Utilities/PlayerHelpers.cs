@@ -14,7 +14,12 @@ public static class PlayerHelpers
     /// </summary>
     static public int CountPlayersAliveManaged(TeamSideType team, World world)
     {
-        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(team.ToString());
+	string teamName = "";
+	if (team == TeamSideType.Corpo)
+		teamName = "corpo";
+	else if (team == TeamSideType.Natif)
+		teamName = "natif";
+        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(teamName);
         List<int> totalPlayerIDs = new List<int>();
 
         int count = 0;
@@ -39,7 +44,7 @@ public static class PlayerHelpers
             if (!foundPlayerId)
                 continue;
 
-            Debug.Log($"Found player with id {ghosts[i].ghostId}");
+            //Debug.Log($"Found player with id {ghosts[i].ghostId}");
 
             if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
             {
@@ -52,7 +57,7 @@ public static class PlayerHelpers
             Debug.Log(player.Id);
         }
 
-        Debug.Log($"{count} players alive in {team.ToString()}");
+        //Debug.Log($"{count} players alive in {team.ToString()}");
 
         return count;
     }
