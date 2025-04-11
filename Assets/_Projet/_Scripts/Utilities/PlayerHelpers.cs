@@ -31,40 +31,43 @@ public static class PlayerHelpers
 
         EntityQueryDesc desc = new EntityQueryDesc
         {
-            All = new ComponentType[] { typeof(ClientComponent), typeof(GhostInstance) }
+            All = new ComponentType[] { typeof(ClientComponent) }
         };
         EntityQuery query = world.EntityManager.CreateEntityQuery(desc);
-
         NativeArray<Entity> clients = query.ToEntityArray(Allocator.Temp);
-        NativeArray<GhostInstance> ghosts = query.ToComponentDataArray<GhostInstance>(Allocator.Temp);
 
+        for (int i = 0; i < clients.Length; i++)
+        {
+            Entity clientEntity = clients[i];
 
+            var clientComponent = world.EntityManager.GetComponentData<ClientComponent>(clientEntity);
+            var clientPlayerID = clientComponent.playerID.ToString();
 
-        //for (int i = 0; i < clients.Length; i++)
-        //{
-        //    bool foundPlayerId = teamList.Exists(
-        //        (obj) =>
-        //        {
-        //            return int.Parse(obj.Id) == ghosts[i].ghostId;
-        //        });
+            Debug.Log($"Retrieved clientPlayerID: {clientPlayerID}");
 
-        //    if (!foundPlayerId)
-        //        continue;
+            bool foundPlayerId = teamList.Exists(player =>
+            {
+                Debug.Log($"Comparing team playerId: {player.Id} with clientPlayerID: {clientPlayerID}");
+                return player.Id == clientPlayerID; 
+            });
 
-        //    //Debug.Log($"Found player with id {ghosts[i].ghostId}");
+            if (!foundPlayerId)
+                continue;
 
-        //    if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
-        //    {
-        //        count++;
-        //    }
-        //}
+            Debug.Log($"Found player with playerID {clientPlayerID}");
 
-        //foreach (IReadOnlyPlayer player in teamList)
-        //{
-        //    Debug.Log(player.Id);
-        //}
+            if (world.EntityManager.HasComponent<CharacterIsEnable>(clientEntity))
+            {
+                count++;
+            }
+        }
 
-        //Debug.Log($"{count} players alive in {team.ToString()}");
+        foreach (IReadOnlyPlayer player in teamList)
+        {
+            Debug.Log(player.Id);
+        }
+
+        Debug.Log($"{count} players alive in {team.ToString()}");
 
         return count;
     }

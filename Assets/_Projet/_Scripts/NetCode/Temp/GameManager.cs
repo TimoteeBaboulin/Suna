@@ -147,6 +147,8 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+
+
     //public Dictionary<string, List<IReadOnlyPlayer>> GetPlayersByTeam()
     //{
     //    var playersByTeam = new Dictionary<string, List<IReadOnlyPlayer>>();

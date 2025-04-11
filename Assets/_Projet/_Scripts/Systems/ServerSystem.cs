@@ -12,6 +12,7 @@ public struct ServerMessageRpcCommand : IRpcCommand
 public struct ClientComponent : IComponentData
 {
     public int networkID;
+    public FixedString64Bytes playerID;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -77,7 +78,13 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            ecb.AddComponent(ownerEntity, new ClientComponent { networkID = networkId.Value });
+            FixedString64Bytes currentPlayerId = ServerSessionFactory.instance.Session.CurrentPlayer.Id;
+
+            Debug.Log($"Assigning Player ID: {currentPlayerId.ToString()} to client with NetworkId {networkId.Value}");
+            ecb.AddComponent(ownerEntity, new ClientComponent { 
+                networkID = networkId.Value, 
+                playerID = new FixedString64Bytes(currentPlayerId)}
+            );
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
