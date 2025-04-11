@@ -24,8 +24,11 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
         RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
+	
+	playersAliveRW.ValueRW.nativePlayersAlive = 1;
+	playersAliveRW.ValueRW.corpoPlayersAlive = 1;
 
-        playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
-        playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+        //playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
+        //playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
     }
 }
