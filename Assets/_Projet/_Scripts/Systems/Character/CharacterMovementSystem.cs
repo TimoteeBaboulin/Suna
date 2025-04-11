@@ -26,6 +26,8 @@ public partial struct CharacterMovementSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+		
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         NativeHashMap<Entity, RangedWeaponCommonData> weaponData = new(10, Allocator.TempJob); //Do I need more than 10 ? Since there's 10 players playing top
 
@@ -44,6 +46,7 @@ public partial struct CharacterMovementSystem : ISystem
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
+            ecb = ecb.AsParallelWriter(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
             ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
             StuffListLookup = state.GetComponentLookup<CharacterStuffList>(),
@@ -51,8 +54,10 @@ public partial struct CharacterMovementSystem : ISystem
             CommonDataMap = weaponData,
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
-
         state.Dependency.Complete();
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
 
         weaponData.Dispose();
     }
@@ -64,6 +69,7 @@ public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
+    public EntityCommandBuffer.ParallelWriter ecb;
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
     [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
@@ -91,8 +97,8 @@ public partial struct CharacterMovementJob : IJobEntity
         return angle != 0f && angle <= maxSlopeAngle;
     }
 
-    public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<CommonCharacterAnimationState> commonAnimationState)
+    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -112,7 +118,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (isMoving)
         {
-            commonAnimationState.ValueRW.IsWalking = true;
+            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -137,7 +143,7 @@ public partial struct CharacterMovementJob : IJobEntity
         }
         else
         {
-            commonAnimationState.ValueRW.IsWalking = false;
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey);
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
