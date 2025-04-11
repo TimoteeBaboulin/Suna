@@ -61,7 +61,7 @@ partial class InGameHUDSystem : SystemBase
             .WithNone<RangedWeaponDynamicData>()
             .WithEntityAccess())
         {
-            AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = 1, remainingAmmo = 0 });
+            AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = 0, remainingAmmo = 0 });
         }
     }
 }

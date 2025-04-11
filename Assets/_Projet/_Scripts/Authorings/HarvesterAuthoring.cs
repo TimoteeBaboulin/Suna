@@ -42,9 +42,6 @@ public class HarvesterAuthoring : MonoBehaviour
             AddComponent<HarvesterDefusing>(entity);
             SetComponentEnabled<HarvesterDefusing>(entity, false);
 
-            AddComponent<IsStuffViewChangeParent>(entity);
-            SetComponentEnabled<IsStuffViewChangeParent>(entity, false);
-
             //TODO: Set the tag at the start of the match instead of at the loading of the map
             AddComponent<HarvesterRespawn>(entity);
         }

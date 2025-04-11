@@ -25,9 +25,6 @@ public class RangedWeaponAuthoring : MonoBehaviour
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);
 
-            AddComponent<IsStuffViewChangeParent>(entity);
-            SetComponentEnabled<IsStuffViewChangeParent>(entity, false);
-
             AddComponent<StuffProcessPending>(entity);
             SetComponentEnabled<StuffProcessPending>(entity, true);
         }

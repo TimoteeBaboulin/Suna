@@ -41,7 +41,7 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
-                stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
+                //stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
                 stuffs[i].slot = rangedWeaponSO.location;
                 stuffs[i].type = rangedWeaponSO.type;
                 stuffs[i].side = rangedWeaponSO.side;
@@ -60,7 +60,7 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
 
-                stuffs[i].viewPrefab = meleeWeaponSO.viewPrefab;
+                //stuffs[i].viewPrefab = meleeWeaponSO.viewPrefab;
                 stuffs[i].slot = meleeWeaponSO.location;
                 stuffs[i].type = meleeWeaponSO.type;
                 stuffs[i].side = meleeWeaponSO.side;
@@ -78,7 +78,7 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
-            stuffs[id].viewPrefab = harvesterSO.viewPrefab;
+            //stuffs[id].viewPrefab = harvesterSO.viewPrefab;
             stuffs[id].slot = harvesterSO.location;
             stuffs[id].type = harvesterSO.type;
             stuffs[id].side = harvesterSO.side;

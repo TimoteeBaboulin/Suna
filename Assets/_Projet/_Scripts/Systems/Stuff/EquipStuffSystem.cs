@@ -2,10 +2,9 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
 using Unity.Mathematics;
 using Unity.Transforms;
-using System;
+using UnityEngine;
 
 [GhostComponent]
 public struct EquipStuffQueue : IBufferElementData
@@ -67,13 +66,12 @@ public partial struct EquipStuffSystem : ISystem
             //Set owner of stuff
             stuffOwner.ValueRW.Value = duo.Owner;
 
+            //Auto switch on new stuff
+            ownerStuffList.ValueRW.StuffInHandSlot = stuffData.slot;
+
             //Network
-            //int networkId = state.EntityManager.GetComponentData<GhostOwner>(duo.Owner).NetworkId;
-            //SystemAPI.SetComponent(duo.Stuff, new GhostOwner { NetworkId = networkId }); //Set owner of player to connection
             var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
             buffer.Add(new LinkedEntityGroup { Value = duo.Stuff });
-
-            state.EntityManager.SetComponentEnabled<IsStuffViewChangeParent>(duo.Stuff, true);
         }
         equipStuffQueue.Clear();
     }
@@ -103,6 +101,7 @@ public partial struct UnequipStuffSystem : ISystem
 
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
+            var stuffTransform = SystemAPI.GetComponentRW<LocalTransform>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
             if (ownerStuffList.ValueRO.GetStuffInSlot(stufData.slot) == duo.Stuff)
@@ -111,7 +110,6 @@ public partial struct UnequipStuffSystem : ISystem
             }
 
             stuffOwner.ValueRW.Value = Entity.Null;
-            //SystemAPI.SetComponentEnabled<IsStuffInHand>(duo.Stuff, false);
 
             var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
             for (int i = 0; i < buffer.Length; i++)
@@ -123,17 +121,7 @@ public partial struct UnequipStuffSystem : ISystem
                 }
             }
 
-            state.EntityManager.SetComponentEnabled<IsStuffViewChangeParent>(duo.Stuff, true);
-
-            //Untie Camera View
-            //if (state.World.IsClient()) //Probléme IsClient ne s'actualise pas corectement, à deplacer dans un system dédié
-            //{
-            //    Transform stuffTrasform = state.EntityManager.GetComponentData<StuffGameObjectRef>(duo.Stuff).Value.transform;
-            //    stuffTrasform.SetParent(null);
-            //    stuffTrasform.localPosition = default;
-            //    stuffTrasform.gameObject.SetActive(true);
-            //    stuffTrasform.position = duo.Position;
-            //}
+            stuffTransform.ValueRW.Position = duo.Position;
         }
         equipStuffQueu.Clear();
     }

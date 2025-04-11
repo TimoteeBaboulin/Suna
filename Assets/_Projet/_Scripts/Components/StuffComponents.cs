@@ -52,11 +52,6 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 }
 
 [GhostEnabledBit]
-public struct IsStuffViewChangeParent: IComponentData, IEnableableComponent
-{
-}
-
-[GhostEnabledBit]
 [GhostComponent]
 public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
@@ -66,7 +61,7 @@ public struct StuffProcessPending : IComponentData, IEnableableComponent
 public struct StuffCommonData
 {
     public BlobString Name;
-    public UnityObjectRef<GameObject> viewPrefab;
+    //public UnityObjectRef<GameObject> viewPrefab;
     //public UnityObjectRef<GameObject> UIPrefab;
     public StuffSlot slot;
     public StuffType type;
@@ -93,6 +88,14 @@ public class StuffGameObjectRef : ICleanupComponentData
 //public class StuffUiImage : ICleanupComponentData
 //{
 //    public Image Value;
+//}
+
+//[GhostComponent(PrefabType = GhostPrefabType.AllPredicted, OwnerSendType = SendToOwnerType.SendToNonOwner)]
+
+//public struct Command : ICommandData
+//{
+//    public float3 position;
+//    public float3 normal;
 //}
 
 
