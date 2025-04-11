@@ -39,4 +39,14 @@ public class CommonCharacterModelUtils
         modelTransform.position = newPosition;
         modelTransform.transform.rotation = newRotation;
     }
+
+    public static Animator GetAnimator(in GameObject model)
+    {
+        if (model.TryGetComponent(out Animator animator))
+        {
+            return animator;
+        }
+
+        return null;
+    }
 }
