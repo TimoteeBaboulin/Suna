@@ -142,6 +142,7 @@ public partial struct ShootSystem : ISystem
                                 {
                                     position = hit.Position,
                                     normal = hit.SurfaceNormal,
+                                    origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
                                 };
 
                                 if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
