@@ -48,6 +48,10 @@ public class UIDocumentUtils
         element.style.display = element.style.display.value == DisplayStyle.Flex ? DisplayStyle.None : DisplayStyle.Flex;
     }
     static public bool IsActive<T>(ref T element) where T : VisualElement => element.style.display.value == DisplayStyle.Flex;
+    static public void SetOpacity<T>(ref T element, float value) where T : VisualElement => element.style.opacity = value;
+    static public void SetOpacity<T>(ref T element, bool value) where T : VisualElement => element.style.opacity = value ? 1f : 0f;
+    static public void ToggleOpacity<T>(ref T element) where T : VisualElement => element.style.opacity = element.resolvedStyle.opacity == 0f ? 1f : 0f;
+    static public bool IsOpaque<T>(ref T element) where T : VisualElement => element.resolvedStyle.opacity != 0f;
 
     static public Length PercentLength(float value) => new(value, LengthUnit.Percent);
     static public Length PixelLength(float value) => new(value, LengthUnit.Pixel);

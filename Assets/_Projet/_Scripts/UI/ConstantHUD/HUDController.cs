@@ -64,6 +64,17 @@ public class HUDController : MonoBehaviour
     VisualElement _plant;
     VisualElement _plantFill;
 
+    // Round Information
+    VisualElement _roundElement;
+    VisualElement _roundInfo;
+    Label _roundNumber;
+    Label _roundPhase;
+    VisualElement _roundBuyPhaseText;
+    readonly float _roundPhaseTimer = 4f;
+    float _roundPhaseTime = 0f;
+    RoundPhase _lastPhase = RoundPhase.PostRoundPhase;
+
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -98,12 +109,25 @@ public class HUDController : MonoBehaviour
         _plant = _HUD.Q<VisualElement>("Plant");
         _plantFill = _plant.Q<VisualElement>("PlantFill");
 
+        _roundElement = _HUD.Q<VisualElement>("RoundPhaseElement");
+        _roundInfo = _roundElement.Q<VisualElement>("RoundInfo");
+        _roundNumber = _roundInfo.Q<Label>("RoundNumber");
+        _roundPhase = _roundElement.Q<Label>("RoundPhaseLabel");
+        _roundBuyPhaseText = _roundElement.Q<VisualElement>("RoundBuyText");
+        _roundPhaseTime = _roundPhaseTimer;
+
         // Hide Message Box element at start
         //UI.SetActive(ref _messageBox, false);
 
         // Hide Defuse and Plant elements at start
         UI.SetActive(ref _defuse, false);
         UI.SetActive(ref _plant, false);
+
+        // Hide Round Information elements at start
+        UI.SetOpacity(ref _roundElement, 0f);
+        UI.SetOpacity(ref _roundInfo, 0f);
+        UI.SetOpacity(ref _roundBuyPhaseText, 0f);
+        UI.SetActive(ref _roundElement, false);
     }
 
     private void Update()
@@ -139,7 +163,7 @@ public class HUDController : MonoBehaviour
             _harvesterPlantingSystem.OnPlantRunning += OnPlantRunning;
             _harvesterPlantingSystem.OnPlantCancelOrEnd += OnPlantCancelOrEnd;
         }
-        
+
         if (_harvesterDefusingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
         {
             _harvesterDefusingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterDefusingLinkSystem>();
@@ -167,12 +191,7 @@ public class HUDController : MonoBehaviour
         {
             if (_roundManagerLinkSystem.TryGetRoundComponent(out RoundComponent roundComponent))
             {
-                _corpoScore.text = roundComponent.corporationScore.ToString().PadLeft(2, '0');
-                _natifScore.text = roundComponent.nativeScore.ToString().PadLeft(2, '0');
-                int seconds = Mathf.FloorToInt(roundComponent.timer) % 60;
-                int minutes = Mathf.FloorToInt(roundComponent.timer) / 60;
-                _second.text = seconds.ToString().PadLeft(2, '0');
-                _minute.text = minutes.ToString().PadLeft(2, '0');
+                RoundPhaseUpdate(roundComponent);
             }
         }
 
@@ -181,6 +200,181 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
+    }
+
+    private void RoundPhaseUpdate(RoundComponent roundComponent)
+    {
+        _corpoScore.text = roundComponent.corporationScore.ToString().PadLeft(2, '0');
+        _natifScore.text = roundComponent.nativeScore.ToString().PadLeft(2, '0');
+        int seconds = Mathf.FloorToInt(roundComponent.timer) % 60;
+        int minutes = Mathf.FloorToInt(roundComponent.timer) / 60;
+        _second.text = seconds.ToString().PadLeft(2, '0');
+        _minute.text = minutes.ToString().PadLeft(2, '0');
+        _roundNumber.text = roundComponent.currentRound.ToString();
+
+        if (_lastPhase != roundComponent.currentPhase)
+        {
+            _lastPhase = roundComponent.currentPhase;
+            _roundPhaseTime = 0f;
+        }
+
+        if (_roundPhaseTime < _roundPhaseTimer)
+        {
+            _roundPhaseTime += Time.deltaTime;
+
+            if (_roundPhaseTime >= _roundPhaseTimer)
+            {
+                _roundPhaseTime = _roundPhaseTimer;
+            }
+
+            float t = _roundPhaseTime / _roundPhaseTimer;
+
+            switch (_lastPhase)
+            {
+                case RoundPhase.BuyPhase:
+                    _roundPhase.text = "BUY PHASE";
+                    UpdateForBuyPhase(t);
+                    break;
+                case RoundPhase.ActionPhase:
+                    _roundPhase.text = "ACTION PHASE";
+                    UpdateForActionPhase(t);
+                    break;
+                case RoundPhase.PostPlantPhase:
+                    _roundPhase.text = "HARVESTER PLANTED";
+                    UpdateForPostPlantPhase(t);
+                    break;
+                case RoundPhase.PostRoundPhase:
+                    _roundPhase.text = "END OF ROUND";
+                    UpdateForPostRoundPhase(t);
+                    break;
+            }
+        }
+    }
+
+    private void UpdateForBuyPhase(float t)
+    {
+        // Animation for Buy Phase
+        // One forth of a second to pop up the visual
+        // One half of a second to pop up Round Number and Buy Text
+
+        UI.SetActive(ref _roundElement, true);
+
+        if (t < .25f)
+        {
+            UI.SetOpacity(ref _roundElement, t * 4f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _roundElement, 1f);
+        }
+
+        if (t < .5f)
+        {
+            UI.SetOpacity(ref _roundBuyPhaseText, t * 2f);
+            UI.SetOpacity(ref _roundInfo, t * 2f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _roundBuyPhaseText, 1f);
+            UI.SetOpacity(ref _roundInfo, 1f);
+        }
+    }
+    private void UpdateForActionPhase(float t)
+    {
+        // Animation for Action Phase
+        // One forth of a second to fade away Round Number and Buy Text
+        // One half of a second after a forth to fade away the visual
+
+        UI.SetActive(ref _roundElement, true);
+
+        if (t < .25f)
+        {
+            UI.SetOpacity(ref _roundBuyPhaseText, 1f - t * 4f);
+            UI.SetOpacity(ref _roundInfo, 1f - t * 4f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _roundBuyPhaseText, 0f);
+            UI.SetOpacity(ref _roundInfo, 0f);
+        }
+
+        if (t < .25f)
+        {
+            UI.SetOpacity(ref _roundElement, 1f);
+        }
+        else if (t < .75f)
+        {
+            UI.SetOpacity(ref _roundElement, 1.5f - t * 2f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _roundElement, 0f);
+        }
+
+        if (t == 1f)
+        {
+            UI.SetActive(ref _roundElement, false);
+        }
+    }
+    private void UpdateForPostPlantPhase(float t)
+    {
+        // Animation for Action Phase
+        // One forth of a second to pop up the visual
+        // Last forth to fade away the visual
+
+        UI.SetActive(ref _roundElement, true);
+
+        if (t < .25f)
+        {
+            UI.SetOpacity(ref _roundElement, t * 4f);
+        }
+        else if (t < .75f)
+        {
+            UI.SetOpacity(ref _roundElement, 1f);
+        }
+        else if (t < 1f)
+        {
+            UI.SetOpacity(ref _roundElement, 4f - t * 4f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _roundElement, 0f);
+        }
+
+        if (t == 1f)
+        {
+            UI.SetActive(ref _roundElement, false);
+        }
+    }
+    private void UpdateForPostRoundPhase(float t)
+    {
+        // Animation for Action Phase
+        // One forth of a second to pop up the visual
+        // Last forth to fade away the visual
+
+        UI.SetActive(ref _roundElement, true);
+
+        if (t < .25f)
+        {
+            UI.SetOpacity(ref _roundElement, t * 4f);
+        }
+        else if (t < .75f)
+        {
+            UI.SetOpacity(ref _roundElement, 1f);
+        }
+        else if (t < 1f)
+        {
+            UI.SetOpacity(ref _roundElement, 4f - t * 4f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _roundElement, 0f);
+        }
+
+        if (t == 1f)
+        {
+            UI.SetActive(ref _roundElement, false);
+        }
     }
 
     //----------Start of Weapon List Link System
