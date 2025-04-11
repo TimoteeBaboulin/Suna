@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine.InputSystem.XR;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
@@ -76,7 +77,7 @@ public partial struct CharacterMovementJob : IJobEntity
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
     [ReadOnly] public NativeHashMap<Entity, RangedWeaponCommonData> CommonDataMap;
 
-    private static float3 ProjectOnPlan(float3 vec, float3 normal)
+    private static float3 ProjectOnPlane(float3 vec, float3 normal)
     {
         return vec - math.project(vec, normal);
     }
@@ -88,7 +89,23 @@ public partial struct CharacterMovementJob : IJobEntity
 
     private static float3 SlopeMovementDirection(float3 moveDir, float3 groundNormal)
     {
-        return math.normalize(ProjectOnPlan(moveDir, groundNormal));
+        /*sr = math.cross(math.up(), groundNormal);
+
+        if (math.lengthsq(sr) < 0.001f)
+            sr = math.right();
+
+        if(math.dot(sr, math.right()) < 0)
+        {
+            sr *= -1;
+        }
+
+        sf = math.normalize(math.cross(groundNormal, sr));
+
+        return math.normalize(sf * -moveDir.z + sr * moveDir.x);
+        return math.normalize()*/
+
+        float3 projected = ProjectOnPlane(moveDir, groundNormal);
+        return math.lengthsq(projected) > 0.0001 ? math.normalize(projected) : float3.zero;
     }
 
     private bool OnSlope(float3 groundNormal, float maxSlopeAngle)
@@ -173,11 +190,15 @@ public partial struct CharacterMovementJob : IJobEntity
         if (isMoving && Angle(math.up(), groundNormal) < controller.maxSlopeAngle)
         {
             controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
+            
         }
         else
         {
             controller.direction = float3.zero;
         }
+
+        UnityEngine.Debug.DrawLine(feetPosition, feetPosition + controller.direction, UnityEngine.Color.green);
+        UnityEngine.Debug.DrawLine(feetPosition, feetPosition + moveDir, UnityEngine.Color.white);
 
         float weaponSpeedModifier = 1.0f;
 
@@ -241,7 +262,17 @@ public partial struct CharacterMovementJob : IJobEntity
             vel.Linear.z *= (1.0f - controller.drag);
         }
 
-        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * (-9.81f) * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+        float3 gravityVector = new float3(0, -9.81f, 0);
+
+        vel.Linear += (controller.isJumping ? 1 : (onSlope ? 10 : 1)) * gravityVector * controller.gravityScale * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+
+        if(controller.isGrounded)
+            vel.Linear -= (onSlope ? 10 : 1) * gravityVector * controller.gravityScale * dt; //Removing gravity when grounded
+
+        //if(onSlope && !forwardHit)
+        //    vel.Linear += 10 * controller.gravityScale * gravityVector * dt;
+
+        //vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * (-9.81f) * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
         if (onSlope && !isMoving && !controller.isJumping) //Prevents jumping when stopping on a slope
             vel.Linear.y = 0;
