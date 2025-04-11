@@ -52,7 +52,7 @@ public partial struct ShootSystem : ISystem
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
-            RefRW<CharacterLocalViewRotation> localView = SystemAPI.GetComponentRW<CharacterLocalViewRotation>(owner);
+            RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
             //Check valid state
             if (dynamicData.state == RangedWeaponState.Idle || dynamicData.state == RangedWeaponState.Shoot)

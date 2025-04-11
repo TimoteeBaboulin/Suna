@@ -28,7 +28,7 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>()
+            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
