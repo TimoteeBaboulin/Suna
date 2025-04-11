@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -22,57 +21,74 @@ partial struct StuffSystemClient : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        GameResourcesDatabase grs = SystemAPI.GetSingleton<GameResourcesDatabase>();
+        GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
-        //Instanciate GameObject and Attach to camera
-        foreach (var (owner, stuffDataRef, transform, entity) in SystemAPI
-            .Query<RefRO<StuffOwner>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>>()
-            .WithNone<StuffGameObjectRef>()
-            .WithDisabled<StuffProcessPending>()
-            .WithEntityAccess())
+        //Instanciate GameObject
+        foreach (var (ownerRO, stuffDataRef, transform, stuff) in SystemAPI
+        .Query<RefRO<StuffOwner>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>>()
+        .WithNone<StuffGameObjectRef>()
+        .WithDisabled<StuffProcessPending>()
+        .WithEntityAccess())
         {
             StuffGameObjectRef goRef = new StuffGameObjectRef();
-            ref StuffCommonData data = ref stuffDataRef.ValueRO.GetData(ref grs);
+            Entity owner = ownerRO.ValueRO.Value;
+            ref StuffCommonData data = ref stuffDataRef.ValueRO.GetData(ref database);
 
-            if (owner.ValueRO.Value != Entity.Null)
+            goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID]);
+            ecb.AddComponent(stuff, goRef);
+        }
+
+        //Attach to camera or drop
+        foreach (var (ownerRO, stuffDataRO, transformRO, goRef, stuff) in SystemAPI
+        .Query<RefRO<StuffOwner>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>, StuffGameObjectRef>()
+        .WithAll<IsStuffViewChangeParent>()
+        .WithEntityAccess())
+        {
+            Entity owner = ownerRO.ValueRO.Value;
+            Transform stuffTrasform = goRef.Value.transform;
+
+            //Si le stuff à un propriétaire, on l'attache au bone de la vue
+            if (owner != Entity.Null)
             {
-                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner.ValueRO.Value))
+                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner))
                 {
-                    CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner.ValueRO.Value);
-                    Transform viewTransform = charaBones.WeaponSlotTransform;
-                    goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID], viewTransform);
-                    //goRef.Value = Object.Instantiate(data.viewPrefab.Value, viewTransform);
-                    goRef.Value.transform.localPosition = data._stuffLocalOffsetView;
+                    Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner).WeaponSlotTransform;
+                    ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
+
+                    stuffTrasform.rotation = viewTransform.rotation;
+                    stuffTrasform.SetParent(viewTransform);
+                    stuffTrasform.localPosition = stuffData._stuffLocalOffsetView;
                 }
             }
+            //Si le stuff n'a pas de propriétaire, on le drop au sol
             else
             {
-                Vector3 pos = transform.ValueRO.Position;
-                quaternion rot = transform.ValueRO.Rotation;
+                stuffTrasform.localPosition = default;
+                stuffTrasform.SetParent(null);
 
-                goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID], pos, rot);
-
-                //goRef.Value = Object.Instantiate(data.viewPrefab.Value, pos, rot);
+                Vector3 pos = transformRO.ValueRO.Position;
+                quaternion rot = transformRO.ValueRO.Rotation;
+                stuffTrasform.position = pos;
+                stuffTrasform.rotation = rot;
             }
-            Debug.Log(goRef.Value.name);
-            ecb.AddComponent(entity, goRef);
+
+            state.EntityManager.SetComponentEnabled<IsStuffViewChangeParent>(stuff, false);
         }
 
         //Display stuff in hand
         foreach (var (goRef, ownerRO, entity) in SystemAPI
-            .Query<StuffGameObjectRef, RefRO<StuffOwner>>()
-            .WithPresent<IsStuffInHand>()
-            //.WithNone<TemporaryOverrideGameObjectActive>() //TODO : Voir pour ça
-            .WithEntityAccess())
+        .Query<StuffGameObjectRef, RefRO<StuffOwner>>()
+        .WithPresent<IsStuffInHand>()
+        .WithEntityAccess())
         {
             goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.Value == Entity.Null);
         }
 
         //Clear Stuff GameObject
         foreach (var (goRef, entity) in SystemAPI
-            .Query<StuffGameObjectRef>()
-            .WithNone<LocalTransform>()
-            .WithEntityAccess())
+        .Query<StuffGameObjectRef>()
+        .WithNone<LocalTransform>()
+        .WithEntityAccess())
         {
             Object.Destroy(goRef.Value);
             ecb.RemoveComponent<StuffGameObjectRef>(entity);

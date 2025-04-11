@@ -32,8 +32,8 @@ partial class InGameHUDSystem : SystemBase
     protected override void OnUpdate()
     {
 
-        foreach (var (currentHealth, client, hasHit, stuffInHandTypeRef, stuffListRef) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterClientAttachedComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandLocation>, RefRO<CharacterStuffList>>()
+        foreach (var (currentHealth, client, hasHit, stuffListRef) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterClientAttachedComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffList>>()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = (int)currentHealth.ValueRO.Value });

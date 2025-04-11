@@ -42,7 +42,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
                 stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
-                stuffs[i].location = rangedWeaponSO.location;
+                stuffs[i].slot = rangedWeaponSO.location;
                 stuffs[i].type = rangedWeaponSO.type;
                 stuffs[i].side = rangedWeaponSO.side;
                 stuffs[i].deploymentSpeed = rangedWeaponSO.deploymentSpeed;
@@ -61,7 +61,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
 
                 stuffs[i].viewPrefab = meleeWeaponSO.viewPrefab;
-                stuffs[i].location = meleeWeaponSO.location;
+                stuffs[i].slot = meleeWeaponSO.location;
                 stuffs[i].type = meleeWeaponSO.type;
                 stuffs[i].side = meleeWeaponSO.side;
                 stuffs[i].deploymentSpeed = meleeWeaponSO.deploymentSpeed;
@@ -79,7 +79,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
             stuffs[id].viewPrefab = harvesterSO.viewPrefab;
-            stuffs[id].location = harvesterSO.location;
+            stuffs[id].slot = harvesterSO.location;
             stuffs[id].type = harvesterSO.type;
             stuffs[id].side = harvesterSO.side;
             stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
@@ -144,8 +144,8 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
             AddBuffer<GameResourcesInstantiateStuffQueu>(entity);
-            AddBuffer<EquipStuffQueu>(entity);
-            AddBuffer<UnequipStuffQueu>(entity);
+            AddBuffer<EquipStuffQueue>(entity);
+            AddBuffer<UnequipStuffQueue>(entity);
         }
     }
 }

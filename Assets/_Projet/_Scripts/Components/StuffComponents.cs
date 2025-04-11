@@ -52,6 +52,11 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 }
 
 [GhostEnabledBit]
+public struct IsStuffViewChangeParent: IComponentData, IEnableableComponent
+{
+}
+
+[GhostEnabledBit]
 [GhostComponent]
 public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
@@ -63,7 +68,7 @@ public struct StuffCommonData
     public BlobString Name;
     public UnityObjectRef<GameObject> viewPrefab;
     //public UnityObjectRef<GameObject> UIPrefab;
-    public StuffSlot location;
+    public StuffSlot slot;
     public StuffType type;
     public TeamSideType side;
     public float deploymentSpeed;

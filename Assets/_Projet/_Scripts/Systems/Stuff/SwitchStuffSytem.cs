@@ -83,10 +83,10 @@ public partial struct SwitchStuffSystem : ISystem
 
         //Auto Switch if Hands empty
         foreach (var (stuffListRef, chara) in SystemAPI
-        .Query<RefRO<CharacterStuffList>>()
+        .Query<RefRW<CharacterStuffList>>()
         .WithEntityAccess())
         {
-            ref readonly CharacterStuffList stuffList = ref stuffListRef.ValueRO;
+            ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
 
             if (stuffList.List.Length > 0)
             {

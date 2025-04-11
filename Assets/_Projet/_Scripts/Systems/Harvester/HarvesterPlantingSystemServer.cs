@@ -56,9 +56,9 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     StuffSlot switchToLocation = StuffSlot.MainWeapon;
                     Entity targetWeaponEntity = Entity.Null;
                     RefRW<CharacterStuffList> stuffListRW = SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity);
-                    if (stuffListRW.ValueRO.List[(int)StuffSlot.MainWeapon] == Entity.Null)
+                    if (stuffListRW.ValueRO.GetStuffInSlot(StuffSlot.MainWeapon) == Entity.Null)
                     {
-                        if (stuffListRW.ValueRO.List[(int)StuffSlot.SecondaryWeapon] == Entity.Null)
+                        if (stuffListRW.ValueRO.GetStuffInSlot(StuffSlot.SecondaryWeapon) == Entity.Null)
                         {
                             switchToLocation = StuffSlot.Melee;
                         }
@@ -67,13 +67,13 @@ partial struct HarvesterPlantingSystemServer : ISystem
                             switchToLocation = StuffSlot.Melee;
                         }
                     }
-                    targetWeaponEntity = stuffListRW.ValueRO.List[(int)switchToLocation];
+                    targetWeaponEntity = stuffListRW.ValueRO.GetStuffInSlot(switchToLocation);
 
-                    SystemAPI.GetComponentRW<CharacterStuffInHandLocation>(characterEntity).ValueRW.Value = StuffSlot.Melee;
+                    SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
                     SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
-                    var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();
-                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
+                    unequipStuffQueu.Add(new UnequipStuffQueue
                     {
                         Owner = characterEntity,
                         Stuff = harvesterEntity

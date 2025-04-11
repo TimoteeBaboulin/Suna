@@ -24,8 +24,8 @@ partial class HarvesterSystemClient : SystemBase
         playerActions = input.Player;
         harvesterActions = input.Harvester;
 
-        RequireForUpdate<EquipStuffQueu>();
-        RequireForUpdate<UnequipStuffQueu>();
+        RequireForUpdate<EquipStuffQueue>();
+        RequireForUpdate<UnequipStuffQueue>();
     }
 
     private void AskForOwner(ref EntityCommandBuffer ecb)
@@ -57,8 +57,8 @@ partial class HarvesterSystemClient : SystemBase
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.ServerTick;
 
-        var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
-        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();
+        var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
         foreach ((RefRW<HarvesterComponent> harvesterRW, RefRW<StuffOwner> ownerRW, Entity harvesterEntity) in SystemAPI
             .Query<RefRW<HarvesterComponent>, RefRW<StuffOwner>>()
@@ -144,7 +144,7 @@ partial class HarvesterSystemClient : SystemBase
         {
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
 
-            unequipStuffQueu.Add(new UnequipStuffQueu
+            unequipStuffQueu.Add(new UnequipStuffQueue
             {
                 Stuff = rpc.harvester,
                 Owner = rpc.harvesterOwner,
@@ -180,7 +180,7 @@ partial class HarvesterSystemClient : SystemBase
                 continue;
             }
 
-            equipStuffQueu.Add(new EquipStuffQueu
+            equipStuffQueu.Add(new EquipStuffQueue
             {
                 Stuff = rpc.harvester,
                 Owner = rpc.character

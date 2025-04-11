@@ -135,8 +135,8 @@ partial struct ProcessPendingStuffSystem : ISystem
             //Add stuff on player inventory
             if (processRO.ValueRO.Owner != Entity.Null)
             {
-                var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
-                equipStuffQueu.Add(new EquipStuffQueu
+                var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+                equipStuffQueu.Add(new EquipStuffQueue
                 {
                     Stuff = stuff,
                     Owner = processRO.ValueRO.Owner,

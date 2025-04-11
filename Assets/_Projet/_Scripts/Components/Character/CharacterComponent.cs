@@ -91,9 +91,16 @@ public struct CharacterStuffList : IComponentData
     [GhostField] public FixedList128Bytes<Entity> List;
     [GhostField] public StuffSlot StuffInHandSlot;
 
-    public Entity GetStuffInHand()
+    public Entity StuffInHand { get => List[(int)StuffInHandSlot]; set => List[(int)StuffInHandSlot] = value; }
+
+    public Entity GetStuffInSlot(StuffSlot slot)
     {
-        return List[(int)StuffInHandSlot];
+        return List[(int)slot];
+    }
+
+    public void SetStuffInSlot(StuffSlot slot, Entity stuff)
+    {
+        List[(int)slot] = stuff;
     }
 }
 

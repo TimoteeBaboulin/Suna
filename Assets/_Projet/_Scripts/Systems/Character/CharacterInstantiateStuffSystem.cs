@@ -17,8 +17,8 @@ partial struct CharacterInstantiateStuffSystem : ISystem
     {
         var stuffInstanciateQueus = SystemAPI.GetSingletonBuffer<GameResourcesInstantiateStuffQueu>();
 
-        foreach (var (stuffListRef, stuffInHandTypeRef, defaultStuffNames, chara) in SystemAPI
-            .Query<RefRW<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>, DynamicBuffer<CharacterDefaultStuffName>>()
+        foreach (var (stuffListRef, defaultStuffNames, chara) in SystemAPI
+            .Query<RefRW<CharacterStuffList>, DynamicBuffer<CharacterDefaultStuffName>>()
             .WithAll<IsInstanciateDefaultStuff>()
             .WithEntityAccess())
         {
