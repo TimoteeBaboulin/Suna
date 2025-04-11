@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -19,8 +20,6 @@ public partial class CharacterInputSystem : SystemBase
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAny<CharacterInput>();
         RequireForUpdate(GetEntityQuery(builder));
-
-        RequireForUpdate<UnscaledClientTime>();
     }
 
     protected override void OnDestroy()
@@ -30,9 +29,6 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        UnscaledClientTime unscaledTime = SystemAPI.GetSingleton<UnscaledClientTime>();
-        float deltaTime = unscaledTime.UnscaleDeltaTime;
-
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
@@ -59,7 +55,7 @@ public partial class CharacterInputSystem : SystemBase
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
 
-            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity * deltaTime * 4;
+            input.ValueRW.look = math.radians(CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity);
 
             //TODO :Make these into a function
             if (isJumpPerfomered && !plantingOrDefusing)
