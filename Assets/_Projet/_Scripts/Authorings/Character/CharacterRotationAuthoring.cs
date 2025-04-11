@@ -15,6 +15,7 @@ class CharacterRotationAuthoringBaker : Baker<CharacterRotationAuthoring>
 
         AddComponent(entity, new CharacterViewRotation
         {
+            Pitch = 0,
             ViewRotation = quaternion.identity,
             ShootingModifier = quaternion.identity,
         });

@@ -59,7 +59,7 @@ public partial class CharacterInputSystem : SystemBase
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
 
-            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity * deltaTime * 10;
+            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity * deltaTime * 4;
 
             //TODO :Make these into a function
             if (isJumpPerfomered && !plantingOrDefusing)

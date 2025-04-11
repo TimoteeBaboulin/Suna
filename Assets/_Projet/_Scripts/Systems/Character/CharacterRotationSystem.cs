@@ -34,7 +34,12 @@ public partial struct CommonCharacterRotationSystem : ISystem
             //newRotation = math.mul(newRotation, quaternion.RotateX(-mouseY));
 
             characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(mouseX));
-            characterViewRotation.ValueRW.ViewRotation = math.mul(characterViewRotation.ValueRO.ViewRotation, quaternion.RotateX(-mouseY));
+
+            characterViewRotation.ValueRW.Pitch += math.degrees(-mouseY);
+            characterViewRotation.ValueRW.Pitch = math.clamp(characterViewRotation.ValueRW.Pitch, -89f, 89f);
+            characterViewRotation.ValueRW.ViewRotation.value = quaternion.RotateX(math.radians(characterViewRotation.ValueRO.Pitch)).value;
+            //characterViewRotation.ValueRW.ViewRotation = math.mul(characterViewRotation.ValueRO.ViewRotation, quaternion.RotateX(-mouseY));
+
 
             //characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(math.radians(mouseX)));
 
