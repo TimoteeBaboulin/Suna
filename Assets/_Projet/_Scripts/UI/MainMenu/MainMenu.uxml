@@ -8,5 +8,11 @@
             <ui:Button text="Quit" name="QuitButton" class="main-menu-button" />
         </ui:VisualElement>
         <ui:VisualElement name="Container" style="flex-grow: 1;" />
+        <ui:VisualElement name="ConnectionFeedback" style="position: absolute; align-items: center; justify-content: center; align-self: center; align-content: center; left: 50%; right: 50%; width: 400px; height: 100px; translate: -50% 0; background-color: rgba(0, 0, 0, 0.25); -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); font-size: 25px; -unity-font-style: bold; color: rgb(255, 255, 255);">
+            <ui:Label text="Status" style="-unity-text-align: middle-center; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: -5px;" />
+            <ui:VisualElement name="BackGround" style="height: 30px; width: 90%; background-color: rgba(0, 0, 0, 0.5); top: -5px;">
+                <ui:VisualElement name="Fill" style="width: 0; flex-grow: 1;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

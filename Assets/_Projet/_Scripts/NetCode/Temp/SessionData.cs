@@ -119,7 +119,7 @@ namespace GameNetwork
         float loadingProgress;
         public const string LoadingProgressPropertyName = nameof(LoadingProgress);
         [CreateProperty]
-        float LoadingProgress
+        public float LoadingProgress
         {
             get => loadingProgress;
             set

@@ -1,4 +1,6 @@
+using GameNetwork;
 using System.Linq;
+using Unity.Properties;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,10 +20,11 @@ public class MainMenuController : MonoBehaviour
     private Button _quitButton;
     private VisualElement _container;
 
-    [Header("Connection Helper")]
-    [SerializeField] private ConnectionManager connectionManager;
+    private VisualElement _connectionFeedback;
+    private Label _connectionFeedbackLabel;
+    private VisualElement _connectionFeedbackFill;
+    private bool _sessionDataFound = false;
 
-    [SerializeField] private SceneID _sceneLoadOnPlay = SceneID.MultipayerTest;
 
     private void Awake()
     {
@@ -40,6 +43,12 @@ public class MainMenuController : MonoBehaviour
 
         _quitButton = _root.Q<Button>("QuitButton");
         _quitButton.clicked += OnQuitButton_Click;
+
+        _connectionFeedback = _root.Q<VisualElement>("ConnectionFeedback");
+        _connectionFeedbackLabel = _connectionFeedback.Q<Label>();
+        _connectionFeedbackFill = _connectionFeedback.Q<VisualElement>("Fill");
+
+        //UIDocumentUtils.SetActive(ref _connectionFeedback, false);
     }
 
     private void Start()
@@ -47,6 +56,27 @@ public class MainMenuController : MonoBehaviour
         // Unlock Cursor at start
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         UnityEngine.Cursor.visible = true;
+    }
+
+    private void Update()
+    {
+        if (_sessionDataFound) return;
+
+        if (SessionData.Instance != null)
+        {
+            Debug.Log("SessionData.Instance found");
+            _sessionDataFound = true;
+            _connectionFeedback.dataSource = SessionData.Instance;
+            SessionData.Instance.propertyChanged += OnSessionDataPropertyChanged;
+        }
+    }
+
+    private void OnSessionDataPropertyChanged(object sender, BindablePropertyChangedEventArgs args)
+    {
+        Debug.Log("hello");
+        UIDocumentUtils.SetActive(ref _connectionFeedback, true);
+        _connectionFeedbackLabel.text = SessionData.Instance.LoadingStatusText;
+        _connectionFeedbackFill.style.width = UIDocumentUtils.PercentLength(SessionData.Instance.LoadingProgress * 100f);
     }
 
     private async void OnPlayButton_Click()
