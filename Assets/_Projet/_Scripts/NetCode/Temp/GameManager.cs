@@ -19,13 +19,14 @@ public class GameManager : Singleton<GameManager>
 {
     public enum GlobalGameState { MainMenu, Loading, InGame }
     public GlobalGameState GameState { get; set; }
+    public ISession CurrentSession => sessionTransport.Session;
 
-    public string SessionID { get; private set; }
-
-    private ClientTransportHelper clientConnectionSettings;
+    private ClientTransportHelper sessionTransport;
     private CancellationTokenSource loadingToken;
     private ConnectionHandlerNew connectionHandler;
-    private ClientTransportHelper serverSession;
+
+    private int countTeamNatif;
+    private int countTeamCorpo;
 
     protected override void Awake()
     {
@@ -42,7 +43,7 @@ public class GameManager : Singleton<GameManager>
         {
             await ClientTransportHelper.StartServicesAsync();
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
-            serverSession = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
+            sessionTransport = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
         }
 
 
@@ -55,7 +56,7 @@ public class GameManager : Singleton<GameManager>
     public async Task Play()
     {
         await ClientTransportHelper.StartServicesAsync();
-        clientConnectionSettings = await connectionHandler.Connect(loadingToken.Token);
+        sessionTransport = await connectionHandler.Connect(loadingToken.Token);
 
         GameState = GlobalGameState.InGame;
         Cursor.lockState = CursorLockMode.Locked;
@@ -65,15 +66,104 @@ public class GameManager : Singleton<GameManager>
         GameState = GlobalGameState.InGame;
 
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
+        Debug.Log($"Count of current player PROPERTIES: {CurrentSession.CurrentPlayer.Properties.Count}");
+
+        var currentPlayers = CurrentSession.Players;
+
+        foreach (var player in currentPlayers)
+        {
+            if (player.Properties.TryGetValue("team", out PlayerProperty prop) && prop.Value == "none")
+            {
+                AssignTeamToPlayer(player, currentPlayers);
+            }
+        }
+
+        var localPlayer = CurrentSession.CurrentPlayer;
+        if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
+        {
+            Debug.Log($"[Play] Local player team: {localTeam.Value}");
+        }
+
+        //CurrentSession.CurrentPlayer.SetProperty("team", new PlayerProperty("Corpo", VisibilityPropertyOptions.Public));
+        //foreach (var item in CurrentSession.CurrentPlayer.Properties)
+        //{
+        //    Debug.Log($"Player PROPERTIES {item.Key} values: {item.Value.Value}");
+        //}
+
+        //foreach (var item in CurrentSession.Properties)
+        //{
+        //    Debug.Log($"Session PROPERTIES {item.Key} values: {item.Value.Value}");
+        //}
+
     }
 
+    private void AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
+    {
+        int countTeamA = 0;
+        int countTeamB = 0;
 
+        foreach (var p in allPlayers)
+        {
+            if (p.Properties.TryGetValue("team", out PlayerProperty prop))
+            {
+                if (prop.Value == "Corpo")
+                    countTeamA++;
+                else if (prop.Value == "Natif")
+                    countTeamB++;
+            }
+        }
+
+        string assignedTeam = (countTeamA == 0 && countTeamB == 0)
+            ? ((UnityEngine.Random.value < 0.5f) ? "Corpo" : "Natif")
+            : (countTeamA <= countTeamB ? "Corpo" : "Natif");
+
+        if (readOnlyPlayer is IPlayer player)
+        {
+            player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
+            Debug.Log($"[Team Assignment] Assigned Player {player.AllocationId} to team {assignedTeam}");
+
+            UpdateTeamCountInSession(assignedTeam, player.Id);
+        }
+        else
+        {
+            Debug.LogError("[Team Assignment] Cannot assign team: player instance is not modifiable.");
+        }
+    }
+
+    private void UpdateTeamCountInSession(string assignedTeam, string playerId)
+    {
+        if (CurrentSession is IHostSession hostSession)
+        {
+            if (assignedTeam == "Corpo")
+            {
+                var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
+                int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
+                hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
+                hostSession.SavePropertiesAsync();
+                hostSession.SavePlayerDataAsync(playerId);
+            }
+            else if (assignedTeam == "Natif")
+            {
+                var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
+                int currentCountNatif = int.Parse(countTeamNatifProp.Value);
+                hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
+                hostSession.SavePropertiesAsync();
+                hostSession.SavePlayerDataAsync(playerId);
+            }
+
+            Debug.Log($"Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
+        }
+        else
+        {
+            Debug.LogError("[Team Assignment] Session is not of type IHostSession.");
+        }
+    }
 
     public bool IsSessionFull()
     {
-        if (clientConnectionSettings != null)
+        if (sessionTransport != null)
         {
-            return clientConnectionSettings.Session.AvailableSlots == 0;
+            return CurrentSession.AvailableSlots == 0;
         }
         return false;
     }
@@ -82,7 +172,7 @@ public class GameManager : Singleton<GameManager>
         List<IReadOnlyPlayer> playersInTeam = new List<IReadOnlyPlayer>();
         for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
         {
-            var player = clientConnectionSettings.Session.Players[i];
+            var player = CurrentSession.Players[i];
 
             foreach (var property in player.Properties)
             {
@@ -101,7 +191,7 @@ public class GameManager : Singleton<GameManager>
         List<IReadOnlyPlayer> allPlayers = new List<IReadOnlyPlayer>();
         for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
         {
-            allPlayers.Add(clientConnectionSettings.Session.Players[i]);
+            allPlayers.Add(CurrentSession.Players[i]);
         }
         return allPlayers;
     }
@@ -109,15 +199,15 @@ public class GameManager : Singleton<GameManager>
     public int GetCurrentNbOfPlayersInSession()
     {
 
-        if (clientConnectionSettings != null)
+        if (sessionTransport != null)
         {
             if (RequestedPlayType == PlayType.Client)
             {
-                return clientConnectionSettings.Session.Players.Count - 1;
+                return CurrentSession.Players.Count - 1;
             }
             else if (RequestedPlayType == PlayType.ClientAndServer)
             {
-                return clientConnectionSettings.Session.Players.Count;
+                return CurrentSession.Players.Count;
             }
         }
         return 0;
@@ -225,19 +315,19 @@ public class GameManager : Singleton<GameManager>
 
     public async Task LeaveSessionAsync()
     {
-        if (clientConnectionSettings != null)
+        if (sessionTransport != null)
         {
             // Log that we are initiating session leave.
             Debug.Log("[LeaveSessionAsync] Initiating leave process for session.");
-            clientConnectionSettings.Session.RemovedFromSession += OnSessionLeft;
-            await clientConnectionSettings.Session.LeaveAsync();
+            CurrentSession.RemovedFromSession += OnSessionLeft;
+            await CurrentSession.LeaveAsync();
         }
     }
 
     public void OnSessionLeft()
     {
         Debug.Log("[OnSessionLeft] Session left successfully.");
-        clientConnectionSettings = null;
+        sessionTransport = null;
     }
 
     static async Task DestroyGameSessionWorlds()

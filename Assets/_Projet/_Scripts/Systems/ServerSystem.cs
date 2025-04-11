@@ -9,9 +9,9 @@ public struct ServerMessageRpcCommand : IRpcCommand
 {
     public FixedString64Bytes message;
 }
-public struct InitializedClient : IComponentData
+public struct ClientComponent : IComponentData
 {
-    public int id;
+    public int networkID;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -39,7 +39,7 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
+        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<ClientComponent>().WithEntityAccess())
         {
             InstantiateClient(entity, commandBuffer);
         }
@@ -77,7 +77,7 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            ecb.AddComponent(ownerEntity, new InitializedClient { id = networkId.Value });
+            ecb.AddComponent(ownerEntity, new ClientComponent { networkID = networkId.Value });
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
@@ -125,13 +125,25 @@ public partial class SessionStatusSystem : SystemBase
 
             if (ServerSessionFactory.instance != null)
             {
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ServerSessionFactory.instance.Session.Name}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ServerSessionFactory.instance.Session.PlayerCount}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ServerSessionFactory.instance.Session.IsHost} ");
+                var session = ServerSessionFactory.instance.Session;
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} ");;
 
-                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ServerSessionFactory.instance.Session.Name}");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ServerSessionFactory.instance.Session.PlayerCount}");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ServerSessionFactory.instance.Session.IsHost} ");
+
+                var players = session.Players;
+
+                Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
+                Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
+
+                foreach (var player in players)
+                {
+                    foreach (var property in player.Properties)
+                    {
+                        Debug.Log($"[SessionStatusSystem :@ {player.Id}] team: {property.Value.Value} "); ;
+                    }
+                }
             }
             else
             {

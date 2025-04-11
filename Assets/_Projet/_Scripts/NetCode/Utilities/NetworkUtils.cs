@@ -248,18 +248,31 @@ namespace GameNetwork.Utils
         public SessionOptions CreateSessionOptions()
         {
             int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
-            var options = new SessionOptions { MaxPlayers = maxPlayers };
+            var options = new SessionOptions 
+            { 
+                MaxPlayers = maxPlayers, 
+                PlayerProperties = new Dictionary<string, PlayerProperty>
+        {
+            { "team", new PlayerProperty("none", VisibilityPropertyOptions.Public) }
+        },
+                SessionProperties = new Dictionary<string, SessionProperty>
+                {
+                    {"CountTeamNatif", new SessionProperty("0", VisibilityPropertyOptions.Public) },
+                    {"CountTeamCorpo", new SessionProperty("0", VisibilityPropertyOptions.Public) }
+                }
+            };
 
-            int playersPerTeam = (maxPlayers - 1) / 2;
 
-            for (int i = 0; i < maxPlayers - 1; i++)
-            {
-                string team = i < playersPerTeam ? "corpo" : "natif";
-                options.PlayerProperties.Add(
-                    $"player{i + 1}",
-                    new PlayerProperty(team, VisibilityPropertyOptions.Public)
-                );
-            }
+            //int playersPerTeam = (maxPlayers - 1) / 2;
+
+            //for (int i = 0; i < maxPlayers - 1; i++)
+            //{
+            //    string team = i < playersPerTeam ? "Corpo" : "Natif";
+            //    options.PlayerProperties.Add(
+            //        $"player{i + 1}",
+            //        new PlayerProperty(team, VisibilityPropertyOptions.Public)
+            //    );
+            //}
 
             Debug.Log($"Create sessions with IP {CurrentIP}, Port {CurrentPort}");
 
