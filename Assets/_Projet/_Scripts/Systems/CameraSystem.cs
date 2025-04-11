@@ -1,4 +1,3 @@
-using TMPro;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -9,7 +8,6 @@ using UnityEngine;
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-//[UpdateInGroup(typeof(PresentationSystemGroup))]
 partial class CameraSystem : SystemBase
 {
     private static Entity currentTarget = Entity.Null;
