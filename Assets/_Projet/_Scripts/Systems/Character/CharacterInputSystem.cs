@@ -19,6 +19,8 @@ public partial class CharacterInputSystem : SystemBase
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAny<CharacterInput>();
         RequireForUpdate(GetEntityQuery(builder));
+
+        RequireForUpdate<UnscaledClientTime>();
     }
 
     protected override void OnDestroy()
@@ -28,7 +30,9 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        // InputSystem.Update();
+        UnscaledClientTime unscaledTime = SystemAPI.GetSingleton<UnscaledClientTime>();
+        float deltaTime = unscaledTime.UnscaleDeltaTime;
+
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
@@ -55,7 +59,7 @@ public partial class CharacterInputSystem : SystemBase
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
 
-            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
+            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity * deltaTime * 10;
 
             //TODO :Make these into a function
             if (isJumpPerfomered && !plantingOrDefusing)

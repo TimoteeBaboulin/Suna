@@ -90,7 +90,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
                 CharacterRotation = quaternion.identity,
                 ViewRotation = quaternion.identity,
             });
-            AddComponent(entity, new CharacterLocalViewRotation 
+            AddComponent(entity, new CharacterViewRotation 
             { 
                 ViewRotation = quaternion.identity,
                 ShootingModifier = quaternion.identity
