@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -84,17 +83,6 @@ public sealed class CharacterAuthoring : MonoBehaviour
             SetComponentEnabled<IsInstanciateDefaultStuff>(entity, true);
 
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
-
-            AddComponent(entity, new CharacterAndViewRotationComponent
-            {
-                CharacterRotation = quaternion.identity,
-                ViewRotation = quaternion.identity,
-            });
-            AddComponent(entity, new CharacterViewRotation 
-            { 
-                ViewRotation = quaternion.identity,
-                ShootingModifier = quaternion.identity
-            });
 
             CharacterStuffList stuff = new CharacterStuffList();
             for (int i = 0; i < (int)StuffInventoryLocation.nbLocation; i++) stuff.Value.Add(Entity.Null);
