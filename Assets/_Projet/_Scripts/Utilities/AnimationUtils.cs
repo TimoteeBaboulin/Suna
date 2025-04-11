@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class AnimationUtils
 {
+    // Only used in Animation System
     public static void UpdateFloatParameter(in Animator animator, DynamicBuffer<AnimationFloatBufferElement> floatBuffer)
     {
         foreach (var floatElement in floatBuffer)
@@ -13,6 +14,7 @@ public class AnimationUtils
         }
     }
 
+    // Only used in Animation System
     public static void UpdateIntParameter(in Animator animator, DynamicBuffer<AnimationIntBufferElement> intBuffer)
     {
         foreach (var intElement in intBuffer)
@@ -21,6 +23,7 @@ public class AnimationUtils
         }
     }
 
+    // Only used in Animation System
     public static void UpdateBoolParameter(in Animator animator, DynamicBuffer<AnimationBoolBufferElement> boolBuffer)
     {
         foreach (var boolElement in boolBuffer)
@@ -29,6 +32,7 @@ public class AnimationUtils
         }
     }
 
+    // Only used in Animation System
     public static void UpdateTriggerParameter(in Animator animator, DynamicBuffer<AnimationTriggerBufferElement> triggerBuffer)
     {
         foreach (var triggerElement in triggerBuffer)
@@ -37,6 +41,7 @@ public class AnimationUtils
         }
     }
 
+    // Only used in Animation System
     public static void SetAnimator(in Animator animator, in Entity entity, in EntityCommandBuffer ecb, in EntityManager entityManager)
     {
         if (entityManager.HasComponent<AnimatorReference>(entity))
@@ -46,6 +51,7 @@ public class AnimationUtils
         }
     }
 
+    // To be used to set a parameter outside of a job
     [BurstCompile]
     public static void AddFloatCommand(in FixedString32Bytes name, in float value, in Entity entity, in EntityCommandBuffer ecb)
     {
@@ -56,6 +62,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter in a job
     [BurstCompile]
     public static void AddFloatCommandJob(in FixedString32Bytes name, in float value, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
     {
@@ -66,6 +73,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter outside of a job
     [BurstCompile]
     public static void AddIntCommand(in FixedString32Bytes name, in int value, in Entity entity, in EntityCommandBuffer ecb)
     {
@@ -76,6 +84,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter in a job
     [BurstCompile]
     public static void AddIntCommandJob(in FixedString32Bytes name, in int value, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
     {
@@ -86,6 +95,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter outside of a job
     [BurstCompile]
     public static void AddBoolCommand(in FixedString32Bytes name, in bool value, in Entity entity, in EntityCommandBuffer ecb)
     {
@@ -96,6 +106,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter in a job
     [BurstCompile]
     public static void AddBoolCommandJob(in FixedString32Bytes name, in bool value, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
     {
@@ -106,6 +117,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter outside of a job
     [BurstCompile]
     public static void AddTriggerCommand(in FixedString32Bytes name, in Entity entity, in EntityCommandBuffer ecb)
     {
@@ -115,6 +127,7 @@ public class AnimationUtils
         });
     }
 
+    // To be used to set a parameter in a job
     [BurstCompile]
     public static void AddTriggerCommandJob(in FixedString32Bytes name, in Entity entity, in EntityCommandBuffer.ParallelWriter ecb, in int sortKey)
     {
