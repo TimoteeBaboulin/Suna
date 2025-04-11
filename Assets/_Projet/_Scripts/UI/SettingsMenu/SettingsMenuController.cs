@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -7,11 +6,16 @@ public class SettingsMenuController : MonoBehaviour
 {
     // Settings UI Elements
     public VisualElement root;
+    private Button _saveButton;
     private Slider _sensitivitySlider;
     private FloatField _sensitivityField;
 
     private void Start()
     {
+        // Initialize Elements and Callbacks
+        _saveButton = root.Q<Button>("SaveButton");
+        _saveButton.clicked += SaveAndCloseSettings;
+
         _sensitivitySlider = root.Q<Slider>("SensitivitySlider");
         _sensitivitySlider.RegisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
 
@@ -39,7 +43,7 @@ public class SettingsMenuController : MonoBehaviour
         _sensitivityField.value = value;
     }
 
-    public void SaveSettings()
+    private void SaveSettings()
     {
         float sensitivityValue = _sensitivitySlider.value;
         _sensitivitySlider.UnregisterValueChangedCallback(OnSensitivitySlider_ValueChanged);
@@ -51,5 +55,11 @@ public class SettingsMenuController : MonoBehaviour
             clientSettings.Sensivity = _sensitivitySlider.value;
             settingsLinkSystem.UpdateClientSettings(clientSettings);
         }
+    }
+
+    public void SaveAndCloseSettings()
+    {
+        SaveSettings();
+        root.RemoveFromHierarchy();
     }
 }

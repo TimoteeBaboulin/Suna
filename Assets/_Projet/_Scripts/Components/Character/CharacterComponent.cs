@@ -48,31 +48,9 @@ public struct CharacterComponent : IComponentData
     [GhostField] public Entity teamEntity;
 }
 
-// Do not use the values of this component for calculations.
-// It is only meant to synchronize these values between the server and clients.
-[GhostComponent]
-public struct CharacterAndViewRotationComponent : IComponentData
-{
-    [GhostField] public quaternion CharacterRotation;
-    [GhostField] public quaternion ViewRotation;
-}
-
 public struct CharacterShootStartPositionDelta : IComponentData
 {
     public float3 PositionDelta;
-}
-
-// This value is used for calculations that require the character's view rotation.
-public struct CharacterLocalViewRotation : IComponentData
-{
-    public quaternion ViewRotation;
-}
-
-// To be used for updating the character's rotation and its view from the client to the server.
-public struct ClientCharacterAndViewRotationRpcCommand : IRpcCommand
-{
-    public quaternion ViewRotation;
-    public quaternion CharacterRotation;
 }
 
 public struct CharacterClientAttachedComponent : IComponentData

@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,7 +29,6 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        // InputSystem.Update();
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
@@ -47,15 +47,15 @@ public partial class CharacterInputSystem : SystemBase
         selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
         selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
-        foreach (var (controller, input, characterCamera, harvesterActions) in SystemAPI
-            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<CharacterCameraComponent>, RefRO<PlayerHarvesterActions>>()
+        foreach (var (controller, input, harvesterActions) in SystemAPI
+            .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<PlayerHarvesterActions>>()
             .WithAll<CharacterIsEnable, GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             bool plantingOrDefusing = harvesterActions.ValueRO.IsDefusing || harvesterActions.ValueRO.IsPlanting;
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
 
-            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
+            input.ValueRW.look = math.radians(CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity);
 
             //TODO :Make these into a function
             if (isJumpPerfomered && !plantingOrDefusing)

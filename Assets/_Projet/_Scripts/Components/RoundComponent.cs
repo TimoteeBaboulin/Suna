@@ -20,6 +20,12 @@ public struct RoundComponent : IComponentData
     public int maxStreakCount;
 }
 
+public struct PlayerCounts : IComponentData
+{
+    public int nativePlayersAlive;
+    public int corpoPlayersAlive;
+}
+
 public struct RoundCollectorPlantedComponent : IComponentData
 {
 

@@ -87,10 +87,10 @@ partial class CameraSystem : SystemBase
             if (EntityManager.HasComponent<CharacterIsEnable>(currentTarget)
                 && EntityManager.IsComponentEnabled<CharacterIsEnable>(currentTarget)
                 && EntityManager.HasComponent<LocalTransform>(currentTarget)
-                && EntityManager.HasComponent<CharacterLocalViewRotation>(currentTarget))
+                && EntityManager.HasComponent<CharacterViewRotation>(currentTarget))
             {
                 RefRO<LocalTransform> localTransform = SystemAPI.GetComponentRO<LocalTransform>(currentTarget);
-                RefRO<CharacterLocalViewRotation> localViewRotation = SystemAPI.GetComponentRO<CharacterLocalViewRotation>(currentTarget);
+                RefRO<CharacterViewRotation> localViewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(currentTarget);
 
                 if (EntityManager.HasComponent<GhostOwnerIsLocal>(currentTarget)
                 && EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(currentTarget))
@@ -102,7 +102,7 @@ partial class CameraSystem : SystemBase
                     Camera.main.transform.position = localTransform.ValueRO.Position + tpsOffset;
                 }
                 
-                Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
+                Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }
     }

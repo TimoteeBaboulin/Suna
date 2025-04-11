@@ -21,12 +21,14 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
-
             FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
+
+            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>()
+            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))

@@ -44,6 +44,12 @@ public partial struct RpcHarvesterOwnerChange : IRpcCommand
     public Entity newOwner;
     public Entity character;
 }
+
+public partial struct RpcHarvesterDropped : IRpcCommand
+{
+    public Entity harvester;
+    public float3 position;
+}
 public partial struct RpcHarvesterPlanted : IRpcCommand
 {
     public Entity harvester;

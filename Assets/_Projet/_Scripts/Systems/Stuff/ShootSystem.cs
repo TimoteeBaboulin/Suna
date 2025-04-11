@@ -52,6 +52,8 @@ public partial struct ShootSystem : ISystem
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
+            RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
+
             //Check valid state
             if (dynamicData.state == RangedWeaponState.Idle || dynamicData.state == RangedWeaponState.Shoot)
             {
@@ -101,8 +103,12 @@ public partial struct ShootSystem : ISystem
                         {
                             // Apply spread on raycast
                             float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                            float2 visualRecoil = recoil / 5f;
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                            quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
                             recoilRotation = math.mul(input.shootRotation, recoilRotation);
+
+                            localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
 
                             dynamicData.patternBulletIndex++;
 
@@ -158,8 +164,11 @@ public partial struct ShootSystem : ISystem
                 else
                 {
                     dynamicData.shotFired = false;
+
                 }
             }
+
+            localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
         }
     }
 
@@ -174,6 +183,20 @@ public partial struct ShootSystem : ISystem
         {
             //Debug.LogError("CharacterInput not found");
             Input = default;
+            return false;
+        }
+    }
+
+    bool TryGetCharacterRO(Entity owner, ref SystemState state, out RefRO<CharacterComponent> controller)
+    {
+        if (state.EntityManager.HasComponent<CharacterComponent>(owner))
+        {
+            controller = SystemAPI.GetComponentRO<CharacterComponent>(owner);
+            return true;
+        }
+        else
+        {
+            controller = default;
             return false;
         }
     }

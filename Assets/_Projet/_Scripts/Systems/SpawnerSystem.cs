@@ -75,6 +75,8 @@ public partial struct RespawnSystem : ISystem
     ComponentLookup<LocalTransform> respawnPtLookupInit;
     ComponentLookup<ResetStuffTag> resetStuffLookupInit;
 
+    NativeList<int> teamSpawnIndexes;
+	
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -84,6 +86,10 @@ public partial struct RespawnSystem : ISystem
 
         respawnPtLookupInit = state.GetComponentLookup<LocalTransform>(isReadOnly: true);
         resetStuffLookupInit = state.GetComponentLookup<ResetStuffTag>(isReadOnly: true);
+
+        teamSpawnIndexes = new NativeList<int>(Allocator.Persistent);
+        teamSpawnIndexes.Add(0);
+        teamSpawnIndexes.Add(0);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -100,8 +106,6 @@ public partial struct RespawnSystem : ISystem
             teamSpawnsValid[(int)spawner.ValueRO.team] = true;
             teamSpawnsEntities[(int)spawner.ValueRO.team] = entity;
         }
-
-        int[] teamSpawnIndexes = { 0, 0 };
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
