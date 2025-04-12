@@ -3,6 +3,7 @@ using GameNetwork.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
@@ -19,7 +20,7 @@ public class GameManager : Singleton<GameManager>
 {
     public enum GlobalGameState { MainMenu, Loading, InGame }
     public GlobalGameState GameState { get; set; }
-    public ISession CurrentSession => sessionTransport.Session;
+    private ISession currentSession => sessionTransport.Session;
 
     private ClientTransportHelper sessionTransport;
     private CancellationTokenSource loadingToken;
@@ -66,19 +67,24 @@ public class GameManager : Singleton<GameManager>
         GameState = GlobalGameState.InGame;
 
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
-        Debug.Log($"Count of current player PROPERTIES: {CurrentSession.CurrentPlayer.Properties.Count}");
+        Debug.Log($"Count of current player PROPERTIES: {currentSession.CurrentPlayer.Properties.Count}");
 
-        var currentPlayers = CurrentSession.Players;
-
-        foreach (var player in currentPlayers)
+        if (currentSession is IHostSession hostSession)
         {
-            if (player.Properties.TryGetValue("team", out PlayerProperty prop) && prop.Value == "none")
+            hostSession.PlayerJoined += OnPlayerJoined;
+            Debug.Log("[Team Assignment] PlayerJoined listener attached.");
+
+            // Assign teams to any existing players (like the host)
+            foreach (var player in currentSession.Players)
             {
-                AssignTeamToPlayer(player, currentPlayers);
+                if (!player.Properties.TryGetValue("team", out var prop) || prop.Value == "none")
+                {
+                    AssignTeamToPlayer(player, currentSession.Players);
+                }
             }
         }
 
-        var localPlayer = CurrentSession.CurrentPlayer;
+        var localPlayer = currentSession.CurrentPlayer;
         if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
         {
             Debug.Log($"[Play] Local player team: {localTeam.Value}");
@@ -120,7 +126,7 @@ public class GameManager : Singleton<GameManager>
 
     private void UpdateTeamCountInSession(string assignedTeam, string playerId)
     {
-        if (CurrentSession is IHostSession hostSession)
+        if (currentSession is IHostSession hostSession)
         {
             if (assignedTeam == "Corpo")
             {
@@ -144,6 +150,28 @@ public class GameManager : Singleton<GameManager>
         else
         {
             Debug.LogError("[Team Assignment] Session is not of type IHostSession.");
+        }
+    }
+
+    private void OnPlayerJoined(string playerId)
+    {
+        Debug.Log($"[Team Assignment] PlayerJoined triggered for ID: {playerId}");
+
+        foreach (var p in currentSession.Players)
+        {
+            Debug.Log($"[Player Check] Session Player ID: {p.Id}");
+        }
+
+        var player = currentSession.Players.FirstOrDefault(p => p.Id == playerId);
+
+        if (player != null)
+        {
+            Debug.Log($"[Team Assignment] Match found! Assigning team to Player ID: {player.Id}");
+            AssignTeamToPlayer(player, currentSession.Players);
+        }
+        else
+        {
+            Debug.LogWarning($"[Team Assignment] No player found with ID: {playerId}");
         }
     }
 
@@ -201,7 +229,7 @@ public class GameManager : Singleton<GameManager>
     {
         if (sessionTransport != null)
         {
-            return CurrentSession.AvailableSlots == 0;
+            return currentSession.AvailableSlots == 0;
         }
         return false;
     }
@@ -211,7 +239,7 @@ public class GameManager : Singleton<GameManager>
         List<IReadOnlyPlayer> allPlayers = new List<IReadOnlyPlayer>();
         for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
         {
-            allPlayers.Add(CurrentSession.Players[i]);
+            allPlayers.Add(currentSession.Players[i]);
         }
         return allPlayers;
     }
@@ -223,11 +251,11 @@ public class GameManager : Singleton<GameManager>
         {
             if (RequestedPlayType == PlayType.Client)
             {
-                return CurrentSession.Players.Count - 1;
+                return currentSession.Players.Count - 1;
             }
             else if (RequestedPlayType == PlayType.ClientAndServer)
             {
-                return CurrentSession.Players.Count;
+                return currentSession.Players.Count;
             }
         }
         return 0;
@@ -339,8 +367,8 @@ public class GameManager : Singleton<GameManager>
         {
             // Log that we are initiating session leave.
             Debug.Log("[LeaveSessionAsync] Initiating leave process for session.");
-            CurrentSession.RemovedFromSession += OnSessionLeft;
-            await CurrentSession.LeaveAsync();
+            currentSession.RemovedFromSession += OnSessionLeft;
+            await currentSession.LeaveAsync();
         }
     }
 

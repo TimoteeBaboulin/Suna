@@ -83,7 +83,7 @@ public partial class ServerSystem : SystemBase
             Debug.Log($"Assigning Player ID: {currentPlayerId.ToString()} to client with NetworkId {networkId.Value}");
             ecb.AddComponent(ownerEntity, new ClientComponent { 
                 networkID = networkId.Value, 
-                playerID = new FixedString64Bytes(currentPlayerId)}
+                playerID = currentPlayerId}
             );
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
@@ -146,6 +146,7 @@ public partial class SessionStatusSystem : SystemBase
 
                 foreach (var player in players)
                 {
+                    Debug.Log($"[SessionStatusSystem :@ {player.Id}] propertyCount: {player.Properties.Count} ");
                     foreach (var property in player.Properties)
                     {
                         Debug.Log($"[SessionStatusSystem :@ {player.Id}] team: {property.Value.Value} "); ;

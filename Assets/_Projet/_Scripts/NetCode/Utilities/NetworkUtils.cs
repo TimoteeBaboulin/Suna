@@ -248,9 +248,9 @@ namespace GameNetwork.Utils
         public SessionOptions CreateSessionOptions()
         {
             int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
-            var options = new SessionOptions 
-            { 
-                MaxPlayers = maxPlayers, 
+            var options = new SessionOptions
+            {
+                MaxPlayers = maxPlayers,
                 PlayerProperties = new Dictionary<string, PlayerProperty>
         {
             { "team", new PlayerProperty("none", VisibilityPropertyOptions.Public) }
@@ -261,29 +261,7 @@ namespace GameNetwork.Utils
                     {"CountTeamCorpo", new SessionProperty("0", VisibilityPropertyOptions.Public) }
                 }
             };
-
-
-            //int playersPerTeam = (maxPlayers - 1) / 2;
-
-            //for (int i = 0; i < maxPlayers - 1; i++)
-            //{
-            //    string team = i < playersPerTeam ? "Corpo" : "Natif";
-            //    options.PlayerProperties.Add(
-            //        $"player{i + 1}",
-            //        new PlayerProperty(team, VisibilityPropertyOptions.Public)
-            //    );
-            //}
-
-            Debug.Log($"Create sessions with IP {CurrentIP}, Port {CurrentPort}");
-
-            //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-            //{
-            //    return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
-            //}
-            //else
-            //{
-            //}
-                return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
+            return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
         }
     }
 }
