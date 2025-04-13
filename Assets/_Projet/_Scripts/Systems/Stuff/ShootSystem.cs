@@ -52,6 +52,8 @@ public partial struct ShootSystem : ISystem
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
+            if (owner == Entity.Null) continue;
+
             RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
             //Check valid state
@@ -60,14 +62,14 @@ public partial struct ShootSystem : ISystem
                 dynamicData.state = RangedWeaponState.Idle;
 
                 // Retrieve player input
-                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) continue;
                 ref CharacterInput input = ref inputRef.ValueRW;
 
                 // Retrieve player bones
                 //if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
                 //float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
-                if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+                if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) continue;
 
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
@@ -151,6 +153,16 @@ public partial struct ShootSystem : ISystem
                                 }
 
                                 // === FIN VISUEL ===
+
+                                // === SON ===
+                                RangedWeaponSoundRpc soundRpc = new RangedWeaponSoundRpc()
+                                {
+                                    soudToPlay = RangedWeaponState.Shoot,
+                                    source = weapon
+                                };
+                                RpcUtils.SendServerToClientRpc(ref soundRpc);
+                                // === FIN SON ===
+
                             }
                         }
 

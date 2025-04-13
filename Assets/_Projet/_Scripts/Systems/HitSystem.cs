@@ -41,10 +41,10 @@ public partial class HitSystem : SystemBase
                     Scale = 1.0f
                 });
 
-                commandBuffer.AddComponent<DestroyTag>(hitEffect);
 
-                commandBuffer.DestroyEntity(entity);
+                commandBuffer.AddComponent<DestroyTag>(hitEffect);
             }
+            commandBuffer.DestroyEntity(entity);
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();

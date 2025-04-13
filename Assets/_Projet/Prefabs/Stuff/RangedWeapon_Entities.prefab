@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ae85e58195ed9644a2b26ef5cb135e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rangedWeapon: {fileID: 0}
 --- !u!114 &-8095411162693691296
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71,12 +72,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultGhostMode: 0
+  DefaultGhostMode: 2
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1
   MaxSendRate: 0
-  prefabId: d9b5e5c85a42a5443a2712c1442912a0
+  prefabId: 4abe784462fc88442aa94cf884cafc21
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0

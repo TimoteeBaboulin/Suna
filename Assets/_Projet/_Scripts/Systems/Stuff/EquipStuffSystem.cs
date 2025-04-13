@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 [GhostComponent]
 public struct EquipStuffQueue : IBufferElementData
@@ -46,6 +47,8 @@ public partial struct EquipStuffSystem : ISystem
 
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
+            int ownerNetworkId = SystemAPI.GetComponent<GhostOwner>(duo.Owner).NetworkId;
+            var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
             ref var stuffData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
@@ -67,9 +70,10 @@ public partial struct EquipStuffSystem : ISystem
             stuffOwner.ValueRW.Value = duo.Owner;
 
             //Auto switch on new stuff
-            ownerStuffList.ValueRW.StuffInHandSlot = stuffData.slot;
+            //ownerStuffList.ValueRW.StuffInHandSlot = stuffData.slot;
 
             //Network
+            stuffGhostOwner.ValueRW.NetworkId = ownerNetworkId;
             var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
             buffer.Add(new LinkedEntityGroup { Value = duo.Stuff });
         }
@@ -102,6 +106,7 @@ public partial struct UnequipStuffSystem : ISystem
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
             var stuffTransform = SystemAPI.GetComponentRW<LocalTransform>(duo.Stuff);
+            var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
             if (ownerStuffList.ValueRO.GetStuffInSlot(stufData.slot) == duo.Stuff)
@@ -111,6 +116,8 @@ public partial struct UnequipStuffSystem : ISystem
 
             stuffOwner.ValueRW.Value = Entity.Null;
 
+            //Network
+            stuffGhostOwner.ValueRW.NetworkId = -1;
             var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
             for (int i = 0; i < buffer.Length; i++)
             {

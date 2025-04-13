@@ -72,11 +72,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DefaultGhostMode: 0
+  DefaultGhostMode: 2
   SupportedGhostModes: 3
   OptimizationMode: 0
   Importance: 1
-  prefabId: d9b5e5c85a42a5443a2712c1442912a0
+  MaxSendRate: 0
+  prefabId: b7518e0c938ce854c956a2aa97be3152
   HasOwner: 1
   SupportAutoCommandTarget: 1
   TrackInterpolationDelay: 0

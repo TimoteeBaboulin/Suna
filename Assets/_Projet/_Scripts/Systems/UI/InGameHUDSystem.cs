@@ -45,7 +45,6 @@ partial class InGameHUDSystem : SystemBase
                 HitRegister?.Invoke(this, EventArgs.Empty);
             }
         }
-
         foreach (var (weaponDataRef, stuff) in SystemAPI
             .Query<RefRO<RangedWeaponDynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()

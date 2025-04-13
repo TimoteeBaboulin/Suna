@@ -60,26 +60,14 @@ partial struct StuffSystemClient : ISystem
                         stuffTransform.rotation = viewTransform.rotation;
                         stuffTransform.SetParent(viewTransform);
                         stuffTransform.localPosition = stuffData._stuffLocalOffsetView;
-                        Debug.Log("Equiped");
                     }
                 }
             }
             //Si le stuff n'a pas de propriétaire et a un parent, on le drop au sol
             else if(stuffTransform.parent != null)
             {
-                //stuffTrasform.localPosition = Vector3.zero;
-                //Vector3 tempPos = stuffTrasform.position;
                 stuffTransform.SetParent(null);
-                //stuffTrasform.position = tempPos;
-                //Debug.Log("////////////////////////////////////////////////////////////////////////Droped " + stuffTransform.position); //TODO : Est bon juste une fois, ce lance trop de fois
-
-                //Vector3 pos = transformRO.ValueRO.Position;
-                //quaternion rot = transformRO.ValueRO.Rotation;
-                //stuffTrasform.position = pos;
-                //stuffTrasform.rotation = rot;
             }
-
-            //state.EntityManager.SetComponentEnabled<IsStuffOwnerUpdate>(stuff, false);
         }
 
         //Stuff view and entity follow

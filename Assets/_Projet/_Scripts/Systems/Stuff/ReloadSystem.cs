@@ -27,12 +27,12 @@ public partial struct RangedWeaponReloadSystem : ISystem
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         if (!networkTime.IsFirstPredictionTick) return;
 
-        float dt = networkTime.ServerTickFraction * SystemAPI.Time.DeltaTime;
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+        float dt = SystemAPI.Time.DeltaTime;
+
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        var gr = SystemAPI.GetSingleton<GameResourcesDatabase>();
+        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
         foreach (var (dynamicDataRef, dataAccessRef, ownerRef, weapon) in SystemAPI
         .Query<RefRW<RangedWeaponDynamicData>, RefRO<RangedWeaponDatabaseAccess>, RefRO<StuffOwner>>()
@@ -43,12 +43,12 @@ public partial struct RangedWeaponReloadSystem : ISystem
             //Simplification des components de l'arme
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
-            ref var data = ref dataAccessRef.ValueRO.GetData(ref gr);
+            ref var data = ref dataAccessRef.ValueRO.GetData(ref database);
 
             if (dynamicData.state != RangedWeaponState.Reload)
             {
                 //Recuperation Input joueur
-                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) continue;
                 ref CharacterInput input = ref inputRef.ValueRW;
 
                 if (input.reload.IsSet && dynamicData.currentAmmo < data.magazineCapacity + 1 && dynamicData.remainingAmmo > 0)
@@ -59,6 +59,13 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
+
+                    RangedWeaponSoundRpc soundRpc = new RangedWeaponSoundRpc()
+                    {
+                        soudToPlay = RangedWeaponState.Reload,
+                        source = weapon
+                    };
+                    RpcUtils.SendServerToClientRpc(ref soundRpc);
                 }
             }
             else
