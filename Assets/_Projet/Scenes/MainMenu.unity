@@ -24158,6 +24158,10 @@ PrefabInstance:
       value: ConnectionManager
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+      propertyPath: Port
+      value: 53970
+      objectReference: {fileID: 0}
+    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isClientLocal
       value: 1
       objectReference: {fileID: 0}

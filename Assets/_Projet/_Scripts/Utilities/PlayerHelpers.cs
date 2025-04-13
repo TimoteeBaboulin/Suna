@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameNetwork.Utils;
+using System;
 using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
@@ -16,54 +17,74 @@ public static class PlayerHelpers
     /// </summary>
     static public int CountPlayersAliveManaged(TeamSideType team, World world)
     {
+        // Determine the team name.
         string teamName = team == TeamSideType.Corpo ? "Corpo" : "Natif";
 
+        // Get the team list from session.
         List<IReadOnlyPlayer> teamList = GetPlayersByTeam(teamName);
         Debug.Log($"[AliveCheck] Team '{teamName}' session player count: {teamList.Count}");
 
-        int count = 0;
+        int aliveCount = 0;
 
-        EntityQueryDesc desc = new EntityQueryDesc
+        // ---------- QUERY A: Get all client entities with ClientComponent ----------
+        EntityQuery clientQuery = world.EntityManager.CreateEntityQuery(new EntityQueryDesc
+        {
+            All = new ComponentType[] { typeof(ClientComponent) }
+        });
+        NativeArray<Entity> clientEntities = clientQuery.ToEntityArray(Allocator.Temp);
+
+        // Build a dictionary to look up the client’s playerID by its Entity.
+        Dictionary<Entity, string> clientIdLookup = new Dictionary<Entity, string>();
+        for (int i = 0; i < clientEntities.Length; i++)
+        {
+            Entity e = clientEntities[i];
+            ClientComponent clientComp = world.EntityManager.GetComponentData<ClientComponent>(e);
+            clientIdLookup[e] = clientComp.playerID.ToString();
+            Debug.Log($"[AliveCheck] Client entity {e.Index} with playerID: {clientIdLookup[e]}");
+        }
+        clientEntities.Dispose();
+
+
+        // ---------- QUERY B: Get character entities with CharacterClientAttachedComponent and CharacterIsEnable ----------
+        EntityQueryDesc characterDesc = new EntityQueryDesc
         {
             All = new ComponentType[]
             {
-            typeof(CharacterClientAttachedComponent)
+            typeof(CharacterClientAttachedComponent),
+            typeof(CharacterIsEnable)
             },
+            Options = EntityQueryOptions.IgnoreComponentEnabledState
         };
 
-        EntityQuery query = world.EntityManager.CreateEntityQuery(desc);
-        NativeArray<Entity> characters = query.ToEntityArray(Allocator.Temp);
+        EntityQuery characterQuery = world.EntityManager.CreateEntityQuery(characterDesc);
+        NativeArray<Entity> characterEntities = characterQuery.ToEntityArray(Allocator.Temp);
+        Debug.Log($"[AliveCheck] Total character entities: {characterEntities.Length}");
 
-        Debug.Log($"[AliveCheck] Total character entities: {characters.Length}");
-
-        for (int i = 0; i < characters.Length; i++)
+        // Loop through character entities.
+        for (int i = 0; i < characterEntities.Length; i++)
         {
-            Entity characterEntity = characters[i];
+            Entity characterEntity = characterEntities[i];
             var entityManager = world.EntityManager;
 
-            // Make sure CharacterIsEnable is enabled
+            // Check if the character's CharacterIsEnable is actually enabled.
             if (!entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
                 continue;
 
-            // Get linked client entity from character
-            if (!entityManager.HasComponent<CharacterClientAttachedComponent>(characterEntity))
-            {
-                Debug.LogWarning($"[AliveCheck] Character entity {characterEntity.Index} missing CharacterClientAttachedComponent.");
-                continue;
-            }
-
-            var attached = entityManager.GetComponentData<CharacterClientAttachedComponent>(characterEntity);
+            // Get the attached client entity from the character.
+            CharacterClientAttachedComponent attached = entityManager.GetComponentData<CharacterClientAttachedComponent>(characterEntity);
             Entity clientEntity = attached.ClientEntity;
 
-            if (!entityManager.HasComponent<ClientComponent>(clientEntity))
+            ClientComponent client = entityManager.GetComponentData<ClientComponent>(clientEntity);
+            Debug.LogWarning($"[AliveCheck] client.playerID {client.playerID}");
+
+            // Look up the client player ID from our dictionary.
+            if (!clientIdLookup.TryGetValue(clientEntity, out string clientPlayerId))
             {
-                Debug.LogWarning($"[AliveCheck] Client entity {clientEntity.Index} missing ClientComponent.");
+                Debug.LogWarning($"[AliveCheck] No ClientComponent found for client entity {clientEntity.Index}");
                 continue;
             }
 
-            var clientComp = entityManager.GetComponentData<ClientComponent>(clientEntity);
-            string clientPlayerId = clientComp.playerID.ToString();
-            Debug.Log($"[AliveCheck] ClientID '{clientPlayerId}'");
+            // Compare clientPlayerId against the team session list.
             bool found = teamList.Exists(player =>
             {
                 Debug.Log($"[AliveCheck] Comparing client ID '{clientPlayerId}' with session player ID '{player.Id}'");
@@ -72,28 +93,20 @@ public static class PlayerHelpers
 
             if (found)
             {
-                Debug.Log($"[AliveCheck] ✅ Matched PlayerID: {clientPlayerId}");
-                count++;
+                aliveCount++;
+                Debug.Log($"[AliveCheck] Matched client playerID: {clientPlayerId} for character entity {characterEntity.Index}");
             }
         }
+        characterEntities.Dispose();
 
-        characters.Dispose();
-
-        Debug.Log($"[AliveCheck] --- Team {teamName} player IDs ---");
-        foreach (IReadOnlyPlayer player in teamList)
-        {
-            Debug.Log($" - {player.Id}");
-        }
-
-        Debug.Log($"[AliveCheck] ✅ Final count of alive players in team '{teamName}': {count}");
-
-        return count;
+        Debug.Log($"[AliveCheck] Final alive count for team '{teamName}': {aliveCount}");
+        return aliveCount;
     }
 
     static public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
     {
         var teamPlayers = new List<IReadOnlyPlayer>();
-        var session = ServerSessionFactory.instance.Session;
+        var session = ClientTransportHelper.instance.Session;
         var players = session.Players;
 
         foreach (var player in players)

@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -78,7 +79,7 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            FixedString64Bytes currentPlayerId = ServerSessionFactory.instance.Session.CurrentPlayer.Id;
+            FixedString64Bytes currentPlayerId = ClientTransportHelper.instance.Session.CurrentPlayer.Id;
 
             Debug.Log($"Assigning Player ID: {currentPlayerId.ToString()} to client with NetworkId {networkId.Value}");
             ecb.AddComponent(ownerEntity, new ClientComponent { 
@@ -111,9 +112,9 @@ public partial class SessionStatusSystem : SystemBase
     protected override void OnUpdate()
     {
         // First, check if we haven't subscribed and a session is available.
-        if (!didSubscribe && ServerSessionFactory.instance != null)
+        if (!didSubscribe && ClientTransportHelper.instance != null)
         {
-            var session = ServerSessionFactory.instance.Session;
+            var session = ClientTransportHelper.instance.Session;
             session.PlayerLeaving += OnPlayerLeaving;
             session.PlayerHasLeft += OnPlayerHasLeft;
             session.RemovedFromSession += OnRemovedFromSession;
@@ -130,9 +131,9 @@ public partial class SessionStatusSystem : SystemBase
         {
             timer = 0f; 
 
-            if (ServerSessionFactory.instance != null)
+            if (ClientTransportHelper.instance != null)
             {
-                var session = ServerSessionFactory.instance.Session;
+                var session = ClientTransportHelper.instance.Session;
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
@@ -167,9 +168,9 @@ public partial class SessionStatusSystem : SystemBase
 
     protected override void OnDestroy()
     {
-        if (didSubscribe && ServerSessionFactory.instance != null)
+        if (didSubscribe && ClientTransportHelper.instance != null)
         {
-            var session = ServerSessionFactory.instance.Session;
+            var session = ClientTransportHelper.instance.Session;
             session.PlayerLeaving -= OnPlayerLeaving;
             session.PlayerHasLeft -= OnPlayerHasLeft;
             session.RemovedFromSession -= OnRemovedFromSession;

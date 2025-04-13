@@ -9,35 +9,29 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
 {
-    private string SessionName;
-    private ClientTransportHelper serverConnectionSettings;
-
-    public static ServerSessionFactory instance { get; private set; }
-    public ISession Session { get; private set; }
+    private static ServerSessionFactory instance;
     private ServerSessionFactory() { }
 
     public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
     {
         instance = new ServerSessionFactory();
-        instance.SessionName = ClientTransportHelper.CurrentPort.ToString();
-
         try
         {
             AutoConnectPort = port;
             SessionOptions options = new SessionOptions
             {
                 MaxPlayers = ClientTransportHelper.MaxNbOfPlayers,
-                Name = instance.SessionName
+                Name = ClientTransportHelper.CurrentPort.ToString()
             };
             ClientTransportHelper transportHelper = new ClientTransportHelper();
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
-            instance.Session = serverSession.Session;
+            ISession session = serverSession.Session;
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
-            Debug.Log($"[ServerSessionFactory] Created session with code: {instance.Session.Id}");
-            Debug.Log($"[ServerSessionFactory] Created session with name: {instance.Session.Name}");
+            Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
+            Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
 
 
             return serverSession;

@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -109,7 +110,7 @@ public partial struct RespawnSystem : ISystem
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
-
+            
             //This is set up to allow easy team dispatching once it's implemented
             TeamSideType teamSideType = TeamSideType.Neutre;
             if (SystemAPI.HasComponent<CorpoTeamTag>(clientEntity))
@@ -153,6 +154,10 @@ public partial struct RespawnSystem : ISystem
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
+                FixedString64Bytes currentPlayerId = ClientTransportHelper.instance.Session.CurrentPlayer.Id;
+
+                playerComponent.ValueRW.networkID = networkId;
+                playerComponent.ValueRW.playerID = currentPlayerId;
                 SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }

@@ -2,7 +2,9 @@
 using Unity.Entities;
 using UnityEngine;
 
-[UpdateBefore(typeof(RoundSystemServer))]
+//[UpdateBefore(typeof(RoundSystemServer))]
+//[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateAfter(typeof(RespawnSystem))]
 public partial class CountPlayersSystemServer : SystemBase
 {
     protected override void OnCreate()
@@ -10,6 +12,7 @@ public partial class CountPlayersSystemServer : SystemBase
         base.OnCreate();
 
         RequireForUpdate<RoundComponent>();
+        RequireForUpdate<CharacterIsEnable>();
     }
 
     protected override void OnUpdate()
@@ -24,11 +27,11 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
         RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
-	
-	// playersAliveRW.ValueRW.nativePlayersAlive = 1;
-	// playersAliveRW.ValueRW.corpoPlayersAlive = 1;
 
-        playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
-        playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+        if (World.IsCreated)
+        {
+            playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
+            playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+        }
     }
 }
