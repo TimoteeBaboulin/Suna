@@ -106,7 +106,6 @@ public partial class CharacterInputSystem : SystemBase
             if (isShootPressed && !plantingOrDefusing)
             {
                 input.ValueRW.attack.Set();
-                input.ValueRW.shootRotation = Camera.main.transform.rotation;
             }
             else
             {

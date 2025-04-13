@@ -53,6 +53,7 @@ namespace MeleeWeapon
                 if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
                 float3 viewPos = modelBonesRef.WeaponSlotTransform.position;
 
+                if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
 
                 // Calculate strike rate
                 if (dynamicData.strikeTimer > 0)
@@ -63,7 +64,7 @@ namespace MeleeWeapon
                 {
                     dynamicData.strikeTimer += commonData.strikeRate;
 
-                    RaycastHit hit = ClosestRayCast(input.shootRotation, viewPos, commonData.range, owner);
+                    RaycastHit hit = ClosestRayCast(shootRotation, viewPos, commonData.range, owner);
 
                     // Apply damage to the target player
                     if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
@@ -110,6 +111,23 @@ namespace MeleeWeapon
             {
                 //Debug.LogError("CharacterModelBones not found");
                 modelBones = default;
+                return false;
+            }
+        }
+
+        bool TryGetCharacterShootRotation(Entity owner, ref SystemState state, out quaternion shootRotation)
+        {
+            if (state.EntityManager.HasComponent<LocalTransform>(owner)
+                && state.EntityManager.HasComponent<CharacterViewRotation>(owner))
+            {
+                quaternion characterRotation = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Rotation;
+                quaternion viewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(owner).ValueRO.ViewRotation;
+                shootRotation = math.mul(characterRotation, viewRotation);
+                return true;
+            }
+            else
+            {
+                shootRotation = quaternion.identity;
                 return false;
             }
         }

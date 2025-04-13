@@ -69,6 +69,8 @@ public partial struct ShootSystem : ISystem
 
                 if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
 
+                if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
+
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
                     dynamicData.firerateTimer -= dt;
@@ -108,7 +110,7 @@ public partial struct ShootSystem : ISystem
                             float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                             quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
-                            recoilRotation = math.mul(input.shootRotation, recoilRotation);
+                            recoilRotation = math.mul(shootRotation, recoilRotation);
 
                             localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
 
@@ -230,6 +232,23 @@ public partial struct ShootSystem : ISystem
         else
         {
             shootStartpos = default;
+            return false;
+        }
+    }
+
+    bool TryGetCharacterShootRotation(Entity owner, ref SystemState state, out quaternion shootRotation)
+    {
+        if (state.EntityManager.HasComponent<LocalTransform>(owner)
+            && state.EntityManager.HasComponent<CharacterViewRotation>(owner))
+        {
+            quaternion characterRotation = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Rotation;
+            quaternion viewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(owner).ValueRO.ViewRotation;
+            shootRotation = math.mul(characterRotation, viewRotation);
+            return true;
+        }
+        else
+        {
+            shootRotation = quaternion.identity;
             return false;
         }
     }
