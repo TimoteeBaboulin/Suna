@@ -46,8 +46,6 @@ public class GameManager : Singleton<GameManager>
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
             sessionTransport = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
         }
-
-
     }
 
     public void Update()
@@ -69,170 +67,11 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
         Debug.Log($"Count of current player PROPERTIES: {currentSession.CurrentPlayer.Properties.Count}");
 
-        //if (currentSession is IHostSession hostSession)
-        //{
-        //    hostSession.PlayerJoined += OnPlayerJoined;
-        //    Debug.Log("[Team Assignment] PlayerJoined listener attached.");
-
-        //    // Assign teams to any existing players (like the host)
-        //    foreach (var player in currentSession.Players)
-        //    {
-        //        if (!player.Properties.TryGetValue("team", out var prop) || prop.Value == "none")
-        //        {
-        //            AssignTeamToPlayer(player, currentSession.Players);
-        //        }
-        //    }
-        //}
-
         var localPlayer = currentSession.CurrentPlayer;
         if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
         {
             Debug.Log($"[Play] Local player team: {localTeam.Value}");
         }
-    }
-
-    //private void AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
-    //{
-    //    int countTeamA = 0;
-    //    int countTeamB = 0;
-
-    //    foreach (var p in allPlayers)
-    //    {
-    //        if (p.Properties.TryGetValue("team", out PlayerProperty prop))
-    //        {
-    //            if (prop.Value == "Corpo")
-    //                countTeamA++;
-    //            else if (prop.Value == "Natif")
-    //                countTeamB++;
-    //        }
-    //    }
-
-    //    string assignedTeam = (countTeamA == 0 && countTeamB == 0)
-    //        ? ((UnityEngine.Random.value < 0.5f) ? "Corpo" : "Natif")
-    //        : (countTeamA <= countTeamB ? "Corpo" : "Natif");
-
-    //    if (readOnlyPlayer is IPlayer player)
-    //    {
-    //        player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
-    //        Debug.Log($"[Team Assignment] Assigned Player {player.AllocationId} to team {assignedTeam}");
-
-    //        UpdateTeamCountInSession(assignedTeam, player.Id);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("[Team Assignment] Cannot assign team: player instance is not modifiable.");
-    //    }
-    //}
-
-    //private void UpdateTeamCountInSession(string assignedTeam, string playerId)
-    //{
-    //    if (currentSession is IHostSession hostSession)
-    //    {
-    //        Debug.Log($"Update {playerId}, {assignedTeam}");
-    //        if (assignedTeam == "Corpo")
-    //        {
-    //            var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
-    //            int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
-    //            hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
-    //            hostSession.SavePropertiesAsync();
-    //            hostSession.SavePlayerDataAsync(playerId);
-    //        }
-    //        else if (assignedTeam == "Natif")
-    //        {
-    //            var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
-    //            int currentCountNatif = int.Parse(countTeamNatifProp.Value);
-    //            hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
-    //            hostSession.SavePropertiesAsync();
-    //            hostSession.SavePlayerDataAsync(playerId);
-    //        }
-
-    //        Debug.Log($"Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
-    //    }
-    //    else
-    //    {
-    //        Debug.LogError("[Team Assignment] Session is not of type IHostSession.");
-    //    }
-    //}
-
-    //private void OnPlayerJoined(string playerId)
-    //{
-    //    Debug.Log($"[Team Assignment] PlayerJoined triggered for ID: {playerId}");
-
-    //    foreach (var p in currentSession.Players)
-    //    {
-    //        Debug.Log($"[Player Check] Session Player ID: {p.Id}");
-    //    }
-
-    //    var player = currentSession.Players.FirstOrDefault(p => p.Id == playerId);
-
-    //    if (player != null)
-    //    {
-    //        Debug.Log($"[Team Assignment] Match found! Assigning team to Player ID: {player.Id}");
-    //        AssignTeamToPlayer(player, currentSession.Players);
-    //    }
-    //    else
-    //    {
-    //        Debug.LogWarning($"[Team Assignment] No player found with ID: {playerId}");
-    //    }
-    //}
-
-
-
-    //public Dictionary<string, List<IReadOnlyPlayer>> GetPlayersByTeam()
-    //{
-    //    var playersByTeam = new Dictionary<string, List<IReadOnlyPlayer>>();
-
-    //    foreach (var player in CurrentSession.Players)
-    //    {
-    //        if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
-    //        {
-    //            string team = teamProp.Value;
-    //            if (!playersByTeam.ContainsKey(team))
-    //            {
-    //                playersByTeam[team] = new List<IReadOnlyPlayer>();
-    //            }
-
-    //            playersByTeam[team].Add(player);
-    //        }
-    //    }
-
-    //    return playersByTeam;
-
-    //    //var playersByTeam = GetPlayersByTeam();
-    //    //foreach (var kvp in playersByTeam)
-    //    //{
-    //    //    Debug.Log($"Team {kvp.Key} players:");
-    //    //    foreach (var player in kvp.Value)
-    //    //    {
-    //    //        Debug.Log($" - Player ID: {player.Id}");
-    //    //    }
-    //    //}
-    //}
-
-    //public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
-    //{
-    //    var teamPlayers = new List<IReadOnlyPlayer>();
-
-    //    foreach (var player in CurrentSession.Players)
-    //    {
-    //        if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
-    //        {
-    //            if (teamProp.Value.Equals(teamName, StringComparison.OrdinalIgnoreCase))
-    //            {
-    //                teamPlayers.Add(player);
-    //            }
-    //        }
-    //    }
-    //    return teamPlayers;
-    //}
-
-    public bool IsSessionFull()
-    {
-        if (sessionTransport != null)
-        {
-            return currentSession.AvailableSlots == 0;
-        }
-        return false;
     }
 
     public List<IReadOnlyPlayer> GetAllPlayers()
@@ -247,7 +86,6 @@ public class GameManager : Singleton<GameManager>
 
     public int GetCurrentNbOfPlayersInSession()
     {
-
         if (sessionTransport != null)
         {
             if (RequestedPlayType == PlayType.Client)

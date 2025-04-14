@@ -37,8 +37,6 @@ public partial class ClientSystem : SystemBase
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<TeamAliveCountRpc>>().WithEntityAccess())
         {
             Debug.Log($"[ClientSystem] Received team alive counts: Native: {command.ValueRO.nativePlayersAlive}, Corpo: {command.ValueRO.corpoPlayersAlive}");
-            // Update UI or internal state as necessary
-
             commandBuffer.DestroyEntity(entity);  
         }
 

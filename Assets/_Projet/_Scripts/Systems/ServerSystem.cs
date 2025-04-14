@@ -84,7 +84,6 @@ public partial class ServerSystem : SystemBase
             PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
             Debug.Log($"[Team Assignment] Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
 
-            // Assign the team and update session properties
             string team = PlayerHelpers.AssignTeamToPlayer(currentPlayer, ClientTransportHelper.instance.Session.Players);
             Debug.Log($"[Team Assignment] Assigned Team: {team}");
             ecb.AddComponent(ownerEntity, new ClientComponent { 
@@ -117,7 +116,6 @@ public partial class SessionStatusSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        // First, check if we haven't subscribed and a session is available.
         if (!didSubscribe && ClientTransportHelper.instance != null)
         {
             var session = ClientTransportHelper.instance.Session;
@@ -233,16 +231,13 @@ public partial class SessionStatusSystem : SystemBase
         //}
     }
 
-    // Event handler for when the current client is removed.
     private void OnRemovedFromSession()
     {
         Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
     }
 
-    // Event handler for when session properties change.
     private void OnSessionPropertiesChanged()
     {
         Debug.Log("[SessionStatusSystem] Session properties have been updated.");
-        // Update internal ECS state or perform other actions based on the new properties.
     }
 }

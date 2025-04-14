@@ -59,7 +59,6 @@ public static class PlayerHelpers
             ClientComponent client = entityManager.GetComponentData<ClientComponent>(clientEntity);
             bool found = false;
 
-            // Compare client player ID with the team list
             for (int j = 0; j < teamList.Count; j++)
             {
                 var player = teamList[j];
@@ -78,7 +77,6 @@ public static class PlayerHelpers
         }
 
         characterEntities.Dispose();
-        //Debug.Log($"[AliveCheck] Total alive players for team '{teamName}': {aliveCount}");
         return aliveCount;
     }
 
@@ -91,11 +89,6 @@ public static class PlayerHelpers
             var players = session.Players;
             foreach (var player in players)
             {
-                //if (RequestedPlayType == PlayType.Server)
-                //{
-                //    continue;
-                //}
-
                 if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
                 {
                     if (teamProp.Value.Equals(teamName, StringComparison.OrdinalIgnoreCase))
@@ -135,12 +128,10 @@ public static class PlayerHelpers
             }
         }
 
-        // Assign the team based on current counts, or randomly if both teams are empty
         string assignedTeam = (countTeamA == 0 && countTeamB == 0)
             ? (UnityEngine.Random.value < 0.5f ? "Corpo" : "Natif")
             : (countTeamA <= countTeamB ? "Corpo" : "Natif");
 
-        // Set the team property for the player
         if (readOnlyPlayer is IPlayer player)
         {
             player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
@@ -160,7 +151,6 @@ public static class PlayerHelpers
                 var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
                 int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
                 hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
-               // hostSession.SavePropertiesAsync();
                 hostSession.SavePlayerDataAsync(playerId);
             }
             else if (assignedTeam == "Natif")
@@ -168,7 +158,6 @@ public static class PlayerHelpers
                 var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
                 int currentCountNatif = int.Parse(countTeamNatifProp.Value);
                 hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
-                //hostSession.SavePropertiesAsync();
                 hostSession.SavePlayerDataAsync(playerId);
             }
 
