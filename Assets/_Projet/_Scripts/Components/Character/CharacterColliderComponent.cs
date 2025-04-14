@@ -1,6 +1,5 @@
 using Unity.Entities;
 
-public struct CharacterColliderTag : IComponentData { }
 public struct CharacterColliderInitEntityTag : IComponentData { }
 
 public struct CharacterColliderComponent : IComponentData
