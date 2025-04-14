@@ -101,7 +101,6 @@ public partial struct RespawnSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        //Necessary data for efficient handling of respawns
         bool[] teamSpawnsValid = { false, false, false };
         Entity[] teamSpawnsEntities = new Entity[3];
 
@@ -125,18 +124,18 @@ public partial struct RespawnSystem : ISystem
                 teamSideType = TeamSideType.Natif;
             }
 
+            Debug.Log($"[AliveCheck] currentPlayerID '{ClientTransportHelper.instance.Session.CurrentPlayer.Id}' for NetworkId {networkId}");
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId);
             Debug.Log($"[AliveCheck] currentPlayerID '{currentPlayer.Id}' for NetworkId {networkId}");
-
-            var team = currentPlayer.Properties.ContainsKey("team") ? currentPlayer.Properties["team"].Value : "No team property found";
+            string team = currentPlayer.Properties.ContainsKey("team") ? currentPlayer.Properties["team"].Value : "No team property found";
             Debug.Log($"[AliveCheck] Team: {team}");
 
-            switch (team.ToLower())
+            switch (team)
             {
-                case "corpo":
+                case "Corpo":
                     teamSideType = TeamSideType.Corpo;
                     break;
-                case "natif":
+                case "Natif":
                     teamSideType = TeamSideType.Natif;
                     break;
                 default:
@@ -144,8 +143,9 @@ public partial struct RespawnSystem : ISystem
                     break;
             }
 
+//#if UNITY_EDITOR
             Debug.Log($"[AliveCheck] Final teamSideType: {teamSideType}");
-
+//#endif
             if (!teamSpawnsValid[(int)teamSideType])
             {
                 continue;
@@ -166,8 +166,6 @@ public partial struct RespawnSystem : ISystem
             }
 
 
-
-            // Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
@@ -179,7 +177,6 @@ public partial struct RespawnSystem : ISystem
             }
             else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
             {
-                // If character exists, reset its position and health
                 RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
                 RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
                 transform.ValueRW.Position = buffer[index % buffer.Length];

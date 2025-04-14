@@ -26,6 +26,7 @@ public partial class ServerSystem : SystemBase
         _clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
+        
     }
     protected override void OnUpdate()
     {
@@ -80,13 +81,18 @@ public partial class ServerSystem : SystemBase
             });
 
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
+            Debug.Log($"[Team Assignment] Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
 
-            Debug.Log($"Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
+            // Assign the team and update session properties
+            string team = PlayerHelpers.AssignTeamToPlayer(currentPlayer, ClientTransportHelper.instance.Session.Players);
+            Debug.Log($"[Team Assignment] Assigned Team: {team}");
             ecb.AddComponent(ownerEntity, new ClientComponent { 
                 networkID = networkId.Value, 
                 playerID = currentPlayer.Id}
             );
 
+            PlayerHelpers.UpdateTeamCountInSession(team, currentPlayer.Id);
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
     }
@@ -94,10 +100,10 @@ public partial class ServerSystem : SystemBase
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateAfter(typeof(CountPlayersSystemServer))]
 public partial class SessionStatusSystem : SystemBase
 {
-    // Set your desired interval (in seconds)
-    private float logInterval = 5f;
+    private float logInterval = 5.0f;
     private float timer;
     private bool didSubscribe = false;
 
@@ -142,8 +148,8 @@ public partial class SessionStatusSystem : SystemBase
 
                 var players = session.Players;
 
-                //Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
-                //Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
+                Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
+                Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
                 if (SystemAPI.TryGetSingleton<PlayerCounts>(out var playerCounts))
                 {
                     Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");

@@ -69,20 +69,20 @@ public class GameManager : Singleton<GameManager>
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
         Debug.Log($"Count of current player PROPERTIES: {currentSession.CurrentPlayer.Properties.Count}");
 
-        if (currentSession is IHostSession hostSession)
-        {
-            hostSession.PlayerJoined += OnPlayerJoined;
-            Debug.Log("[Team Assignment] PlayerJoined listener attached.");
+        //if (currentSession is IHostSession hostSession)
+        //{
+        //    hostSession.PlayerJoined += OnPlayerJoined;
+        //    Debug.Log("[Team Assignment] PlayerJoined listener attached.");
 
-            // Assign teams to any existing players (like the host)
-            foreach (var player in currentSession.Players)
-            {
-                if (!player.Properties.TryGetValue("team", out var prop) || prop.Value == "none")
-                {
-                    AssignTeamToPlayer(player, currentSession.Players);
-                }
-            }
-        }
+        //    // Assign teams to any existing players (like the host)
+        //    foreach (var player in currentSession.Players)
+        //    {
+        //        if (!player.Properties.TryGetValue("team", out var prop) || prop.Value == "none")
+        //        {
+        //            AssignTeamToPlayer(player, currentSession.Players);
+        //        }
+        //    }
+        //}
 
         var localPlayer = currentSession.CurrentPlayer;
         if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
@@ -91,89 +91,90 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    private void AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
-    {
-        int countTeamA = 0;
-        int countTeamB = 0;
+    //private void AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
+    //{
+    //    int countTeamA = 0;
+    //    int countTeamB = 0;
 
-        foreach (var p in allPlayers)
-        {
-            if (p.Properties.TryGetValue("team", out PlayerProperty prop))
-            {
-                if (prop.Value == "Corpo")
-                    countTeamA++;
-                else if (prop.Value == "Natif")
-                    countTeamB++;
-            }
-        }
+    //    foreach (var p in allPlayers)
+    //    {
+    //        if (p.Properties.TryGetValue("team", out PlayerProperty prop))
+    //        {
+    //            if (prop.Value == "Corpo")
+    //                countTeamA++;
+    //            else if (prop.Value == "Natif")
+    //                countTeamB++;
+    //        }
+    //    }
 
-        string assignedTeam = (countTeamA == 0 && countTeamB == 0)
-            ? ((UnityEngine.Random.value < 0.5f) ? "Corpo" : "Natif")
-            : (countTeamA <= countTeamB ? "Corpo" : "Natif");
+    //    string assignedTeam = (countTeamA == 0 && countTeamB == 0)
+    //        ? ((UnityEngine.Random.value < 0.5f) ? "Corpo" : "Natif")
+    //        : (countTeamA <= countTeamB ? "Corpo" : "Natif");
 
-        if (readOnlyPlayer is IPlayer player)
-        {
-            player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
-            Debug.Log($"[Team Assignment] Assigned Player {player.AllocationId} to team {assignedTeam}");
+    //    if (readOnlyPlayer is IPlayer player)
+    //    {
+    //        player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
+    //        Debug.Log($"[Team Assignment] Assigned Player {player.AllocationId} to team {assignedTeam}");
 
-            UpdateTeamCountInSession(assignedTeam, player.Id);
-        }
-        else
-        {
-            Debug.LogError("[Team Assignment] Cannot assign team: player instance is not modifiable.");
-        }
-    }
+    //        UpdateTeamCountInSession(assignedTeam, player.Id);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("[Team Assignment] Cannot assign team: player instance is not modifiable.");
+    //    }
+    //}
 
-    private void UpdateTeamCountInSession(string assignedTeam, string playerId)
-    {
-        if (currentSession is IHostSession hostSession)
-        {
-            if (assignedTeam == "Corpo")
-            {
-                var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
-                int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
-                hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
-                hostSession.SavePropertiesAsync();
-                hostSession.SavePlayerDataAsync(playerId);
-            }
-            else if (assignedTeam == "Natif")
-            {
-                var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
-                int currentCountNatif = int.Parse(countTeamNatifProp.Value);
-                hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
-                hostSession.SavePropertiesAsync();
-                hostSession.SavePlayerDataAsync(playerId);
-            }
+    //private void UpdateTeamCountInSession(string assignedTeam, string playerId)
+    //{
+    //    if (currentSession is IHostSession hostSession)
+    //    {
+    //        Debug.Log($"Update {playerId}, {assignedTeam}");
+    //        if (assignedTeam == "Corpo")
+    //        {
+    //            var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
+    //            int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
+    //            hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
+    //            hostSession.SavePropertiesAsync();
+    //            hostSession.SavePlayerDataAsync(playerId);
+    //        }
+    //        else if (assignedTeam == "Natif")
+    //        {
+    //            var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
+    //            int currentCountNatif = int.Parse(countTeamNatifProp.Value);
+    //            hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
+    //            hostSession.SavePropertiesAsync();
+    //            hostSession.SavePlayerDataAsync(playerId);
+    //        }
 
-            Debug.Log($"Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
-        }
-        else
-        {
-            Debug.LogError("[Team Assignment] Session is not of type IHostSession.");
-        }
-    }
+    //        Debug.Log($"Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("[Team Assignment] Session is not of type IHostSession.");
+    //    }
+    //}
 
-    private void OnPlayerJoined(string playerId)
-    {
-        Debug.Log($"[Team Assignment] PlayerJoined triggered for ID: {playerId}");
+    //private void OnPlayerJoined(string playerId)
+    //{
+    //    Debug.Log($"[Team Assignment] PlayerJoined triggered for ID: {playerId}");
 
-        foreach (var p in currentSession.Players)
-        {
-            Debug.Log($"[Player Check] Session Player ID: {p.Id}");
-        }
+    //    foreach (var p in currentSession.Players)
+    //    {
+    //        Debug.Log($"[Player Check] Session Player ID: {p.Id}");
+    //    }
 
-        var player = currentSession.Players.FirstOrDefault(p => p.Id == playerId);
+    //    var player = currentSession.Players.FirstOrDefault(p => p.Id == playerId);
 
-        if (player != null)
-        {
-            Debug.Log($"[Team Assignment] Match found! Assigning team to Player ID: {player.Id}");
-            AssignTeamToPlayer(player, currentSession.Players);
-        }
-        else
-        {
-            Debug.LogWarning($"[Team Assignment] No player found with ID: {playerId}");
-        }
-    }
+    //    if (player != null)
+    //    {
+    //        Debug.Log($"[Team Assignment] Match found! Assigning team to Player ID: {player.Id}");
+    //        AssignTeamToPlayer(player, currentSession.Players);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogWarning($"[Team Assignment] No player found with ID: {playerId}");
+    //    }
+    //}
 
 
 

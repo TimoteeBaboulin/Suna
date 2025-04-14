@@ -32,8 +32,12 @@ public class ServerSessionFactory
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
             Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
             Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
+            Debug.Log($"[ServerSessionFactory] Created session with NB properties: {session.Properties.Count}");
 
-
+            foreach (var property in session.Properties)
+            {
+                Debug.Log($"[ServerSessionFactory] Created session with property: {property.Key} : {property.Value.Value}");
+            }
             return serverSession;
         }
         catch (Exception ex)

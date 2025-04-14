@@ -86,6 +86,7 @@ namespace GameNetwork.Utils
                 Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
 
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+                //IServerSession hostSession = await MultiplayerServerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
                     Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
