@@ -95,8 +95,8 @@ namespace GameNetwork
         public void UpdateLoading(LoadingSteps step, float stepProgress = 0f)
         {
             var currentStep = k_LoadingSteps[step];
-            loadingProgress = currentStep.Start + stepProgress * (currentStep.End - currentStep.Start);
-            loadingStatusText = currentStep.Text;
+            LoadingProgress = currentStep.Start + stepProgress * (currentStep.End - currentStep.Start);
+            LoadingStatusText = currentStep.Text;
             Debug.Log(loadingStatusText);
         }
 

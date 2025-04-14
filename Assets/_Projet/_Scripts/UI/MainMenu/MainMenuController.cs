@@ -48,7 +48,7 @@ public class MainMenuController : MonoBehaviour
         _connectionFeedbackLabel = _connectionFeedback.Q<Label>();
         _connectionFeedbackFill = _connectionFeedback.Q<VisualElement>("Fill");
 
-        //UIDocumentUtils.SetActive(ref _connectionFeedback, false);
+        UIDocumentUtils.SetActive(ref _connectionFeedback, false);
     }
 
     private void Start()
@@ -71,9 +71,13 @@ public class MainMenuController : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        SessionData.Instance.propertyChanged -= OnSessionDataPropertyChanged;
+    }
+
     private void OnSessionDataPropertyChanged(object sender, BindablePropertyChangedEventArgs args)
     {
-        Debug.Log("hello");
         UIDocumentUtils.SetActive(ref _connectionFeedback, true);
         _connectionFeedbackLabel.text = SessionData.Instance.LoadingStatusText;
         _connectionFeedbackFill.style.width = UIDocumentUtils.PercentLength(SessionData.Instance.LoadingProgress * 100f);
