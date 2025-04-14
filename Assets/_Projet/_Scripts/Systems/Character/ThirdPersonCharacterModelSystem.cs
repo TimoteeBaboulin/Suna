@@ -24,10 +24,13 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+
+            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>())
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>>())
         {
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = characterTransform.ValueRO.Rotation;
@@ -67,10 +70,13 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+
+            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>()
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))

@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
+using UnityEngine.InputSystem.XR;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
@@ -26,6 +27,8 @@ public partial struct CharacterMovementSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+		
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         NativeHashMap<Entity, RangedWeaponCommonData> weaponData = new(10, Allocator.TempJob); //Do I need more than 10 ? Since there's 10 players playing top
 
@@ -44,6 +47,7 @@ public partial struct CharacterMovementSystem : ISystem
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
+            ecb = ecb.AsParallelWriter(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
             ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
             StuffListLookup = state.GetComponentLookup<CharacterStuffList>(),
@@ -51,8 +55,10 @@ public partial struct CharacterMovementSystem : ISystem
             CommonDataMap = weaponData,
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
-
         state.Dependency.Complete();
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
 
         weaponData.Dispose();
     }
@@ -64,13 +70,14 @@ public partial struct CharacterMovementJob : IJobEntity
 {
     public float dt;
     public NetworkTime networkTime;
+    public EntityCommandBuffer.ParallelWriter ecb;
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
     [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
     [ReadOnly] public NativeHashMap<Entity, RangedWeaponCommonData> CommonDataMap;
 
-    private static float3 ProjectOnPlan(float3 vec, float3 normal)
+    private static float3 ProjectOnPlane(float3 vec, float3 normal)
     {
         return vec - math.project(vec, normal);
     }
@@ -82,7 +89,23 @@ public partial struct CharacterMovementJob : IJobEntity
 
     private static float3 SlopeMovementDirection(float3 moveDir, float3 groundNormal)
     {
-        return math.normalize(ProjectOnPlan(moveDir, groundNormal));
+        /*sr = math.cross(math.up(), groundNormal);
+
+        if (math.lengthsq(sr) < 0.001f)
+            sr = math.right();
+
+        if(math.dot(sr, math.right()) < 0)
+        {
+            sr *= -1;
+        }
+
+        sf = math.normalize(math.cross(groundNormal, sr));
+
+        return math.normalize(sf * -moveDir.z + sr * moveDir.x);
+        return math.normalize()*/
+
+        float3 projected = ProjectOnPlane(moveDir, groundNormal);
+        return math.lengthsq(projected) > 0.0001 ? math.normalize(projected) : float3.zero;
     }
 
     private bool OnSlope(float3 groundNormal, float maxSlopeAngle)
@@ -91,8 +114,8 @@ public partial struct CharacterMovementJob : IJobEntity
         return angle != 0f && angle <= maxSlopeAngle;
     }
 
-    public void Execute(Entity entity, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<CommonCharacterAnimationState> commonAnimationState)
+    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -112,7 +135,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (isMoving)
         {
-            commonAnimationState.ValueRW.IsWalking = true;
+            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -137,7 +160,7 @@ public partial struct CharacterMovementJob : IJobEntity
         }
         else
         {
-            commonAnimationState.ValueRW.IsWalking = false;
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey);
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
@@ -167,11 +190,15 @@ public partial struct CharacterMovementJob : IJobEntity
         if (isMoving && Angle(math.up(), groundNormal) < controller.maxSlopeAngle)
         {
             controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
+            
         }
         else
         {
             controller.direction = float3.zero;
         }
+
+        UnityEngine.Debug.DrawLine(feetPosition, feetPosition + controller.direction, UnityEngine.Color.green);
+        UnityEngine.Debug.DrawLine(feetPosition, feetPosition + moveDir, UnityEngine.Color.white);
 
         float weaponSpeedModifier = 1.0f;
 
@@ -235,7 +262,17 @@ public partial struct CharacterMovementJob : IJobEntity
             vel.Linear.z *= (1.0f - controller.drag);
         }
 
-        vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * (-9.81f) * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+        float3 gravityVector = new float3(0, -9.81f, 0);
+
+        vel.Linear += (controller.isJumping ? 1 : (onSlope ? 10 : 1)) * gravityVector * controller.gravityScale * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
+
+        if(controller.isGrounded)
+            vel.Linear -= (onSlope ? 10 : 1) * gravityVector * controller.gravityScale * dt; //Removing gravity when grounded
+
+        //if(onSlope && !forwardHit)
+        //    vel.Linear += 10 * controller.gravityScale * gravityVector * dt;
+
+        //vel.Linear.y += ((controller.isGrounded && !forwardHit) ? 10 : 1) * controller.gravityScale * (-9.81f) * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
         if (onSlope && !isMoving && !controller.isJumping) //Prevents jumping when stopping on a slope
             vel.Linear.y = 0;

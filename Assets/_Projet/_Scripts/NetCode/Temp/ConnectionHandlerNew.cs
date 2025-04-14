@@ -219,8 +219,8 @@ public class ConnectionHandlerNew : MonoBehaviour
     private async Task WaitForAttachedCameraAsync(World world, CancellationToken cancellationToken = default)
     {
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingOnPlayer);
-        using var mainEntityCameraQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterLocalViewRotation>());
-        while (!mainEntityCameraQuery.HasSingleton<CharacterLocalViewRotation>())
+        using var mainEntityCameraQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterViewRotation>());
+        while (!mainEntityCameraQuery.HasSingleton<CharacterViewRotation>())
         {
             await Awaitable.NextFrameAsync(cancellationToken);
         }

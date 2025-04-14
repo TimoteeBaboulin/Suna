@@ -21,12 +21,14 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
-
             FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
+
+            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
+            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterLocalViewRotation>>()
+            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
@@ -38,8 +40,9 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
                 modelReference.ModelGameObject.SetActive(true);
             }
 
-            float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = math.mul(characterTransform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
+            float3 sd = math.rotate(newRotation, modelReference.ShootDelta);
+            float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition + sd; //TODO : remove +ShootDelta once we have animations
             CommonCharacterModelUtils.UpdateModelPositionAndRotation(modelReference.ModelGameObject.transform, newPosition, newRotation);
         }
 

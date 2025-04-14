@@ -52,7 +52,7 @@ public partial struct ShootSystem : ISystem
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref ownerRef.ValueRO.Value;
 
-            RefRW<CharacterLocalViewRotation> localView = SystemAPI.GetComponentRW<CharacterLocalViewRotation>(owner);
+            RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
             //Check valid state
             if (dynamicData.state == RangedWeaponState.Idle || dynamicData.state == RangedWeaponState.Shoot)
@@ -68,6 +68,8 @@ public partial struct ShootSystem : ISystem
                 //float3 viewPos = modelBonesRef.ViewBoneTransform.position;
 
                 if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+
+                if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
 
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
@@ -99,14 +101,16 @@ public partial struct ShootSystem : ISystem
                         float2 directionalMovement = (float2) MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
                         bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
 
+                        SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
+
                         for (int i = 0; i < commonData.roundsPerShot; i++)
                         {
                             // Apply spread on raycast
                             float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                            float2 visualRecoil = recoil / 5f;
+                            float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                             quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
-                            recoilRotation = math.mul(input.shootRotation, recoilRotation);
+                            recoilRotation = math.mul(shootRotation, recoilRotation);
 
                             localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
 
@@ -142,6 +146,7 @@ public partial struct ShootSystem : ISystem
                                 {
                                     position = hit.Position,
                                     normal = hit.SurfaceNormal,
+                                    origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
                                 };
 
                                 if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
@@ -164,11 +169,11 @@ public partial struct ShootSystem : ISystem
                 else
                 {
                     dynamicData.shotFired = false;
-
                 }
             }
 
             localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
+            SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
     }
 
@@ -228,6 +233,23 @@ public partial struct ShootSystem : ISystem
         else
         {
             shootStartpos = default;
+            return false;
+        }
+    }
+
+    bool TryGetCharacterShootRotation(Entity owner, ref SystemState state, out quaternion shootRotation)
+    {
+        if (state.EntityManager.HasComponent<LocalTransform>(owner)
+            && state.EntityManager.HasComponent<CharacterViewRotation>(owner))
+        {
+            quaternion characterRotation = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Rotation;
+            quaternion viewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(owner).ValueRO.ViewRotation;
+            shootRotation = math.mul(characterRotation, viewRotation);
+            return true;
+        }
+        else
+        {
+            shootRotation = quaternion.identity;
             return false;
         }
     }

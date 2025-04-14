@@ -71,8 +71,7 @@ public class MainMenuController : MonoBehaviour
     }
     private void SaveAndCloseSettings(SettingsMenuController settingsMenuController)
     {
-        settingsMenuController.SaveSettings();
-        settingsMenuController.root.RemoveFromHierarchy();
+        settingsMenuController.SaveAndCloseSettings();
         Destroy(settingsMenuController);
     }
 
