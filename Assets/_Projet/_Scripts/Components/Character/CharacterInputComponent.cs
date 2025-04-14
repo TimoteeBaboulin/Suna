@@ -18,6 +18,9 @@ public struct CharacterInput : IInputComponentData
     [GhostField] public InputEvent aimingStarted;
     [GhostField] public InputEvent aimingCanceled;
 
+    [GhostField] public InputEvent drop;
+    [GhostField] public InputEvent interact;
+
     public InputEvent openShop;
 
     [GhostField] public int stuffLocation;

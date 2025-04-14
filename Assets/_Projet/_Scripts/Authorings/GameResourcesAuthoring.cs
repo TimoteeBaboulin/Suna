@@ -1,14 +1,11 @@
 ﻿using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class GameResourcesAuthoring : MonoBehaviour
 {
-    public GameObject rangedWeaponEntityPrefab;
-    public GameObject meleeWeaponEntityPrefab;
-    public GameObject harvesterEntityPrefab;
-
     public List<RangedWeaponData> rangedWeaponList;
     public List<MeleeWeaponData> meleeWeaponList;
     public HarvesterData harvester;
@@ -21,15 +18,9 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             Entity entity = GetEntity(TransformUsageFlags.None);
 
-            AddComponent(entity, new GameResourcesStuffEntityPrefabs
-            {
-                rangedWeaponEntityPrefab = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic),
-                meleeWeaponEntityPrefab = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic),
-                harvesterEntityPrefab = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic)
-            });
-
             var builder = new BlobBuilder(Allocator.Temp);
             ref StuffDatabase stuffCollection = ref builder.ConstructRoot<StuffDatabase>();
+            DynamicBuffer<StuffEntityPrefabsBuffer> prefabs = AddBuffer<StuffEntityPrefabsBuffer>(entity);
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -42,6 +33,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
                 //stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
+                prefabs.Add(new StuffEntityPrefabsBuffer { Value = GetEntity(rangedWeaponSO.entityPrefab, TransformUsageFlags.Dynamic) });
+
                 stuffs[i].slot = rangedWeaponSO.location;
                 stuffs[i].type = rangedWeaponSO.type;
                 stuffs[i].side = rangedWeaponSO.side;
@@ -60,7 +53,8 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
 
-                //stuffs[i].viewPrefab = meleeWeaponSO.viewPrefab;
+                prefabs.Add(new StuffEntityPrefabsBuffer { Value = GetEntity(meleeWeaponSO.entityPrefab, TransformUsageFlags.Dynamic) });
+
                 stuffs[i].slot = meleeWeaponSO.location;
                 stuffs[i].type = meleeWeaponSO.type;
                 stuffs[i].side = meleeWeaponSO.side;
@@ -79,6 +73,8 @@ public class GameResourcesAuthoring : MonoBehaviour
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
             //stuffs[id].viewPrefab = harvesterSO.viewPrefab;
+            prefabs.Add(new StuffEntityPrefabsBuffer { Value = GetEntity(harvesterSO.entityPrefab, TransformUsageFlags.Dynamic) });
+
             stuffs[id].slot = harvesterSO.location;
             stuffs[id].type = harvesterSO.type;
             stuffs[id].side = harvesterSO.side;
@@ -143,6 +139,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             AddBlobAsset(ref blobRef, out _);
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
+
             AddBuffer<GameResourcesInstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);
             AddBuffer<UnequipStuffQueue>(entity);

@@ -12,8 +12,7 @@ public partial struct SwitchStuffSystem : ISystem
         state.RequireForUpdate<StuffOwner>();
 
         state.RequireForUpdate<NetworkTime>();
-        state.RequireForUpdate<PhysicsWorldSingleton>();
-        state.RequireForUpdate<PhysicsWorldHistorySingleton>();
+
         state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
     }
 

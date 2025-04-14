@@ -4,8 +4,6 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Mathematics;
 using Unity.Transforms;
-using UnityEngine;
-using static UnityEditor.Progress;
 
 [GhostComponent]
 public struct EquipStuffQueue : IBufferElementData
@@ -59,7 +57,7 @@ public partial struct EquipStuffSystem : ISystem
                 {
                     Stuff = ownerStuffList.ValueRW.GetStuffInSlot(stuffData.slot),
                     Owner = duo.Owner,
-                    Position = ownerPos
+                    //Position = ownerPos
                 });
             }
 
@@ -105,6 +103,7 @@ public partial struct UnequipStuffSystem : ISystem
 
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
             var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
+            var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
             var stuffTransform = SystemAPI.GetComponentRW<LocalTransform>(duo.Stuff);
             var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
             ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
@@ -128,7 +127,8 @@ public partial struct UnequipStuffSystem : ISystem
                 }
             }
 
-            stuffTransform.ValueRW.Position = duo.Position;
+            stuffTransform.ValueRW.Position = math.all(duo.Position == float3.zero) ? ownerPos : duo.Position;
+
         }
         equipStuffQueu.Clear();
     }

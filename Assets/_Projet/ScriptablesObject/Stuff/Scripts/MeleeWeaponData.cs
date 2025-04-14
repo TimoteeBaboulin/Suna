@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class MeleeWeaponData : ScriptableObject
 {
     [Header("Stuff infos")]
+    public GameObject entityPrefab;
     public GameObject viewPrefab;
     public Image UIImage;
     public StuffSlot location;

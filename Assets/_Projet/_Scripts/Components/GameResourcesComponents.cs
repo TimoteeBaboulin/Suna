@@ -1,13 +1,13 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
-public struct GameResourcesStuffEntityPrefabs : IComponentData
+[GhostComponent]
+public struct StuffEntityPrefabsBuffer : IBufferElementData
 {
-    public Entity rangedWeaponEntityPrefab;
-    public Entity meleeWeaponEntityPrefab;
-    public Entity harvesterEntityPrefab;
+    [GhostField] public Entity Value;
 }
 
 public struct GameResourcesDatabase : IComponentData

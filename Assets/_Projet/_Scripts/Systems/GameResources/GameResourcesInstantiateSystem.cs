@@ -1,15 +1,13 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using UnityEngine;
-using static UnityEditor.Progress;
 
 
 partial struct InstanciateEntityStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<GameResourcesStuffEntityPrefabs>();
+        state.RequireForUpdate<StuffEntityPrefabsBuffer>();
         state.RequireForUpdate<GameResourcesDatabase>();
 
         EntityQuery query = state.GetEntityQuery(typeof(GameResourcesInstantiateStuffQueue));
@@ -24,77 +22,57 @@ partial struct InstanciateEntityStuffSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         // Query
-        foreach (var (prefabsRO, databaseRO, instantiateStuffQueu) in SystemAPI.Query<
-            RefRO<GameResourcesStuffEntityPrefabs>,
+        foreach (var (databaseRO, prefabs, instantiateStuffQueue) in SystemAPI.Query<
             RefRO<GameResourcesDatabase>,
+            DynamicBuffer<StuffEntityPrefabsBuffer>,
             DynamicBuffer<GameResourcesInstantiateStuffQueue>>())
         {
             ref var stuffCommonDataArray = ref databaseRO.ValueRO.StuffDatabaseRef.Value.StuffCommonData;
-            ref readonly var prefabs = ref prefabsRO.ValueRO;
-            FixedString128Bytes Name;
 
             // Explore Stuff Infos queue
-            foreach (var stuffInfos in instantiateStuffQueu)
+            foreach (var instanteInfos in instantiateStuffQueue)
             {
                 // Retrieve stuff in database
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
-                    Name = stuffInfos.StuffName;
+                    Entity prefab = prefabs[i].Value;
+                    //Entity prefab = prefabs.ValueRO.Value[i];
 
-                    if (stuffCommonDataArray[i].Name.ToString() == Name.Value)
+                    if (stuffCommonDataArray[i].Name.ToString() == instanteInfos.StuffName)
                     {
-                        ref StuffCommonData stuffData = ref stuffCommonDataArray[i];
-
-                        // Load entity prefab depending on stuff type
-                        Entity prefab = Entity.Null;
-                        switch (stuffData.type)
-                        {
-                            case StuffType.RangedWeapon:
-                                prefab = prefabs.rangedWeaponEntityPrefab;
-                                break;
-                            case StuffType.MeleeWeapon:
-                                prefab = prefabs.meleeWeaponEntityPrefab;
-                                break;
-                            case StuffType.Harvester:
-                                prefab = prefabs.harvesterEntityPrefab;
-                                break;
-                            default:
-                                break;
-                        }
-
                         if (prefab != Entity.Null)
                         {
-                            // Instantiate the Entity prefab
                             Entity stuff = ecb.Instantiate(prefab);
 
-                            if (stuffInfos.Owner != Entity.Null)
+                            if (instanteInfos.Owner != Entity.Null)
                             {
-                                int networkId = state.EntityManager.GetComponentData<GhostOwner>(stuffInfos.Owner).NetworkId;
+                                int networkId = state.EntityManager.GetComponentData<GhostOwner>(instanteInfos.Owner).NetworkId;
                                 ecb.SetComponent(stuff, new GhostOwner { NetworkId = networkId });
-                                ecb.AppendToBuffer(stuffInfos.Owner, new LinkedEntityGroup { Value = stuff });
+                                ecb.AppendToBuffer(instanteInfos.Owner, new LinkedEntityGroup { Value = stuff });
                             }
                             else
                             {
                                 ecb.SetComponent(stuff, new GhostOwner { NetworkId = -1 });
                             }
 
-                                // Define database access for this new stuff
-                                ecb.SetComponent(stuff, new StuffDatabaseAccess
-                                {
-                                    ID = i,
-                                    IsConnectedToDatabase = true,
-                                    NameInDatabase = stuffData.Name.ToString()
-                                });
+                            //Define database access for this new stuff
+
+                            ecb.SetComponent(stuff, new StuffDatabaseAccess
+                            {
+                                ID = i,
+                                IsConnectedToDatabase = true,
+                                NameInDatabase = instanteInfos.StuffName
+                            });
 
                             ecb.SetComponentEnabled<StuffProcessPending>(stuff, true);
-                            ecb.SetComponent(stuff, new StuffProcessPending { Owner = stuffInfos.Owner });
+                            ecb.SetComponent(stuff, new StuffProcessPending { Owner = instanteInfos.Owner });
                         }
                         break;
                     }
                     else continue;
                 }
             }
-            instantiateStuffQueu.Clear();
+            instantiateStuffQueue.Clear();
         }
     }
 }
