@@ -4,10 +4,15 @@
         <engine:ScrollView horizontal-scroller-visibility="Hidden" style="flex-grow: 1;">
             <engine:VisualElement name="GameSettings" style="flex-grow: 1; flex-direction: column;">
                 <engine:Label text="Game Settings" name="CategoryTitle" style="top: auto; left: 50px; margin-top: 50px; margin-right: 0; margin-bottom: 50px; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; align-self: flex-start; font-size: 40px; -unity-font-style: bold; color: rgb(255, 255, 255);" />
-                <engine:VisualElement name="SensitivityContainer" style="margin-top: 0; margin-bottom: 0; margin-right: 0; margin-left: 0; flex-direction: row; left: 100px;">
+                <engine:VisualElement name="SensitivityContainer" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-direction: row; left: 100px;">
                     <engine:Label text="Sensitivity" name="SensitivityLabel" style="font-size: 40px; -unity-text-align: middle-center; color: rgb(204, 204, 204);" />
                     <engine:Slider value="1" high-value="10" fill="false" low-value="0.1" name="SensitivitySlider" inverted="false" style="width: 490px; justify-content: space-evenly; min-height: auto;" />
                     <engine:FloatField value="1" name="SensitivityField" style="width: 125px; height: auto; font-size: 30px; -unity-text-align: upper-right; -unity-font-style: normal;" />
+                </engine:VisualElement>
+                <engine:VisualElement name="VolumeContainer" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-direction: row; left: 100px;">
+                    <engine:Label text="Volume" name="VolumeLabel" style="font-size: 40px; -unity-text-align: middle-center; color: rgb(204, 204, 204);" />
+                    <engine:Slider value="50" high-value="100" fill="false" low-value="0" name="VolumeSlider" inverted="false" style="width: 490px; justify-content: space-evenly; min-height: auto;" />
+                    <engine:FloatField value="50" name="VolumeField" style="width: 125px; height: auto; font-size: 30px; -unity-text-align: upper-right; -unity-font-style: normal;" />
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:ScrollView>
