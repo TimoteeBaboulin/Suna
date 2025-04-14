@@ -32,11 +32,8 @@ public partial struct PickStuffSystem : ISystem
                 quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
                 float3 forward = math.mul(shootRotation, math.forward());
 
-                UnityEngine.Debug.Log($"Forward: {forward}");
-                RaycastHit hit = ClosestRayCast(startPosition, forward, 1, chara, state.EntityManager);
-                UnityEngine.Debug.Log($"Hit: {hit.Entity} {hit.Position}");
+                RaycastHit hit = ClosestRayCast(startPosition, forward, 4, chara, state.EntityManager);
                 if (!state.EntityManager.HasComponent<StuffOwner>(hit.Entity)) continue;
-                UnityEngine.Debug.Log("Success !");
 
                 equipStuffQueue.Add(new EquipStuffQueue
                 {
@@ -72,7 +69,7 @@ public partial struct PickStuffSystem : ISystem
         RaycastInput raycastInput = new RaycastInput()
         {
             Start = startPos,
-            End = direction * range,
+            End = startPos + direction * range,
         };
 
         NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
@@ -81,6 +78,7 @@ public partial struct PickStuffSystem : ISystem
             float closestDist = float.MaxValue;
             foreach (RaycastHit hit in allHits)
             {
+                UnityEngine.Debug.Log(hit.Entity);
                 // If the entity hit is the shooter, skip
                 if (hit.Entity == owner) continue;
 
