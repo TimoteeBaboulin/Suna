@@ -81,7 +81,17 @@ public partial class ServerSystem : SystemBase
             });
 
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
-            PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
+
+            IHostSession hostSession = ClientTransportHelper.instance.Session as IHostSession;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
+            {
+                PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
+
+            }
+            else
+            {
+                hostSession.PlayerJoined += PlayerHelpers.SubscribePlayerJoined;
+            }
             Debug.Log($"[Team Assignment] PlayerJoined {currentPlayer.Id} listener attached.");
 
             ecb.AddComponent(ownerEntity, new ClientComponent
@@ -154,15 +164,7 @@ public partial class SessionStatusSystem : SystemBase
 
                 Debug.Log($"Session Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
                 Debug.Log($"Session Count Natif : {session.Properties["CountTeamNatif"].Value}");
-                if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
-                {
-                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
-                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
-                }
-                else
-                {
-                    Debug.Log("[SessionStatusSystem] PlayerAliveCounts singleton not found or updated.");
-                }
+
                 //else
                 //{
                 //    Debug.Log("[SessionStatusSystem] PlayerCounts singleton not found or updated.");
@@ -248,6 +250,11 @@ public partial class SessionStatusSystem : SystemBase
 
     private void OnSessionPropertiesChanged()
     {
-        Debug.Log("[SessionStatusSystem] Session properties have been updated.");
+        Debug.Log("[OnSessionPropertiesChanged] Session properties have been updated.");
+        if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
+        {
+            Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
+            Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
+        }
     }
 }
