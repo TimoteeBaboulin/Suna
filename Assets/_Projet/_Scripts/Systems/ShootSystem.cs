@@ -1,8 +1,10 @@
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -98,7 +100,7 @@ public partial struct ShootSystem : ISystem
                         dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;
 
-                        float2 directionalMovement = (float2) MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
+                        float2 directionalMovement = (float2)MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
                         bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
 
                         SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
@@ -255,18 +257,17 @@ public partial struct ShootSystem : ISystem
 
     RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
     {
+        const int additionalRenderDelay = 1;
 
-        LocalTransform startTransform = new LocalTransform
-        {
-            Position = startPos,
-            Rotation = shootRotation,
-            Scale = 1,
-        };
+        CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
+        uint delay = interpolationDelay.Delay + additionalRenderDelay;
 
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        float3 startPosition = startTransform.Position;
-        float3 endPosition = startPosition + new float3(startTransform.Forward() * range);
-        RaycastHit closestHit = default;
+        PhysicsWorldHistorySingleton collisionHistory = SystemAPI.GetSingleton<PhysicsWorldHistorySingleton>();
+        PhysicsWorld physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        NetworkTick tick = networkTime.ServerTick;
+
+        collisionHistory.GetCollisionWorldFromTick(tick, delay, ref physicsWorld, out var collWorld);
 
         CollisionFilter filter = new CollisionFilter
         {
@@ -274,15 +275,17 @@ public partial struct ShootSystem : ISystem
             CollidesWith = ~(1u << 6)
         };
 
+        float3 forward = math.mul(shootRotation, math.forward());
         RaycastInput raycastInput = new RaycastInput()
         {
-            Start = startPosition,
-            End = endPosition,
+            Start = startPos,
+            End = startPos + new float3(forward * range),
             Filter = filter //filtre pour partie du corps
         };
 
+        RaycastHit closestHit = default;
         NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-        if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
+        if (collWorld.CastRay(raycastInput, ref allHits))
         {
             // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
             float closestDist = float.MaxValue;
