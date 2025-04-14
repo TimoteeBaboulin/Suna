@@ -133,7 +133,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8117814211565531284, guid: c885e24b33c6512408dffff61fe74700, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8454011489246002764, guid: c885e24b33c6512408dffff61fe74700, type: 3}
       propertyPath: m_LocalPosition.x
@@ -300,7 +300,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &512655491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -542,6 +542,10 @@ PrefabInstance:
     - target: {fileID: 1037626092535876247, guid: 779be0a0477345941add539ad9178106, type: 3}
       propertyPath: m_Name
       value: Shop
+      objectReference: {fileID: 0}
+    - target: {fileID: 1037626092535876247, guid: 779be0a0477345941add539ad9178106, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8398659000021893333, guid: 779be0a0477345941add539ad9178106, type: 3}
       propertyPath: m_LocalPosition.x
@@ -963,7 +967,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1699409678
 Transform:
   m_ObjectHideFlags: 0
@@ -1019,6 +1023,10 @@ PrefabInstance:
     - target: {fileID: 6542852334063179998, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: m_Name
       value: TempSingletonMochePourPrefabStuffView
+      objectReference: {fileID: 0}
+    - target: {fileID: 6542852334063179998, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8154457008906386100, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1082,7 +1090,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1810152298
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1236,7 +1244,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8977548657208505599, guid: e83674b8b13aeb042a334f5d857c7119, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1264,7 +1272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1999031786
 Light:
   m_ObjectHideFlags: 0
@@ -1398,7 +1406,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!20 &2021676135
 Camera:
   m_ObjectHideFlags: 0
@@ -1605,7 +1613,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2055270455
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1677,6 +1685,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ConnectionManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+      propertyPath: Port
+      value: 53970
+      objectReference: {fileID: 0}
     - target: {fileID: 7540693576825535764, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1737,7 +1749,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2108226782
 Transform:
   m_ObjectHideFlags: 0

@@ -34,6 +34,14 @@ public partial class ClientSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
+        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<TeamAliveCountRpc>>().WithEntityAccess())
+        {
+            Debug.Log($"[ClientSystem] Received team alive counts: Native: {command.ValueRO.nativePlayersAlive}, Corpo: {command.ValueRO.corpoPlayersAlive}");
+            // Update UI or internal state as necessary
+
+            commandBuffer.DestroyEntity(entity);  // Cleanup the RPC command entity
+        }
+
         if (Keyboard.current.vKey.wasPressedThisFrame)
         {
             ClientMessageRpcCommand command = new ClientMessageRpcCommand() { message = "Client message to server BOUMBOUMBOUBm" };

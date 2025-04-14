@@ -79,7 +79,7 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            FixedString64Bytes currentPlayerId = ClientTransportHelper.instance.Session.CurrentPlayer.Id;
+            FixedString64Bytes currentPlayerId = PlayerHelpers.FindCurrentPlayerIdForNetworkId(networkId.Value);
 
             Debug.Log($"Assigning Player ID: {currentPlayerId.ToString()} to client with NetworkId {networkId.Value}");
             ecb.AddComponent(ownerEntity, new ClientComponent { 

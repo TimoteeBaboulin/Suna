@@ -22,84 +22,70 @@ public static class PlayerHelpers
 
         // Get the team list from session.
         List<IReadOnlyPlayer> teamList = GetPlayersByTeam(teamName);
-        Debug.Log($"[AliveCheck] Team '{teamName}' session player count: {teamList.Count}");
 
         int aliveCount = 0;
 
-        // ---------- QUERY A: Get all client entities with ClientComponent ----------
-        EntityQuery clientQuery = world.EntityManager.CreateEntityQuery(new EntityQueryDesc
+        // Query for character entities with CharacterClientAttachedComponent and CharacterIsEnable
+        EntityQuery characterQuery = world.EntityManager.CreateEntityQuery(new EntityQueryDesc
         {
-            All = new ComponentType[] { typeof(ClientComponent) }
-        });
-        NativeArray<Entity> clientEntities = clientQuery.ToEntityArray(Allocator.Temp);
-
-        // Build a dictionary to look up the client’s playerID by its Entity.
-        Dictionary<Entity, string> clientIdLookup = new Dictionary<Entity, string>();
-        for (int i = 0; i < clientEntities.Length; i++)
-        {
-            Entity e = clientEntities[i];
-            ClientComponent clientComp = world.EntityManager.GetComponentData<ClientComponent>(e);
-            clientIdLookup[e] = clientComp.playerID.ToString();
-            Debug.Log($"[AliveCheck] Client entity {e.Index} with playerID: {clientIdLookup[e]}");
-        }
-        clientEntities.Dispose();
-
-
-        // ---------- QUERY B: Get character entities with CharacterClientAttachedComponent and CharacterIsEnable ----------
-        EntityQueryDesc characterDesc = new EntityQueryDesc
-        {
-            All = new ComponentType[]
-            {
-            typeof(CharacterClientAttachedComponent),
-            typeof(CharacterIsEnable)
-            },
+            All = new ComponentType[] { typeof(CharacterClientAttachedComponent), typeof(CharacterIsEnable) },
             Options = EntityQueryOptions.IgnoreComponentEnabledState
-        };
+        });
 
-        EntityQuery characterQuery = world.EntityManager.CreateEntityQuery(characterDesc);
         NativeArray<Entity> characterEntities = characterQuery.ToEntityArray(Allocator.Temp);
         Debug.Log($"[AliveCheck] Total character entities: {characterEntities.Length}");
+        Debug.Log($"[AliveCheck] Total character teamListCount: {teamList.Count}");
 
-        // Loop through character entities.
+        // Loop through all character entities
         for (int i = 0; i < characterEntities.Length; i++)
         {
             Entity characterEntity = characterEntities[i];
             var entityManager = world.EntityManager;
 
-            // Check if the character's CharacterIsEnable is actually enabled.
+            // Skip if the CharacterIsEnable component is not enabled
             if (!entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
                 continue;
 
-            // Get the attached client entity from the character.
+            // Get the attached client entity from the character
             CharacterClientAttachedComponent attached = entityManager.GetComponentData<CharacterClientAttachedComponent>(characterEntity);
             Entity clientEntity = attached.ClientEntity;
 
+            // Get the ClientComponent for the client associated with this character
             ClientComponent client = entityManager.GetComponentData<ClientComponent>(clientEntity);
-            Debug.LogWarning($"[AliveCheck] client.playerID {client.playerID}");
 
-            // Look up the client player ID from our dictionary.
-            if (!clientIdLookup.TryGetValue(clientEntity, out string clientPlayerId))
+            Debug.Log($"[AliveCheck] Checking client ID '{client.playerID}' against team session player IDs...");
+
+            bool found = false;
+            // Loop through the team list manually to compare player IDs
+            for (int j = 0; j < teamList.Count; j++)
             {
-                Debug.LogWarning($"[AliveCheck] No ClientComponent found for client entity {clientEntity.Index}");
-                continue;
+                var player = teamList[j];
+
+                Debug.Log($"[AliveCheck] Comparing client ID '{client.playerID}' with session player ID '{player.Id}'");
+
+                // If IDs match, we found the correct player
+                if (player.Id == client.playerID.ToString())
+                {
+                    found = true;
+                    break; // Stop the loop once the correct match is found
+                }
+                Debug.Log($"[AliveCheck] Mismatched client ID '{client.playerID}' with session player ID '{player.Id}', skipping.");
             }
 
-            // Compare clientPlayerId against the team session list.
-            bool found = teamList.Exists(player =>
-            {
-                Debug.Log($"[AliveCheck] Comparing client ID '{clientPlayerId}' with session player ID '{player.Id}'");
-                return player.Id == clientPlayerId;
-            });
-
+            // If a valid player match is found, increment alive count
             if (found)
             {
                 aliveCount++;
-                Debug.Log($"[AliveCheck] Matched client playerID: {clientPlayerId} for character entity {characterEntity.Index}");
+                Debug.Log($"[AliveCheck] Found matching client playerID: {client.playerID} ClientID {client.playerID} " +
+                    $"for character entity {characterEntity.Index}");
             }
+            else
+            {
+                Debug.Log($"[AliveCheck] No match for client ID '{client.playerID}' in the team '{teamName}'");
+            }
+            Debug.Log($"[AliveCheck] found {found}");
         }
         characterEntities.Dispose();
-
-        Debug.Log($"[AliveCheck] Final alive count for team '{teamName}': {aliveCount}");
         return aliveCount;
     }
 
@@ -113,7 +99,10 @@ public static class PlayerHelpers
         {
             // Skip host if in Server or Host mode
             if ((RequestedPlayType == PlayType.Server) && player.Id == session.CurrentPlayer.Id)
+            {
+                Debug.Log($"[AliveCheck] skipped player '{player.Id}':currentSessionID {session.CurrentPlayer.Id} is host");
                 continue;
+            }
 
             if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
             {
@@ -126,4 +115,12 @@ public static class PlayerHelpers
 
         return teamPlayers;
     }
+    static public FixedString64Bytes FindCurrentPlayerIdForNetworkId(int networkId)
+    {
+        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
+        FixedString64Bytes currentPlayerId = sessionPlayers[networkId - 1].Id;
+
+        return currentPlayerId;
+    }
+
 }

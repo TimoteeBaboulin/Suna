@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -77,7 +78,7 @@ public partial struct RespawnSystem : ISystem
     ComponentLookup<ResetStuffTag> resetStuffLookupInit;
 
     NativeList<int> teamSpawnIndexes;
-	
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -110,7 +111,7 @@ public partial struct RespawnSystem : ISystem
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
-            
+
             //This is set up to allow easy team dispatching once it's implemented
             TeamSideType teamSideType = TeamSideType.Neutre;
             if (SystemAPI.HasComponent<CorpoTeamTag>(clientEntity))
@@ -150,12 +151,12 @@ public partial struct RespawnSystem : ISystem
             //ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             //ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
 
+            FixedString64Bytes currentPlayerId = PlayerHelpers.FindCurrentPlayerIdForNetworkId(networkId);
+            Debug.Log($"[AliveCheck] currentPlayerID '{currentPlayerId}' for NetworkId {networkId}");
             //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
-                FixedString64Bytes currentPlayerId = ClientTransportHelper.instance.Session.CurrentPlayer.Id;
-
                 playerComponent.ValueRW.networkID = networkId;
                 playerComponent.ValueRW.playerID = currentPlayerId;
                 SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
@@ -208,7 +209,7 @@ public partial struct RespawnSystem : ISystem
         {
             case TeamSideType.Corpo: ecb.AddComponent<CorpoTeamTag>(character); break;
             case TeamSideType.Natif: ecb.AddComponent<NatifTeamTag>(character); break;
-            default:break;
+            default: break;
         }
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
