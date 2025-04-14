@@ -1,9 +1,13 @@
+using GameNetwork.Utils;
+using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Services.Multiplayer;
 using Unity.Transforms;
+using UnityEngine;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -76,7 +80,7 @@ public partial struct RespawnSystem : ISystem
     ComponentLookup<ResetStuffTag> resetStuffLookupInit;
 
     NativeList<int> teamSpawnIndexes;
-	
+
     [BurstCompile]
     public void OnCreate(ref SystemState state)
     {
@@ -97,7 +101,6 @@ public partial struct RespawnSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        //Necessary data for efficient handling of respawns
         bool[] teamSpawnsValid = { false, false, false };
         Entity[] teamSpawnsEntities = new Entity[3];
 
@@ -109,9 +112,9 @@ public partial struct RespawnSystem : ISystem
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
-
-            //This is set up to allow easy team dispatching once it's implemented
+            int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
             TeamSideType teamSideType = TeamSideType.Neutre;
+
             if (SystemAPI.HasComponent<CorpoTeamTag>(clientEntity))
             {
                 teamSideType = TeamSideType.Corpo;
@@ -121,38 +124,54 @@ public partial struct RespawnSystem : ISystem
                 teamSideType = TeamSideType.Natif;
             }
 
-            //TODO: Let the client know its team so we can spawn in the right spawn
-            teamSideType = (TeamSideType)UnityEngine.Random.Range(0, 2);
+            Debug.Log($"[AliveCheck] currentPlayerID '{ClientTransportHelper.instance.Session.CurrentPlayer.Id}' for NetworkId {networkId}");
+            IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId);
+            Debug.Log($"[AliveCheck] currentPlayerID '{currentPlayer.Id}' for NetworkId {networkId}");
+            string team = currentPlayer.Properties.ContainsKey("team") ? currentPlayer.Properties["team"].Value : "No team property found";
+            Debug.Log($"[AliveCheck] Team: {team}");
 
+            switch (team)
+            {
+                case "Corpo":
+                    teamSideType = TeamSideType.Corpo;
+                    break;
+                case "Natif":
+                    teamSideType = TeamSideType.Natif;
+                    break;
+                default:
+                    teamSideType = TeamSideType.Neutre; 
+                    break;
+            }
+
+//#if UNITY_EDITOR
+            Debug.Log($"[AliveCheck] Final teamSideType: {teamSideType}");
+//#endif
             if (!teamSpawnsValid[(int)teamSideType])
             {
                 continue;
             }
 
-            //Spawns are currently random but we might need to dispatch them in order with a counter getting incremented
-            //Or a special procedure for new rounds
             Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
-
             var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
+
             int index;
             if (teamSideType == TeamSideType.Neutre)
+            {
                 index = UnityEngine.Random.Range(0, buffer.Length);
+            }
             else
             {
                 index = teamSpawnIndexes[(int)teamSideType];
                 teamSpawnIndexes[(int)teamSideType]++;
             }
 
-            int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
 
-            //SpawnCharacter(clientEntity, networkId, ecb, buffer[random]);
-            //ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
-            //ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
-
-            //Spawn a new character if the client no longer has one, otherwise teleport it back to the start with full health
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
+                playerComponent.ValueRW.networkID = networkId;
+                playerComponent.ValueRW.playerID = currentPlayer.Id;
+
                 SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
@@ -203,7 +222,7 @@ public partial struct RespawnSystem : ISystem
         {
             case TeamSideType.Corpo: ecb.AddComponent<CorpoTeamTag>(character); break;
             case TeamSideType.Natif: ecb.AddComponent<NatifTeamTag>(character); break;
-            default:break;
+            default: break;
         }
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");
