@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -28,7 +29,6 @@ public partial class CharacterInputSystem : SystemBase
     }
     protected override void OnUpdate()
     {
-        // InputSystem.Update();
         Vector2 CharacterMove = actions.Move.ReadValue<Vector2>();
         Vector2 CharacterLook = actions.Look.ReadValue<Vector2>();
 
@@ -55,7 +55,7 @@ public partial class CharacterInputSystem : SystemBase
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
 
-            input.ValueRW.look = CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
+            input.ValueRW.look = math.radians(CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity);
 
             //TODO :Make these into a function
             if (isJumpPerfomered && !plantingOrDefusing)
@@ -106,7 +106,6 @@ public partial class CharacterInputSystem : SystemBase
             if (isShootPressed && !plantingOrDefusing)
             {
                 input.ValueRW.attack.Set();
-                input.ValueRW.shootRotation = Camera.main.transform.rotation;
             }
             else
             {

@@ -21,6 +21,4 @@ public struct CharacterInput : IInputComponentData
     public InputEvent openShop;
 
     [GhostField] public int stuffLocation;
-
-    [GhostField] public quaternion shootRotation;
 }

@@ -1,5 +1,4 @@
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
@@ -85,17 +84,6 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
 
-            AddComponent(entity, new CharacterAndViewRotationComponent
-            {
-                CharacterRotation = quaternion.identity,
-                ViewRotation = quaternion.identity,
-            });
-            AddComponent(entity, new CharacterLocalViewRotation 
-            { 
-                ViewRotation = quaternion.identity,
-                ShootingModifier = quaternion.identity
-            });
-
             CharacterStuffList stuff = new CharacterStuffList();
             for (int i = 0; i < (int)StuffInventoryLocation.nbLocation; i++) stuff.Value.Add(Entity.Null);
             AddComponent(entity, stuff);
@@ -108,6 +96,11 @@ public sealed class CharacterAuthoring : MonoBehaviour
             {
                 IsDefusing = false,
                 IsPlanting = false
+            });
+
+            AddComponent(entity, new FPVVisualRecoil
+            {
+                timeSinceLastShoot = 1.0f
             });
         }
     }

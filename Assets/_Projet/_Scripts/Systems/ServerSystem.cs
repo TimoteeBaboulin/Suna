@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -9,9 +10,10 @@ public struct ServerMessageRpcCommand : IRpcCommand
 {
     public FixedString64Bytes message;
 }
-public struct InitializedClient : IComponentData
+public struct ClientComponent : IComponentData
 {
-    public int id;
+    public int networkID;
+    public FixedString64Bytes playerID;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -24,6 +26,7 @@ public partial class ServerSystem : SystemBase
         _clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
+        
     }
     protected override void OnUpdate()
     {
@@ -39,7 +42,7 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(entity);
         }
 
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<InitializedClient>().WithEntityAccess())
+        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<ClientComponent>().WithEntityAccess())
         {
             InstantiateClient(entity, commandBuffer);
         }
@@ -77,8 +80,18 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            ecb.AddComponent(ownerEntity, new InitializedClient { id = networkId.Value });
+            IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
+            Debug.Log($"[Team Assignment] Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
 
+            string team = PlayerHelpers.AssignTeamToPlayer(currentPlayer, ClientTransportHelper.instance.Session.Players);
+            Debug.Log($"[Team Assignment] Assigned Team: {team}");
+            ecb.AddComponent(ownerEntity, new ClientComponent { 
+                networkID = networkId.Value, 
+                playerID = currentPlayer.Id}
+            );
+
+            PlayerHelpers.UpdateTeamCountInSession(team, currentPlayer.Id);
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
     }
@@ -86,10 +99,10 @@ public partial class ServerSystem : SystemBase
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateAfter(typeof(CountPlayersSystemServer))]
 public partial class SessionStatusSystem : SystemBase
 {
-    // Set your desired interval (in seconds)
-    private float logInterval = 5f;
+    private float logInterval = 5.0f;
     private float timer;
     private bool didSubscribe = false;
 
@@ -103,10 +116,9 @@ public partial class SessionStatusSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        // First, check if we haven't subscribed and a session is available.
-        if (!didSubscribe && ServerSessionFactory.instance != null)
+        if (!didSubscribe && ClientTransportHelper.instance != null)
         {
-            var session = ServerSessionFactory.instance.Session;
+            var session = ClientTransportHelper.instance.Session;
             session.PlayerLeaving += OnPlayerLeaving;
             session.PlayerHasLeft += OnPlayerHasLeft;
             session.RemovedFromSession += OnRemovedFromSession;
@@ -123,15 +135,28 @@ public partial class SessionStatusSystem : SystemBase
         {
             timer = 0f; 
 
-            if (ServerSessionFactory.instance != null)
+            if (ClientTransportHelper.instance != null)
             {
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ServerSessionFactory.instance.Session.Name}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ServerSessionFactory.instance.Session.PlayerCount}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ServerSessionFactory.instance.Session.IsHost} ");
+                var session = ClientTransportHelper.instance.Session;
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} ");;
 
-                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ServerSessionFactory.instance.Session.Name}");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ServerSessionFactory.instance.Session.PlayerCount}");
-                ServerConsole.Log(ServerConsole.LogType.Info, $"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ServerSessionFactory.instance.Session.IsHost} ");
+
+                var players = session.Players;
+
+                Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
+                Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
+                if (SystemAPI.TryGetSingleton<PlayerCounts>(out var playerCounts))
+                {
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
+                }
+                //else
+                //{
+                //    Debug.Log("[SessionStatusSystem] PlayerCounts singleton not found or updated.");
+                //}
             }
             else
             {
@@ -147,9 +172,9 @@ public partial class SessionStatusSystem : SystemBase
 
     protected override void OnDestroy()
     {
-        if (didSubscribe && ServerSessionFactory.instance != null)
+        if (didSubscribe && ClientTransportHelper.instance != null)
         {
-            var session = ServerSessionFactory.instance.Session;
+            var session = ClientTransportHelper.instance.Session;
             session.PlayerLeaving -= OnPlayerLeaving;
             session.PlayerHasLeft -= OnPlayerHasLeft;
             session.RemovedFromSession -= OnRemovedFromSession;
@@ -206,16 +231,13 @@ public partial class SessionStatusSystem : SystemBase
         //}
     }
 
-    // Event handler for when the current client is removed.
     private void OnRemovedFromSession()
     {
         Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
     }
 
-    // Event handler for when session properties change.
     private void OnSessionPropertiesChanged()
     {
         Debug.Log("[SessionStatusSystem] Session properties have been updated.");
-        // Update internal ECS state or perform other actions based on the new properties.
     }
 }
