@@ -41,7 +41,8 @@ public partial class HitSystem : SystemBase
                 float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
                 Entity hitEffect = commandBuffer.Instantiate(prefabManager.hitVisualEffect);
                 Entity tracerEntity = commandBuffer.Instantiate(prefabManager.tracerRoundVisualEffect);
-
+                float tracerSpeed = SystemAPI.GetComponentRO<TracerRoundComponent>(prefabManager.tracerRoundVisualEffect).ValueRO.speed;
+                
                 commandBuffer.SetComponent(tracerEntity, new LocalTransform
                 {
                     Position = command.ValueRO.origin,
@@ -52,7 +53,7 @@ public partial class HitSystem : SystemBase
                 {
                     start = command.ValueRO.origin,
                     end = command.ValueRO.position,
-                    speed = 15
+                    speed = tracerSpeed
                 });
                 commandBuffer.SetComponent(hitEffect, new LocalTransform
                 {
