@@ -25,6 +25,7 @@ public class NetcodePrefabsConverter : MonoBehaviour
 
     [Header("Visual Elements Prefabs")]
     public GameObject hitPrefab = null;
+    public GameObject tracerRoundVfxPrefab = null;
 }
 
 public struct ClientPrefabData : IComponentData
@@ -51,6 +52,7 @@ public struct ClientPrefabData : IComponentData
 public struct VisualEffetPrefabData : IComponentData
 {
     public Entity hitVisualEffect;
+    public Entity tracerRoundVisualEffect;
 }
 
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
@@ -76,9 +78,15 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         LocalTransform transformPrefab = default;
         //Coucou ici Aurelien
         Entity hitEffect = default;
+        Entity tracerEffect = default;
+
         if (authoring.hitPrefab != null)
         {
             hitEffect = GetEntity(authoring.hitPrefab, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.tracerRoundVfxPrefab != null)
+        {
+            tracerEffect = GetEntity(authoring.tracerRoundVfxPrefab, TransformUsageFlags.Dynamic);
         }
 
         if (authoring.Client != null)
@@ -160,7 +168,8 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity VisualEffectentity = GetEntity(TransformUsageFlags.Dynamic);
         AddComponent(VisualEffectentity, new VisualEffetPrefabData
         {
-            hitVisualEffect = hitEffect
+            hitVisualEffect = hitEffect,
+            tracerRoundVisualEffect = tracerEffect
         });
     }
 }
