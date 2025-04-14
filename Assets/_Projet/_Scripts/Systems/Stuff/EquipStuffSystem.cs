@@ -41,6 +41,7 @@ public partial struct EquipStuffSystem : ISystem
 
         foreach (var duo in equipStuffQueue)
         {
+
             if (duo.Owner == Entity.Null || duo.Stuff == Entity.Null) continue;
 
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);

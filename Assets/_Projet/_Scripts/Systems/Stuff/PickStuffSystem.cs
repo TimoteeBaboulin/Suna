@@ -32,14 +32,15 @@ public partial struct PickStuffSystem : ISystem
                 quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
                 float3 forward = math.mul(shootRotation, math.forward());
 
-                RaycastHit hit = ClosestRayCast(startPosition, forward, 4, chara, state.EntityManager);
-                if (!state.EntityManager.HasComponent<StuffOwner>(hit.Entity)) continue;
-
-                equipStuffQueue.Add(new EquipStuffQueue
+                RaycastHit hit = RayCast(startPosition, forward, 4, chara, state.EntityManager);
+                if (hit.Entity != Entity.Null)
                 {
-                    Stuff = hit.Entity,
-                    Owner = chara,
-                });
+                    equipStuffQueue.Add(new EquipStuffQueue
+                    {
+                        Stuff = hit.Entity,
+                        Owner = chara,
+                    });
+                }
             }
         }
 
@@ -60,51 +61,38 @@ public partial struct PickStuffSystem : ISystem
         //}
     }
 
-    RaycastHit ClosestRayCast(float3 startPos, float3 direction, float range, Entity owner, in EntityManager entityManager)
+    RaycastHit RayCast(float3 startPos, float3 direction, float range, Entity owner, in EntityManager entityManager)
     {
-
         PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        RaycastHit closestHit = default;
 
         RaycastInput raycastInput = new RaycastInput()
         {
             Start = startPos,
             End = startPos + direction * range,
+            Filter = CollisionFilter.Default,
         };
-
-        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-        if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
-        {
-            float closestDist = float.MaxValue;
-            foreach (RaycastHit hit in allHits)
-            {
-                UnityEngine.Debug.Log(hit.Entity);
-                // If the entity hit is the shooter, skip
-                if (hit.Entity == owner) continue;
-
-                // If the entity hit have an owner, skip
-                if (entityManager.HasComponent<StuffOwner>(hit.Entity))
-                {
-                    Entity ownerOfStuffHited = entityManager.GetComponentData<StuffOwner>(hit.Entity).Value;
-                    if (ownerOfStuffHited != Entity.Null)
-                    {
-                        continue;
-                    }
-                }
-
-                float currentDist = math.distancesq(raycastInput.Start, hit.Position);
-
-                if (currentDist < closestDist)
-                {
-                    closestHit = hit;
-                    closestDist = currentDist;
-                }
-            }
-        }
 
 #if !UNITY_SERVER
         UnityEngine.Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, UnityEngine.Color.cyan, 0.5f);
 #endif
-        return closestHit;
+
+        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+        if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
+        {
+            foreach (RaycastHit hit in allHits)
+            {
+                if (entityManager.HasComponent<StuffOwner>(hit.Entity))
+                {
+                    UnityEngine.Debug.Log("HasComponent");
+
+                    Entity ownerOfStuffHited = entityManager.GetComponentData<StuffOwner>(hit.Entity).Value;
+                    if (ownerOfStuffHited == Entity.Null)
+                    {
+                        return hit;
+                    }
+                }
+            }
+        }
+        return default;
     }
 }

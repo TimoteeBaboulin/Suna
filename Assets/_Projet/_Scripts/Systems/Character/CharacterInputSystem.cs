@@ -48,7 +48,7 @@ public partial class CharacterInputSystem : SystemBase
         selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
         bool isDropPressed = actions.Drop.WasPressedThisFrame();
-        bool isInteractPressed = actions.Interact.IsPressed();
+        bool isInteractPressed = actions.Interact.WasPressedThisFrame();
 
 
 
