@@ -106,10 +106,10 @@ public static class PlayerHelpers
     static public IReadOnlyPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        if (RequestedPlayType == PlayType.Server && networkId == 1)
-        {
-            networkId++;
-        }
+        //if (RequestedPlayType == PlayType.Server && networkId == 1)
+        //{
+        //    networkId++;
+        //}
 
         IReadOnlyPlayer currentPlayerId = sessionPlayers[networkId - 1];
         return currentPlayerId;

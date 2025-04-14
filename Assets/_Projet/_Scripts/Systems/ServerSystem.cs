@@ -83,16 +83,15 @@ public partial class ServerSystem : SystemBase
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
 
             IHostSession hostSession = ClientTransportHelper.instance.Session as IHostSession;
-            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-            {
                 PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
-
-            }
-            else
-            {
-                hostSession.PlayerJoined += PlayerHelpers.SubscribePlayerJoined;
-            }
-            Debug.Log($"[Team Assignment] PlayerJoined {currentPlayer.Id} listener attached.");
+            //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
+            //{
+            //}
+            //else
+            //{
+            //    hostSession.PlayerJoined += PlayerHelpers.SubscribePlayerJoined;
+            //    Debug.Log($"[Team Assignment] PlayerJoined {currentPlayer.Id} listener attached.");
+            //}
 
             ecb.AddComponent(ownerEntity, new ClientComponent
             {
