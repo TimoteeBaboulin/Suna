@@ -39,7 +39,7 @@ public partial class ClientSystem : SystemBase
             Debug.Log($"[ClientSystem] Received team alive counts: Native: {command.ValueRO.nativePlayersAlive}, Corpo: {command.ValueRO.corpoPlayersAlive}");
             // Update UI or internal state as necessary
 
-            commandBuffer.DestroyEntity(entity);  // Cleanup the RPC command entity
+            commandBuffer.DestroyEntity(entity);  
         }
 
         if (Keyboard.current.vKey.wasPressedThisFrame)

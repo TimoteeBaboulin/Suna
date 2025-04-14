@@ -79,12 +79,12 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            FixedString64Bytes currentPlayerId = PlayerHelpers.FindCurrentPlayerIdForNetworkId(networkId.Value);
+            IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
 
-            Debug.Log($"Assigning Player ID: {currentPlayerId.ToString()} to client with NetworkId {networkId.Value}");
+            Debug.Log($"Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
             ecb.AddComponent(ownerEntity, new ClientComponent { 
                 networkID = networkId.Value, 
-                playerID = currentPlayerId}
+                playerID = currentPlayer.Id}
             );
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
@@ -136,7 +136,7 @@ public partial class SessionStatusSystem : SystemBase
                 var session = ClientTransportHelper.instance.Session;
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} ");;
 
 
@@ -144,15 +144,15 @@ public partial class SessionStatusSystem : SystemBase
 
                 //Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
                 //Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
-
-                foreach (var player in players)
+                if (SystemAPI.TryGetSingleton<PlayerCounts>(out var playerCounts))
                 {
-                    Debug.Log($"[SessionStatusSystem :@ {player.Id}] propertyCount: {player.Properties.Count} ");
-                    foreach (var property in player.Properties)
-                    {
-                        Debug.Log($"[SessionStatusSystem :@ {player.Id}] team: {property.Value.Value} "); ;
-                    }
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
                 }
+                //else
+                //{
+                //    Debug.Log("[SessionStatusSystem] PlayerCounts singleton not found or updated.");
+                //}
             }
             else
             {
