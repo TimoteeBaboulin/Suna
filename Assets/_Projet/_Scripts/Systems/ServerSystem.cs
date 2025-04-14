@@ -26,7 +26,7 @@ public partial class ServerSystem : SystemBase
         _clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
-        
+
     }
     protected override void OnUpdate()
     {
@@ -59,7 +59,7 @@ public partial class ServerSystem : SystemBase
 
     #region Public Methods
 
-    public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
+    public async void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
     {
         if (SystemAPI.TryGetSingleton(out ClientPrefabData prefabManager))
         {
@@ -82,16 +82,15 @@ public partial class ServerSystem : SystemBase
 
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
             PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
-            Debug.Log($"[Team Assignment] Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
+            Debug.Log($"[Team Assignment] PlayerJoined {currentPlayer.Id} listener attached.");
+            var session = ClientTransportHelper.instance.Session;
 
-            string team = PlayerHelpers.AssignTeamToPlayer(currentPlayer, ClientTransportHelper.instance.Session.Players);
-            Debug.Log($"[Team Assignment] Assigned Team: {team}");
-            ecb.AddComponent(ownerEntity, new ClientComponent { 
-                networkID = networkId.Value, 
-                playerID = currentPlayer.Id}
+            ecb.AddComponent(ownerEntity, new ClientComponent
+            {
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id
+            }
             );
-
-            PlayerHelpers.UpdateTeamCountInSession(team, currentPlayer.Id);
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
     }
@@ -133,25 +132,37 @@ public partial class SessionStatusSystem : SystemBase
 
         if (timer >= logInterval)
         {
-            timer = 0f; 
+            timer = 0f;
 
             if (ClientTransportHelper.instance != null)
             {
                 var session = ClientTransportHelper.instance.Session;
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} ");;
+
+                if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+                {
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
+                }
+                else
+                {
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
+                }
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} "); ;
 
 
                 var players = session.Players;
 
-                Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
-                Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
-                if (SystemAPI.TryGetSingleton<PlayerCounts>(out var playerCounts))
+                Debug.Log($"Session Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
+                Debug.Log($"Session Count Natif : {session.Properties["CountTeamNatif"].Value}");
+                if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
                 {
                     Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
                     Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
+                }
+                else
+                {
+                    Debug.Log("[SessionStatusSystem] PlayerAliveCounts singleton not found or updated.");
                 }
                 //else
                 //{
