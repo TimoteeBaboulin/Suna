@@ -141,13 +141,10 @@ public static class PlayerHelpers
             var session = ClientTransportHelper.instance.Session as IHostSession;
             if (session != null)
             {
-                Task savePlayerTask = session.SaveCurrentPlayerDataAsync();
+                await session.SaveCurrentPlayerDataAsync();
                 Debug.Log($"[Team Assignment] Assigned Player {player.Id} to team {assignedTeam}");
 
-                await Task.WhenAll(savePlayerTask);
-
-                Task refreshTask = session.RefreshAsync();
-                await Task.WhenAll(refreshTask);
+                await session.RefreshAsync();
                 await UpdateTeamCountInSession(assignedTeam, player.Id);
             }
             else
@@ -177,8 +174,7 @@ public static class PlayerHelpers
             }
 
             Debug.Log($"[Before Save] Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
-            Task saveSessionTask = hostSession.SavePropertiesAsync();
-            await Task.WhenAll(saveSessionTask);
+            await hostSession.SavePropertiesAsync();
             Debug.Log($"[After SavePropertiesAsync] Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
             Debug.Log($"[Final Save] Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
         }
