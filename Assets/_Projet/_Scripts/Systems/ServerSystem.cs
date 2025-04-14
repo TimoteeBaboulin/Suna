@@ -59,7 +59,7 @@ public partial class ServerSystem : SystemBase
 
     #region Public Methods
 
-    public async void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
+    public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
     {
         if (SystemAPI.TryGetSingleton(out ClientPrefabData prefabManager))
         {
@@ -83,7 +83,6 @@ public partial class ServerSystem : SystemBase
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
             PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
             Debug.Log($"[Team Assignment] PlayerJoined {currentPlayer.Id} listener attached.");
-            var session = ClientTransportHelper.instance.Session;
 
             ecb.AddComponent(ownerEntity, new ClientComponent
             {

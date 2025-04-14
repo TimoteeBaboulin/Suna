@@ -144,7 +144,6 @@ public static class PlayerHelpers
                 await session.SaveCurrentPlayerDataAsync();
                 Debug.Log($"[Team Assignment] Assigned Player {player.Id} to team {assignedTeam}");
 
-                await session.RefreshAsync();
                 await UpdateTeamCountInSession(assignedTeam, player.Id);
             }
             else
@@ -192,7 +191,7 @@ public static class PlayerHelpers
         var player = session.Players.FirstOrDefault(p => p.Id == playerId);
         if (player != null)
         {
-           string team = await AssignTeamToPlayer(player, session.Players);
+            string team = await AssignTeamToPlayer(player, session.Players);
             Debug.Log($"[Team Assignment] Match found! Assigning {team} to Player ID: {player.Id}");
         }
         else
