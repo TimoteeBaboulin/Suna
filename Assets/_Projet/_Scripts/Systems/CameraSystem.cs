@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -112,24 +113,65 @@ partial class CameraSystem : SystemBase
                 RefRO<LocalTransform> localTransform = SystemAPI.GetComponentRO<LocalTransform>(currentTarget);
                 RefRO<CharacterViewRotation> localViewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(currentTarget);
 
-                Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
+                bool ADSActive = true;
 
-                if (EntityManager.HasComponent<CharacterComponent>(currentTarget))
+                //If you can't find the database or the database access of the currently equipped
+                //Stuff, you can not ADS
+                if (TryGetCurrentlyEquippedStuff(currentTarget, out Entity stuffEntity))
                 {
                     CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
-
-                    if (character.isAiming)
+                    if (character.isAiming && WeaponCanADS(stuffEntity, out float adsFov))
                     {
-                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, aimingFov, 0.1f);
+                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.1f);
                     }
                     else
                     {
                         Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
                     }
                 }
+                else
+                {
+                    Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                }
 
+				Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
                 Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }
+    }
+
+    bool WeaponCanADS(Entity stuffEntity, out float fov)
+    {
+        fov = 0;
+
+        if (SystemAPI.HasComponent<ScopeComponent>(stuffEntity))
+        {
+            fov = SystemAPI.GetComponentRO<ScopeComponent>(stuffEntity).ValueRO.ScopeFOV;
+            return true; 
+        }
+
+        if (SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity))
+        {
+            StuffDatabaseAccess databaseAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+            GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+            fov = databaseAccess.GetData(ref database).ADSFOV;
+            return databaseAccess.GetData(ref database).canADS;
+        }
+
+        return false;
+    }
+
+    bool TryGetCurrentlyEquippedStuff(Entity characterEntity, out Entity stuffEntity)
+    {
+        stuffEntity = default;
+
+        if (!SystemAPI.HasComponent<CharacterStuffInHandLocation>(characterEntity)
+            || !SystemAPI.HasComponent<CharacterStuffList>(characterEntity))
+            return false;
+
+        CharacterStuffList stuffList = SystemAPI.GetComponent<CharacterStuffList>(characterEntity);
+        stuffEntity = stuffList.Value[(int)SystemAPI.GetComponent<CharacterStuffInHandLocation>(characterEntity).Value];
+        return true;
     }
 }

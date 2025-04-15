@@ -10,7 +10,6 @@ public struct TeamAliveCountRpc : IRpcCommand
     public int corpoPlayersAlive;
 }
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-[UpdateAfter(typeof(RespawnSystem))]
 public partial class CountPlayersSystemServer : SystemBase
 {
     protected override void OnCreate()
@@ -27,12 +26,12 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
 
-        if (!SystemAPI.HasComponent<PlayerCounts>(entity))
+        if (!SystemAPI.HasComponent<PlayerAliveCounts>(entity))
         {
             return;
         }
 
-        RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
+        RefRW<PlayerAliveCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerAliveCounts>(entity);
 
         playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
         playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);

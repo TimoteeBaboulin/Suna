@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class GameResourcesAuthoring : MonoBehaviour
@@ -50,6 +51,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].price = rangedWeaponSO.price;
                 stuffs[i]._stuffLocalOffsetView = rangedWeaponSO._stuffLocalOffsetView;
                 stuffs[i].killGain = rangedWeaponSO.killGain;
+                stuffs[i].canADS = rangedWeaponSO.canADS;
+                stuffs[i].ADSFOV = rangedWeaponSO.ADSFOV;
 
                 stuffs[i].dataID = i;
             }
@@ -69,6 +72,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].price = meleeWeaponSO.price;
                 stuffs[i]._stuffLocalOffsetView = meleeWeaponSO._stuffLocalOffsetView;
                 stuffs[i].killGain = meleeWeaponSO.killGain;
+                stuffs[i].canADS = false;
+                stuffs[i].ADSFOV = 0;
 
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
             }
@@ -87,6 +92,8 @@ public class GameResourcesAuthoring : MonoBehaviour
             stuffs[id].price = harvesterSO.price;
             stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
             stuffs[id].killGain = harvesterSO.killGain;
+            stuffs[id].canADS = false;
+            stuffs[id].ADSFOV = 0;
 
             stuffs[id].dataID = 0;
 
@@ -118,6 +125,10 @@ public class GameResourcesAuthoring : MonoBehaviour
                 rangedWeapons[i].nbMagazine = rangedWeaponSO.nbMagazine;
                 rangedWeapons[i].magazineCapacity = rangedWeaponSO.magazineCapacity;
                 rangedWeapons[i].lastFireTimeMax = rangedWeaponSO.lastFireTimeMax;
+                rangedWeapons[i].scope = new ScopeComponent
+                {
+                    ScopeFOV = rangedWeaponSO.scope != null ? rangedWeaponSO.scope.fov : 0
+                };
             }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
