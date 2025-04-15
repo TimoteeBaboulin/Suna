@@ -42,6 +42,8 @@ partial struct ClientSettingsSystem : ISystem
                     ClientSettingsComponent settingsComponent = new ClientSettingsComponent()
                     {
                         Sensivity = settingsData.Sensivity,
+                        Volume = settingsData.Volume,
+                        Pseudo = settingsData.Pseudo
                     };
 
                     entityManager.AddComponentData(entity, settingsComponent);
