@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -102,30 +103,23 @@ partial class CameraSystem : SystemBase
 
                     //If you can't find the database or the database access of the currently equipped
                     //Stuff, you can not ADS
-                    GameResourcesDatabase database;
-                    StuffDatabaseAccess databaseAccess = default; ;
-                    if (!SystemAPI.TryGetSingleton<GameResourcesDatabase>(out database) || !TryGetCurrentlyEquippedStuff(currentTarget, out databaseAccess))
+                    if (TryGetCurrentlyEquippedStuff(currentTarget, out Entity stuffEntity))
                     {
-                        ADSActive = false;
-                    }
-                    else
-                    {
-                        if (!databaseAccess.GetData(ref database).canADS || !EntityManager.HasComponent<CharacterComponent>(currentTarget))
+                        CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
+                        if (character.isAiming && WeaponCanADS(stuffEntity, out float adsFov))
                         {
-                            ADSActive = false;
+                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.1f);
                         }
-                    }
-
-                    CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
-                    if (character.isAiming && ADSActive)
-                    {
-                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, aimingFov, 0.1f);
+                        else
+                        {
+                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                        }
                     }
                     else
                     {
                         Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
                     }
-                    
+
                 }
                 else
                 {
@@ -137,21 +131,38 @@ partial class CameraSystem : SystemBase
         }
     }
 
-    bool TryGetCurrentlyEquippedStuff(Entity characterEntity, out StuffDatabaseAccess databaseAccess)
+    bool WeaponCanADS(Entity stuffEntity, out float fov)
     {
-        databaseAccess = default;
+        fov = 0;
+
+        if (SystemAPI.HasComponent<ScopeComponent>(stuffEntity))
+        {
+            fov = SystemAPI.GetComponentRO<ScopeComponent>(stuffEntity).ValueRO.ScopeFOV;
+            return true; 
+        }
+
+        if (SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity))
+        {
+            StuffDatabaseAccess databaseAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+            GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+            fov = databaseAccess.GetData(ref database).ADSFOV;
+            return databaseAccess.GetData(ref database).canADS;
+        }
+
+        return false;
+    }
+
+    bool TryGetCurrentlyEquippedStuff(Entity characterEntity, out Entity stuffEntity)
+    {
+        stuffEntity = default;
 
         if (!SystemAPI.HasComponent<CharacterStuffInHandLocation>(characterEntity)
             || !SystemAPI.HasComponent<CharacterStuffList>(characterEntity))
             return false;
 
         CharacterStuffList stuffList = SystemAPI.GetComponent<CharacterStuffList>(characterEntity);
-        Entity stuffEntity = stuffList.Value[(int)SystemAPI.GetComponent<CharacterStuffInHandLocation>(characterEntity).Value];
-
-        if (!SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity))
-            return false;
-
-        databaseAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+        stuffEntity = stuffList.Value[(int)SystemAPI.GetComponent<CharacterStuffInHandLocation>(characterEntity).Value];
         return true;
     }
 }

@@ -52,7 +52,7 @@ public struct RangedWeaponCommonData
     public int nbMagazine;
     public int magazineCapacity;
 
-    //public ScopeData scope;
+    public ScopeComponent scope;
     //public HandleData handle;
     //public CrossData cross;
     //public SilencerData silencer;

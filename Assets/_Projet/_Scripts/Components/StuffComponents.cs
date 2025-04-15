@@ -71,6 +71,7 @@ public struct StuffCommonData
     public uint killGain;
 
     public bool canADS;
+    public float ADSFOV;
 
     public int dataID;
 }

@@ -101,6 +101,7 @@ partial struct ProcessPendingStuffSystem : ISystem
     {
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         ref var stuffCommonDataArray = ref database.StuffDatabaseRef.Value.StuffCommonData;
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (ownerRO, dataAccessRW, stuff) in SystemAPI
             .Query<RefRO<StuffOwner>, RefRW<StuffDatabaseAccess>>()
@@ -134,13 +135,16 @@ partial struct ProcessPendingStuffSystem : ISystem
                 charaStuffList.ValueRW.Value[(int)stuffData.location] = stuff;
             }
 
-            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value);
+            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);
             
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 
-    void SpecificLoadSet(ref SystemState state, Entity stuff, ref StuffCommonData stuffData, ref StuffDatabase database)
+    void SpecificLoadSet(ref SystemState state, Entity stuff, ref StuffCommonData stuffData, ref StuffDatabase database, EntityCommandBuffer ecb)
     {
         switch (stuffData.type)
         {
@@ -153,6 +157,10 @@ partial struct ProcessPendingStuffSystem : ISystem
                     currentAmmo = data.magazineCapacity + 1, // 1 = bullet in chamber
                     remainingAmmo = data.magazineCapacity * (data.nbMagazine - 1),
                 });
+                if (data.scope.ScopeFOV != 0)
+                {
+                    ecb.AddComponent(stuff, data.scope);
+                }
                 break;
             case StuffType.MeleeWeapon:
                 SystemAPI.SetComponent(stuff, new MeleeWeaponDatabaseAccess { Value = stuffData.dataID });
