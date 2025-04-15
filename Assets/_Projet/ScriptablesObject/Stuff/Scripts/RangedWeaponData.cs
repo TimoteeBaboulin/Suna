@@ -68,6 +68,9 @@ public class RangedWeaponData : ScriptableObject
     [Tooltip("Propulsion of the enemy ragdoll when it dies")]
     public float knockbackForceOnKill;
 
+    [Tooltip("Tell the game whether or not you can ads with that weapon")]
+    public bool canADS;
+
     public float lastFireTimeMax;
 
     public int nbMagazine;

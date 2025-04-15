@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using UnityEngine;
 
 public class GameResourcesAuthoring : MonoBehaviour
@@ -50,6 +51,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].price = rangedWeaponSO.price;
                 stuffs[i]._stuffLocalOffsetView = rangedWeaponSO._stuffLocalOffsetView;
                 stuffs[i].killGain = rangedWeaponSO.killGain;
+                stuffs[i].canADS = rangedWeaponSO.canADS;
 
                 stuffs[i].dataID = i;
             }
@@ -69,6 +71,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].price = meleeWeaponSO.price;
                 stuffs[i]._stuffLocalOffsetView = meleeWeaponSO._stuffLocalOffsetView;
                 stuffs[i].killGain = meleeWeaponSO.killGain;
+                stuffs[i].canADS = false;
 
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
             }
@@ -87,6 +90,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             stuffs[id].price = harvesterSO.price;
             stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
             stuffs[id].killGain = harvesterSO.killGain;
+            stuffs[id].canADS = false;
 
             stuffs[id].dataID = 0;
 

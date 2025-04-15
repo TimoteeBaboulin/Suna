@@ -96,20 +96,36 @@ partial class CameraSystem : SystemBase
                 && EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(currentTarget))
                 {
                     Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
+                    
 
-                    if (EntityManager.HasComponent<CharacterComponent>(currentTarget))
+                    bool ADSActive = true;
+
+                    //If you can't find the database or the database access of the currently equipped
+                    //Stuff, you can not ADS
+                    GameResourcesDatabase database;
+                    StuffDatabaseAccess databaseAccess = default; ;
+                    if (!SystemAPI.TryGetSingleton<GameResourcesDatabase>(out database) || !TryGetCurrentlyEquippedStuff(currentTarget, out databaseAccess))
                     {
-                        CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
-
-                        if (character.isAiming)
+                        ADSActive = false;
+                    }
+                    else
+                    {
+                        if (!databaseAccess.GetData(ref database).canADS || !EntityManager.HasComponent<CharacterComponent>(currentTarget))
                         {
-                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, aimingFov, 0.1f);
-                        }
-                        else
-                        {
-                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                            ADSActive = false;
                         }
                     }
+
+                    CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
+                    if (character.isAiming && ADSActive)
+                    {
+                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, aimingFov, 0.1f);
+                    }
+                    else
+                    {
+                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                    }
+                    
                 }
                 else
                 {
@@ -119,5 +135,23 @@ partial class CameraSystem : SystemBase
                 Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }
+    }
+
+    bool TryGetCurrentlyEquippedStuff(Entity characterEntity, out StuffDatabaseAccess databaseAccess)
+    {
+        databaseAccess = default;
+
+        if (!SystemAPI.HasComponent<CharacterStuffInHandLocation>(characterEntity)
+            || !SystemAPI.HasComponent<CharacterStuffList>(characterEntity))
+            return false;
+
+        CharacterStuffList stuffList = SystemAPI.GetComponent<CharacterStuffList>(characterEntity);
+        Entity stuffEntity = stuffList.Value[(int)SystemAPI.GetComponent<CharacterStuffInHandLocation>(characterEntity).Value];
+
+        if (!SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity))
+            return false;
+
+        databaseAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+        return true;
     }
 }
