@@ -23,8 +23,8 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);   
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
@@ -35,6 +35,8 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             {
                 if (state.EntityManager.HasComponent<CameraIsAtached>(characterEntity))
                 {
+                    CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
+
                     Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
                     AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
 

@@ -72,8 +72,8 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
@@ -84,6 +84,8 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             {
                 if (!state.EntityManager.HasComponent<CameraIsAtached>(characterEntity))
                 {
+                    CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
+
                     Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
                     AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
 
