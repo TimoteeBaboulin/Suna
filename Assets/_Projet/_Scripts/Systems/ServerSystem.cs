@@ -35,7 +35,6 @@ public partial class ServerSystem : SystemBase
 
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        //Message from all clients to server
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
         {
             ServerConsole.Log(ServerConsole.LogType.Info, $"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}, version {request.ValueRO.SourceConnection.Version}");
@@ -78,11 +77,9 @@ public partial class ServerSystem : SystemBase
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
             var session = ClientTransportHelper.instance.Session;
 
-            // Now assign the team once during client instantiation
             string teamString = PlayerHelpers.AssignTeamToPlayer(currentPlayer, session.Players);
             PlayerHelpers.UpdateTeamCountInSession(teamString, currentPlayer.Id);
 
-            // Convert team string to enum value
             TeamSideType assignedTeam = TeamSideType.Neutre;
             switch (teamString)
             {
@@ -97,7 +94,6 @@ public partial class ServerSystem : SystemBase
                     break;
             }
 
-            // Add the client component with team data to the owner entity
             ecb.AddComponent(ownerEntity, new ClientComponent
             {
                 networkID = networkId.Value,

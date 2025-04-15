@@ -113,7 +113,6 @@ public partial struct RespawnSystem : ISystem
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             int networkId = SystemAPI.GetComponent<GhostOwner>(clientEntity).NetworkId;
-            // Use the team stored on the clientComponent
             TeamSideType teamSideType = playerComponent.ValueRW.team;
             Debug.Log($"[AliveCheck] Final teamSideType from ClientComponent: {teamSideType} for networkId {networkId}");
 
@@ -140,7 +139,6 @@ public partial struct RespawnSystem : ISystem
             if (!state.EntityManager.Exists(characterEntity))
             {
                 playerComponent.ValueRW.networkID = networkId;
-                // No longer fetching player id from PlayerHelpers because it is in the clientComponent
 
                 SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
@@ -157,83 +155,6 @@ public partial struct RespawnSystem : ISystem
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
         }
-
-        //        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
-        //        {
-        //            int networkId = state.EntityManager.GetComponentData<GhostOwner>(clientEntity).NetworkId;
-        //            TeamSideType teamSideType = TeamSideType.Neutre;
-
-        //            if (SystemAPI.HasComponent<CorpoTeamTag>(clientEntity))
-        //            {
-        //                teamSideType = TeamSideType.Corpo;
-        //            }
-        //            else if (SystemAPI.HasComponent<NatifTeamTag>(clientEntity))
-        //            {
-        //                teamSideType = TeamSideType.Natif;
-        //            }
-
-        //            IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId);
-        //            Debug.Log($"[AliveCheck] currentPlayerID '{currentPlayer.Id}' for NetworkId {networkId}");
-        //            string team = currentPlayer.Properties.ContainsKey("team") ? currentPlayer.Properties["team"].Value : "No team property found";
-        //            Debug.Log($"[AliveCheck] Team: {team} for {currentPlayer.Id}");
-
-        //            switch (team)
-        //            {
-        //                case "Corpo":
-        //                    teamSideType = TeamSideType.Corpo;
-        //                    break;
-        //                case "Natif":
-        //                    teamSideType = TeamSideType.Natif;
-        //                    break;
-        //                default:
-        //                    teamSideType = TeamSideType.Neutre; 
-        //                    break;
-        //            }
-
-        ////#if UNITY_EDITOR
-        //            Debug.Log($"[AliveCheck] Final teamSideType: {teamSideType}");
-        ////#endif
-        //            if (!teamSpawnsValid[(int)teamSideType])
-        //            {
-        //                continue;
-        //            }
-
-        //            Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
-        //            var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(teamSpawnsEntities[(int)teamSideType]);
-
-        //            int index;
-        //            if (teamSideType == TeamSideType.Neutre)
-        //            {
-        //                index = UnityEngine.Random.Range(0, buffer.Length);
-        //            }
-        //            else
-        //            {
-        //                index = teamSpawnIndexes[(int)teamSideType];
-        //                teamSpawnIndexes[(int)teamSideType]++;
-        //            }
-
-
-        //            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
-        //            if (!state.EntityManager.Exists(characterEntity))
-        //            {
-        //                playerComponent.ValueRW.networkID = networkId;
-        //                playerComponent.ValueRW.playerID = currentPlayer.Id;
-
-        //                SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
-        //                ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
-        //            }
-        //            else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
-        //            {
-        //                RefRW<LocalTransform> transform = SystemAPI.GetComponentRW<LocalTransform>(characterEntity);
-        //                RefRW<CurrentHealthComponent> currentHealth = SystemAPI.GetComponentRW<CurrentHealthComponent>(characterEntity);
-        //                transform.ValueRW.Position = buffer[index % buffer.Length];
-        //                currentHealth.ValueRW.Value = 100;
-
-        //                ecb.SetComponentEnabled<CharacterIsEnable>(characterEntity, true);
-        //                ecb.RemoveComponent<HasNoHealthTag>(characterEntity);
-        //                ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
-        //            }
-        //        }
     }
 
     public void SpawnCharacter(Entity client, int networkId, EntityCommandBuffer ecb, float3 position, TeamSideType team)

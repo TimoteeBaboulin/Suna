@@ -106,13 +106,20 @@ public static class PlayerHelpers
     static public IReadOnlyPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
+        int index = networkId - 1;
+
         if (RequestedPlayType == PlayType.Server && networkId == 1)
         {
-            networkId++;
+            index = networkId; 
         }
 
-        IReadOnlyPlayer currentPlayerId = sessionPlayers[networkId - 1];
-        return currentPlayerId;
+        if (index < 0 || index >= sessionPlayers.Count)
+        {
+            Debug.LogError($"FindCurrentPlayerForNetworkId: index {index} hors limites (sessionPlayers.Count = {sessionPlayers.Count}) pour networkId {networkId}.");
+            return null;
+        }
+
+        return sessionPlayers[index];
     }
 
     static public string AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
