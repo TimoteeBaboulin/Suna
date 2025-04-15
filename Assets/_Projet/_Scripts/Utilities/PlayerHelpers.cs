@@ -145,6 +145,10 @@ public static class PlayerHelpers
         if (readOnlyPlayer is IPlayer player)
         {
             player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
+
+            var session = ClientTransportHelper.instance.Session;
+            if (session is IHostSession hostSession)
+                hostSession.SaveCurrentPlayerDataAsync();
         }
         return assignedTeam;
     }
@@ -166,7 +170,6 @@ public static class PlayerHelpers
                 int currentCountNatif = int.Parse(countTeamNatifProp.Value);
                 hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
             }
-            hostSession.SaveCurrentPlayerDataAsync();        
             hostSession.SavePropertiesAsync();         
             Debug.Log($"[Final Save] Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
         }

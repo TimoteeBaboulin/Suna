@@ -114,7 +114,6 @@ public partial struct RespawnSystem : ISystem
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             int networkId = SystemAPI.GetComponent<GhostOwner>(clientEntity).NetworkId;
-
             TeamSideType teamSideType = playerComponent.ValueRW.team;
             // Use the team stored on the clientComponent
             Debug.Log($"[AliveCheck] Final teamSideType from ClientComponent: {teamSideType} for networkId {networkId}");
@@ -141,12 +140,7 @@ public partial struct RespawnSystem : ISystem
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
             if (!state.EntityManager.Exists(characterEntity))
             {
-                playerComponent.ValueRW.networkID = networkId;
-
-                var clientData = SystemAPI.GetComponent<ClientComponent>(clientEntity);
-                int validNetworkId = clientData.networkID;
-
-                SpawnCharacter(clientEntity, validNetworkId, ecb, buffer[index % buffer.Length], teamSideType);
+                SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
             else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
@@ -200,7 +194,8 @@ public partial struct RespawnSystem : ISystem
             case TeamSideType.Natif:
                 ecb.AddComponent<NatifTeamTag>(character);
                 break;
-            default: break;
+            default:
+                break;
         }
 
         ServerConsole.Log(ServerConsole.LogType.Info, $"Character spawned with NetworkId {networkId}, in the world {worldName}");

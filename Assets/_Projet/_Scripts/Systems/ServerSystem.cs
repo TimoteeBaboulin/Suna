@@ -49,6 +49,8 @@ public partial class ServerSystem : SystemBase
 
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
+
+        Dependency.Complete();
     }
 
     #region Public Methods
@@ -64,16 +66,14 @@ public partial class ServerSystem : SystemBase
 
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
+
             Entity client = ecb.Instantiate(prefabManager.Client);
+
             ecb.SetComponent(client, new GhostOwner()
             {
                 NetworkId = networkId.Value
             });
-            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup()
-            {
-                Value = client
-            });
-
+            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() { Value = client });
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
             var session = ClientTransportHelper.instance.Session;
 
@@ -93,7 +93,17 @@ public partial class ServerSystem : SystemBase
                     assignedTeam = TeamSideType.Neutre;
                     break;
             }
+
+
+            //Do not remove this code, it's not nice, not ugly but it's fucks hard and if you remove it, it will fuck you
             ecb.AddComponent(ownerEntity, new ClientComponent
+            {
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id,
+                team = assignedTeam
+            });
+
+            ecb.SetComponent(client, new ClientComponent
             {
                 networkID = networkId.Value,
                 playerID = currentPlayer.Id,
@@ -103,13 +113,7 @@ public partial class ServerSystem : SystemBase
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
                 $"NetworkId {networkId.Value} " +
                 $"currentPlayerID {currentPlayer.Id} " +
-                $"team {assignedTeam}" +
-                $"world {worldName}");
-
-            Debug.Log($"New Client : " +
-                $"NetworkId {networkId.Value} " +
-                $"currentPlayerID {currentPlayer.Id} " +
-                $"team {assignedTeam}" +
+                $"team {assignedTeam} " +
                 $"world {worldName}");
         }
     }
