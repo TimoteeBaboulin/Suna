@@ -70,13 +70,10 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
-
-            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
-            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
@@ -85,7 +82,25 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             }
             else
             {
-                modelReference.ModelGameObject.SetActive(true);
+                if (!state.EntityManager.HasComponent<CameraIsAtached>(characterEntity))
+                {
+                    CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
+
+                    Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
+                    AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
+
+                    if (!modelReference.ModelGameObject.activeSelf)
+                    {
+                        modelReference.ModelGameObject.SetActive(true);
+                    }
+                }
+                else
+                {
+                    if (modelReference.ModelGameObject.activeSelf)
+                    {
+                        modelReference.ModelGameObject.SetActive(false);
+                    }
+                }
             }
 
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;

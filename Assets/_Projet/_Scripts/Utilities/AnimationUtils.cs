@@ -47,7 +47,11 @@ public class AnimationUtils
         if (entityManager.HasComponent<AnimatorReference>(entity))
         {
             AnimatorReference animatorRef = entityManager.GetComponentObject<AnimatorReference>(entity);
-            animatorRef.Animator = animator;
+
+            if (animatorRef.Animator != animator)
+            {
+                animatorRef.Animator = animator;
+            }
         }
     }
 

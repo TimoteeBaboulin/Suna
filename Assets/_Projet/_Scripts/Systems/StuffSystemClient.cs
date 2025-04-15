@@ -65,6 +65,20 @@ partial struct StuffSystemClient : ISystem
             //.WithNone<TemporaryOverrideGameObjectActive>() //TODO : Voir pour ça
             .WithEntityAccess())
         {
+            if (ownerRO.ValueRO.Value != Entity.Null)
+            {
+                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(ownerRO.ValueRO.Value))
+                {
+                    CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(ownerRO.ValueRO.Value);
+                    Transform viewTransform = charaBones.WeaponSlotTransform;
+
+                    if (goRef.Value.transform.parent != viewTransform)
+                    {
+                        goRef.Value.transform.SetParent(viewTransform, false);
+                    } 
+                }
+            }
+
             goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.Value == Entity.Null);
         }
 

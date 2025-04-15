@@ -54,6 +54,7 @@ public partial struct CalculateFrameDamageSystem : ISystem
             Lookup = lookup
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
+        state.Dependency.Complete();
     }
 }
 
@@ -145,7 +146,6 @@ public partial struct ApplyDamageSystem : ISystem
             ECB = ecb.AsParallelWriter()
         };
         state.Dependency = job.ScheduleParallel(state.Dependency);
-
         state.Dependency.Complete();
 
         commonDataMap.Dispose();

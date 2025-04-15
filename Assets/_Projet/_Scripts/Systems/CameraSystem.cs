@@ -15,7 +15,6 @@ partial class CameraSystem : SystemBase
     private static float3 currentPosition;
     private static quaternion currentRotation;
     private static float3 fpsOffset = new float3(0f, 0.9f, 0f);
-    private static float3 tpsOffset = new float3(0, 1f, -1f);
     private static int defaultFov = 60;
     private static int aimingFov = 50;
 
@@ -45,7 +44,14 @@ partial class CameraSystem : SystemBase
                         .Build()
                         .ToEntityArray(Allocator.Temp))
                     {
+                        if (currentTarget != Entity.Null
+                            && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                        {
+                            EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                        }
+
                         currentTarget = entity;
+                        EntityManager.AddComponent<CameraIsAtached>(currentTarget);
                         needNewTarget = false;
                     }
                 }
@@ -62,13 +68,26 @@ partial class CameraSystem : SystemBase
                 .Build()
                 .ToEntityArray(Allocator.Temp))
             {
+                if (currentTarget != Entity.Null
+                            && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                {
+                    EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                }
+
                 currentTarget = entity;
+                EntityManager.AddComponent<CameraIsAtached>(currentTarget);
                 needNewTarget = false;
             }
         }
 
         if (needNewTarget)
         {
+            if (currentTarget != Entity.Null
+                            && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+            {
+                EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+            }
+
             currentTarget = Entity.Null;
 
             foreach (var entity in SystemAPI
@@ -79,6 +98,7 @@ partial class CameraSystem : SystemBase
                 .ToEntityArray(Allocator.Temp))
             {
                 currentTarget = entity;
+                EntityManager.AddComponent<CameraIsAtached>(currentTarget);
                 needNewTarget = false;
             }
         }
@@ -93,39 +113,28 @@ partial class CameraSystem : SystemBase
                 RefRO<LocalTransform> localTransform = SystemAPI.GetComponentRO<LocalTransform>(currentTarget);
                 RefRO<CharacterViewRotation> localViewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(currentTarget);
 
-                if (EntityManager.HasComponent<GhostOwnerIsLocal>(currentTarget)
-                && EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(currentTarget))
+                bool ADSActive = true;
+
+                //If you can't find the database or the database access of the currently equipped
+                //Stuff, you can not ADS
+                if (TryGetCurrentlyEquippedStuff(currentTarget, out Entity stuffEntity))
                 {
-                    Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
-                    
-
-                    bool ADSActive = true;
-
-                    //If you can't find the database or the database access of the currently equipped
-                    //Stuff, you can not ADS
-                    if (TryGetCurrentlyEquippedStuff(currentTarget, out Entity stuffEntity))
+                    CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
+                    if (character.isAiming && WeaponCanADS(stuffEntity, out float adsFov))
                     {
-                        CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
-                        if (character.isAiming && WeaponCanADS(stuffEntity, out float adsFov))
-                        {
-                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.1f);
-                        }
-                        else
-                        {
-                            Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
-                        }
+                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.1f);
                     }
                     else
                     {
                         Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
                     }
-
                 }
                 else
                 {
-                    Camera.main.transform.position = localTransform.ValueRO.Position + tpsOffset;
+                    Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
                 }
 
+				Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
                 Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }

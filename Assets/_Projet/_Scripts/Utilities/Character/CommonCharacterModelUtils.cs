@@ -25,6 +25,15 @@ public class CommonCharacterModelUtils
         });
     }
 
+    public static void SetCommonModelBonesComponent(in Transform modelTransform, RefRO<CommonCharacterModelBonesName> modelBonesName,
+        in Entity characterEntity, in EntityCommandBuffer ecb)
+    {
+        ecb.SetComponent(characterEntity, new CommonCharacterModelBonesTransform
+        {
+            WeaponSlotTransform = FindBoneByName(modelTransform, modelBonesName.ValueRO.WeaponSlotName),
+        });
+    }
+
     public static void DisableModelRendering(in GameObject modelGameObject)
     {
         if (modelGameObject.TryGetComponent(out ThirdPersonCharacterModelBehaviour modelBehaviour)

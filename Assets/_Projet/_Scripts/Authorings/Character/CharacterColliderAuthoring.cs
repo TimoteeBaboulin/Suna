@@ -12,7 +12,6 @@ class CharacterColliderAuthoringBaker : Baker<CharacterColliderAuthoring>
     {
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
-        AddComponent<CharacterColliderTag>(entity);
         AddComponent<CharacterColliderInitEntityTag>(entity);
         AddComponent<CharacterColliderComponent>(entity);
     }
