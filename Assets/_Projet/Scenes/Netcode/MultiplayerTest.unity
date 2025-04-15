@@ -547,6 +547,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3697976406561640613, guid: 779be0a0477345941add539ad9178106, type: 3}
+      propertyPath: SMG
+      value: 
+      objectReference: {fileID: 11400000, guid: c5169048c8241b14e985c1031fca08c3, type: 2}
+    - target: {fileID: 3697976406561640613, guid: 779be0a0477345941add539ad9178106, type: 3}
+      propertyPath: Sniper
+      value: 
+      objectReference: {fileID: 11400000, guid: f2477d3aa9ae6134a8c99d791df8ccb1, type: 2}
     - target: {fileID: 8398659000021893333, guid: 779be0a0477345941add539ad9178106, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1009,6 +1017,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: listPrefabView.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: 'listPrefabView.Array.data[0]'
       value: 
       objectReference: {fileID: 9077871864667713224, guid: 8dba0b4f06989b341a56d9b89f32e3ce, type: 3}
@@ -1020,6 +1032,22 @@ PrefabInstance:
       propertyPath: 'listPrefabView.Array.data[2]'
       value: 
       objectReference: {fileID: 7445839901049856988, guid: 12ac2772131245344b8d8d8002e98e1b, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[5]'
+      value: 
+      objectReference: {fileID: 7068153267853143302, guid: d2ef8e43e061d584ebd3b59f623ce9b7, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[6]'
+      value: 
+      objectReference: {fileID: 8839504196725151190, guid: d2d43aecd7857b64dbcf0a13d293ee1b, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[7]'
+      value: 
+      objectReference: {fileID: 7445839901049856988, guid: 12ac2772131245344b8d8d8002e98e1b, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[8]'
+      value: 
+      objectReference: {fileID: 521297520866367205, guid: 129fe5109c530f04093a1df81198ef71, type: 3}
     - target: {fileID: 6542852334063179998, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: m_Name
       value: TempSingletonMochePourPrefabStuffView
@@ -1103,6 +1131,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ab704b4536c06478030f49690b0f13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InitializationSettings: {fileID: 11400000, guid: a33fd9d9c7c56424cbcbea0493620991, type: 2}
+  basePath: 
+  language: 
+  defaultPoolSize: 0
+  lowerPoolSize: 0
+  streamingPoolSize: 0
+  memoryCutoffThreshold: 0
+  monitorPoolSize: 0
+  monitorQueuePoolSize: 0
+  callbackManagerBufferSize: 0
+  spatialAudioPoolSize: 0
+  maxSoundPropagationDepth: 0
+  engineLogging: 0
 --- !u!4 &1810152299
 Transform:
   m_ObjectHideFlags: 0
@@ -1472,6 +1513,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4189884339f7f3b49aa74c61c3840393, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDefaultListener: 1
+  bOverrideScalingFactor: 0
+  scalingFactor: -1
+  listenerId: 0
 --- !u!114 &2021676139
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1484,6 +1529,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b60de2044443d544ab62056252bafac, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_listeners:
+    initialListenerList: []
+    useDefaultListeners: 1
+  isEnvironmentAware: 1
+  isStaticObject: 0
+  usePositionOffsetData: 0
+  m_positionOffsetData:
+    KeepMe: 0
+    positionOffset: {x: 0, y: 0, z: 0}
+  scalingFactor: 1
+  m_posOffsetData: {fileID: 0}
+  listenerMask: 1
 --- !u!1652712579 &2021676141
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
@@ -1555,6 +1612,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00d227fdd24555d4a967ce10edb2bb9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triggerList: f7e1664c
+  useOtherObject: 0
+  data:
+    idInternal: 0
+    valueGuidInternal: 
+    WwiseObjectReference: {fileID: 0}
+  decodeBank: 0
+  overrideLoadSetting: 0
+  loadAsynchronous: 0
+  saveDecodedBank: 0
+  unloadTriggerList: 958ca0ea
+  bankNameInternal: 
+  valueGuidInternal: 
 --- !u!1 &2055270454
 GameObject:
   m_ObjectHideFlags: 0

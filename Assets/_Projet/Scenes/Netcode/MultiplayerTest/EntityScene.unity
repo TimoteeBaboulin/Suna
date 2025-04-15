@@ -1237,12 +1237,16 @@ PrefabInstance:
       objectReference: {fileID: 1063816135455577480, guid: b7518e0c938ce854c956a2aa97be3152, type: 3}
     - target: {fileID: 985117995988363320, guid: 0460548379cb339488d25d69e35ffc5d, type: 3}
       propertyPath: rangedWeaponList.Array.size
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 985117995988363320, guid: 0460548379cb339488d25d69e35ffc5d, type: 3}
       propertyPath: 'rangedWeaponList.Array.data[5]'
       value: 
       objectReference: {fileID: 11400000, guid: c5169048c8241b14e985c1031fca08c3, type: 2}
+    - target: {fileID: 985117995988363320, guid: 0460548379cb339488d25d69e35ffc5d, type: 3}
+      propertyPath: 'rangedWeaponList.Array.data[6]'
+      value: 
+      objectReference: {fileID: 11400000, guid: f2477d3aa9ae6134a8c99d791df8ccb1, type: 2}
     - target: {fileID: 3093370179945693043, guid: 0460548379cb339488d25d69e35ffc5d, type: 3}
       propertyPath: m_Name
       value: GameResources
