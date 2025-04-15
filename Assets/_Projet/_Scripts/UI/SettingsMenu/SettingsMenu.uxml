@@ -14,6 +14,10 @@
                     <engine:Slider value="50" high-value="100" fill="false" low-value="0" name="VolumeSlider" inverted="false" style="width: 490px; justify-content: space-evenly; min-height: auto;" />
                     <engine:FloatField value="50" name="VolumeField" style="width: 125px; height: auto; font-size: 30px; -unity-text-align: upper-right; -unity-font-style: normal;" />
                 </engine:VisualElement>
+                <engine:VisualElement name="PseudoContainer" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-direction: row; left: 100px;">
+                    <engine:Label text="Pseudo" name="PseudoLabel" style="font-size: 40px; -unity-text-align: middle-center; color: rgb(204, 204, 204);" />
+                    <engine:TextField name="PseudoField" placeholder-text="UnnamedPlayer" max-length="15" style="font-size: 30px; width: 400px;" />
+                </engine:VisualElement>
             </engine:VisualElement>
         </engine:ScrollView>
         <engine:Button text="Save &amp; Close" name="SaveButton" class="main-menu-button" style="align-self: center; height: 50px;" />
