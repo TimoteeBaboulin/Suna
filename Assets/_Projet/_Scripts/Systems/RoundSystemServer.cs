@@ -104,7 +104,7 @@ public partial struct RoundSystemServer : ISystem
         }
         else
         {
-            PlayerCounts playerCount = SystemAPI.GetComponent<PlayerCounts>(entity);
+            PlayerAliveCounts playerCount = SystemAPI.GetComponent<PlayerAliveCounts>(entity);
 
             var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
@@ -190,7 +190,7 @@ public partial struct RoundSystemServer : ISystem
 
         //Send a RPC to clients so they get the updated score
         VictoryRpcCommand rpc = new() { team = team };
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {
@@ -319,7 +319,7 @@ public partial struct RoundSystemServer : ISystem
     {
         //Send a RPC to update the phase of the clients based on the server's
         ChangePhaseRpcCommand rpc = new() { phase = component.ValueRW.currentPhase };
-        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
         foreach (var client in query.ToEntityArray(Allocator.Temp))
         {

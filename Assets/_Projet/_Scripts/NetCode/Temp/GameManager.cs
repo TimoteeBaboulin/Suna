@@ -3,6 +3,7 @@ using GameNetwork.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
@@ -19,13 +20,14 @@ public class GameManager : Singleton<GameManager>
 {
     public enum GlobalGameState { MainMenu, Loading, InGame }
     public GlobalGameState GameState { get; set; }
+    private ISession currentSession => sessionTransport.Session;
 
-    public string SessionID { get; private set; }
-
-    private ClientTransportHelper clientConnectionSettings;
+    private ClientTransportHelper sessionTransport;
     private CancellationTokenSource loadingToken;
     private ConnectionHandlerNew connectionHandler;
-    private ClientTransportHelper serverSession;
+
+    private int countTeamNatif;
+    private int countTeamCorpo;
 
     protected override void Awake()
     {
@@ -42,10 +44,8 @@ public class GameManager : Singleton<GameManager>
         {
             await ClientTransportHelper.StartServicesAsync();
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
-            serverSession = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
+            sessionTransport = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
         }
-
-
     }
 
     public void Update()
@@ -55,7 +55,7 @@ public class GameManager : Singleton<GameManager>
     public async Task Play()
     {
         await ClientTransportHelper.StartServicesAsync();
-        clientConnectionSettings = await connectionHandler.Connect(loadingToken.Token);
+        sessionTransport = await connectionHandler.Connect(loadingToken.Token);
 
         GameState = GlobalGameState.InGame;
         Cursor.lockState = CursorLockMode.Locked;
@@ -65,35 +65,7 @@ public class GameManager : Singleton<GameManager>
         GameState = GlobalGameState.InGame;
 
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
-    }
-
-
-
-    public bool IsSessionFull()
-    {
-        if (clientConnectionSettings != null)
-        {
-            return clientConnectionSettings.Session.AvailableSlots == 0;
-        }
-        return false;
-    }
-    public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
-    {
-        List<IReadOnlyPlayer> playersInTeam = new List<IReadOnlyPlayer>();
-        for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
-        {
-            var player = clientConnectionSettings.Session.Players[i];
-
-            foreach (var property in player.Properties)
-            {
-                if (property.Value.Value == teamName)
-                {
-                    playersInTeam.Add(player);
-                    break;
-                }
-            }
-        }
-        return playersInTeam;
+        Debug.Log($"Count of current player PROPERTIES: {currentSession.CurrentPlayer.Properties.Count}");
     }
 
     public List<IReadOnlyPlayer> GetAllPlayers()
@@ -101,23 +73,22 @@ public class GameManager : Singleton<GameManager>
         List<IReadOnlyPlayer> allPlayers = new List<IReadOnlyPlayer>();
         for (int i = 0; i < GetCurrentNbOfPlayersInSession(); i++)
         {
-            allPlayers.Add(clientConnectionSettings.Session.Players[i]);
+            allPlayers.Add(currentSession.Players[i]);
         }
         return allPlayers;
     }
 
     public int GetCurrentNbOfPlayersInSession()
     {
-
-        if (clientConnectionSettings != null)
+        if (sessionTransport != null)
         {
             if (RequestedPlayType == PlayType.Client)
             {
-                return clientConnectionSettings.Session.Players.Count - 1;
+                return currentSession.Players.Count - 1;
             }
             else if (RequestedPlayType == PlayType.ClientAndServer)
             {
-                return clientConnectionSettings.Session.Players.Count;
+                return currentSession.Players.Count;
             }
         }
         return 0;
@@ -176,7 +147,7 @@ public class GameManager : Singleton<GameManager>
         // Mark the connection state as not connected.
         ClientTransportHelper.State = ClientConnectionState.NotConnected;
 
-       // bool requestedDisconnect = false;
+        // bool requestedDisconnect = false;
 
         // Loop over all worlds that are client worlds.
         foreach (var world in World.All)
@@ -192,7 +163,7 @@ public class GameManager : Singleton<GameManager>
                         // Log which entity is getting the disconnect request.
                         Debug.Log($"[Disconnect] Adding disconnect request to entity: {entity}");
                         world.EntityManager.AddComponentData(entity, new NetworkStreamRequestDisconnect());
-                       // requestedDisconnect = true;
+                        // requestedDisconnect = true;
                     }
                     entities.Dispose();
                 }
@@ -225,19 +196,19 @@ public class GameManager : Singleton<GameManager>
 
     public async Task LeaveSessionAsync()
     {
-        if (clientConnectionSettings != null)
+        if (sessionTransport != null)
         {
             // Log that we are initiating session leave.
             Debug.Log("[LeaveSessionAsync] Initiating leave process for session.");
-            clientConnectionSettings.Session.RemovedFromSession += OnSessionLeft;
-            await clientConnectionSettings.Session.LeaveAsync();
+            currentSession.RemovedFromSession += OnSessionLeft;
+            await currentSession.LeaveAsync();
         }
     }
 
     public void OnSessionLeft()
     {
         Debug.Log("[OnSessionLeft] Session left successfully.");
-        clientConnectionSettings = null;
+        sessionTransport = null;
     }
 
     static async Task DestroyGameSessionWorlds()

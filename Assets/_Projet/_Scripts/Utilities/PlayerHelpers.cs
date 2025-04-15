@@ -1,9 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using GameNetwork.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Multiplayer.Playmode;
 using Unity.NetCode;
+using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using static Unity.NetCode.ClientServerBootstrap;
 
 public static class PlayerHelpers
 {
@@ -14,51 +21,175 @@ public static class PlayerHelpers
     /// </summary>
     static public int CountPlayersAliveManaged(TeamSideType team, World world)
     {
-	string teamName = "";
-	if (team == TeamSideType.Corpo)
-		teamName = "corpo";
-	else if (team == TeamSideType.Natif)
-		teamName = "natif";
-        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(teamName);
-        List<int> totalPlayerIDs = new List<int>();
+        int aliveCount = 0;
+        string teamName = team == TeamSideType.Corpo ? "Corpo" : "Natif";
 
-        int count = 0;
-
-        EntityQueryDesc desc = new EntityQueryDesc
+        List<IReadOnlyPlayer> teamList = GetPlayersByTeam(teamName);
+        if (teamList.Count == 0)
         {
-            All = new ComponentType[] { typeof(ClientComponent), typeof(GhostInstance) }
-        };
-        EntityQuery query = world.EntityManager.CreateEntityQuery(desc);
+            return 0;
+        }
 
-        NativeArray<Entity> clients = query.ToEntityArray(Allocator.Temp);
-        NativeArray<GhostInstance> ghosts = query.ToComponentDataArray<GhostInstance>(Allocator.Temp);
-
-        for (int i = 0; i < clients.Length; i++)
+        EntityQuery characterQuery = world.EntityManager.CreateEntityQuery(new EntityQueryDesc
         {
-            bool foundPlayerId = players.Exists(
-                (obj) =>
-                {
-                    return int.Parse(obj.Id) == ghosts[i].ghostId;
-                });
+            All = new ComponentType[] { typeof(CharacterClientAttachedComponent), typeof(CharacterIsEnable) },
+            Options = EntityQueryOptions.IgnoreComponentEnabledState
+        });
 
-            if (!foundPlayerId)
-                continue;
+        NativeArray<Entity> characterEntities = characterQuery.ToEntityArray(Allocator.Temp);
 
-            //Debug.Log($"Found player with id {ghosts[i].ghostId}");
+        for (int i = 0; i < characterEntities.Length; i++)
+        {
+            Entity characterEntity = characterEntities[i];
+            var entityManager = world.EntityManager;
 
-            if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
+            if (!entityManager.HasComponent<CharacterIsEnable>(characterEntity) ||
+                !entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
             {
-                count++;
+                continue;
+            }
+
+            if (!entityManager.HasComponent<CharacterClientAttachedComponent>(characterEntity)) { continue; }
+
+            CharacterClientAttachedComponent attached = entityManager.GetComponentData<CharacterClientAttachedComponent>(characterEntity);
+            Entity clientEntity = attached.ClientEntity;
+
+            if (!entityManager.HasComponent<ClientComponent>(clientEntity))
+            {
+                continue;
+            }
+
+            ClientComponent client = entityManager.GetComponentData<ClientComponent>(clientEntity);
+            bool found = false;
+
+            for (int j = 0; j < teamList.Count; j++)
+            {
+                var player = teamList[j];
+
+                if (player.Id == client.playerID.ToString())
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (found)
+            {
+                aliveCount++;
             }
         }
 
-        foreach (IReadOnlyPlayer player in players)
+        characterEntities.Dispose();
+        return aliveCount;
+    }
+
+    static public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    {
+        var teamPlayers = new List<IReadOnlyPlayer>();
+        if (ClientTransportHelper.instance != null && ClientTransportHelper.instance.Session != null)
         {
-            Debug.Log(player.Id);
+            var session = ClientTransportHelper.instance.Session;
+            var players = session.Players;
+            foreach (var player in players)
+            {
+                if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
+                {
+                    if (teamProp.Value.Equals(teamName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        teamPlayers.Add(player);
+                    }
+                }
+            }
+        }
+        return teamPlayers;
+    }
+    static public IReadOnlyPlayer FindCurrentPlayerForNetworkId(int networkId)
+    {
+        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
+        int index = networkId - 1;
+
+        if (RequestedPlayType == PlayType.Server && networkId == 1)
+        {
+            index = networkId; 
         }
 
-        //Debug.Log($"{count} players alive in {team.ToString()}");
+        if (index < 0 || index >= sessionPlayers.Count)
+        {
+            Debug.LogError($"FindCurrentPlayerForNetworkId: index {index} hors limites (sessionPlayers.Count = {sessionPlayers.Count}) pour networkId {networkId}.");
+            return null;
+        }
 
-        return count;
+        return sessionPlayers[index];
+    }
+
+    static public string AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
+    {
+        int countTeamCorpo = 0;
+        int countTeamNatif = 0;
+
+        foreach (var p in allPlayers)
+        {
+            if (p.Properties.TryGetValue("team", out PlayerProperty prop))
+            {
+                if (prop.Value == "Corpo")
+                    countTeamCorpo++;
+                else if (prop.Value == "Natif")
+                    countTeamNatif++;
+            }
+        }
+
+        string assignedTeam = (countTeamCorpo == 0 && countTeamNatif == 0)
+            ? (UnityEngine.Random.value < 0.5f ? "Corpo" : "Natif")
+            : (countTeamCorpo <= countTeamNatif ? "Corpo" : "Natif");
+
+        if (readOnlyPlayer is IPlayer player)
+        {
+            player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
+        }
+        return assignedTeam;
+    }
+
+    static public void UpdateTeamCountInSession(string assignedTeam, string playerId)
+    {
+        var session = ClientTransportHelper.instance.Session;
+        if (session is IHostSession hostSession)
+        {
+            if (assignedTeam == "Corpo")
+            {
+                var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
+                int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
+                hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
+            }
+            else if (assignedTeam == "Natif")
+            {
+                var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
+                int currentCountNatif = int.Parse(countTeamNatifProp.Value);
+                hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
+            }
+            hostSession.SaveCurrentPlayerDataAsync();        
+            hostSession.SavePropertiesAsync();         
+            Debug.Log($"[Final Save] Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
+        }
+    }
+
+    static public void SubscribePlayerJoined(string playerId)
+    {
+        Debug.Log($"[Team Assignment] PlayerJoined triggered for ID: {playerId}");
+        var session = ClientTransportHelper.instance.Session;
+        foreach (var p in session.Players)
+        {
+            Debug.Log($"[Player Check] Session Player ID: {p.Id}");
+        }
+
+        var player = session.Players.FirstOrDefault(p => p.Id == playerId);
+        if (player != null)
+        {
+            string team = AssignTeamToPlayer(player, session.Players);
+            Debug.Log($"[Team Assignment] Match found! Assigning {team} to Player ID: {player.Id}");
+        }
+        else
+        {
+            Debug.LogWarning($"[Team Assignment] No player found with ID: {playerId}");
+        }
     }
 }

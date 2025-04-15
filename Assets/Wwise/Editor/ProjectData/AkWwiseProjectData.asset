@@ -17,12 +17,12 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Virtual Acoustics
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: []
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: 08afa1427da885468a183996e3a2c432
+      guid: "\u040B\uFA10rB"
     ParentPath: Virtual Acoustics\Default Work Unit
-    guid: 08afa1427da885468a183996e3a2c432
+    guid: "\u040B\uFA10rB"
     GuidInternal: 
     m_lastTime: -8584575093024275694
     List: []
@@ -31,152 +31,152 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Master-Mixer Hierarchy
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: 6924ad1a7785a4489344f7ee45689393
+      guid: "i$\0\x1Aw\0\0H\0D\U001EE168\0\0"
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
-    guid: 6924ad1a7785a4489344f7ee45689393
+    guid: "i$\0\x1Aw\0\0H\0D\U001EE168\0\0"
     GuidInternal: 
-    m_lastTime: -8584575093028034551
+    m_lastTime: -8584579263519035995
     List:
     - name: Master Audio Bus
-      guid: d8a41415a61d2a41a17e75ca0c2149f3
+      guid: "\u0624\x14\x15\0\x1D*A\0~u\u028C!I\U000E9933"
       id: 3803692087
       PathAndIcons:
       - ElementName: Master-Mixer Hierarchy
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: 6924ad1a7785a4489344f7ee45689393
+        guid: "i$\0\x1Aw\0\0H\0D\U001EE168\0\0"
       - ElementName: Master Audio Bus
         ObjectType: 2
-        guid: d8a41415a61d2a41a17e75ca0c2149f3
+        guid: "\u0624\x14\x15\0\x1D*A\0~u\u028C!I\U000D0874"
       Path: Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus
   BankWwu:
   - PhysicalPath: SoundBanks\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: SoundBanks
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: ba60688da2d0e14e9c2083f407a04640
+      guid: "\0`h\0\0\u0421N\0 \0\U00107806@"
     ParentPath: SoundBanks\Default Work Unit
-    guid: ba60688da2d0e14e9c2083f407a04640
+    guid: "\0`h\0\0\u0421N\0 \0\U00107806@"
     GuidInternal: 
-    m_lastTime: -8584573205653467945
+    m_lastTime: -8584578561011529522
     List:
     - name: DefaultBank
-      guid: bc866bf90dfff1479f016a5a99d55c1e
+      guid: "\0\0k\0\r\0\U000477C1jZ\0\u055C\x1E"
       id: 187290962
       PathAndIcons:
       - ElementName: SoundBanks
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: ba60688da2d0e14e9c2083f407a04640
+        guid: "\0`h\0\0\u0421N\0 \0\U00107806@"
       - ElementName: DefaultBank
         ObjectType: 7
-        guid: bc866bf90dfff1479f016a5a99d55c1e
+        guid: "\0\0k\0\r\0\U000477C1jZ\0\u055C\x1E"
       Path: SoundBanks\Default Work Unit\DefaultBank
   EventWwu:
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: Events
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: 796a3769bf4c0c43b6db861a3b5a440a
+      guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
     ParentPath: Events\Default Work Unit
-    guid: 796a3769bf4c0c43b6db861a3b5a440a
+    guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
     GuidInternal: 
-    m_lastTime: -8584573205654227184
+    m_lastTime: -8584578561011900042
     List:
     - name: Footstep
-      guid: 9b328937a796d24fb9542e5b638b2771
+      guid: "\02\07\0\0\u048F\0T.[c\0'q"
       id: 1866025847
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
+        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
       - ElementName: Footstep
         ObjectType: 3
-        guid: 9b328937a796d24fb9542e5b638b2771
+        guid: "\02\07\0\0\u048F\0T.[c\0'q"
       Path: Events\Default Work Unit\Footstep
       maxAttenuation: 0
       maxDuration: 0.5611338
       minDuration: 0.5611338
     - name: Pistol_Reload
-      guid: 7c31bd991b042f4f9d594c0543e9f945
+      guid: "|1\0\0\e\x04/O\0YL\x05C\u9E45"
       id: 1068215004
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
+        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
       - ElementName: Pistol_Reload
         ObjectType: 3
-        guid: 7c31bd991b042f4f9d594c0543e9f945
+        guid: "|1\0\0\e\x04/O\0YL\x05C\u9E45"
       Path: Events\Default Work Unit\Pistol_Reload
       maxAttenuation: 0
       maxDuration: 0.69659865
       minDuration: 0.69659865
     - name: Pistol_Shoot
-      guid: cf6965ca56287c4f9e9f530727951166
+      guid: "\u03E9e\u0296(|O\0\0S\a'\0\x11f"
       id: 2124970216
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
+        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
       - ElementName: Pistol_Shoot
         ObjectType: 3
-        guid: cf6965ca56287c4f9e9f530727951166
+        guid: "\u03E9e\u0296(|O\0\0S\a'\0\x11f"
       Path: Events\Default Work Unit\Pistol_Shoot
       maxAttenuation: 0
       maxDuration: 2.0273924
       minDuration: 2.0273924
     - name: Rifle_Reload
-      guid: 4c505f4ba9ab8148903749464fff5b5f
+      guid: "LP_K\0\0\0H\07IFO\0[_"
       id: 3214964847
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
+        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
       - ElementName: Rifle_Reload
         ObjectType: 3
-        guid: 4c505f4ba9ab8148903749464fff5b5f
+        guid: "LP_K\0\0\0H\07IFO\0[_"
       Path: Events\Default Work Unit\Rifle_Reload
       maxAttenuation: 0
       maxDuration: 0.23832199
       minDuration: 0.23832199
     - name: Rifle_Shoot
-      guid: 9a27464da56fff45bee18aa41bdabb7c
+      guid: "\0'FM\0o\0E\0\u12A4\e\u06BB|"
       id: 1117295805
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 00000000000000000000000000000000
+        guid: 
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
+        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
       - ElementName: Rifle_Shoot
         ObjectType: 3
-        guid: 9a27464da56fff45bee18aa41bdabb7c
+        guid: "\0'FM\0o\0E\0\u12A4\e\u06BB|"
       Path: Events\Default Work Unit\Rifle_Shoot
       maxAttenuation: 0
       maxDuration: 2.970771
@@ -186,59 +186,59 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Game Parameters
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: 68c92b51ba44254fa885c7d3ea087ecf
+      guid: "h\u026BQ\0D%O\0\0\u01D3\uA23E\u03D0"
     ParentPath: Game Parameters\Default Work Unit
-    guid: 68c92b51ba44254fa885c7d3ea087ecf
+    guid: "h\u026BQ\0D%O\0\0\u01D3\uA23E\u03C7"
     GuidInternal: 
-    m_lastTime: -8584575093047238842
+    m_lastTime: -8584579263519183045
     List: []
   StateWwu:
   - PhysicalPath: States\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: States
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: e85b3507f3e0324ea153a56a0269a3da
+      guid: "\u86F5\a\U000E0C8E\0S\0j\x02i\0\u0690"
     ParentPath: States\Default Work Unit
-    guid: e85b3507f3e0324ea153a56a0269a3da
+    guid: "\u86F5\a\U000E0C8E\0S\0j\x02i\0\u0687"
     GuidInternal: 
-    m_lastTime: -8584575093024275694
+    m_lastTime: -8584579263518912859
     List: []
   SwitchWwu:
   - PhysicalPath: Switches\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: Switches
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: f977118fece93c47b14a1fe666ca9f29
+      guid: "\0w\x11\0\uCA7CG\0J\x1F\u698A\0)"
     ParentPath: Switches\Default Work Unit
-    guid: f977118fece93c47b14a1fe666ca9f29
+    guid: "\0w\x11\0\uCA7CG\0J\x1F\u698A\0)"
     GuidInternal: 
-    m_lastTime: -8584575093024275694
+    m_lastTime: -8584579263518912859
     List: []
   TriggerWwu:
   - PhysicalPath: Triggers\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: Triggers
       ObjectType: 5
-      guid: 00000000000000000000000000000000
+      guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: 3b0370d94aa350408e9b99db2bcef2b0
+      guid: ";\x03p\u064A\0P@\0\0\0\u06EB\u03B2\0"
     ParentPath: Triggers\Default Work Unit
-    guid: 3b0370d94aa350408e9b99db2bcef2b0
+    guid: ";\x03p\u064A\0P@\0\0\0\u06EB\u03B2\0"
     GuidInternal: 
-    m_lastTime: -8584575093024275694
+    m_lastTime: -8584579263518912859
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 05000000060000000e0000000f000000
+  ExpandedWaapiItemIds: 
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0
