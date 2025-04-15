@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class NetcodePrefabsConverter : MonoBehaviour
 {
@@ -55,6 +56,12 @@ public struct VisualEffetPrefabData : IComponentData
     public Entity tracerRoundVisualEffect;
 }
 
+public struct VFXDurationData : IComponentData
+{
+    public float hitVFXDuration;
+    public float tracerVFXDuration;
+}
+
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 {
     public override void Bake(NetcodePrefabsConverter authoring)
@@ -76,9 +83,17 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity characterLegCollider2 = default;
 
         LocalTransform transformPrefab = default;
-        //Coucou ici Aurelien
+
         Entity hitEffect = default;
         Entity tracerEffect = default;
+        // VFX durations
+        float hitDuration = 1.0f;
+        float tracerDuration = 1.0f;
+
+        hitEffect = GetVFXEntityWithDuration(authoring.hitPrefab, TransformUsageFlags.Dynamic, out hitDuration);
+        tracerEffect = GetVFXEntityWithDuration(authoring.tracerRoundVfxPrefab, TransformUsageFlags.Dynamic, out tracerDuration);
+        //Coucou ici Aurelien
+
 
         if (authoring.hitPrefab != null)
         {
@@ -171,5 +186,27 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             hitVisualEffect = hitEffect,
             tracerRoundVisualEffect = tracerEffect
         });
+
+        AddComponent(entity, new VFXDurationData
+        {
+            hitVFXDuration = hitDuration,
+            tracerVFXDuration = tracerDuration
+        });
+    }
+
+    private Entity GetVFXEntityWithDuration(GameObject prefab, TransformUsageFlags usageFlags, out float duration)
+    {
+        duration = 1.0f;
+
+        if (prefab == null)
+            return Entity.Null;
+
+        var vfx = prefab.GetComponent<VisualEffect>();
+        if (vfx != null && vfx.HasFloat("duration"))
+        {
+            duration = vfx.GetFloat("duration");
+        }
+
+        return GetEntity(prefab, usageFlags);
     }
 }

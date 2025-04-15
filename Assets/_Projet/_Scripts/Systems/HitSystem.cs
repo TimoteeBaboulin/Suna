@@ -9,6 +9,10 @@ using UnityEngine;
 using UnityEngine.VFX;
 
 public struct DestroyTag : IComponentData { }
+public struct Lifetime : IComponentData
+{
+    public float RemainingTime;
+}
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class HitSystem : SystemBase
@@ -63,7 +67,11 @@ public partial class HitSystem : SystemBase
                 });
 
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
-
+                if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
+                {
+                    commandBuffer.AddComponent(hitEffect, new Lifetime { RemainingTime = durationData.hitVFXDuration });
+                    commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
+                }
                 commandBuffer.DestroyEntity(entity);
             }
         }
@@ -71,8 +79,3 @@ public partial class HitSystem : SystemBase
         commandBuffer.Dispose();
     }
 }
-
-//prefabConverter = GameObject.FindFirstObjectByType<NetcodePrefabsConverter>();
-//float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
-//GameObject.Instantiate(prefabConverter.hitPrefab, new Vector3(hitPosition.x, hitPosition.y, hitPosition.z), Quaternion.identity);
-//commandBuffer.DestroyEntity(entity);

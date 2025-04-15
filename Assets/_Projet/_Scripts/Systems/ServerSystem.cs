@@ -74,20 +74,42 @@ public partial class ServerSystem : SystemBase
                 Value = client
             });
 
-            // Get the player associated with the network id.
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            var session = ClientTransportHelper.instance.Session;
 
+            string teamString = PlayerHelpers.AssignTeamToPlayer(currentPlayer, session.Players);
+            PlayerHelpers.UpdateTeamCountInSession(teamString, currentPlayer.Id);
+
+            TeamSideType assignedTeam = TeamSideType.Neutre;
+            switch (teamString)
+            {
+                case "Corpo":
+                    assignedTeam = TeamSideType.Corpo;
+                    break;
+                case "Natif":
+                    assignedTeam = TeamSideType.Natif;
+                    break;
+                default:
+                    assignedTeam = TeamSideType.Neutre;
+                    break;
+            }
             ecb.AddComponent(ownerEntity, new ClientComponent
             {
                 networkID = networkId.Value,
                 playerID = currentPlayer.Id,
-                team = TeamSideType.Neutre
+                team = assignedTeam
             });
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
                 $"NetworkId {networkId.Value} " +
                 $"currentPlayerID {currentPlayer.Id} " +
-                $"team {TeamSideType.Neutre} " +
+                $"team {assignedTeam}" +
+                $"world {worldName}");
+
+            Debug.Log($"New Client : " +
+                $"NetworkId {networkId.Value} " +
+                $"currentPlayerID {currentPlayer.Id} " +
+                $"team {assignedTeam}" +
                 $"world {worldName}");
         }
     }
