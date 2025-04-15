@@ -66,12 +66,6 @@ public class GameManager : Singleton<GameManager>
 
         Debug.Log($"Nb of players: {GetCurrentNbOfPlayersInSession()}");
         Debug.Log($"Count of current player PROPERTIES: {currentSession.CurrentPlayer.Properties.Count}");
-
-        var localPlayer = currentSession.CurrentPlayer;
-        if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
-        {
-            Debug.Log($"[Play] Local player team: {localTeam.Value}");
-        }
     }
 
     public List<IReadOnlyPlayer> GetAllPlayers()

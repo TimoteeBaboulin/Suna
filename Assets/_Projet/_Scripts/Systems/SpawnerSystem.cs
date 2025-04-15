@@ -74,6 +74,7 @@ public partial struct OnDieJob : IJobEntity
 
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateAfter(typeof(ServerSystem))]
 public partial struct RespawnSystem : ISystem
 {
     ComponentLookup<LocalTransform> respawnPtLookupInit;
@@ -81,7 +82,7 @@ public partial struct RespawnSystem : ISystem
 
     NativeList<int> teamSpawnIndexes;
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
@@ -113,26 +114,45 @@ public partial struct RespawnSystem : ISystem
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
             int networkId = SystemAPI.GetComponent<GhostOwner>(clientEntity).NetworkId;
-            TeamSideType teamSideType = playerComponent.ValueRW.team;
-            Debug.Log($"[AliveCheck] Final teamSideType from ClientComponent: {teamSideType} for networkId {networkId}");
 
-            if (!teamSpawnsValid[(int)teamSideType])
+            IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId);
+            var session = ClientTransportHelper.instance.Session;
+            string teamString = PlayerHelpers.AssignTeamToPlayer(currentPlayer, session.Players);
+            PlayerHelpers.UpdateTeamCountInSession(teamString, currentPlayer.Id);
+
+            TeamSideType assignedTeam = TeamSideType.Neutre;
+            switch (teamString)
+            {
+                case "Corpo":
+                    assignedTeam = TeamSideType.Corpo;
+                    break;
+                case "Natif":
+                    assignedTeam = TeamSideType.Natif;
+                    break;
+                default:
+                    assignedTeam = TeamSideType.Neutre;
+                    break;
+            }
+            playerComponent.ValueRW.team = assignedTeam;
+            Debug.Log($"[RespawnSystem] Assigned team: {assignedTeam} for networkId {networkId}");
+
+            if (!teamSpawnsValid[(int)assignedTeam])
             {
                 continue;
             }
 
-            Entity spawnerEntity = teamSpawnsEntities[(int)teamSideType];
+            Entity spawnerEntity = teamSpawnsEntities[(int)assignedTeam];
             var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(spawnerEntity);
 
             int index;
-            if (teamSideType == TeamSideType.Neutre)
+            if (assignedTeam == TeamSideType.Neutre)
             {
                 index = UnityEngine.Random.Range(0, buffer.Length);
             }
             else
             {
-                index = teamSpawnIndexes[(int)teamSideType];
-                teamSpawnIndexes[(int)teamSideType]++;
+                index = teamSpawnIndexes[(int)assignedTeam];
+                teamSpawnIndexes[(int)assignedTeam]++;
             }
 
             Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
@@ -140,7 +160,7 @@ public partial struct RespawnSystem : ISystem
             {
                 playerComponent.ValueRW.networkID = networkId;
 
-                SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], teamSideType);
+                SpawnCharacter(clientEntity, networkId, ecb, buffer[index % buffer.Length], assignedTeam);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
             }
             else if (state.EntityManager.HasComponent<LocalTransform>(characterEntity))
@@ -175,7 +195,7 @@ public partial struct RespawnSystem : ISystem
             Rotation = quaternion.identity,
             Scale = 1.0f
         });
-        ecb.SetComponent(character, new GhostOwner() //Set owner of player to connection
+        ecb.SetComponent(character, new GhostOwner
         {
             NetworkId = networkId
         });
@@ -188,8 +208,12 @@ public partial struct RespawnSystem : ISystem
         ecb.SetComponent(character, new CharacterClientAttachedComponent { ClientEntity = client });
         switch (team)
         {
-            case TeamSideType.Corpo: ecb.AddComponent<CorpoTeamTag>(character); break;
-            case TeamSideType.Natif: ecb.AddComponent<NatifTeamTag>(character); break;
+            case TeamSideType.Corpo: 
+                ecb.AddComponent<CorpoTeamTag>(character); 
+                break;
+            case TeamSideType.Natif: 
+                ecb.AddComponent<NatifTeamTag>(character); 
+                break;
             default: break;
         }
 
