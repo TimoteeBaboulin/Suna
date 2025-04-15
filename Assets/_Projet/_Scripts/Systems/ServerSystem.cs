@@ -89,12 +89,6 @@ public partial class ServerSystem : SystemBase
                 $"currentPlayerID {currentPlayer.Id} " +
                 $"team {TeamSideType.Neutre} " +
                 $"world {worldName}");
-
-            Debug.Log($"New Client : " +
-                $"NetworkId {networkId.Value} " +
-                $"currentPlayerID {currentPlayer.Id} " +
-                $"team {TeamSideType.Neutre} " +
-                $"world {worldName}");
         }
     }
     #endregion
