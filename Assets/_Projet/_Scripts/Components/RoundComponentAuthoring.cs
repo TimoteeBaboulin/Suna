@@ -26,7 +26,7 @@ public class RoundComponentAuthoring : MonoBehaviour
                 maxStreakCount = authoring._maxStreakCount
             });
 
-            AddComponent<PlayerCounts>(entity);
+            AddComponent<PlayerAliveCounts>(entity);
             var buffer = AddBuffer<PhaseTimesBuffer>(entity);
             for (int i = 0; i < 4; i++)
             {

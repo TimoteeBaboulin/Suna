@@ -104,7 +104,7 @@ public partial struct RoundSystemServer : ISystem
         }
         else
         {
-            PlayerCounts playerCount = SystemAPI.GetComponent<PlayerCounts>(entity);
+            PlayerAliveCounts playerCount = SystemAPI.GetComponent<PlayerAliveCounts>(entity);
 
             var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 

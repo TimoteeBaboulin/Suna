@@ -70,6 +70,9 @@ public struct StuffCommonData
     public float3 _stuffLocalOffsetView;
     public uint killGain;
 
+    public bool canADS;
+    public float ADSFOV;
+
     public int dataID;
 }
 

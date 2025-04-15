@@ -14,6 +14,7 @@ public struct ClientComponent : IComponentData
 {
     public int networkID;
     public FixedString64Bytes playerID;
+    public TeamSideType team;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -26,7 +27,7 @@ public partial class ServerSystem : SystemBase
         _clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
-        
+
     }
     protected override void OnUpdate()
     {
@@ -34,7 +35,6 @@ public partial class ServerSystem : SystemBase
 
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        //Message from all clients to server
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
         {
             ServerConsole.Log(ServerConsole.LogType.Info, $"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}, version {request.ValueRO.SourceConnection.Version}");
@@ -46,12 +46,6 @@ public partial class ServerSystem : SystemBase
         {
             InstantiateClient(entity, commandBuffer);
         }
-
-        //if (Keyboard.current.oKey.wasPressedThisFrame)
-        //{
-        //    ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
-        //    RpcUtils.SendServerToClientRpc(ref command);
-        //}
 
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
@@ -71,28 +65,30 @@ public partial class ServerSystem : SystemBase
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
             Entity client = ecb.Instantiate(prefabManager.Client);
-            ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
+            ecb.SetComponent(client, new GhostOwner()
             {
                 NetworkId = networkId.Value
             });
-            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
+            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup()
             {
                 Value = client
             });
 
+            // Get the player associated with the network id.
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
-            PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
-            Debug.Log($"[Team Assignment] Assigning Player ID: {currentPlayer.Id.ToString()} to client with NetworkId {networkId.Value}");
 
-            string team = PlayerHelpers.AssignTeamToPlayer(currentPlayer, ClientTransportHelper.instance.Session.Players);
-            Debug.Log($"[Team Assignment] Assigned Team: {team}");
-            ecb.AddComponent(ownerEntity, new ClientComponent { 
-                networkID = networkId.Value, 
-                playerID = currentPlayer.Id}
-            );
+            ecb.AddComponent(ownerEntity, new ClientComponent
+            {
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id,
+                team = TeamSideType.Neutre
+            });
 
-            PlayerHelpers.UpdateTeamCountInSession(team, currentPlayer.Id);
-            ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
+            ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
+                $"NetworkId {networkId.Value} " +
+                $"currentPlayerID {currentPlayer.Id} " +
+                $"team {TeamSideType.Neutre} " +
+                $"world {worldName}");
         }
     }
     #endregion
@@ -133,26 +129,30 @@ public partial class SessionStatusSystem : SystemBase
 
         if (timer >= logInterval)
         {
-            timer = 0f; 
+            timer = 0f;
 
             if (ClientTransportHelper.instance != null)
             {
                 var session = ClientTransportHelper.instance.Session;
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} ");;
+
+                if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+                {
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
+                }
+                else
+                {
+                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
+                }
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} "); ;
 
 
                 var players = session.Players;
 
-                Debug.Log($"Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
-                Debug.Log($"Count Natif : {session.Properties["CountTeamNatif"].Value}");
-                if (SystemAPI.TryGetSingleton<PlayerCounts>(out var playerCounts))
-                {
-                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
-                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
-                }
+                Debug.Log($"Session Count Corpo : {session.Properties["CountTeamCorpo"].Value}");
+                Debug.Log($"Session Count Natif : {session.Properties["CountTeamNatif"].Value}");
+
                 //else
                 //{
                 //    Debug.Log("[SessionStatusSystem] PlayerCounts singleton not found or updated.");
@@ -238,6 +238,11 @@ public partial class SessionStatusSystem : SystemBase
 
     private void OnSessionPropertiesChanged()
     {
-        Debug.Log("[SessionStatusSystem] Session properties have been updated.");
+        Debug.Log("[OnSessionPropertiesChanged] Session properties have been updated.");
+        if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
+        {
+            Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
+            Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
+        }
     }
 }
