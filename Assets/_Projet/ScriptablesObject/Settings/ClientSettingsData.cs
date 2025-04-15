@@ -5,4 +5,6 @@ public class ClientSettingsData : ScriptableObject
 {
     [Header("Controls")]
     public float Sensivity;
+    public float Volume;
+    public string Pseudo;
 }
