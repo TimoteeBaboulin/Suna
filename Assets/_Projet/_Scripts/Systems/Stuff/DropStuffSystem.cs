@@ -1,5 +1,9 @@
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Physics;
+using Unity.Transforms;
 using Unity.Physics;
 using UnityEngine;
 
@@ -15,10 +19,14 @@ public partial struct DropStuffSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        // Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
         var unequipStuffQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
-        foreach (var (stuffListRW, inputRO, chara) in SystemAPI
-        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
+        foreach (var (stuffListRW, inputRO, transformRO, shootStartPosDeltaRO, viewRO, chara) in SystemAPI
+        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>, RefRO<LocalTransform>, RefRO<CharacterShootStartPositionDelta>, RefRO<CharacterViewRotation>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRO.ValueRO;
@@ -30,7 +38,31 @@ public partial struct DropStuffSystem : ISystem
                     Stuff = stuffList.StuffInHand,
                     Owner = chara,
                 });
+
+                Entity dropedStuffPrefab = SystemAPI.GetComponent<StuffDynamicData>(stuffList.StuffInHand).dropedEntityPrefab;
+                Entity dropedStuff = ecb.Instantiate(dropedStuffPrefab);
+
+                ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuffList.StuffInHand });
+
+                float3 startPosition = shootStartPosDeltaRO.ValueRO.PositionDelta + transformRO.ValueRO.Position;
+                quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
+                float3 forward = math.mul(shootRotation, math.forward());
+
+                ecb.SetComponent(dropedStuff, new LocalTransform
+                {
+                    Position = startPosition + forward,
+                    Rotation = quaternion.identity,
+                    Scale = 1f
+                });
+
+                ecb.SetComponent(dropedStuff, new PhysicsVelocity
+                {
+                    Linear = forward * 5f,
+                    Angular = float3.zero
+                });
+
             }
+
         }
     }
 }

@@ -20,7 +20,7 @@ public class RangedWeaponAuthoring : MonoBehaviour
                 IsConnectedToDatabase = false,
                 NameInDatabase = authoring.rangedWeapon != null ? authoring.rangedWeapon.entityName : ""
             });
-            AddComponent(entity, new StuffOwner());
+            AddComponent(entity, new StuffDynamicData());
 
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);

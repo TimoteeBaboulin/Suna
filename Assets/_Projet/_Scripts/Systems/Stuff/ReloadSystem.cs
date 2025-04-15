@@ -13,7 +13,7 @@ public partial struct RangedWeaponReloadSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<GameResourcesDatabase>();
-        state.RequireForUpdate<StuffOwner>();
+        state.RequireForUpdate<StuffDynamicData>();
 
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<PhysicsWorldSingleton>();
@@ -35,14 +35,14 @@ public partial struct RangedWeaponReloadSystem : ISystem
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
         foreach (var (dynamicDataRef, dataAccessRef, ownerRef, weapon) in SystemAPI
-        .Query<RefRW<RangedWeaponDynamicData>, RefRO<RangedWeaponDatabaseAccess>, RefRO<StuffOwner>>()
+        .Query<RefRW<RangedWeaponDynamicData>, RefRO<RangedWeaponDatabaseAccess>, RefRO<StuffDynamicData>>()
         .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
 
             //Simplification des components de l'arme
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
-            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+            ref readonly Entity owner = ref ownerRef.ValueRO.owner;
             ref var data = ref dataAccessRef.ValueRO.GetData(ref database);
 
             if (dynamicData.state != RangedWeaponState.Reload)

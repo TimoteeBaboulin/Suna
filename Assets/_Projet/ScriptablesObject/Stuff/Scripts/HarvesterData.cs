@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class HarvesterData : ScriptableObject
 {
     [Header("Stuff infos")]
-    public GameObject entityPrefab;
+    public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
     public Image UIImage;
     public StuffSlot location;

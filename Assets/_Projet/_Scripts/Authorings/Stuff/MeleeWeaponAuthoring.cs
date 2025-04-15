@@ -20,7 +20,7 @@ public class MeleeWeaponAuthoring : MonoBehaviour
                 IsConnectedToDatabase = false,
                 NameInDatabase = authoring.meleeWeapon != null ? authoring.meleeWeapon.entityName : ""
             });
-            AddComponent(entity, new StuffOwner());
+            AddComponent(entity, new StuffDynamicData());
 
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);

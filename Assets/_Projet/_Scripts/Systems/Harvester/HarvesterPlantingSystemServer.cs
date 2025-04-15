@@ -41,7 +41,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
         if (currentPhase is RoundPhase.ActionPhase)
         {
             foreach (var (harvesterRW, harvesterTransformRW, ownerRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<LocalTransform>, RefRW<StuffOwner>> ()
+                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<LocalTransform>, RefRW<StuffDynamicData>> ()
                         .WithAll<HarvesterPlanting>()
                         .WithEntityAccess())
             {
@@ -50,7 +50,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 {
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
-                    Entity characterEntity = ownerRW.ValueRO.Value;
+                    Entity characterEntity = ownerRW.ValueRO.owner;
 
                     
                     StuffSlot switchToLocation = StuffSlot.MainWeapon;
@@ -103,7 +103,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                         });
                     }
                     SystemAPI.GetComponentRW<PlayerHarvesterActions>(characterEntity).ValueRW.IsPlanting = false;
-                    ownerRW.ValueRW.Value = Entity.Null;
+                    ownerRW.ValueRW.owner = Entity.Null;
 
 
                     Debug.Log("[Server] Harvester planted");
@@ -163,7 +163,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
 
             Debug.Log("[Server] Plant stopped");
 
-            Entity owner = SystemAPI.GetComponentRO<StuffOwner>(rpc.harvester).ValueRO.Value;
+            Entity owner = SystemAPI.GetComponentRO<StuffDynamicData>(rpc.harvester).ValueRO.owner;
             SystemAPI.GetComponentRW<PlayerHarvesterActions>(owner).ValueRW.IsPlanting = false;
             ecb.DestroyEntity(entity);
         }

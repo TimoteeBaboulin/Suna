@@ -6,6 +6,10 @@ using UnityEngine;
 
 public class GameResourcesAuthoring : MonoBehaviour
 {
+    public GameObject rangedWeaponEntityPrefab;
+    public GameObject meleeWeaponEntityPrefab;
+    public GameObject harvesterEntityPrefab;
+
     public List<RangedWeaponData> rangedWeaponList;
     public List<MeleeWeaponData> meleeWeaponList;
     public HarvesterData harvester;
@@ -22,6 +26,10 @@ public class GameResourcesAuthoring : MonoBehaviour
             ref StuffDatabase stuffCollection = ref builder.ConstructRoot<StuffDatabase>();
             DynamicBuffer<StuffEntityPrefabsBuffer> prefabs = AddBuffer<StuffEntityPrefabsBuffer>(entity);
 
+            Entity rangedWeaponEntity = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic);
+            Entity meleeWeaponEntity = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic);
+            Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
+
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + 1);
@@ -33,7 +41,11 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
                 //stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
-                prefabs.Add(new StuffEntityPrefabsBuffer { Value = GetEntity(rangedWeaponSO.entityPrefab, TransformUsageFlags.Dynamic) });
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(rangedWeaponSO.dropedEtityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = rangedWeaponEntity
+                });
 
                 stuffs[i].slot = rangedWeaponSO.location;
                 stuffs[i].type = rangedWeaponSO.type;
@@ -53,7 +65,11 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
 
-                prefabs.Add(new StuffEntityPrefabsBuffer { Value = GetEntity(meleeWeaponSO.entityPrefab, TransformUsageFlags.Dynamic) });
+                prefabs.Add(new StuffEntityPrefabsBuffer 
+                { 
+                    dropedEntityPrefab = GetEntity(meleeWeaponSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = meleeWeaponEntity
+                });
 
                 stuffs[i].slot = meleeWeaponSO.location;
                 stuffs[i].type = meleeWeaponSO.type;
@@ -73,7 +89,11 @@ public class GameResourcesAuthoring : MonoBehaviour
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
             //stuffs[id].viewPrefab = harvesterSO.viewPrefab;
-            prefabs.Add(new StuffEntityPrefabsBuffer { Value = GetEntity(harvesterSO.entityPrefab, TransformUsageFlags.Dynamic) });
+            prefabs.Add(new StuffEntityPrefabsBuffer 
+            { 
+                dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                inHandEntityPrefab = harvesterEntity
+            });
 
             stuffs[id].slot = harvesterSO.location;
             stuffs[id].type = harvesterSO.type;

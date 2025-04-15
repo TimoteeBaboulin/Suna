@@ -55,7 +55,7 @@ partial class InGameHUDSystem : SystemBase
         }
 
         foreach (var (stuffOwner, stuff) in SystemAPI
-            .Query<RefRO<StuffOwner>>()
+            .Query<RefRO<StuffDynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
             .WithNone<RangedWeaponDynamicData>()
             .WithEntityAccess())

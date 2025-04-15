@@ -18,6 +18,10 @@ public partial struct PickStuffSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        // Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
         var equipStuffQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
 
         foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, chara) in SystemAPI
@@ -27,6 +31,7 @@ public partial struct PickStuffSystem : ISystem
             ref readonly CharacterInput input = ref inputRO.ValueRO;
             if (input.interact.IsSet)
             {
+                //CharacterShootStartPositionDelta
                 float3 startPosition = shootStartPosDeltaRO.ValueRO.PositionDelta + transformRO.ValueRO.Position;
 
                 quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
@@ -37,9 +42,11 @@ public partial struct PickStuffSystem : ISystem
                 {
                     equipStuffQueue.Add(new EquipStuffQueue
                     {
-                        Stuff = hit.Entity,
+                        Stuff = state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value,
                         Owner = chara,
                     });
+
+                    ecb.DestroyEntity(hit.Entity);
                 }
             }
         }
@@ -81,15 +88,9 @@ public partial struct PickStuffSystem : ISystem
         {
             foreach (RaycastHit hit in allHits)
             {
-                if (entityManager.HasComponent<StuffOwner>(hit.Entity))
+                if (entityManager.HasComponent<StuffEntityInHandRef>(hit.Entity))
                 {
-                    UnityEngine.Debug.Log("HasComponent");
-
-                    Entity ownerOfStuffHited = entityManager.GetComponentData<StuffOwner>(hit.Entity).Value;
-                    if (ownerOfStuffHited == Entity.Null)
-                    {
-                        return hit;
-                    }
+                    return hit;
                 }
             }
         }

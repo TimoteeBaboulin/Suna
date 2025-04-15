@@ -20,7 +20,7 @@ public partial struct ShootSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<StuffOwner>();
+        state.RequireForUpdate<StuffDynamicData>();
 
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<PhysicsWorldSingleton>();
@@ -44,13 +44,13 @@ public partial struct ShootSystem : ISystem
 
         //Query
         foreach (var (dynamicDataRW, databaseAccessRO, ownerRef, weapon) in SystemAPI
-        .Query<RefRW<RangedWeaponDynamicData>, RefRO<RangedWeaponDatabaseAccess>, RefRW<StuffOwner>>()
+        .Query<RefRW<RangedWeaponDynamicData>, RefRO<RangedWeaponDatabaseAccess>, RefRW<StuffDynamicData>>()
         .WithAll<IsStuffInHand, Simulate>()
         .WithEntityAccess())
         {
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
-            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+            ref readonly Entity owner = ref ownerRef.ValueRO.owner;
 
             if (owner == Entity.Null) continue;
 

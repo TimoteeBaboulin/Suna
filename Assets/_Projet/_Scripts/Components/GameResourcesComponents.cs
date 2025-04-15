@@ -7,7 +7,8 @@ using UnityEngine;
 [GhostComponent]
 public struct StuffEntityPrefabsBuffer : IBufferElementData
 {
-    [GhostField] public Entity Value;
+    [GhostField] public Entity dropedEntityPrefab;
+    [GhostField] public Entity inHandEntityPrefab;
 }
 
 public struct GameResourcesDatabase : IComponentData

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7445839901049856988
+--- !u!1 &7068153267853143302
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,52 +8,52 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5171076458023955360}
-  - component: {fileID: 6524709136430185389}
-  - component: {fileID: 4495097130225524033}
-  - component: {fileID: 8496547038986901487}
-  - component: {fileID: -3248569909443750377}
-  - component: {fileID: 6491094149420269235}
-  - component: {fileID: 1179154659870058539}
-  - component: {fileID: -1621214181411093457}
-  - component: {fileID: 4339220116238022625}
-  m_Layer: 0
-  m_Name: KnifeNeutral_Entity
+  - component: {fileID: 5263119125811303619}
+  - component: {fileID: 7691697018561133283}
+  - component: {fileID: 324899141894828115}
+  - component: {fileID: -5984192113815054128}
+  - component: {fileID: -6168689890456593397}
+  - component: {fileID: -7234654648080854408}
+  - component: {fileID: -3884107123419067030}
+  - component: {fileID: -8521635159079172884}
+  - component: {fileID: -2482787461030426569}
+  m_Layer: 7
+  m_Name: Nelara_DropedEntity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5171076458023955360
+--- !u!4 &5263119125811303619
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
+  m_GameObject: {fileID: 7068153267853143302}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.101112, y: 7.798604, z: 27.955404}
+  m_LocalPosition: {x: -1.7052786, y: 1.5347879, z: -0.19263457}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6524709136430185389
+--- !u!33 &7691697018561133283
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
-  m_Mesh: {fileID: 8700909353959388522, guid: 69c5108dd37debe4d8f431fd0a553bcf, type: 3}
---- !u!23 &4495097130225524033
+  m_GameObject: {fileID: 7068153267853143302}
+  m_Mesh: {fileID: 0}
+--- !u!23 &324899141894828115
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
+  m_GameObject: {fileID: 7068153267853143302}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -70,7 +70,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: d804b6e3e84034442871b28503124bb5, type: 2}
+  - {fileID: 2100000, guid: ac416a81db141794a94d28bf6a76ea43, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -92,14 +92,74 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8496547038986901487
+--- !u!114 &-5984192113815054128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068153267853143302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6168689890456593397
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068153267853143302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultGhostMode: 0
+  SupportedGhostModes: 3
+  OptimizationMode: 0
+  Importance: 1
+  MaxSendRate: 0
+  prefabId: 9642f47db853010469daf0a2a90b0646
+  HasOwner: 0
+  SupportAutoCommandTarget: 1
+  TrackInterpolationDelay: 0
+  GhostGroup: 0
+  UsePreSerialization: 0
+  RollbackPredictedSpawnedGhostState: 0
+  RollbackPredictionOnStructuralChanges: 1
+--- !u!114 &-7234654648080854408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7068153267853143302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfdaa6c06fe64fbda2b16e07a4ee0b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ComponentOverrides:
+  - FullTypeName: Unity.Physics.PhysicsVelocity
+    EntityIndex: 0
+    PrefabType: -1
+    SendTypeOptimization: -1
+    VariantHash: 3828067354630405971
+  - FullTypeName: Unity.Transforms.LocalTransform
+    EntityIndex: 0
+    PrefabType: 7
+    SendTypeOptimization: 3
+    VariantHash: 6907887384974514810
+--- !u!65 &-3884107123419067030
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
-  m_Material: {fileID: 0}
+  m_GameObject: {fileID: 7068153267853143302}
+  m_Material: {fileID: 13400000, guid: 041cbc8295670ca42aca85801306c4c1, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -111,15 +171,15 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.031807803, y: 0.0683628, z: 0.43372697}
-  m_Center: {x: 0.00000006239861, y: 0.000000033527613, z: -0.000000037252903}
---- !u!54 &-3248569909443750377
+  m_Size: {x: 0.063791655, y: 0.24419115, z: 0.51419705}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &-8521635159079172884
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
+  m_GameObject: {fileID: 7068153267853143302}
   serializedVersion: 4
   m_Mass: 1
   m_Drag: 0
@@ -140,76 +200,15 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &6491094149420269235
+--- !u!114 &-2482787461030426569
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
+  m_GameObject: {fileID: 7068153267853143302}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
+  m_Script: {fileID: 11500000, guid: c69bf33cf5474454b9b6d6c0ea22392d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1179154659870058539
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultGhostMode: 2
-  SupportedGhostModes: 3
-  OptimizationMode: 0
-  Importance: 1
-  MaxSendRate: 0
-  prefabId: 7ba930eb1c36de5438ad2abb7fb3462e
-  HasOwner: 1
-  SupportAutoCommandTarget: 1
-  TrackInterpolationDelay: 0
-  GhostGroup: 0
-  UsePreSerialization: 0
-  RollbackPredictedSpawnedGhostState: 0
-  RollbackPredictionOnStructuralChanges: 1
---- !u!114 &-1621214181411093457
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bfdaa6c06fe64fbda2b16e07a4ee0b25, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ComponentOverrides:
-  - FullTypeName: Unity.Physics.PhysicsVelocity
-    EntityIndex: 0
-    PrefabType: -1
-    SendTypeOptimization: -1
-    VariantHash: 3828067354630405971
-  - FullTypeName: Unity.Transforms.LocalTransform
-    EntityIndex: 0
-    PrefabType: 7
-    SendTypeOptimization: 3
-    VariantHash: 6907887384974514810
---- !u!114 &4339220116238022625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7445839901049856988}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38320b09b5ef67742b8fbb68222534ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  meleeWeapon: {fileID: 0}

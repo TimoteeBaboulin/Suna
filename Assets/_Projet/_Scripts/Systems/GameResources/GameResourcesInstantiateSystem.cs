@@ -22,7 +22,7 @@ partial struct InstanciateEntityStuffSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         // Query
-        foreach (var (databaseRO, prefabs, instantiateStuffQueue) in SystemAPI.Query<
+        foreach (var (databaseRO, stuffPrefabs, instantiateStuffQueue) in SystemAPI.Query<
             RefRO<GameResourcesDatabase>,
             DynamicBuffer<StuffEntityPrefabsBuffer>,
             DynamicBuffer<GameResourcesInstantiateStuffQueue>>())
@@ -35,14 +35,11 @@ partial struct InstanciateEntityStuffSystem : ISystem
                 // Retrieve stuff in database
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
-                    Entity prefab = prefabs[i].Value;
-                    //Entity prefab = prefabs.ValueRO.Value[i];
-
                     if (stuffCommonDataArray[i].Name.ToString() == instanteInfos.StuffName)
                     {
-                        if (prefab != Entity.Null)
+                        if (stuffPrefabs[i].inHandEntityPrefab != Entity.Null)
                         {
-                            Entity stuff = ecb.Instantiate(prefab);
+                            Entity stuff = ecb.Instantiate(stuffPrefabs[i].inHandEntityPrefab);
 
                             if (instanteInfos.Owner != Entity.Null)
                             {
@@ -65,7 +62,15 @@ partial struct InstanciateEntityStuffSystem : ISystem
                             });
 
                             ecb.SetComponentEnabled<StuffProcessPending>(stuff, true);
-                            ecb.SetComponent(stuff, new StuffProcessPending { Owner = instanteInfos.Owner });
+                            ecb.SetComponent(stuff, new StuffProcessPending 
+                            { 
+                                Owner = instanteInfos.Owner ,
+                            });
+
+                            ecb.SetComponent(stuff, new StuffDynamicData
+                            {
+                                dropedEntityPrefab = stuffPrefabs[i].dropedEntityPrefab
+                            });
                         }
                         break;
                     }
@@ -92,8 +97,8 @@ partial struct ProcessPendingStuffSystem : ISystem
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         ref var stuffCommonDataArray = ref database.StuffDatabaseRef.Value.StuffCommonData;
 
-        foreach (var (ownerRO, dataAccessRW, processRO, ghostOwnerRW, stuff) in SystemAPI
-            .Query<RefRO<StuffOwner>, RefRW<StuffDatabaseAccess>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
+        foreach (var (dataAccessRW, processRO, ghostOwnerRW, stuff) in SystemAPI
+            .Query<RefRW<StuffDatabaseAccess>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
             .WithAll<StuffProcessPending>()
             .WithEntityAccess())
         {
@@ -111,7 +116,7 @@ partial struct ProcessPendingStuffSystem : ISystem
             }
 
             // When spawning a server-owned ghost
-            ghostOwnerRW.ValueRW.NetworkId = -1;
+            //ghostOwnerRW.ValueRW.NetworkId = -1;
 
             //Get Stuff Data on database
             ref StuffCommonData stuffData = ref dataAccessRW.ValueRO.GetData(ref database);

@@ -17,7 +17,7 @@ public class HarvesterAuthoring : MonoBehaviour
                 IsConnectedToDatabase = false,
                 NameInDatabase = authoring.harvester != null ? authoring.harvester.entityName : ""
             });
-            AddComponent(entity, new StuffOwner());
+            AddComponent(entity, new StuffDynamicData());
 
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);

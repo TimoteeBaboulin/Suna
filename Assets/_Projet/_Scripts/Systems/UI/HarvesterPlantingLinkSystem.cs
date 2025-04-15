@@ -20,12 +20,12 @@ partial class HarvesterPlantingLinkSystem : SystemBase
         NetworkTick currentTick = networkTime.InterpolationTick;
 
         foreach (var (harvester, owner, entity) in SystemAPI
-            .Query<RefRO<HarvesterComponent>, RefRO<StuffOwner>>()
+            .Query<RefRO<HarvesterComponent>, RefRO<StuffDynamicData>>()
             .WithAll<HarvesterPlanting>()
             .WithEntityAccess())
         {
-            if (owner.ValueRO.Value == Entity.Null) continue;
-            if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(owner.ValueRO.Value)) continue;
+            if (owner.ValueRO.owner == Entity.Null) continue;
+            if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(owner.ValueRO.owner)) continue;
             if (timeSpent == 0f)
             {
                 OnPlantStart?.Invoke(this, EventArgs.Empty);
@@ -43,7 +43,7 @@ partial class HarvesterPlantingLinkSystem : SystemBase
         }
 
         foreach (var (harvester, owner, entity) in SystemAPI
-            .Query<RefRO<HarvesterComponent>, RefRO<StuffOwner>>()
+            .Query<RefRO<HarvesterComponent>, RefRO<StuffDynamicData>>()
             .WithDisabled<HarvesterPlanting>()
             .WithEntityAccess())
         {

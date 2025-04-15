@@ -12,7 +12,7 @@ partial struct StuffSystemClient : ISystem
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<GameResourcesDatabase>();
-        state.RequireForUpdate<StuffOwner>();
+        state.RequireForUpdate<StuffDynamicData>();
         state.RequireForUpdate<StuffDatabaseAccess>();
 
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithDisabled<StuffProcessPending>().Build(ref state);
@@ -26,13 +26,13 @@ partial struct StuffSystemClient : ISystem
 
         //Instanciate GameObject
         foreach (var (ownerRO, stuffDataRef, transform, stuff) in SystemAPI
-        .Query<RefRO<StuffOwner>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>>()
+        .Query<RefRO<StuffDynamicData>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>>()
         .WithNone<StuffGameObjectRef>()
         .WithDisabled<StuffProcessPending>()
         .WithEntityAccess())
         {
             StuffGameObjectRef goRef = new StuffGameObjectRef();
-            Entity owner = ownerRO.ValueRO.Value;
+            Entity owner = ownerRO.ValueRO.owner;
             ref StuffCommonData data = ref stuffDataRef.ValueRO.GetData(ref database);
 
             goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID]);
@@ -41,12 +41,13 @@ partial struct StuffSystemClient : ISystem
 
         //Attach to camera or drop
         foreach (var (ownerRO, stuffDataRO, transformRO, goRef, stuff) in SystemAPI
-        .Query<RefRO<StuffOwner>, RefRO<StuffDatabaseAccess>, RefRO<LocalTransform>, StuffGameObjectRef>()
+        .Query<RefRO<StuffDynamicData>, RefRO<StuffDatabaseAccess>, RefRO<LocalTransform>, StuffGameObjectRef>()
         //.WithAll<IsStuffOwnerUpdate>()
         .WithEntityAccess())
         {
-            Entity owner = ownerRO.ValueRO.Value;
+            Entity owner = ownerRO.ValueRO.owner;
             Transform stuffTransform = goRef.Value.transform;
+
             //Si le stuff à un propriétaire, on l'attache au bone de la vue
             if (owner != Entity.Null)
             {
@@ -56,7 +57,6 @@ partial struct StuffSystemClient : ISystem
                     if (stuffTransform.parent != viewTransform)
                     {
                         ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
-
                         stuffTransform.rotation = viewTransform.rotation;
                         stuffTransform.SetParent(viewTransform);
                         stuffTransform.localPosition = stuffData._stuffLocalOffsetView;
@@ -64,36 +64,34 @@ partial struct StuffSystemClient : ISystem
                 }
             }
             //Si le stuff n'a pas de propriétaire et a un parent, on le drop au sol
-            else if(stuffTransform.parent != null)
+            else if (stuffTransform.parent != null)
             {
                 stuffTransform.SetParent(null);
             }
         }
 
-        //Stuff view and entity follow
-        foreach (var (ownerRO, transformRW, goRef, stuff) in SystemAPI
-        .Query<RefRO<StuffOwner>, RefRW<LocalTransform>, StuffGameObjectRef>()
+        //Stuff view follow Droped stuff
+        foreach (var (inHandRefRO, transformRW, stuff) in SystemAPI
+        .Query<RefRO<StuffEntityInHandRef>, RefRW<LocalTransform>>()
         .WithEntityAccess())
         {
             ref LocalTransform entityTransform = ref transformRW.ValueRW;
-            Transform viewTransform = goRef.Value.transform;
+            Transform viewTransform = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value).Value.transform;
 
-            if (ownerRO.ValueRO.Value == Entity.Null)
+            if (viewTransform.parent == null)
             {
                 viewTransform.position = entityTransform.Position;
                 viewTransform.rotation = entityTransform.Rotation;
-                //Debug.Log("Droped Entity " + entityTransform.Position);
-                //Debug.Log("Droped View " + viewTransform.position);
             }
         }
 
-        //Display stuff in hand
+        //Display stuff
         foreach (var (goRef, ownerRO, entity) in SystemAPI
-        .Query<StuffGameObjectRef, RefRO<StuffOwner>>()
+        .Query<StuffGameObjectRef, RefRO<StuffDynamicData>>()
         .WithPresent<IsStuffInHand>()
         .WithEntityAccess())
         {
-            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.Value == Entity.Null);
+            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.owner == Entity.Null);
         }
 
         //Clear Stuff GameObject

@@ -9,7 +9,7 @@ public partial struct SwitchStuffSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<StuffOwner>();
+        state.RequireForUpdate<StuffDynamicData>();
 
         state.RequireForUpdate<NetworkTime>();
 

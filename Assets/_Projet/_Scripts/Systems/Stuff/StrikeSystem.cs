@@ -15,7 +15,7 @@ namespace MeleeWeapon
     {
         public void OnCreate(ref SystemState state)
         {
-            state.RequireForUpdate<StuffOwner>();
+            state.RequireForUpdate<StuffDynamicData>();
 
             state.RequireForUpdate<NetworkTime>();
             state.RequireForUpdate<PhysicsWorldSingleton>();
@@ -37,13 +37,13 @@ namespace MeleeWeapon
 
             //Query
             foreach (var (dynamicDataRW, databaseAccessRO, ownerRef, weapon) in SystemAPI
-            .Query<RefRW<MeleeWeaponDynamicData>, RefRO<MeleeWeaponDatabaseAccess>, RefRW<StuffOwner>>()
+            .Query<RefRW<MeleeWeaponDynamicData>, RefRO<MeleeWeaponDatabaseAccess>, RefRW<StuffDynamicData>>()
             .WithAll<IsStuffInHand, Simulate>()
             .WithEntityAccess())
             {
                 ref MeleeWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
                 ref MeleeWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
-                ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+                ref readonly Entity owner = ref ownerRef.ValueRO.owner;
 
                 // Retrieve player input
                 if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;

@@ -41,9 +41,16 @@ public struct StuffDatabaseAccess : IComponentData
 }
 
 [GhostComponent]
-public struct StuffOwner : IComponentData
+public struct StuffEntityInHandRef : IComponentData
 {
     [GhostField] public Entity Value;
+}
+
+[GhostComponent]
+public struct StuffDynamicData : IComponentData
+{
+    [GhostField] public Entity owner;
+    [GhostField] public Entity dropedEntityPrefab;
 }
 
 [GhostEnabledBit]

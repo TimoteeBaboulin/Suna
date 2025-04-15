@@ -48,7 +48,7 @@ public partial struct EquipStuffSystem : ISystem
             var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
             int ownerNetworkId = SystemAPI.GetComponent<GhostOwner>(duo.Owner).NetworkId;
             var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
-            var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
+            var stuffOwner = SystemAPI.GetComponentRW<StuffDynamicData>(duo.Stuff);
             ref var stuffData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
 
             //If inventory slot is already have stuff, we unequip them
@@ -66,7 +66,7 @@ public partial struct EquipStuffSystem : ISystem
             ownerStuffList.ValueRW.SetStuffInSlot(stuffData.slot, duo.Stuff);
 
             //Set owner of stuff
-            stuffOwner.ValueRW.Value = duo.Owner;
+            stuffOwner.ValueRW.owner = duo.Owner;
 
             //Auto switch on new stuff
             //ownerStuffList.ValueRW.StuffInHandSlot = stuffData.slot;
@@ -103,7 +103,7 @@ public partial struct UnequipStuffSystem : ISystem
             if (duo.Owner == Entity.Null || duo.Stuff == Entity.Null) continue;
 
             var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
-            var stuffOwner = SystemAPI.GetComponentRW<StuffOwner>(duo.Stuff);
+            var stuffOwner = SystemAPI.GetComponentRW<StuffDynamicData>(duo.Stuff);
             var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
             var stuffTransform = SystemAPI.GetComponentRW<LocalTransform>(duo.Stuff);
             var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
@@ -114,7 +114,7 @@ public partial struct UnequipStuffSystem : ISystem
                 ownerStuffList.ValueRW.SetStuffInSlot(stufData.slot, Entity.Null);
             }
 
-            stuffOwner.ValueRW.Value = Entity.Null;
+            stuffOwner.ValueRW.owner = Entity.Null;
 
             //Network
             stuffGhostOwner.ValueRW.NetworkId = -1;
@@ -148,20 +148,22 @@ public partial struct StuffOwnershipSystem : ISystem
         {
             foreach (var stuff in charaStuffList.List)
             {
-                if (SystemAPI.Exists(stuff) && SystemAPI.HasComponent<StuffOwner>(stuff))
+                if (SystemAPI.Exists(stuff) && SystemAPI.HasComponent<StuffDynamicData>(stuff))
                 {
-                    Entity owner = SystemAPI.GetComponent<StuffOwner>(stuff).Value;
+                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff).owner;
 
                     if (owner != chara)
                     {
-                        ecb.SetComponent(stuff, new StuffOwner { Value = chara });
+                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
+                        dynData.owner = chara;
+                        ecb.SetComponent(stuff, dynData);
                     }
                 }
             }
         }
 
         //Check if a stuff no longer has a player and set its owner to null
-        foreach (var (owner, stuff) in SystemAPI.Query<StuffOwner>().WithEntityAccess())
+        foreach (var (owner, stuff) in SystemAPI.Query<StuffDynamicData>().WithEntityAccess())
         {
             bool hasOwner = false;
 
@@ -179,7 +181,9 @@ public partial struct StuffOwnershipSystem : ISystem
 
             if (!hasOwner)
             {
-                ecb.SetComponent(stuff, new StuffOwner { Value = Entity.Null });
+                var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
+                dynData.owner = Entity.Null;
+                ecb.SetComponent(stuff, dynData);
             }
         }
 
