@@ -106,16 +106,16 @@ public static class PlayerHelpers
     static public IReadOnlyPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        //if (RequestedPlayType == PlayType.Server && networkId == 1)
-        //{
-        //    networkId++;
-        //}
+        if (RequestedPlayType == PlayType.Server && networkId == 1)
+        {
+            networkId++;
+        }
 
         IReadOnlyPlayer currentPlayerId = sessionPlayers[networkId - 1];
         return currentPlayerId;
     }
 
-    static public async Task<string> AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
+    static public string AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)
     {
         int countTeamCorpo = 0;
         int countTeamNatif = 0;
@@ -138,23 +138,11 @@ public static class PlayerHelpers
         if (readOnlyPlayer is IPlayer player)
         {
             player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
-            var session = ClientTransportHelper.instance.Session as IHostSession;
-            if (session != null)
-            {
-                await session.SaveCurrentPlayerDataAsync();
-                Debug.Log($"[Team Assignment] Assigned Player {player.Id} to team {assignedTeam}");
-
-                await UpdateTeamCountInSession(assignedTeam, player.Id);
-            }
-            else
-            {
-                Debug.LogError("Failed to retrieve host session as IHostSession.");
-            }
         }
         return assignedTeam;
     }
 
-    static public async Task UpdateTeamCountInSession(string assignedTeam, string playerId)
+    static public void UpdateTeamCountInSession(string assignedTeam, string playerId)
     {
         var session = ClientTransportHelper.instance.Session;
         if (session is IHostSession hostSession)
@@ -171,15 +159,13 @@ public static class PlayerHelpers
                 int currentCountNatif = int.Parse(countTeamNatifProp.Value);
                 hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
             }
-
-            Debug.Log($"[Before Save] Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
-            await hostSession.SavePropertiesAsync();
-            Debug.Log($"[After SavePropertiesAsync] Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
+            hostSession.SaveCurrentPlayerDataAsync();        
+            hostSession.SavePropertiesAsync();         
             Debug.Log($"[Final Save] Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
         }
     }
 
-    static public async void SubscribePlayerJoined(string playerId)
+    static public void SubscribePlayerJoined(string playerId)
     {
         Debug.Log($"[Team Assignment] PlayerJoined triggered for ID: {playerId}");
         var session = ClientTransportHelper.instance.Session;
@@ -191,7 +177,7 @@ public static class PlayerHelpers
         var player = session.Players.FirstOrDefault(p => p.Id == playerId);
         if (player != null)
         {
-            string team = await AssignTeamToPlayer(player, session.Players);
+            string team = AssignTeamToPlayer(player, session.Players);
             Debug.Log($"[Team Assignment] Match found! Assigning {team} to Player ID: {player.Id}");
         }
         else

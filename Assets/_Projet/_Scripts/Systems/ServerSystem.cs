@@ -14,6 +14,7 @@ public struct ClientComponent : IComponentData
 {
     public int networkID;
     public FixedString64Bytes playerID;
+    public TeamSideType team;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -47,12 +48,6 @@ public partial class ServerSystem : SystemBase
             InstantiateClient(entity, commandBuffer);
         }
 
-        //if (Keyboard.current.oKey.wasPressedThisFrame)
-        //{
-        //    ServerMessageRpcCommand command = new ServerMessageRpcCommand() { message = "Hello world" };
-        //    RpcUtils.SendServerToClientRpc(ref command);
-        //}
-
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
@@ -71,34 +66,45 @@ public partial class ServerSystem : SystemBase
             NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
             FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
             Entity client = ecb.Instantiate(prefabManager.Client);
-            ecb.SetComponent(client, new GhostOwner() //Set owner of player to connection
+            ecb.SetComponent(client, new GhostOwner()
             {
                 NetworkId = networkId.Value
             });
-            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() //Link it to connection
+            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup()
             {
                 Value = client
             });
 
             IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            var session = ClientTransportHelper.instance.Session;
 
-            IHostSession hostSession = ClientTransportHelper.instance.Session as IHostSession;
-                PlayerHelpers.SubscribePlayerJoined(currentPlayer.Id);
-            //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-            //{
-            //}
-            //else
-            //{
-            //    hostSession.PlayerJoined += PlayerHelpers.SubscribePlayerJoined;
-            //    Debug.Log($"[Team Assignment] PlayerJoined {currentPlayer.Id} listener attached.");
-            //}
+            // Now assign the team once during client instantiation
+            string teamString = PlayerHelpers.AssignTeamToPlayer(currentPlayer, session.Players);
+            PlayerHelpers.UpdateTeamCountInSession(teamString, currentPlayer.Id);
 
+            // Convert team string to enum value
+            TeamSideType assignedTeam = TeamSideType.Neutre;
+            switch (teamString)
+            {
+                case "Corpo":
+                    assignedTeam = TeamSideType.Corpo;
+                    break;
+                case "Natif":
+                    assignedTeam = TeamSideType.Natif;
+                    break;
+                default:
+                    assignedTeam = TeamSideType.Neutre;
+                    break;
+            }
+
+            // Add the client component with team data to the owner entity
             ecb.AddComponent(ownerEntity, new ClientComponent
             {
                 networkID = networkId.Value,
-                playerID = currentPlayer.Id
-            }
-            );
+                playerID = currentPlayer.Id,
+                team = assignedTeam
+            });
+
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client connected with NetworkId {networkId.Value}, in the world {worldName}");
         }
     }
