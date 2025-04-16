@@ -4,12 +4,14 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.VisualScripting;
 
 [GhostComponent]
 public struct EquipStuffQueue : IBufferElementData
 {
     [GhostField] public Entity Owner;
     [GhostField] public Entity Stuff;
+    [GhostField] public bool AutoSwitch;
 }
 
 [GhostComponent]
@@ -39,42 +41,42 @@ public partial struct EquipStuffSystem : ISystem
         var equipStuffQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
         var unequipStuffQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
-        foreach (var duo in equipStuffQueue)
+        foreach (var equipInfos in equipStuffQueue)
         {
+            StuffUtilities.EquipUnsafe(ref state, ref database, equipInfos.Owner, equipInfos.Stuff, equipInfos.AutoSwitch);
+            //if (equipInfos.Owner == Entity.Null || equipInfos.Stuff == Entity.Null) continue;
 
-            if (duo.Owner == Entity.Null || duo.Stuff == Entity.Null) continue;
+            //var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(equipInfos.Owner);
+            //var ownerPos = SystemAPI.GetComponent<LocalToWorld>(equipInfos.Owner).Position;
+            //int ownerNetworkId = SystemAPI.GetComponent<GhostOwner>(equipInfos.Owner).NetworkId;
+            //var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(equipInfos.Stuff);
+            //var stuffOwner = SystemAPI.GetComponentRW<StuffDynamicData>(equipInfos.Stuff);
+            //ref var stuffData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(equipInfos.Stuff).GetData(ref database);
 
-            var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
-            var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
-            int ownerNetworkId = SystemAPI.GetComponent<GhostOwner>(duo.Owner).NetworkId;
-            var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
-            var stuffOwner = SystemAPI.GetComponentRW<StuffDynamicData>(duo.Stuff);
-            ref var stuffData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
+            ////If inventory slot is already have stuff, we unequip them
+            //if (ownerStuffList.ValueRW.GetStuffInSlot(stuffData.slot) != Entity.Null)
+            //{
+            //    unequipStuffQueue.Add(new UnequipStuffQueue
+            //    {
+            //        Stuff = ownerStuffList.ValueRW.GetStuffInSlot(stuffData.slot),
+            //        Owner = equipInfos.Owner,
+            //        //Position = ownerPos
+            //    });
+            //}
 
-            //If inventory slot is already have stuff, we unequip them
-            if (ownerStuffList.ValueRW.GetStuffInSlot(stuffData.slot) != Entity.Null)
-            {
-                unequipStuffQueue.Add(new UnequipStuffQueue
-                {
-                    Stuff = ownerStuffList.ValueRW.GetStuffInSlot(stuffData.slot),
-                    Owner = duo.Owner,
-                    //Position = ownerPos
-                });
-            }
+            ////Add the stuff in player inventory
+            //ownerStuffList.ValueRW.SetStuffInSlot(stuffData.slot, equipInfos.Stuff);
 
-            //Add the stuff in player inventory
-            ownerStuffList.ValueRW.SetStuffInSlot(stuffData.slot, duo.Stuff);
+            ////Set owner of stuff
+            //stuffOwner.ValueRW.owner = equipInfos.Owner;
 
-            //Set owner of stuff
-            stuffOwner.ValueRW.owner = duo.Owner;
+            ////Auto switch on new stuff
+            ////ownerStuffList.ValueRW.StuffInHandSlot = stuffData.slot;
 
-            //Auto switch on new stuff
-            //ownerStuffList.ValueRW.StuffInHandSlot = stuffData.slot;
-
-            //Network
-            stuffGhostOwner.ValueRW.NetworkId = ownerNetworkId;
-            var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
-            buffer.Add(new LinkedEntityGroup { Value = duo.Stuff });
+            ////Network
+            //stuffGhostOwner.ValueRW.NetworkId = ownerNetworkId;
+            //var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(equipInfos.Owner);
+            //buffer.Add(new LinkedEntityGroup { Value = equipInfos.Stuff });
         }
         equipStuffQueue.Clear();
     }
@@ -96,42 +98,44 @@ public partial struct UnequipStuffSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
-        var equipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
+        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
-        foreach (var duo in equipStuffQueu)
+        foreach (var unequipInfos in unequipStuffQueu)
         {
-            if (duo.Owner == Entity.Null || duo.Stuff == Entity.Null) continue;
+            StuffUtilities.UnequipUnsafe(ref state, ref database, unequipInfos.Owner, unequipInfos.Stuff);
 
-            var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(duo.Owner);
-            var stuffOwner = SystemAPI.GetComponentRW<StuffDynamicData>(duo.Stuff);
-            var ownerPos = SystemAPI.GetComponent<LocalToWorld>(duo.Owner).Position;
-            var stuffTransform = SystemAPI.GetComponentRW<LocalTransform>(duo.Stuff);
-            var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(duo.Stuff);
-            ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(duo.Stuff).GetData(ref database);
+            //if (unequipInfos.Owner == Entity.Null || unequipInfos.Stuff == Entity.Null) continue;
 
-            if (ownerStuffList.ValueRO.GetStuffInSlot(stufData.slot) == duo.Stuff)
-            {
-                ownerStuffList.ValueRW.SetStuffInSlot(stufData.slot, Entity.Null);
-            }
+            //var ownerStuffList = SystemAPI.GetComponentRW<CharacterStuffList>(unequipInfos.Owner);
+            //var stuffDynamicData = SystemAPI.GetComponentRW<StuffDynamicData>(unequipInfos.Stuff);
+            ////var ownerPos = SystemAPI.GetComponent<LocalToWorld>(unequipInfos.Owner).Position;
+            //var stuffTransform = SystemAPI.GetComponentRW<LocalTransform>(unequipInfos.Stuff);
+            //var stuffGhostOwner = SystemAPI.GetComponentRW<GhostOwner>(unequipInfos.Stuff);
+            //ref var stufData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(unequipInfos.Stuff).GetData(ref database);
 
-            stuffOwner.ValueRW.owner = Entity.Null;
+            //if (ownerStuffList.ValueRO.GetStuffInSlot(stufData.slot) == unequipInfos.Stuff)
+            //{
+            //    ownerStuffList.ValueRW.SetStuffInSlot(stufData.slot, Entity.Null);
+            //}
 
-            //Network
-            stuffGhostOwner.ValueRW.NetworkId = -1;
-            var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(duo.Owner);
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                if (buffer[i].Value == duo.Stuff)
-                {
-                    buffer.RemoveAt(i);
-                    break;
-                }
-            }
+            //stuffDynamicData.ValueRW.owner = Entity.Null;
 
-            stuffTransform.ValueRW.Position = math.all(duo.Position == float3.zero) ? ownerPos : duo.Position;
+            ////Network
+            //stuffGhostOwner.ValueRW.NetworkId = -1;
+            //var buffer = SystemAPI.GetBuffer<LinkedEntityGroup>(unequipInfos.Owner);
+            //for (int i = 0; i < buffer.Length; i++)
+            //{
+            //    if (buffer[i].Value == unequipInfos.Stuff)
+            //    {
+            //        buffer.RemoveAt(i);
+            //        break;
+            //    }
+            //}
+
+            //stuffTransform.ValueRW.Position = math.all(unequipInfos.Position == float3.zero) ? ownerPos : unequipInfos.Position;
 
         }
-        equipStuffQueu.Clear();
+        unequipStuffQueu.Clear();
     }
 }
 
