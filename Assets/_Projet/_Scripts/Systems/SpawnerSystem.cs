@@ -115,8 +115,8 @@ public partial struct RespawnSystem : ISystem
         {
             int networkId = SystemAPI.GetComponent<GhostOwner>(clientEntity).NetworkId;
             TeamSideType teamSideType = playerComponent.ValueRW.team;
-            // Use the team stored on the clientComponent
-            Debug.Log($"[AliveCheck] Final teamSideType from ClientComponent: {teamSideType} for networkId {networkId}");
+            //Debug.Log($"[AliveCheck] Final teamSideType from ClientComponent: {teamSideType} for networkId {networkId}");
+            //Debug.Log($"[AliveCheck] teamSideType : {PlayerHelpers.GetPlayerInTeam(networkId)} for networkId {networkId}");
 
             if (!teamSpawnsValid[(int)teamSideType])
             {

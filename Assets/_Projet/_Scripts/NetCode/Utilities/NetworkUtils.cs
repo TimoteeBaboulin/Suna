@@ -254,10 +254,10 @@ namespace GameNetwork.Utils
             var options = new SessionOptions
             {
                 MaxPlayers = maxPlayers,
-                PlayerProperties = new Dictionary<string, PlayerProperty>
-        {
-            { "team", new PlayerProperty("none", VisibilityPropertyOptions.Public) }
-        }
+        //        PlayerProperties = new Dictionary<string, PlayerProperty>
+        //{
+        //    { "team", new PlayerProperty("none", VisibilityPropertyOptions.Public) }
+        //}
                 //SessionProperties = new Dictionary<string, SessionProperty>
                 //{
                 //    {"CountTeamNatif", new SessionProperty("0", VisibilityPropertyOptions.Public) },

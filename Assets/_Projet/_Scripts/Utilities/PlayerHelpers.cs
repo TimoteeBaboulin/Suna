@@ -14,82 +14,155 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public static class PlayerHelpers
 {
+    public struct AliveCounts
+    {
+        public int natifPlayersAlive;
+        public int corpoPlayersAlive;
+    }
+
     /// <summary>
-    /// Function used to receive the number of players alive in a team
-    /// The function is managed so can't be used in ISystems or Burst Compiled methods
-    /// Written by Timotee
+    /// Computes and returns a struct with the current alive counts for each team.
     /// </summary>
-    static public int CountPlayersAliveManaged(TeamSideType team, World world)
+    public static AliveCounts GetCurrentAliveCounts(World world)
+    {
+        AliveCounts counts;
+        counts.natifPlayersAlive = GetPlayersAlive(TeamSideType.Natif, world);
+        counts.corpoPlayersAlive = GetPlayersAlive(TeamSideType.Corpo, world);
+        return counts;
+    }
+
+    /// <summary>
+    /// Returns the current number of alive players for the given team.
+    /// </summary>
+    public static int GetPlayersAlive(TeamSideType team, World world)
+    {
+        return CountPlayersAliveForTeam(team, world);
+    }
+
+    private static int CountPlayersAliveForTeam(TeamSideType team, World world)
     {
         int aliveCount = 0;
-        string teamName = team == TeamSideType.Corpo ? "Corpo" : "Natif";
 
-        List<IReadOnlyPlayer> teamList = GetPlayersByTeam(team);
-        if (teamList.Count == 0)
+        ComponentType teamTag;
+        switch (team)
         {
-            return 0;
+            case TeamSideType.Corpo:
+                teamTag = ComponentType.ReadOnly<CorpoTeamTag>();
+                break;
+            case TeamSideType.Natif:
+                teamTag = ComponentType.ReadOnly<NatifTeamTag>();
+                break;
+            default:
+                Debug.LogWarning($"Team {team} does not have a defined tag component.");
+                return 0;
         }
 
-        EntityQuery characterQuery = world.EntityManager.CreateEntityQuery(new EntityQueryDesc
+        EntityManager entityManager = world.EntityManager;
+
+        EntityQuery characterQuery = entityManager.CreateEntityQuery(new EntityQueryDesc
         {
-            All = new ComponentType[] { typeof(CharacterClientAttachedComponent), typeof(CharacterIsEnable) },
-            Options = EntityQueryOptions.IgnoreComponentEnabledState
+            All = new ComponentType[]
+            {
+            ComponentType.ReadOnly<CharacterClientAttachedComponent>(),
+            ComponentType.ReadOnly<CharacterIsEnable>(),
+            teamTag
+            },
+            Options = EntityQueryOptions.IgnoreComponentEnabledState // Allows checking enable state manually.
         });
 
         NativeArray<Entity> characterEntities = characterQuery.ToEntityArray(Allocator.Temp);
+        //Debug.Log($"[CountPlayersAlive] Filtered entity count: {characterEntities.Length} for team {team}.");
 
         for (int i = 0; i < characterEntities.Length; i++)
         {
             Entity characterEntity = characterEntities[i];
-            var entityManager = world.EntityManager;
-
-            if (!entityManager.HasComponent<CharacterIsEnable>(characterEntity) ||
-                !entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
+            if (!entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
             {
                 continue;
             }
+            aliveCount++;
 
-            if (!entityManager.HasComponent<CharacterClientAttachedComponent>(characterEntity)) { continue; }
-
-            CharacterClientAttachedComponent attached = entityManager.GetComponentData<CharacterClientAttachedComponent>(characterEntity);
-            Entity clientEntity = attached.ClientEntity;
-
-            if (!entityManager.HasComponent<ClientComponent>(clientEntity))
-            {
-                continue;
-            }
-
-            ClientComponent client = entityManager.GetComponentData<ClientComponent>(clientEntity);
-            bool found = false;
-
-            for (int j = 0; j < teamList.Count; j++)
-            {
-                var player = teamList[j];
-
-                if (player.Id == client.playerID.ToString())
-                {
-                    found = true;
-                    Debug.Log($"[Final Save] {player.Id}, found {found}");
-                    break;
-                }
-            }
-
-            if (found)
-            {
-                aliveCount++;
-            }
+            //Debug.Log($"[CountPlayersAlive] Counting entity {characterEntity} for team {team}.");
         }
 
         characterEntities.Dispose();
         return aliveCount;
     }
+    ///// <summary>
+    ///// Function used to receive the number of players alive in a team
+    ///// The function is managed so can't be used in ISystems or Burst Compiled methods
+    ///// Written by Timotee
+    ///// </summary>
+    //static public int CountPlayersAliveManaged(TeamSideType team, World world)
+    //{
+    //    int aliveCount = 0;
+    //    string teamName = team == TeamSideType.Corpo ? "Corpo" : "Natif";
+
+    //    List<IReadOnlyPlayer> teamList = GetPlayersByTeam(team);
+    //    if (teamList.Count == 0)
+    //    {
+    //        return 0;
+    //    }
+
+    //    EntityQuery characterQuery = world.EntityManager.CreateEntityQuery(new EntityQueryDesc
+    //    {
+    //        All = new ComponentType[] { typeof(CharacterClientAttachedComponent), typeof(CharacterIsEnable) },
+    //        Options = EntityQueryOptions.IgnoreComponentEnabledState
+    //    });
+
+    //    NativeArray<Entity> characterEntities = characterQuery.ToEntityArray(Allocator.Temp);
+
+    //    for (int i = 0; i < characterEntities.Length; i++)
+    //    {
+    //        Entity characterEntity = characterEntities[i];
+    //        var entityManager = world.EntityManager;
+
+    //        if (!entityManager.HasComponent<CharacterIsEnable>(characterEntity) ||
+    //            !entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
+    //        {
+    //            continue;
+    //        }
+
+    //        if (!entityManager.HasComponent<CharacterClientAttachedComponent>(characterEntity)) { continue; }
+
+    //        CharacterClientAttachedComponent attached = entityManager.GetComponentData<CharacterClientAttachedComponent>(characterEntity);
+    //        Entity clientEntity = attached.ClientEntity;
+
+    //        if (!entityManager.HasComponent<ClientComponent>(clientEntity))
+    //        {
+    //            continue;
+    //        }
+
+    //        ClientComponent client = entityManager.GetComponentData<ClientComponent>(clientEntity);
+    //        bool found = false;
+
+    //        for (int j = 0; j < teamList.Count; j++)
+    //        {
+    //            var player = teamList[j];
+    //            Debug.Log($"[Final Save] {player.Id}, found {client.playerID}");
+    //            if (player.Id == client.playerID)
+    //            {
+    //                found = true;
+    //                break;
+    //            }
+    //        }
+
+    //        if (found)
+    //        {
+    //            aliveCount++;
+    //        }
+    //    }
+
+    //    //characterEntities.Dispose();
+    //    return aliveCount;
+    //}
 
     static public List<IReadOnlyPlayer> GetPlayersByTeam(TeamSideType teamSide)
     {
         var teamPlayers = new List<IReadOnlyPlayer>();
         if (ClientTransportHelper.instance != null && ClientTransportHelper.instance.Session != null)
         {
-            var session = ClientTransportHelper.instance.Session;
+            var session = ClientTransportHelper.instance.Session.AsHost();
             var players = session.Players;
             foreach (var player in players)
             {
@@ -110,7 +183,7 @@ public static class PlayerHelpers
         var teamPlayers = new List<IReadOnlyPlayer>();
         if (ClientTransportHelper.instance != null && ClientTransportHelper.instance.Session != null)
         {
-            var session = ClientTransportHelper.instance.Session;
+            var session = ClientTransportHelper.instance.Session.AsHost();
             var players = session.Players;
             foreach (var player in players)
             {
@@ -125,7 +198,7 @@ public static class PlayerHelpers
         }
         return teamPlayers;
     }
-    static public IReadOnlyPlayer FindCurrentPlayerForNetworkId(int networkId)
+    static public IPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
         int index = networkId - 1;
@@ -141,7 +214,7 @@ public static class PlayerHelpers
             return null;
         }
 
-        return sessionPlayers[index];
+        return (IPlayer)sessionPlayers[index];
     }
 
     static public string AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, IReadOnlyList<IReadOnlyPlayer> allPlayers)

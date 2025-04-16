@@ -10,6 +10,7 @@ public struct TeamAliveCountRpc : IRpcCommand
     public int corpoPlayersAlive;
 }
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateAfter(typeof(RoundComponent))]
 public partial class CountPlayersSystemServer : SystemBase
 {
     protected override void OnCreate()
@@ -31,21 +32,23 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
 
+        // Get the alive counts using our new helper.
+        PlayerHelpers.AliveCounts counts = PlayerHelpers.GetCurrentAliveCounts(World);
+
         RefRW<PlayerAliveCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerAliveCounts>(entity);
-
-        playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
-        playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
-        SendTeamAliveCountsToClients(playersAliveRW.ValueRW.nativePlayersAlive, playersAliveRW.ValueRW.corpoPlayersAlive);
+        playersAliveRW.ValueRW.corpoPlayersAlive = counts.corpoPlayersAlive;
+        playersAliveRW.ValueRW.nativePlayersAlive = counts.natifPlayersAlive;
+        //  SendTeamAliveCountsToClients(playersAliveRW.ValueRW.nativePlayersAlive, playersAliveRW.ValueRW.corpoPlayersAlive);
     }
 
-    private void SendTeamAliveCountsToClients(int nativePlayersAlive, int corpoPlayersAlive)
-    {
-        var command = new TeamAliveCountRpc
-        {
-            nativePlayersAlive = nativePlayersAlive,
-            corpoPlayersAlive = corpoPlayersAlive
-        };
+    //private void SendTeamAliveCountsToClients(int nativePlayersAlive, int corpoPlayersAlive)
+    //{
+    //    var command = new TeamAliveCountRpc
+    //    {
+    //        nativePlayersAlive = nativePlayersAlive,
+    //        corpoPlayersAlive = corpoPlayersAlive
+    //    };
 
-        RpcUtils.SendServerToClientRpc(ref command);  
-    }
+    //    RpcUtils.SendServerToClientRpc(ref command);  
+    //}
 }
