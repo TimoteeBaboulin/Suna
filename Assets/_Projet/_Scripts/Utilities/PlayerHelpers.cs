@@ -24,7 +24,7 @@ public static class PlayerHelpers
         int aliveCount = 0;
         string teamName = team == TeamSideType.Corpo ? "Corpo" : "Natif";
 
-        List<IReadOnlyPlayer> teamList = GetPlayersByTeam(teamName);
+        List<IReadOnlyPlayer> teamList = GetPlayersByTeam(team);
         if (teamList.Count == 0)
         {
             return 0;
@@ -69,6 +69,7 @@ public static class PlayerHelpers
                 if (player.Id == client.playerID.ToString())
                 {
                     found = true;
+                    Debug.Log($"[Final Save] {player.Id}, found {found}");
                     break;
                 }
             }
@@ -81,6 +82,27 @@ public static class PlayerHelpers
 
         characterEntities.Dispose();
         return aliveCount;
+    }
+
+    static public List<IReadOnlyPlayer> GetPlayersByTeam(TeamSideType teamSide)
+    {
+        var teamPlayers = new List<IReadOnlyPlayer>();
+        if (ClientTransportHelper.instance != null && ClientTransportHelper.instance.Session != null)
+        {
+            var session = ClientTransportHelper.instance.Session;
+            var players = session.Players;
+            foreach (var player in players)
+            {
+                if (player.Properties.TryGetValue("team", out PlayerProperty teamProp))
+                {
+                    if (teamProp.Value.Equals(teamSide.ToString(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        teamPlayers.Add(player);
+                    }
+                }
+            }
+        }
+        return teamPlayers;
     }
 
     static public List<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
