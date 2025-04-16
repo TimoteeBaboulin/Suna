@@ -149,6 +149,24 @@ public static class PlayerHelpers
         return assignedTeam;
     }
 
+    static public TeamSideType GetPlayerInTeam(int networkId)
+    {
+        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
+        int index = networkId - 1;
+
+        string team = sessionPlayers[index].Properties["team"].Value;
+
+        if (team == "Corpo")
+        {
+            return TeamSideType.Corpo;
+        }
+        else if (team == "Natif")
+        {
+            return TeamSideType.Natif;
+        }
+        return TeamSideType.Neutre;
+    }
+
     //static public void UpdateTeamCountInSession(string assignedTeam, string playerId)
     //{
     //    var session = ClientTransportHelper.instance.Session;
