@@ -22,7 +22,9 @@ public class ShopController : MonoBehaviour
     [SerializeField] private RangedWeaponData lp17;
     [SerializeField] private RangedWeaponData fakir;
     [SerializeField] private RangedWeaponData banduka;
+    [SerializeField] private GrenadeData heGrenade;
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
+    private Dictionary<Button, GrenadeData> grenadeDict = new();
 
     private void Awake()
     {
@@ -47,6 +49,10 @@ public class ShopController : MonoBehaviour
         CreateShopButton(out button, 30); line.Add(button);
         CreateShopButton(out button, 30); line.Add(button);
         CreateShopButton(out button, 30); line.Add(button);
+        CreateShopLine(out line); shopmenu.Add(line);
+        CreateShopButton(out button, 10); line.Add(button); grenadeDict[button] = heGrenade;
+        CreateShopButton(out button, 10); line.Add(button);
+        CreateShopButton(out button, 10); line.Add(button);
 
         List<Button> buttonList = shopmenu.Query<Button>().ToList();
 
@@ -56,7 +62,6 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
-                //btn.style.backgroundImage = weaponDict[btn].UIImage;
                 AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
 
                 btn.clicked += () =>
@@ -74,6 +79,25 @@ public class ShopController : MonoBehaviour
                 // On hover Debug Log entity name
                 btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
                 btn.RegisterCallback<PointerLeaveEvent>(evt => OnShopButtonLeave());
+            }
+            else if (grenadeDict.ContainsKey(btn))
+            {
+                Button btnRef = btn;
+                AddProductLabelsToShopButton(ref btnRef, grenadeDict[btn].entityName, grenadeDict[btn].price.ToString() + " $");
+                AddWeaponIcon(ref btnRef, grenadeDict[btn].UIImage);
+                btn.clicked += () =>
+                {
+                    ShopCommand sc = new ShopCommand
+                    {
+                        weaponData = grenadeDict[btn].entityName,
+                    };
+                    RpcUtils.SendClientToServerRpc(ref sc);
+                    UI.SetActive(ref root, false);
+                    ActivateUIInput(false);
+                };
+                // On hover Debug Log entity name
+                //btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
+                //btn.RegisterCallback<PointerLeaveEvent>(evt => OnShopButtonLeave());
             }
         }
     }

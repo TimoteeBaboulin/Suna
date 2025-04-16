@@ -12,6 +12,7 @@ public enum StuffInventoryLocation
     SecondaryWeapon,
     Melee,
     Harvester,
+    Grenade,
     SpecialStuff1,
     SpecialStuff2,
     SpecialStuff3,
@@ -24,6 +25,7 @@ public enum StuffType
 {
     RangedWeapon,
     MeleeWeapon,
+    Grenade,
     Harvester,
 }
 

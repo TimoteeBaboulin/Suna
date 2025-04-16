@@ -8,10 +8,12 @@ public class GameResourcesAuthoring : MonoBehaviour
 {
     public GameObject rangedWeaponEntityPrefab;
     public GameObject meleeWeaponEntityPrefab;
+    public GameObject grenadesEntityPrefab;
     public GameObject harvesterEntityPrefab;
 
     public List<RangedWeaponData> rangedWeaponList;
     public List<MeleeWeaponData> meleeWeaponList;
+    public List<GrenadeData> grenadesList;
     public HarvesterData harvester;
 
     public class Baker : Baker<GameResourcesAuthoring>
@@ -26,6 +28,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             {
                 rangedWeaponEntityPrefab = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic),
                 meleeWeaponEntityPrefab = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic),
+                grenadesEntityPrefab = GetEntity(authoring.grenadesEntityPrefab, TransformUsageFlags.Dynamic),
                 harvesterEntityPrefab = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic)
             });
 
@@ -34,9 +37,11 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + 1);
+            BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count + 1);
 
-            for (int i = 0; i < authoring.rangedWeaponList.Count; i++)
+            int i = 0;
+
+            for (; i < authoring.rangedWeaponList.Count; i++)
             {
                 var rangedWeaponSO = authoring.rangedWeaponList[i];
 
@@ -57,7 +62,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].dataID = i;
             }
 
-            for (int i = authoring.rangedWeaponList.Count; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count; i++)
+            for (; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count; i++)
             {
                 var meleeWeaponSO = authoring.meleeWeaponList[i - authoring.rangedWeaponList.Count];
 
@@ -78,7 +83,25 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
             }
 
-            int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count;
+            for(; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count; i++)
+            {
+                var grenadeSO = authoring.grenadesList[i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count];
+                builder.AllocateString(ref stuffs[i].Name, grenadeSO.entityName);
+                stuffs[i].viewPrefab = grenadeSO.viewPrefab;
+                stuffs[i].location = grenadeSO.location;
+                stuffs[i].type = grenadeSO.type;
+                stuffs[i].side = grenadeSO.side;
+                //stuffs[i].deploymentSpeed = 0;
+                //stuffs[i].storageSpeed = 0;
+                stuffs[i].price = grenadeSO.price;
+                stuffs[i]._stuffLocalOffsetView = grenadeSO._stuffLocalOffsetView;
+                stuffs[i].killGain = grenadeSO.killGain;
+                //stuffs[i].canADS = false;
+                //stuffs[i].ADSFOV = 0;
+                stuffs[i].dataID = i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count;
+            }
+
+            int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count;
             var harvesterSO = authoring.harvester;
 
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
@@ -100,7 +123,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<RangedWeaponCommonData> rangedWeapons = builder.Allocate(ref stuffCollection.RangedWeaponsCommonData, authoring.rangedWeaponList.Count);
-            for (int i = 0; i < authoring.rangedWeaponList.Count; i++)
+            for (i = 0; i < authoring.rangedWeaponList.Count; i++)
             {
                 var rangedWeaponSO = authoring.rangedWeaponList[i];
 
@@ -134,7 +157,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<MeleeWeaponCommonData> meleeWeapons = builder.Allocate(ref stuffCollection.MeleeWeaponsCommonData, authoring.meleeWeaponList.Count);
-            for (int i = 0; i < authoring.meleeWeaponList.Count; i++)
+            for (i = 0; i < authoring.meleeWeaponList.Count; i++)
             {
                 var meleeWeaponSO = authoring.meleeWeaponList[i];
 

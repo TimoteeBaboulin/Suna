@@ -48,8 +48,6 @@ partial class ShopSystem : SystemBase
                 }
             }
 
-            UnityEngine.Debug.Log("Destroying RPC Command");
-
             commandBuffer.DestroyEntity(entity);
         }
         

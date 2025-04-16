@@ -69,26 +69,20 @@ MonoBehaviour:
   _weaponMap:
   - Weapon: SKAR-18
     Tex: {fileID: 2800000, guid: 70f5215ab63fa8d428afb510c2f15c92, type: 3}
-  - Weapon: LP-17
-    Tex: {fileID: 2800000, guid: 316742663b0de52499f38e79e4e47e8c, type: 3}
-  - Weapon: KnifeNeutral
-    Tex: {fileID: 2800000, guid: 17e93a7d2b73ab042a2fa69ffbd00533, type: 3}
-  - Weapon: Banduka
-    Tex: {fileID: 2800000, guid: e3cf4253223c9a54caf096587cd19b44, type: 3}
-  - Weapon: flash
-    Tex: {fileID: 2800000, guid: 3bf107d4b83258940b56973fc07a2140, type: 3}
-  - Weapon: grenade
-    Tex: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
-  - Weapon: molotov
-    Tex: {fileID: 2800000, guid: 155ce38312023144daed970fc32403d4, type: 3}
-  - Weapon: Harvester
-    Tex: {fileID: 2800000, guid: 5df4077d4c9959d4891fdd672a71c71c, type: 3}
-  - Weapon: smoke
-    Tex: {fileID: 2800000, guid: 6443b435f173e9140baa4b8395256c97, type: 3}
-  - Weapon: FAKIR
-    Tex: {fileID: 2800000, guid: 64abbe030a7398540a1716496f28facd, type: 3}
   - Weapon: Decimator
     Tex: {fileID: 2800000, guid: c11863400add628488bd989c54a3b0a9, type: 3}
+  - Weapon: LP-17
+    Tex: {fileID: 2800000, guid: 316742663b0de52499f38e79e4e47e8c, type: 3}
+  - Weapon: FAKIR
+    Tex: {fileID: 2800000, guid: 64abbe030a7398540a1716496f28facd, type: 3}
+  - Weapon: Banduka
+    Tex: {fileID: 2800000, guid: e3cf4253223c9a54caf096587cd19b44, type: 3}
+  - Weapon: KnifeNeutral
+    Tex: {fileID: 2800000, guid: 17e93a7d2b73ab042a2fa69ffbd00533, type: 3}
+  - Weapon: HE Grenade
+    Tex: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
+  - Weapon: Harvester
+    Tex: {fileID: 2800000, guid: 5df4077d4c9959d4891fdd672a71c71c, type: 3}
   _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}
 --- !u!1652712579 &6461208371077268186
 MultiplayerRolesData:

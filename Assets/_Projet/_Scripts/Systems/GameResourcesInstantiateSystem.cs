@@ -53,6 +53,9 @@ partial struct InstanciateEntityStuffSystem : ISystem
                             case StuffType.Harvester:
                                 prefab = prefabs.harvesterEntityPrefab;
                                 break;
+                            case StuffType.Grenade:
+                                prefab = prefabs.grenadesEntityPrefab;
+                                break;
                             default:
                                 break;
                         }
@@ -164,6 +167,9 @@ partial struct ProcessPendingStuffSystem : ISystem
                 break;
             case StuffType.MeleeWeapon:
                 SystemAPI.SetComponent(stuff, new MeleeWeaponDatabaseAccess { Value = stuffData.dataID });
+                break;
+            case StuffType.Grenade:
+                SystemAPI.SetComponent(stuff, new GrenadeDatabaseAccess { Value = stuffData.dataID });
                 break;
             default:
 
