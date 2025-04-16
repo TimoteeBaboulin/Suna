@@ -80,7 +80,10 @@ public class ShopController : MonoBehaviour
 
     private void Update()
     {
-        CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null)
+            return;
+        CharacterInputSystem system = world.GetExistingSystemManaged<CharacterInputSystem>();
 
         if (system != null)
         {

@@ -61,7 +61,26 @@ public class ConnectionHandlerNew : MonoBehaviour
         else
         {
             await QuerySessionsAsync();
-            sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
+
+            var listOfJoinedSession = await MultiplayerService.Instance.GetJoinedSessionIdsAsync();
+
+            Debug.Log(listOfJoinedSession.Count);
+            if (listOfJoinedSession.Count > 0)
+            {
+                foreach (var joinedSessionID in listOfJoinedSession)
+                {
+                    if (ClientTransportHelper.instance.Session.Id == joinedSessionID)
+                    {
+                        Debug.Log($"found session already joined{joinedSessionID}");
+                        sessionTransport = await new ClientTransportHelper().ReconnectByIdAsync(joinedSessionID, token);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
+            }
         }
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);

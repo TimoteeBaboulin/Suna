@@ -147,7 +147,7 @@ public partial class SessionStatusSystem : SystemBase
     {
         if (!didSubscribe && ClientTransportHelper.instance != null)
         {
-            var session = ClientTransportHelper.instance.Session;
+            var session = ClientTransportHelper.instance.Session.AsHost();
             session.PlayerLeaving += OnPlayerLeaving;
             session.PlayerHasLeft += OnPlayerHasLeft;
             session.RemovedFromSession += OnRemovedFromSession;
@@ -166,7 +166,7 @@ public partial class SessionStatusSystem : SystemBase
 
             if (ClientTransportHelper.instance != null)
             {
-                var session = ClientTransportHelper.instance.Session;
+                var session = ClientTransportHelper.instance.Session.AsHost();
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
 
@@ -206,7 +206,7 @@ public partial class SessionStatusSystem : SystemBase
     {
         if (didSubscribe && ClientTransportHelper.instance != null)
         {
-            var session = ClientTransportHelper.instance.Session;
+            var session = ClientTransportHelper.instance.Session.AsHost();
             session.PlayerLeaving -= OnPlayerLeaving;
             session.PlayerHasLeft -= OnPlayerHasLeft;
             session.RemovedFromSession -= OnRemovedFromSession;
@@ -224,7 +224,9 @@ public partial class SessionStatusSystem : SystemBase
     private void OnPlayerLeaving(string playerId)
     {
         Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} is leaving the session.");
-
+        var session = ClientTransportHelper.instance.Session.AsHost();
+        session.RemovePlayerAsync(playerId);
+        session.RefreshAsync();
         //if (int.TryParse(playerId, out int targetId))
         //{
         //    foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
@@ -246,6 +248,9 @@ public partial class SessionStatusSystem : SystemBase
     private void OnPlayerHasLeft(string playerId)
     {
         Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} has left the session.");
+        var session = ClientTransportHelper.instance.Session.AsHost();
+        session.RemovePlayerAsync(playerId);
+        session.RefreshAsync();
         //if (int.TryParse(playerId, out int targetId))
         //{
         //    foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
