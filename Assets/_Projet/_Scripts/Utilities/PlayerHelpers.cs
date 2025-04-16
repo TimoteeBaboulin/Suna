@@ -110,7 +110,7 @@ public static class PlayerHelpers
 
         if (RequestedPlayType == PlayType.Server && networkId == 1)
         {
-            index = networkId; 
+            index = networkId;
         }
 
         if (index < 0 || index >= sessionPlayers.Count)
@@ -145,35 +145,31 @@ public static class PlayerHelpers
         if (readOnlyPlayer is IPlayer player)
         {
             player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
-
-            var session = ClientTransportHelper.instance.Session;
-            if (session is IHostSession hostSession)
-                hostSession.SaveCurrentPlayerDataAsync();
         }
         return assignedTeam;
     }
 
-    static public void UpdateTeamCountInSession(string assignedTeam, string playerId)
-    {
-        var session = ClientTransportHelper.instance.Session;
-        if (session is IHostSession hostSession)
-        {
-            if (assignedTeam == "Corpo")
-            {
-                var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
-                int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
-                hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
-            }
-            else if (assignedTeam == "Natif")
-            {
-                var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
-                int currentCountNatif = int.Parse(countTeamNatifProp.Value);
-                hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
-            }
-            hostSession.SavePropertiesAsync();         
-            Debug.Log($"[Final Save] Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
-        }
-    }
+    //static public void UpdateTeamCountInSession(string assignedTeam, string playerId)
+    //{
+    //    var session = ClientTransportHelper.instance.Session;
+    //    if (session is IHostSession hostSession)
+    //    {
+    //        if (assignedTeam == "Corpo")
+    //        {
+    //            var countTeamCorpoProp = hostSession.Properties["CountTeamCorpo"];
+    //            int currentCountCorpo = int.Parse(countTeamCorpoProp.Value);
+    //            hostSession.SetProperty("CountTeamCorpo", new SessionProperty((currentCountCorpo + 1).ToString(), VisibilityPropertyOptions.Public));
+    //        }
+    //        else if (assignedTeam == "Natif")
+    //        {
+    //            var countTeamNatifProp = hostSession.Properties["CountTeamNatif"];
+    //            int currentCountNatif = int.Parse(countTeamNatifProp.Value);
+    //            hostSession.SetProperty("CountTeamNatif", new SessionProperty((currentCountNatif + 1).ToString(), VisibilityPropertyOptions.Public));
+    //        }
+    //        //hostSession.SavePropertiesAsync();         
+    //        Debug.Log($"[Final Save] Updated Team Counts: Corpo = {hostSession.Properties["CountTeamCorpo"].Value}, Natif = {hostSession.Properties["CountTeamNatif"].Value}");
+    //    }
+    //}
 
     static public void SubscribePlayerJoined(string playerId)
     {

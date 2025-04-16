@@ -40,7 +40,7 @@ public class GameManager : Singleton<GameManager>
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
         loadingToken = new CancellationTokenSource();
 
-        if (Application.platform == RuntimePlatform.WindowsServer || RequestedPlayType == PlayType.Server)
+        if (RequestedPlayType == PlayType.Server)
         {
             await ClientTransportHelper.StartServicesAsync();
             Debug.Log($"Port in GameManager : {AutoConnectPort}");
