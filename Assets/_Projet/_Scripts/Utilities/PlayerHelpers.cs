@@ -34,7 +34,7 @@ public static class PlayerHelpers
     /// <summary>
     /// Returns the current number of alive players for the given team.
     /// </summary>
-    public static int GetPlayersAlive(TeamSideType team, World world)
+    private static int GetPlayersAlive(TeamSideType team, World world)
     {
         return CountPlayersAliveForTeam(team, world);
     }
