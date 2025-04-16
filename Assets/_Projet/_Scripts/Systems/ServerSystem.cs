@@ -5,6 +5,7 @@ using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
+using static PlayerHelpers;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -74,12 +75,18 @@ public partial class ServerSystem : SystemBase
                 NetworkId = networkId.Value
             });
             ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() { Value = client });
-            IReadOnlyPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
             var hostSession = ClientTransportHelper.instance.Session.AsHost();
-            string teamString = PlayerHelpers.AssignTeamToPlayer(currentPlayer, hostSession.Players);
-            hostSession.SaveCurrentPlayerDataAsync();
 
+            IPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            if (currentPlayer != null)
+            {
+                currentPlayer.SetProperty("team", new PlayerProperty("none", VisibilityPropertyOptions.Public));
+                hostSession.SavePlayerDataAsync(currentPlayer.Id);
+            }
+            string teamString = AssignTeamToPlayer(currentPlayer, hostSession.Players);
+            hostSession.SavePlayerDataAsync(currentPlayer.Id);
 
+            //Debug.Log($"Property {currentPlayer.Properties["team"].Value} : {currentPlayer.Properties.Count}");
             TeamSideType assignedTeam = TeamSideType.Neutre;
             switch (teamString)
             {
@@ -172,11 +179,16 @@ public partial class SessionStatusSystem : SystemBase
                     Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
                 }
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} "); ;
-                if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
-                {
-                    Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
-                    Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
-                }
+                //if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
+                //{
+                //    Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
+                //    Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
+                //}
+
+                // Additionally, calculate alive counts directly using PlayerHelpers
+                AliveCounts currentCounts = PlayerHelpers.GetCurrentAliveCounts(World);
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native players alive: {currentCounts.natifPlayersAlive}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo players alive: {currentCounts.corpoPlayersAlive}");
             }
             else
             {
