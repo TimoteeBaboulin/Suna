@@ -40,8 +40,11 @@ public class PauseMenuController : MonoBehaviour
 
     private void Update()
     {
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null)
+            return;
         // For now forced to search it every frame, apparently changes every frame
-        CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
+        CharacterInputSystem system = world.GetExistingSystemManaged<CharacterInputSystem>();
         if (system != null)
         {
             input = system.input;
@@ -93,7 +96,8 @@ public class PauseMenuController : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            await GameManager.Instance.DisconnectAndUnloadWorlds();
+            // await GameManager.Instance.DisconnectAndUnloadWorlds();
+            await LoadUtils.QuitAsync();
             await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
         }
         //SceneManager.LoadScene("MainMenu");
