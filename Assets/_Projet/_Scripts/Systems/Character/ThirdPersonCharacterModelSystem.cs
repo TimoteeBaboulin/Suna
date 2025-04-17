@@ -12,8 +12,8 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, modelBonesName, commonBonesName, ghostOwner, characterEntity) in SystemAPI
-            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
+        foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
@@ -26,7 +26,8 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
-            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones, 
+                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
 
             Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
             AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
@@ -62,8 +63,8 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, modelBonesName, commonBonesName, ghostOwner, characterEntity) in SystemAPI
-            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
+        foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
@@ -75,7 +76,8 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
-            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones,
+                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI

@@ -7,6 +7,10 @@ public class ThirdPersonCharacterModelPrefab : IComponentData
 {
     public GameObject CorpoModelPrefab;
     public GameObject NatifModelPrefab;
+
+    public CharacterColliderBones CorpoColliderBones;
+    public CharacterColliderBones NatifColliderBones;
+
     public float3 DeltaPosition;
 }
 
@@ -16,30 +20,8 @@ public class ThirdPersonCharacterModelReference : ICleanupComponentData
     public float3 DeltaPosition;
 }
 
-public struct ThirdPersonCharacterModelBonesName :  IComponentData
-{
-    public FixedString64Bytes ViewBoneName;
-    public FixedString64Bytes HeadBoneName;
-    public FixedString64Bytes ArmLeftBoneName0;
-    public FixedString64Bytes ArmLeftBoneName1;
-    public FixedString64Bytes ArmLeftBoneName2;
-    public FixedString64Bytes ArmRightBoneName0;
-    public FixedString64Bytes ArmRightBoneName1;
-    public FixedString64Bytes ArmRightBoneName2;
-    public FixedString64Bytes ThoraxBoneName;
-    public FixedString64Bytes StomachBoneName0;
-    public FixedString64Bytes StomachBoneName1;
-    public FixedString64Bytes LegLeftBoneName0;
-    public FixedString64Bytes LegLeftBoneName1;
-    public FixedString64Bytes LegLeftBoneName2;
-    public FixedString64Bytes LegRightBoneName0;
-    public FixedString64Bytes LegRightBoneName1;
-    public FixedString64Bytes LegRightBoneName2;
-}
-
 public class ThirdPersonCharacterModelBonesTransform : IComponentData
 {
-    public Transform ViewBoneTransform;
     public Transform HeadBoneTransform;
     public Transform ArmLeftBoneTransform0;
     public Transform ArmLeftBoneTransform1;
