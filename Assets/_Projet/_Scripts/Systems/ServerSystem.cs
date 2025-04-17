@@ -1,4 +1,4 @@
-using GameNetwork.Utils;
+﻿using GameNetwork.Utils;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -83,10 +83,9 @@ public partial class ServerSystem : SystemBase
                 currentPlayer.SetProperty("team", new PlayerProperty("none", VisibilityPropertyOptions.Public));
                 hostSession.SavePlayerDataAsync(currentPlayer.Id);
             }
-            string teamString = AssignTeamToPlayer(currentPlayer, hostSession.Players);
+            string teamString = AssignTeamToPlayer(currentPlayer);
             hostSession.SavePlayerDataAsync(currentPlayer.Id);
 
-            //Debug.Log($"Property {currentPlayer.Properties["team"].Value} : {currentPlayer.Properties.Count}");
             TeamSideType assignedTeam = TeamSideType.Neutre;
             switch (teamString)
             {
@@ -134,7 +133,6 @@ public partial class SessionStatusSystem : SystemBase
     private float logInterval = 5.0f;
     private float timer;
     private bool didSubscribe = false;
-
     protected override void OnCreate()
     {
         var clients = GetComponentLookup<NetworkId>(true);
@@ -145,18 +143,6 @@ public partial class SessionStatusSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        if (!didSubscribe && ClientTransportHelper.instance != null)
-        {
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.PlayerLeaving += OnPlayerLeaving;
-            session.PlayerHasLeft += OnPlayerHasLeft;
-            session.RemovedFromSession += OnRemovedFromSession;
-            session.SessionPropertiesChanged += OnSessionPropertiesChanged;
-            session.StateChanged += OnStateChanged;
-
-            didSubscribe = true;
-            Debug.Log($"[SessionStatusSystem] Subscribed to session events for session: {session.Name}");
-        }
         float deltaTime = SystemAPI.Time.DeltaTime;
         timer += deltaTime;
 
@@ -164,117 +150,32 @@ public partial class SessionStatusSystem : SystemBase
         {
             timer = 0f;
 
-            if (ClientTransportHelper.instance != null)
+        
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {ClientTransportHelper.instance.Session.Id}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ClientTransportHelper.instance.Session.Name}");
+
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
             {
-                var session = ClientTransportHelper.instance.Session.AsHost();
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {session.Id}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {session.Name}");
-
-                if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-                {
-                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount - 1}");//Minus the server, as it counts as player
-                }
-                else
-                {
-                    Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {session.PlayerCount}");
-                }
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {session.State} "); ;
-                //if (SystemAPI.TryGetSingleton<PlayerAliveCounts>(out var playerCounts))
-                //{
-                //    Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Native players alive: {playerCounts.nativePlayersAlive}");
-                //    Debug.Log($"[OnSessionPropertiesChanged :@ {System.DateTime.Now}] Corpo players alive: {playerCounts.corpoPlayersAlive}");
-                //}
-
-                // Additionally, calculate alive counts directly using PlayerHelpers
-                AliveCounts currentCounts = PlayerHelpers.GetCurrentAliveCounts(World);
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native players alive: {currentCounts.natifPlayersAlive}");
-                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo players alive: {currentCounts.corpoPlayersAlive}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ClientTransportHelper.instance.Session.PlayerCount - 1}");//Minus the server, as it counts as player
             }
             else
             {
-                Debug.Log($"[SessionStatusSystem] No active session detected @ {System.DateTime.Now}");
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ClientTransportHelper.instance.Session.PlayerCount}");
             }
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ClientTransportHelper.instance.Session.State} "); ;
+
+            PlayerHelpers.AliveCounts currentCounts = PlayerHelpers.GetCurrentAliveCounts(World);
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native players alive: {currentCounts.natifPlayersAlive}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo players alive: {currentCounts.corpoPlayersAlive}");
+
+            PlayerHelpers.GlobalTeamCount teamCounts = PlayerHelpers.GetCurrentTeamCounts();
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
+
+            PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");
+
         }
-    }
-
-    private void Session_StateChanged(Unity.Services.Multiplayer.SessionState obj)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    protected override void OnDestroy()
-    {
-        if (didSubscribe && ClientTransportHelper.instance != null)
-        {
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.PlayerLeaving -= OnPlayerLeaving;
-            session.PlayerHasLeft -= OnPlayerHasLeft;
-            session.RemovedFromSession -= OnRemovedFromSession;
-            session.SessionPropertiesChanged -= OnSessionPropertiesChanged;
-
-            Debug.Log("[SessionStatusSystem] Unsubscribed from session events.");
-        }
-    }
-
-    private void OnStateChanged(SessionState state)
-    {
-        Debug.Log($"[SessionStatusSystem] state {state}");
-    }
-
-    private void OnPlayerLeaving(string playerId)
-    {
-        Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} is leaving the session.");
-        var session = ClientTransportHelper.instance.Session.AsHost();
-        session.RemovePlayerAsync(playerId);
-        session.RefreshAsync();
-        //if (int.TryParse(playerId, out int targetId))
-        //{
-        //    foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
-        //    {
-        //        if (clientData.ValueRO.id == targetId)
-        //        {
-        //            EntityManager.DestroyEntity(entity);
-        //            Debug.Log($"[SessionStatusSystem] Destroyed client entity with NetworkId {playerId}");
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    Debug.LogError($"[SessionStatusSystem] Unable to parse playerId {playerId} to an integer.");
-        //}
-    }
-
-    // Event handler for when a player has left.
-    private void OnPlayerHasLeft(string playerId)
-    {
-        Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} has left the session.");
-        var session = ClientTransportHelper.instance.Session.AsHost();
-        session.RemovePlayerAsync(playerId);
-        session.RefreshAsync();
-        //if (int.TryParse(playerId, out int targetId))
-        //{
-        //    foreach (var (clientData, entity) in SystemAPI.Query<RefRO<InitializedClient>>().WithEntityAccess())
-        //    {
-        //        if (clientData.ValueRO.id == targetId)
-        //        {
-        //            EntityManager.DestroyEntity(entity);
-        //            Debug.Log($"[SessionStatusSystem] Destroyed client entity with NetworkId {playerId}");
-        //        }
-        //    }
-        //}
-        //else
-        //{
-        //    Debug.LogError($"[SessionStatusSystem] Unable to parse playerId {playerId} to an integer.");
-        //}
-    }
-
-    private void OnRemovedFromSession()
-    {
-        Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
-    }
-
-    private void OnSessionPropertiesChanged()
-    {
-        Debug.Log("[OnSessionPropertiesChanged] Session properties have been updated.");
     }
 }

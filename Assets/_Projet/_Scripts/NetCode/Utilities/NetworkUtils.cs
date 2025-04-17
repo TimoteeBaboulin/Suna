@@ -253,7 +253,7 @@ namespace GameNetwork.Utils
             int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
             var options = new SessionOptions
             {
-                MaxPlayers = maxPlayers,
+                MaxPlayers = maxPlayers
             };
             return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
         }

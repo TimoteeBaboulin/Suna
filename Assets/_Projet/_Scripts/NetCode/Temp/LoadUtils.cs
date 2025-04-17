@@ -166,7 +166,9 @@ namespace GameNetwork.Utils
                 ClientTransportHelper.instance.Session.RemovedFromSession -= OnSessionLeft;
 
                 if (ClientTransportHelper.instance.Session.IsHost)
+                {
                     ClientTransportHelper.SessionID = null;
+                }
 
                 if (ClientTransportHelper.instance.Session.IsHost)
                     await ClientTransportHelper.instance.Session.AsHost().DeleteAsync();
@@ -212,7 +214,6 @@ namespace GameNetwork.Utils
         }
         public static Task DestroyGameSessionWorlds()
         {
-            // 1) Collect client & server worlds without LINQ (avoid boxing)
             var nets = new List<World>();
             for (int i = 0; i < World.All.Count; i++)
             {
@@ -223,16 +224,13 @@ namespace GameNetwork.Utils
 
             if (nets.Count > 0)
             {
-                // 2) Force‐complete any outstanding ECS jobs _now_
                 foreach (var w in nets)
                     w.EntityManager.CompleteAllTrackedJobs();
 
-                // 3) Dispose each world immediately
                 foreach (var w in nets)
                     w.Dispose();
             }
 
-            // This method is logically synchronous, so return a completed Task
             return Task.CompletedTask;
         }
 

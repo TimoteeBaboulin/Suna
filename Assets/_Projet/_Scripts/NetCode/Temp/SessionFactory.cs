@@ -1,15 +1,18 @@
-using GameNetwork.Utils;
+﻿using GameNetwork.Utils;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
+using static UnityEngine.CullingGroup;
 
 public class ServerSessionFactory
 {
     private static ServerSessionFactory instance;
+    private static IHostSession session;
     private ServerSessionFactory() { }
 
     public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
@@ -26,7 +29,13 @@ public class ServerSessionFactory
             ClientTransportHelper transportHelper = new ClientTransportHelper();
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
-            ISession session = serverSession.Session;
+            session = serverSession.Session.AsHost();
+
+            session.PlayerLeaving += OnPlayerLeaving;
+            session.PlayerHasLeft += OnPlayerHasLeft;
+            session.RemovedFromSession += OnRemovedFromSession;
+            session.SessionPropertiesChanged += OnSessionPropertiesChanged;
+            session.StateChanged += OnStateChanged;
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
@@ -47,57 +56,68 @@ public class ServerSessionFactory
         }
     }
 
-    //// Custom events you may want to expose
-    //public event Action<string> PlayerDisconnected;
-    //public event Action<string> PlayerReconnected;
-    //public event Action<SessionState> SessionStateChanged;
-    ///// <summary>
-    ///// Subscribes to events on the provided session to monitor when players disconnect or the session reconnects.
-    ///// </summary>
-    ///// <param name="session">The session to subscribe to.</param>
-    //public void SubscribeToSessionEvents(ISession session)
-    //{
-    //    session.PlayerLeaving += OnPlayerLeavingHandler;
-    //    session.PlayerHasLeft += OnPlayerHasLeftHandler;
-    //    session.StateChanged += async (newState) => await OnSessionStateChangedAsync(session, newState);
-    //}
+    static private void OnStateChanged(SessionState state)
+    {
+        Debug.Log($"[SessionStatusSystem] state {state}");
+    }
 
-    //private void OnPlayerLeavingHandler(string playerId)
-    //{
-    //    Debug.Log($"[ServerSessionFactory] Player '{playerId}' is leaving.");
-    //    PlayerDisconnected?.Invoke(playerId);
-    //}
+    static private void OnPlayerLeaving(string playerId)
+    {
+        Debug.Log($"[OnPlayerLeaving] Player with NetworkId {playerId} is leaving the session.");
+    }
 
-    //private void OnPlayerHasLeftHandler(string playerId)
-    //{
-    //    Debug.Log($"[ServerSessionFactory] Player '{playerId}' has left the session.");
-    //    PlayerDisconnected?.Invoke(playerId);
-    //}
+    static private void OnPlayerHasLeft(string playerId)
+    {
+        Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} has left the session.");
+        var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
+        Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
+        var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
+        Debug.Log($"[SessionStatusSystem] → CountTeamNatif roster size: {listNatif.Count}");
 
-    ///// <summary>
-    ///// Handles state changes and attempts reconnection if the session state indicates disconnection.
-    ///// </summary>
-    ///// <param name="session">The session whose state changed.</param>
-    ///// <param name="newState">The new state of the session.</param>
-    //private async Task OnSessionStateChangedAsync(ISession session, SessionState newState)
-    //{
-    //    Debug.Log($"[ServerSessionFactory] Session state changed to: {newState}");
-    //    SessionStateChanged?.Invoke(newState);
+        if (listCorpo.Count > 0)
+        {
+            foreach (var playersCorpo in listCorpo)
+            {
+                if (playersCorpo.Id == playerId)
+                {
+                    Debug.Log($"[SessionStatusSystem] → found corpo : {playerId}");
+                    PlayerHelpers.RemovePlayer(playerId);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log($"[SessionStatusSystem]   – No players in Corpo to check");
+        }
 
-    //    if (newState == SessionState.Disconnected)
-    //    {
-    //        Debug.Log("[ServerSessionFactory] Session is disconnected. Attempting to reconnect...");
+        if (listNatif.Count > 0)
+        {
+            foreach (var playersNatif in listNatif)
+            {
+                if (playersNatif.Id == playerId)
+                {
+                    Debug.Log($"[SessionStatusSystem] → found Natif : {playerId}");
+                    PlayerHelpers.RemovePlayer(playerId);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log($"[SessionStatusSystem]   – No players in Natif to check");
+        }
+        session.RemovePlayerAsync(playerId);
+        //session.RefreshAsync();
+    }
 
-    //        try
-    //        {
-    //            await session.ReconnectAsync();
-    //            Debug.Log("[ServerSessionFactory] Session reconnected successfully.");
-    //            PlayerReconnected?.Invoke(session.CurrentPlayer?.Id);
-    //        }
-    //        catch (SessionException ex)
-    //        {
-    //            Debug.LogError($"[ServerSessionFactory] Failed to reconnect session: {ex.Message}");
-    //        }
-    //    }
-    //}
+    static private void OnRemovedFromSession()
+    {
+        Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
+    }
+
+    static private void OnSessionPropertiesChanged()
+    {
+        Debug.Log("[OnSessionPropertiesChanged] Session properties have been updated.");
+    }
 }

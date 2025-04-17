@@ -64,7 +64,6 @@ public class ConnectionHandlerNew : MonoBehaviour
 
             var listOfJoinedSession = await MultiplayerService.Instance.GetJoinedSessionIdsAsync();
 
-            Debug.Log(listOfJoinedSession.Count);
             if (listOfJoinedSession.Count > 0)
             {
                 foreach (var joinedSessionID in listOfJoinedSession)
