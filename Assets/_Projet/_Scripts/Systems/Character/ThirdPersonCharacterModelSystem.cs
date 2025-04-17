@@ -12,12 +12,15 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, modelBonesName, commonBonesName, characterEntity) in SystemAPI
-            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>>()
+        foreach (var (modelPrefab, modelBonesName, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
-            GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
+            GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
+                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.DisableModelRendering(modelGameObject);
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
@@ -59,12 +62,15 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, modelBonesName, commonBonesName, characterEntity) in SystemAPI
-            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>>()
+        foreach (var (modelPrefab, modelBonesName, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
-            GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
+            GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
+                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 

@@ -6,6 +6,7 @@ using UnityEngine;
 public class ThirdPersonCharacterModelPrefab : IComponentData
 {
     public GameObject CorpoModelPrefab;
+    public GameObject NatifModelPrefab;
     public float3 DeltaPosition;
 }
 

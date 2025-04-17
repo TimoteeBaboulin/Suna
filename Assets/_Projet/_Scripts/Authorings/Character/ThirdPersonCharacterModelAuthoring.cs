@@ -4,6 +4,7 @@ using UnityEngine;
 class ThirdPersonCharacterModelAuthoring : MonoBehaviour
 {
     public GameObject CorpoModelPrefab;
+    public GameObject NatifModelPrefab;
     public Transform DeltaPosition;
 
     [Header("Model Bones")]
@@ -35,6 +36,7 @@ class ThirdPersonCharacterModelAuthoringBaker : Baker<ThirdPersonCharacterModelA
         AddComponentObject(entity, new ThirdPersonCharacterModelPrefab
         {
             CorpoModelPrefab = authoring.CorpoModelPrefab,
+            NatifModelPrefab = authoring.NatifModelPrefab,
             DeltaPosition = authoring.DeltaPosition.position,
         });
 

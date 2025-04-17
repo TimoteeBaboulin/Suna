@@ -212,11 +212,12 @@ public static class PlayerHelpers
     static public TeamSideType GetPlayerInTeam(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        int index = networkId - 1;
+        var player = FindCurrentPlayerForNetworkId(networkId);
 
-        if (sessionPlayers[index].Properties.Count > 0)
+        if (player.Properties.Count > 0)
         {
-            string team = sessionPlayers[index].Properties["team"].Value;
+            Debug.Log($"Player propeties count {player.Properties.Count}");
+            string team = player.Properties["team"].Value;
 
             if (team == "Corpo")
             {
@@ -226,6 +227,7 @@ public static class PlayerHelpers
             {
                 return TeamSideType.Natif;
             }
+            return TeamSideType.Neutre;
         }
         return TeamSideType.Neutre;
     }
