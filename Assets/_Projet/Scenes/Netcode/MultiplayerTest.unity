@@ -786,6 +786,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3697976406561640613, guid: 779be0a0477345941add539ad9178106, type: 3}
+      propertyPath: SMG
+      value: 
+      objectReference: {fileID: 11400000, guid: c5169048c8241b14e985c1031fca08c3, type: 2}
+    - target: {fileID: 3697976406561640613, guid: 779be0a0477345941add539ad9178106, type: 3}
+      propertyPath: Sniper
+      value: 
+      objectReference: {fileID: 11400000, guid: f2477d3aa9ae6134a8c99d791df8ccb1, type: 2}
     - target: {fileID: 8398659000021893333, guid: 779be0a0477345941add539ad9178106, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1334,6 +1342,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: listPrefabView.Array.size
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: 'listPrefabView.Array.data[0]'
       value: 
       objectReference: {fileID: 9077871864667713224, guid: 8dba0b4f06989b341a56d9b89f32e3ce, type: 3}
@@ -1345,6 +1357,22 @@ PrefabInstance:
       propertyPath: 'listPrefabView.Array.data[2]'
       value: 
       objectReference: {fileID: 7445839901049856988, guid: 12ac2772131245344b8d8d8002e98e1b, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[5]'
+      value: 
+      objectReference: {fileID: 7068153267853143302, guid: d2ef8e43e061d584ebd3b59f623ce9b7, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[6]'
+      value: 
+      objectReference: {fileID: 8839504196725151190, guid: d2d43aecd7857b64dbcf0a13d293ee1b, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[7]'
+      value: 
+      objectReference: {fileID: 7445839901049856988, guid: 12ac2772131245344b8d8d8002e98e1b, type: 3}
+    - target: {fileID: 3851240260336093636, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
+      propertyPath: 'listPrefabView.Array.data[8]'
+      value: 
+      objectReference: {fileID: 521297520866367205, guid: 129fe5109c530f04093a1df81198ef71, type: 3}
     - target: {fileID: 6542852334063179998, guid: 089bb0e6ca1c0e949a46290a236fa16f, type: 3}
       propertyPath: m_Name
       value: TempSingletonMochePourPrefabStuffView
