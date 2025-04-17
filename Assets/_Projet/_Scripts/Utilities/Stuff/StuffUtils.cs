@@ -7,7 +7,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.UI.GridLayoutGroup;
 
-public static class StuffUtilities
+public static class StuffUtils
 {
     public static void EquipNextFrame(DynamicBuffer<EquipStuffQueue> equipStuffQueue, Entity owner, Entity stuff)
     {
@@ -20,7 +20,7 @@ public static class StuffUtilities
         });
     }
 
-    public static void EquipUnsafe(ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff)
+    public static void EquipUnsafe(ref EntityCommandBuffer ecb, ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff)
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
@@ -31,7 +31,11 @@ public static class StuffUtilities
         ref var stuffData = ref state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuff).GetData(ref database);
         var linkedEntityGroup = state.EntityManager.GetBuffer<LinkedEntityGroup>(owner);
 
-        Equip(linkedEntityGroup, ownerGhostOwner, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff);
+        var shootStartPosDelta = state.EntityManager.GetComponentData<CharacterShootStartPositionDelta>(owner);
+        var ownerView = state.EntityManager.GetComponentData<CharacterViewRotation>(owner);
+        var ownerTransform = state.EntityManager.GetComponentData<LocalTransform>(owner);
+
+        Equip(linkedEntityGroup, ownerGhostOwner, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff, ref ecb, shootStartPosDelta, ownerView, ownerTransform);
 
         state.EntityManager.SetComponentData(owner, ownerStuffList);
         state.EntityManager.SetComponentData(stuff, stuffGhostOwner);
@@ -39,24 +43,47 @@ public static class StuffUtilities
     }
 
     public static void Equip(
-        DynamicBuffer<LinkedEntityGroup> linkedEntityGroup, 
+        DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
         GhostOwner ownerGhostOwner,
-        ref CharacterStuffList ownerStuffListRef, 
-        ref GhostOwner stuffGhostOwnerRef, 
-        ref StuffDynamicData stuffDynamicDataRef, 
-        ref StuffCommonData stuffDataRef, 
-        Entity owner, 
-        Entity stuff)
+        ref CharacterStuffList ownerStuffListRef,
+        ref GhostOwner stuffGhostOwnerRef,
+        ref StuffDynamicData stuffDynamicDataRef,
+        ref StuffCommonData stuffDataRef,
+        Entity owner,
+        Entity stuff,
+        ref EntityCommandBuffer ecb,
+        CharacterShootStartPositionDelta shootStartPosDelta,
+        CharacterViewRotation ownerView,
+        LocalTransform ownerTransform,
+        float impulse = 0f)
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
-        //Add the stuff in player inventory
+        if (ownerStuffListRef.GetStuffInSlot(stuffDataRef.slot) != Entity.Null)
+        {
+            Drop(
+                ref ecb,
+                linkedEntityGroup,
+                ref ownerStuffListRef,
+                ref stuffGhostOwnerRef,
+                ref stuffDynamicDataRef,
+                ref stuffDataRef,
+                owner,
+                ownerStuffListRef.GetStuffInSlot(stuffDataRef.slot),
+                shootStartPosDelta,
+                ownerView,
+                ownerTransform,
+                impulse
+            );
+        }
+
+        // Add the stuff in player inventory
         ownerStuffListRef.SetStuffInSlot(stuffDataRef.slot, stuff);
 
-        //Set owner of stuff
+        // Set owner of stuff
         stuffDynamicDataRef.owner = owner;
 
-        //Network
+        // Network
         stuffGhostOwnerRef.NetworkId = ownerGhostOwner.NetworkId;
         linkedEntityGroup.Add(new LinkedEntityGroup { Value = stuff });
     }
@@ -71,7 +98,6 @@ public static class StuffUtilities
             Owner = owner
         });
     }
-
     public static void UnequipUnsafe(ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff)
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
@@ -118,7 +144,7 @@ public static class StuffUtilities
         }
     }
 
-    public static void DroppNextFrame(
+    public static void DropNextFrame(
         DynamicBuffer<UnequipStuffQueue> unequipStuffQueue,
         ref EntityCommandBuffer ecb,
         ref StuffDynamicData stuffDynamicDataRef,
@@ -164,12 +190,12 @@ public static class StuffUtilities
         CharacterShootStartPositionDelta shootStartPosDelta,
         CharacterViewRotation ownerView,
         LocalTransform ownerTransform,
-        float3 direction,
         float impulse)
     {
         Unequip(linkedEntityGroup, ref ownerStuffListRef, ref stuffGhostOwnerRef, ref stuffDynamicDataRef, ref stuffDataRef, owner, stuff);
         DropBehavior(ref ecb, ref stuffDynamicDataRef, stuff, shootStartPosDelta, ownerView, ownerTransform, impulse);
     }
+
     private static void DropBehavior(
     ref EntityCommandBuffer ecb,
     ref StuffDynamicData stuffDynamicDataRef,

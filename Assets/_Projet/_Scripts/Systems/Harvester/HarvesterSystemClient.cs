@@ -143,13 +143,8 @@ partial class HarvesterSystemClient : SystemBase
              in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
-
-            unequipStuffQueu.Add(new UnequipStuffQueue
-            {
-                Stuff = rpc.harvester,
-                Owner = rpc.harvesterOwner,
-                Position = rpc.plantPosition
-            });
+            
+            StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
 
             ecb.DestroyEntity(entity);
         }
@@ -175,19 +170,11 @@ partial class HarvesterSystemClient : SystemBase
 
                 if (stuffOwner.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueue
-                    {
-                        Stuff = rpc.harvester,
-                        Owner = stuffOwner.owner
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
                 }
             }
 
-            equipStuffQueu.Add(new EquipStuffQueue
-            {
-                Stuff = rpc.harvester,
-                Owner = rpc.character
-            });
+            StuffUtils.EquipNextFrame(equipStuffQueu, rpc.character, rpc.harvester);
         }
 
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterDropped rpc, Entity entity)
@@ -211,12 +198,7 @@ partial class HarvesterSystemClient : SystemBase
 
                 if (stuffOwner.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueue
-                    {
-                        Stuff = rpc.harvester,
-                        Owner = stuffOwner.owner,
-                        Position = rpc.position
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
                 }
                 else
                 {

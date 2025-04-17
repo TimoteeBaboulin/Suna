@@ -1,11 +1,8 @@
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using Unity.Physics;
-using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -60,9 +57,7 @@ public partial struct DropStuffSystem : ISystem
                     Linear = forward * 5f,
                     Angular = float3.zero
                 });
-
             }
-
         }
     }
 }

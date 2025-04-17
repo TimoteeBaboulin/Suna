@@ -110,17 +110,10 @@ partial struct HarvesterSystemServer : ISystem
 
                 if (ownerRO.ValueRO.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueue
-                    {
-                        Owner = ownerRO.ValueRO.owner,
-                        Stuff = harvesterEntity
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, ownerRO.ValueRO.owner, harvesterEntity);
                 }
-                equipStuffQueu.Add(new EquipStuffQueue
-                {
-                    Stuff = harvesterEntity,
-                    Owner = characterEntity
-                });
+
+                StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity);
 
                 RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                 {
@@ -143,7 +136,6 @@ partial struct HarvesterSystemServer : ISystem
                     {
                         Owner = ownerRO.ValueRO.owner,
                         Stuff = harvesterEntity,
-                        Position = corpoSpawnPosition
                     });
                 }
                 harvesterRW.ValueRW.DroppedTick = currentTick;
@@ -198,11 +190,9 @@ partial struct HarvesterSystemServer : ISystem
                                     //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-                                    equipStuffQueu.Add(new EquipStuffQueue
-                                    {
-                                        Stuff = harvesterEntity,
-                                        Owner = characterEntity
-                                    });
+
+                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity);
+
                                     RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                                     {
                                         harvester = harvesterEntity,
@@ -259,11 +249,9 @@ partial struct HarvesterSystemServer : ISystem
                                     //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-                                    equipStuffQueu.Add(new EquipStuffQueue
-                                    {
-                                        Stuff = harvesterEntity,
-                                        Owner = characterEntity
-                                    });
+    
+                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity);
+
                                     RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                                     {
                                         harvester = harvesterEntity,

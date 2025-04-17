@@ -53,7 +53,6 @@ partial struct InstanciateEntityStuffSystem : ISystem
                             }
 
                             //Define database access for this new stuff
-
                             ecb.SetComponent(stuff, new StuffDatabaseAccess
                             {
                                 ID = i,
@@ -115,9 +114,6 @@ partial struct ProcessPendingStuffSystem : ISystem
                 }
             }
 
-            // When spawning a server-owned ghost
-            //ghostOwnerRW.ValueRW.NetworkId = -1;
-
             //Get Stuff Data on database
             ref StuffCommonData stuffData = ref dataAccessRW.ValueRO.GetData(ref database);
 
@@ -130,11 +126,7 @@ partial struct ProcessPendingStuffSystem : ISystem
             if (processRO.ValueRO.Owner != Entity.Null)
             {
                 var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
-                equipStuffQueu.Add(new EquipStuffQueue
-                {
-                    Stuff = stuff,
-                    Owner = processRO.ValueRO.Owner,
-                });
+                StuffUtils.EquipNextFrame(equipStuffQueu, processRO.ValueRO.Owner, stuff);
             }
 
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);
