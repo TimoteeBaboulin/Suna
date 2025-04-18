@@ -1,16 +1,17 @@
-
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
 public class SpawnerUtils
 {
-    private static bool TryGetSpawnerSettingsEntity(out Entity entity)
+    [BurstCompile]
+    private static bool TryGetSpawnerSettingsEntity(ref SystemState state, out Entity entity)
     {
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<SpawnerSettingsTag>());
+        EntityQueryBuilder query = new EntityQueryBuilder(Allocator.Temp);
 
-        if (query.TryGetSingletonEntity<SpawnerSettingsTag>(out Entity spawnerSettingsEntity))
+        if (query.WithAll<SpawnerSettingsTag>().Build(ref state)
+            .TryGetSingletonEntity<SpawnerSettingsTag>(out Entity spawnerSettingsEntity))
         {
             entity = spawnerSettingsEntity;
             return true;
@@ -23,14 +24,12 @@ public class SpawnerUtils
         }
     }
 
-    private static bool SpawnerSettingsHasAuthoRespawnEnableComponent()
+    [BurstCompile]
+    private static bool SpawnerSettingsHasAuthoRespawnEnableComponent(ref SystemState state)
     {
-        if (!TryGetSpawnerSettingsEntity(out Entity spawnerSettingsEntity)) return false;
+        if (!TryGetSpawnerSettingsEntity(ref state, out Entity spawnerSettingsEntity)) return false;
 
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<SpawnerSettingsTag>());
-
-        if (!entityManager.HasComponent<AutoRespawnIsEnable>(spawnerSettingsEntity))
+        if (!state.EntityManager.HasComponent<AutoRespawnIsEnable>(spawnerSettingsEntity))
         {
             Debug.LogError("SpawnerSettings does not have an AutoRespawnIsEnable component.");
             return false;
@@ -39,28 +38,25 @@ public class SpawnerUtils
         return true;
     }
 
-    public static bool AutoRespawnIsEnable()
+    [BurstCompile]
+    public static bool AutoRespawnIsEnable(ref SystemState state)
     {
-        if (!TryGetSpawnerSettingsEntity(out Entity spawnerSettingsEntity)) return false;
-        if (!SpawnerSettingsHasAuthoRespawnEnableComponent()) return false;
+        if (!TryGetSpawnerSettingsEntity(ref state, out Entity spawnerSettingsEntity)) return false;
+        if (!SpawnerSettingsHasAuthoRespawnEnableComponent(ref state)) return false;
 
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<SpawnerSettingsTag>());
-
-        return entityManager.IsComponentEnabled<AutoRespawnIsEnable>(spawnerSettingsEntity);
+        return state.EntityManager.IsComponentEnabled<AutoRespawnIsEnable>(spawnerSettingsEntity);
     }
 
-    public static void SetAutoRespawn(bool isEnable)
+    [BurstCompile]
+    public static void SetAutoRespawn(bool isEnable, ref SystemState state)
     {
-        if (!TryGetSpawnerSettingsEntity(out Entity spawnerSettingsEntity)) return;
-        if (!SpawnerSettingsHasAuthoRespawnEnableComponent()) return;
+        if (!TryGetSpawnerSettingsEntity(ref state, out Entity spawnerSettingsEntity)) return;
+        if (!SpawnerSettingsHasAuthoRespawnEnableComponent(ref state)) return;
 
-        EntityManager entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<SpawnerSettingsTag>());
-
-        entityManager.SetComponentEnabled<AutoRespawnIsEnable>(spawnerSettingsEntity, isEnable);
+        state.EntityManager.SetComponentEnabled<AutoRespawnIsEnable>(spawnerSettingsEntity, isEnable);
     }
 
+    [BurstCompile]
     public static void RespawnAllClient(ref SystemState state, in EntityCommandBuffer ecb)
     {
         EntityQueryBuilder query = new EntityQueryBuilder(Allocator.Temp);

@@ -39,7 +39,7 @@ public partial struct OnDieSystem : ISystem
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
-            autoRespawnIsEnable = SpawnerUtils.AutoRespawnIsEnable(),
+            autoRespawnIsEnable = SpawnerUtils.AutoRespawnIsEnable(ref state),
             resetStuffLookup = resetStuffLookupInit,
             HasNoHealthTagLookup = hasNoHealthTagLookup,
         };
