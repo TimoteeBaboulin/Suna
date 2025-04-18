@@ -1,13 +1,12 @@
 ﻿using GameNetwork.Utils;
 using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
-using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
-using static UnityEngine.CullingGroup;
 
 public class ServerSessionFactory
 {
@@ -31,6 +30,7 @@ public class ServerSessionFactory
 
             session = serverSession.Session.AsHost();
 
+            session.PlayerJoined += OnPlayerJoined;
             session.PlayerLeaving += OnPlayerLeaving;
             session.PlayerHasLeft += OnPlayerHasLeft;
             session.RemovedFromSession += OnRemovedFromSession;
@@ -42,6 +42,12 @@ public class ServerSessionFactory
             Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
             Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
             Debug.Log($"[ServerSessionFactory] Created session with NB properties: {session.Properties.Count}");
+            Debug.Log($"[ServerSessionFactory] session.Players.Coun: {session.Players.Count}");
+
+            for (int i = 0; i < session.Players.Count; i++)
+            {
+                Debug.Log($"[SessionStatusSystem] → {i} start  Player in game: {session.Players[i].Id}");
+            }
 
             foreach (var property in session.Properties)
             {
@@ -53,6 +59,32 @@ public class ServerSessionFactory
         {
             Debug.LogError($"[ServerSessionFactory] Error creating session: {ex}");
             return null;
+        }
+    }
+
+    private static void OnPlayerJoined(string playerId)
+    {
+        Debug.Log($"[OnPlayerJoined] Player with id {playerId} is joined the session.");
+        var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
+        Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
+        var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
+        Debug.Log($"[SessionStatusSystem] → CountTeamNatif roster size: {listNatif.Count}");
+
+        Debug.Log($"session.Players.Count {session.Players.Count}");
+
+        for (int i = 0; i < session.Players.Count; i++)
+        {
+            Debug.Log($"[SessionStatusSystem] → {i} Player in game: {session.Players[i].Id}");
+        }
+
+        foreach (var item in listCorpo)
+        {
+            Debug.Log($"[SessionStatusSystem] → TeamCorpo: {item.Id}");
+        }
+
+        foreach (var item in listNatif)
+        {
+            Debug.Log($"[SessionStatusSystem] → TeamNatif: {item.Id}");
         }
     }
 
@@ -69,6 +101,7 @@ public class ServerSessionFactory
     static private void OnPlayerHasLeft(string playerId)
     {
         Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} has left the session.");
+        session.RemovePlayerAsync(playerId);
         var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
         var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
@@ -107,7 +140,6 @@ public class ServerSessionFactory
         {
             Debug.Log($"[SessionStatusSystem]   – No players in Natif to check");
         }
-        session.RemovePlayerAsync(playerId);
         //session.RefreshAsync();
     }
 

@@ -78,13 +78,13 @@ public partial class ServerSystem : SystemBase
             var hostSession = ClientTransportHelper.instance.Session.AsHost();
 
             IPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            string teamString = AssignTeamToPlayer(currentPlayer);
+            Debug.Log($"[OnPlayerJoined] Player with id {currentPlayer.Id} created.");
             if (currentPlayer != null)
             {
-                currentPlayer.SetProperty("team", new PlayerProperty("none", VisibilityPropertyOptions.Public));
+                currentPlayer.SetProperty("team", new PlayerProperty(teamString, VisibilityPropertyOptions.Public));
                 hostSession.SavePlayerDataAsync(currentPlayer.Id);
             }
-            string teamString = AssignTeamToPlayer(currentPlayer);
-            hostSession.SavePlayerDataAsync(currentPlayer.Id);
 
             TeamSideType assignedTeam = TeamSideType.Neutre;
             switch (teamString)
@@ -172,10 +172,9 @@ public partial class SessionStatusSystem : SystemBase
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
 
-            PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
-            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
-            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");
-
+            //PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
+            //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
+            //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");
         }
     }
 }
