@@ -1,3 +1,6 @@
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
@@ -6,6 +9,7 @@ using Unity.Scenes;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static GameManager;
 using static Unity.NetCode.ClientServerBootstrap;
 
 namespace GameNetwork.Utils
@@ -147,6 +151,88 @@ namespace GameNetwork.Utils
             await sceneLoading;
         }
 
+        public static async void ReturnToMainMenuAsync()
+        {
+            SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.UnloadingGame);
+            GameManager.Instance.GameState = GlobalGameState.Loading;
+
+            await DisconnectAndUnloadWorlds();
+        }
+
+        private static async Task LeaveSessionAsync()
+        {
+            if (ClientTransportHelper.instance.Session != null)
+            {
+                ClientTransportHelper.instance.Session.RemovedFromSession -= OnSessionLeft;
+
+                if (ClientTransportHelper.instance.Session.IsHost)
+                {
+                    ClientTransportHelper.SessionID = null;
+                }
+
+                if (ClientTransportHelper.instance.Session.IsHost)
+                    await ClientTransportHelper.instance.Session.AsHost().DeleteAsync();
+                else
+                    await ClientTransportHelper.instance.Session.LeaveAsync();
+
+               ClientTransportHelper.instance.Session = null;
+            }
+        }
+
+        public static async Task DisconnectAndUnloadWorlds()
+        {
+            ClientTransportHelper.State = ClientConnectionState.NotConnected;
+
+            bool requestedDisconnect = false;
+            foreach (var world in World.All)
+            {
+                if (world.IsClient())
+                {
+                    using var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
+                    if (query.TryGetSingletonEntity<NetworkId>(out var networkId))
+                    {
+                        requestedDisconnect = true;
+                        world.EntityManager.AddComponentData(networkId, new NetworkStreamRequestDisconnect());
+                    }
+                }
+            }
+
+            if (requestedDisconnect)
+                await Awaitable.NextFrameAsync();
+
+            await LeaveSessionAsync();
+            await DestroyGameSessionWorlds();
+            await UnloadScenesAsync("MultiplayerTest");
+        }
+
+        public static Task QuitAsync() => DisconnectAndUnloadWorlds();
+
+        private static void OnSessionLeft()
+        {
+            ClientTransportHelper.instance = null;
+            ReturnToMainMenuAsync();
+        }
+        public static Task DestroyGameSessionWorlds()
+        {
+            var nets = new List<World>();
+            for (int i = 0; i < World.All.Count; i++)
+            {
+                var w = World.All[i];
+                if (w.IsClient() || w.IsServer())
+                    nets.Add(w);
+            }
+
+            if (nets.Count > 0)
+            {
+                foreach (var w in nets)
+                    w.EntityManager.CompleteAllTrackedJobs();
+
+                foreach (var w in nets)
+                    w.Dispose();
+            }
+
+            return Task.CompletedTask;
+        }
 
         private static async void UpdateLoadingStateAsync(SessionData.LoadingSteps step, AsyncOperation loadingTask)
         {

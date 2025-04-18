@@ -35,13 +35,6 @@ public partial class ClientSystem : SystemBase
             Debug.Log($"message to client {command.ValueRO.message}");
             commandBuffer.DestroyEntity(entity);
         }
-
-        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<TeamAliveCountRpc>>().WithEntityAccess())
-        {
-            Debug.Log($"[ClientSystem] Received team alive counts: Native: {command.ValueRO.nativePlayersAlive}, Corpo: {command.ValueRO.corpoPlayersAlive}");
-            commandBuffer.DestroyEntity(entity);  
-        }
-
         if (Keyboard.current.vKey.wasPressedThisFrame)
         {
             var localPlayer = ClientTransportHelper.instance.Session.CurrentPlayer;

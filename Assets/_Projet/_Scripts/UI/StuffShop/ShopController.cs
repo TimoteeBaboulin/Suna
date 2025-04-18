@@ -23,6 +23,8 @@ public class ShopController : MonoBehaviour
     [SerializeField] private RangedWeaponData fakir;
     [SerializeField] private RangedWeaponData banduka;
     [SerializeField] private GrenadeData heGrenade;
+    [SerializeField] private RangedWeaponData SMG;
+    [SerializeField] private RangedWeaponData Sniper;
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
     private Dictionary<Button, GrenadeData> grenadeDict = new();
 
@@ -46,9 +48,9 @@ public class ShopController : MonoBehaviour
         CreateShopButton(out button, 30); line.Add(button); 
         CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = decimator;
         CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button);
-        CreateShopButton(out button, 30); line.Add(button);
+        CreateShopButton(out button, 30); line.Add(button); 
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = SMG;
+        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = Sniper;
         CreateShopLine(out line); shopmenu.Add(line);
         CreateShopButton(out button, 10); line.Add(button); grenadeDict[button] = heGrenade;
         CreateShopButton(out button, 10); line.Add(button);
@@ -104,7 +106,10 @@ public class ShopController : MonoBehaviour
 
     private void Update()
     {
-        CharacterInputSystem system = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<CharacterInputSystem>();
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null)
+            return;
+        CharacterInputSystem system = world.GetExistingSystemManaged<CharacterInputSystem>();
 
         if (system != null)
         {
