@@ -13,15 +13,8 @@ class SpawnerSettingsAuthoringBaker : Baker<SpawnerSettingsAuthoring>
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
         AddComponent<SpawnerSettingsTag>(entity);
-        AddComponent<AutoRespawnIsEnable>(entity);
 
-        if (authoring.AutoRespawnIsEnable)
-        {
-            SetComponentEnabled<AutoRespawnIsEnable>(entity, true);
-        }
-        else
-        {
-            SetComponentEnabled<AutoRespawnIsEnable>(entity, false);
-        }
+        AddComponent<AutoRespawnIsEnable>(entity);
+        SetComponentEnabled<AutoRespawnIsEnable>(entity, authoring.AutoRespawnIsEnable);
     }
 }

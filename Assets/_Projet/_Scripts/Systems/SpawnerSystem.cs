@@ -34,15 +34,12 @@ public partial struct OnDieSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
-        Entity spawnerSettings = SystemAPI.GetSingletonEntity<SpawnerSettingsTag>();
-        bool autoRespawnIsEnable = state.EntityManager.IsComponentEnabled<AutoRespawnIsEnable>(spawnerSettings);
-
         OnDieJob job = new OnDieJob
         {
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
-            autoRespawnIsEnable = autoRespawnIsEnable,
+            autoRespawnIsEnable = SpawnerUtils.AutoRespawnIsEnable(),
             resetStuffLookup = resetStuffLookupInit,
             HasNoHealthTagLookup = hasNoHealthTagLookup,
         };

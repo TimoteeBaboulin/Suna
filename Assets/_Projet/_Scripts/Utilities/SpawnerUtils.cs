@@ -1,4 +1,5 @@
 
+using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 
@@ -58,5 +59,18 @@ public class SpawnerUtils
         EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<SpawnerSettingsTag>());
 
         entityManager.SetComponentEnabled<AutoRespawnIsEnable>(spawnerSettingsEntity, isEnable);
+    }
+
+    public static void RespawnAllClient(ref SystemState state, in EntityCommandBuffer ecb)
+    {
+        EntityQueryBuilder query = new EntityQueryBuilder(Allocator.Temp);
+
+        foreach (var clientEntity in query
+            .WithAll<ClientComponent>()
+            .Build(ref state)
+            .ToEntityArray(Allocator.Temp))
+        {
+            ecb.AddComponent<WaitForRespawnTag>(clientEntity);
+        }
     }
 }
