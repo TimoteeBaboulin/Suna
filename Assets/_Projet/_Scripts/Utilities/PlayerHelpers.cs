@@ -92,6 +92,12 @@ public static class PlayerHelpers
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
         int index = networkId;
+
+        if (RequestedPlayType == PlayType.ClientAndServer)
+        {
+            index--;
+        }
+
         return (IPlayer)sessionPlayers[index];
     }
 
