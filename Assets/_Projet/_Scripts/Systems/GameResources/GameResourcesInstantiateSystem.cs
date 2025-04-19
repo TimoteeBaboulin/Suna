@@ -126,7 +126,7 @@ partial struct ProcessPendingStuffSystem : ISystem
             if (processRO.ValueRO.Owner != Entity.Null)
             {
                 var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
-                StuffUtils.EquipNextFrame(equipStuffQueu, processRO.ValueRO.Owner, stuff);
+                StuffUtils.EquipNextFrame(equipStuffQueu, processRO.ValueRO.Owner, stuff, true);
             }
 
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);

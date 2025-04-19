@@ -24,6 +24,7 @@ public partial struct PickStuffSystem : ISystem
 
         var equipStuffQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
 
+        //Pick stuff with interact input
         foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, chara) in SystemAPI
         .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>>()
         .WithEntityAccess())
@@ -31,9 +32,7 @@ public partial struct PickStuffSystem : ISystem
             ref readonly CharacterInput input = ref inputRO.ValueRO;
             if (input.interact.IsSet)
             {
-                //CharacterShootStartPositionDelta
                 float3 startPosition = shootStartPosDeltaRO.ValueRO.PositionDelta + transformRO.ValueRO.Position;
-
                 quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
                 float3 forward = math.mul(shootRotation, math.forward());
 
@@ -64,6 +63,10 @@ public partial struct PickStuffSystem : ISystem
         //            Stuff = stuffList.StuffInHand,
         //            Owner = chara,
         //        });
+
+        //        ecb.DestroyEntity(hit.Entity);
+        //        SystemAPI.GetComponentRW<StuffDynamicData>(hit.Entity).ValueRW.dropedEntity = Entity.Null;
+
         //    }
         //}
     }

@@ -22,8 +22,10 @@ partial struct CharacterInstantiateStuffSystem : ISystem
             .WithAll<IsInstanciateDefaultStuff>()
             .WithEntityAccess())
         {
-            foreach (var name in defaultStuffNames)
+            //foreach (var name in defaultStuffNames)
+            for (int i = defaultStuffNames.Length - 1; i >= 0; i--)
             {
+                var name = defaultStuffNames[i];
                 stuffInstanciateQueus.Add(new GameResourcesInstantiateStuffQueue 
                 { 
                     StuffName = name.Value, 

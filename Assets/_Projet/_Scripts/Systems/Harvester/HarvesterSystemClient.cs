@@ -174,7 +174,7 @@ partial class HarvesterSystemClient : SystemBase
                 }
             }
 
-            StuffUtils.EquipNextFrame(equipStuffQueu, rpc.character, rpc.harvester);
+            StuffUtils.EquipNextFrame(equipStuffQueu, rpc.character, rpc.harvester, true);
         }
 
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterDropped rpc, Entity entity)

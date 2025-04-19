@@ -113,7 +113,7 @@ partial struct HarvesterSystemServer : ISystem
                     StuffUtils.UnequipNextFrame(unequipStuffQueu, ownerRO.ValueRO.owner, harvesterEntity);
                 }
 
-                StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity);
+                StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
 
                 RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                 {
@@ -191,7 +191,7 @@ partial struct HarvesterSystemServer : ISystem
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
 
-                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity);
+                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
 
                                     RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                                     {
@@ -250,7 +250,7 @@ partial struct HarvesterSystemServer : ISystem
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
     
-                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity);
+                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
 
                                     RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                                     {

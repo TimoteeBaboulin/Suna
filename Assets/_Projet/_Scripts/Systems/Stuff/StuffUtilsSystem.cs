@@ -2,9 +2,6 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
-using Unity.Mathematics;
-using Unity.Transforms;
-using Unity.VisualScripting;
 
 [GhostComponent]
 public struct EquipStuffQueue : IBufferElementData
@@ -45,7 +42,8 @@ public partial struct EquipStuffSystem : ISystem
 
         foreach (var equipInfos in equipStuffQueue)
         {
-            StuffUtils.EquipUnsafe(ref ecb, ref state, ref database, equipInfos.Owner, equipInfos.Stuff);
+            StuffUtils.EquipUnsafe(ref ecb, ref state, ref database, equipInfos.Owner, equipInfos.Stuff, true);
+
         }
         equipStuffQueue.Clear();
     }
@@ -131,6 +129,26 @@ public partial struct StuffOwnershipSystem : ISystem
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+}
+
+[BurstCompile]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct StuffDropedCleanup : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+        // Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+        foreach (var (stuffInHandRef, dropedStuff) in SystemAPI.Query<RefRO<StuffEntityInHandRef>>().WithEntityAccess())
+        {
+            if (stuffInHandRef.ValueRO.Value == Entity.Null)
+            {
+                ecb.DestroyEntity(dropedStuff);
+            }
+        }
     }
 }
 

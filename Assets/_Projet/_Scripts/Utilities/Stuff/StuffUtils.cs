@@ -9,18 +9,19 @@ using static UnityEngine.UI.GridLayoutGroup;
 
 public static class StuffUtils
 {
-    public static void EquipNextFrame(DynamicBuffer<EquipStuffQueue> equipStuffQueue, Entity owner, Entity stuff)
+    public static void EquipNextFrame(DynamicBuffer<EquipStuffQueue> equipStuffQueue, Entity owner, Entity stuff, bool autoSwitchOn)
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
         equipStuffQueue.Add(new EquipStuffQueue
         {
             Stuff = stuff,
-            Owner = owner
+            Owner = owner,
+            AutoSwitch = autoSwitchOn
         });
     }
 
-    public static void EquipUnsafe(ref EntityCommandBuffer ecb, ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff)
+    public static void EquipUnsafe(ref EntityCommandBuffer ecb, ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff, bool autoSwitchOn)
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
@@ -35,14 +36,16 @@ public static class StuffUtils
         var ownerView = state.EntityManager.GetComponentData<CharacterViewRotation>(owner);
         var ownerTransform = state.EntityManager.GetComponentData<LocalTransform>(owner);
 
-        Equip(linkedEntityGroup, ownerGhostOwner, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff, ref ecb, shootStartPosDelta, ownerView, ownerTransform);
+        Equip(ref state, linkedEntityGroup, ownerGhostOwner, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff, ref ecb, shootStartPosDelta, ownerView, ownerTransform, autoSwitchOn);
 
         state.EntityManager.SetComponentData(owner, ownerStuffList);
         state.EntityManager.SetComponentData(stuff, stuffGhostOwner);
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
+
     }
 
     public static void Equip(
+        ref SystemState state,
         DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
         GhostOwner ownerGhostOwner,
         ref CharacterStuffList ownerStuffListRef,
@@ -55,8 +58,9 @@ public static class StuffUtils
         CharacterShootStartPositionDelta shootStartPosDelta,
         CharacterViewRotation ownerView,
         LocalTransform ownerTransform,
-        float impulse = 0f)
+        bool autoSwitchOn)
     {
+
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
         if (ownerStuffListRef.GetStuffInSlot(stuffDataRef.slot) != Entity.Null)
@@ -73,7 +77,7 @@ public static class StuffUtils
                 shootStartPosDelta,
                 ownerView,
                 ownerTransform,
-                impulse
+                0f
             );
         }
 
@@ -86,6 +90,9 @@ public static class StuffUtils
         // Network
         stuffGhostOwnerRef.NetworkId = ownerGhostOwner.NetworkId;
         linkedEntityGroup.Add(new LinkedEntityGroup { Value = stuff });
+
+        SwitchTo(ref state, ref ownerStuffListRef, stuffDataRef.slot);
+
     }
 
     public static void UnequipNextFrame(DynamicBuffer<UnequipStuffQueue> unequipStuffQueue, Entity owner, Entity stuff)
@@ -227,23 +234,23 @@ public static class StuffUtils
         });
     }
 
-    public static void SwitchTo(Entity stuff)
+    public static void SwitchTo(ref SystemState state, ref CharacterStuffList stuffList, StuffSlot slotToSwitch)
     {
+        Entity previousStuff = stuffList.StuffInHand;
+        Entity nextStuff = stuffList.GetStuffInSlot(slotToSwitch);
 
+        if (nextStuff == Entity.Null) return;
+
+        stuffList.StuffInHandSlot = slotToSwitch;
+
+        if (previousStuff != Entity.Null)
+            state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
+
+        state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
     }
 
-    public static void SwitchTo(Entity owner, StuffSlot stuffSlot)
+    public static void Destroy(ref SystemState state, Entity stuff)
     {
-
-    }
-
-    public static void Destroy(Entity owner, Entity stuff)
-    {
-
-    }
-
-    public static void Destroy(Entity owner, StuffSlot stuffSlot)
-    {
-
+        state.EntityManager.DestroyEntity(stuff);
     }
 }

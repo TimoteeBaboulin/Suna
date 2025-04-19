@@ -30,26 +30,18 @@ public partial struct SwitchStuffSystem : ISystem
 
             if (dir != 0 && stuffList.List.Length > 1)
             {
-                
-                Entity previousStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
-                Entity nextStuff = Entity.Null;
+                Entity previousStuff = stuffList.StuffInHand;
+                StuffSlot nextStuffSlot = stuffList.StuffInHandSlot;
 
                 for (int i = 0; i < stuffList.List.Length; i++)
                 {
-                    stuffList.StuffInHandSlot += dir;
+                    nextStuffSlot += dir;
+                    nextStuffSlot = (StuffSlot)((stuffList.List.Length + (int)nextStuffSlot) % stuffList.List.Length);
 
-                    stuffList.StuffInHandSlot = (StuffSlot)((stuffList.List.Length + (int)stuffList.StuffInHandSlot) % stuffList.List.Length);
-
-                    nextStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
-
-                    if (nextStuff != Entity.Null) break;
+                    if (stuffList.GetStuffInSlot(nextStuffSlot) != Entity.Null) break;
                 }
 
-                if (nextStuff != Entity.Null)
-                {
-                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
-                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
-                }
+                StuffUtils.SwitchTo(ref state, ref stuffList, nextStuffSlot);
             }
         }
 
@@ -60,23 +52,14 @@ public partial struct SwitchStuffSystem : ISystem
         {
             ref readonly CharacterInput input = ref inputRef.ValueRO;
             ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
+
+            if (stuffList.List.Length <= 1) continue;
+
             if (input.stuffLocation > 0)
             {
-                int nextLocation = input.stuffLocation - 1;
+                if ((int)stuffList.StuffInHandSlot == input.stuffLocation) continue;
 
-                if ((int)stuffList.StuffInHandSlot != input.stuffLocation && stuffList.List.Length > 1)
-                {
-                    Entity previousStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
-                    Entity nextStuff = stuffList.List[nextLocation];
-
-                    if (nextStuff != Entity.Null)
-                    {
-                        state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
-                        state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true); //Conaard
-
-                        stuffList.StuffInHandSlot = (StuffSlot)nextLocation;
-                    }
-                }
+                StuffUtils.SwitchTo(ref state, ref stuffList, (StuffSlot)(input.stuffLocation - 1));
             }
         }
 
@@ -87,28 +70,14 @@ public partial struct SwitchStuffSystem : ISystem
         {
             ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
 
-            if (stuffList.List.Length > 0)
+            if (stuffList.StuffInHand == Entity.Null)
             {
-                Entity previousStuff = stuffList.List[(int)stuffList.StuffInHandSlot];
-                Entity nextStuff = Entity.Null;
-
-                if (previousStuff == Entity.Null)
+                for (int i = 0; i < stuffList.List.Length; i++)
                 {
-                    for (int i = 0; i < stuffList.List.Length; i++)
-                    {
-                        nextStuff = stuffList.List[i];
-                        stuffList.StuffInHandSlot = (StuffSlot)i;
+                    if (stuffList.GetStuffInSlot((StuffSlot)i) == Entity.Null) continue;
 
-                        if (nextStuff != Entity.Null)
-                        {
-                            state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
-                            break;
-                        }
-                    }
-                }
-                else if (!state.EntityManager.IsComponentEnabled<IsStuffInHand>(previousStuff))
-                {
-                    state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, true);
+                    StuffUtils.SwitchTo(ref state, ref stuffList, (StuffSlot)i);
+                    break;
                 }
             }
         }
