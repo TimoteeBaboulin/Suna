@@ -21,6 +21,8 @@ public partial struct OnDieSystem : ISystem
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
         builder.WithAll<HasNoHealthTag>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
+
+        state.RequireForUpdate<SpawnerSettingsTag>();
     }
 
     [BurstCompile]
@@ -37,6 +39,7 @@ public partial struct OnDieSystem : ISystem
             dt = SystemAPI.Time.DeltaTime,
             networkTime = SystemAPI.GetSingleton<NetworkTime>(),
             commandBuffer = ecb.AsParallelWriter(),
+            autoRespawnIsEnable = SpawnerUtils.AutoRespawnIsEnable(ref state),
             resetStuffLookup = resetStuffLookupInit,
             HasNoHealthTagLookup = hasNoHealthTagLookup,
         };
@@ -53,6 +56,7 @@ public partial struct OnDieJob : IJobEntity
     public NetworkTime networkTime;
     public EntityCommandBuffer.ParallelWriter commandBuffer;
 
+    [ReadOnly] public bool autoRespawnIsEnable;
     [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
     [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
 
@@ -62,16 +66,14 @@ public partial struct OnDieJob : IJobEntity
             && HasNoHealthTagLookup.HasComponent(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
-            commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
-            //commandBuffer.RemoveComponent<HasNoHealthTag>(sortKey, entity);
-            //commandBuffer.DestroyEntity(sortKey, entity);
 
-            //commandBuffer.AddComponent<ResetStuffTag>(sortKey, entity);
+            if (autoRespawnIsEnable)
+            {
+                commandBuffer.AddComponent<WaitForRespawnTag>(sortKey, CharacterPlayerAttached.ValueRO.ClientEntity);
+            }
         }
     }
 }
-
-
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateAfter(typeof(ServerSystem))]
