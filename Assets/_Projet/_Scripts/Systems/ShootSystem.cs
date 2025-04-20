@@ -177,6 +177,96 @@ public partial struct ShootSystem : ISystem
             localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
             SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
+
+        foreach(var (dynamicDataRW, databaseAccessRO, ownerRef, grenade) in SystemAPI
+            .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRW<StuffOwner>>()
+            .WithAll<IsStuffInHand, Simulate>()
+            .WithDisabled<ReleasedGrenade>()
+            .WithEntityAccess())
+        {
+            Debug.Log("JA");
+
+            ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
+            ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
+            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+
+            RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
+
+            // Retrieve player input
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+            ref CharacterInput input = ref inputRef.ValueRW;
+
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+
+            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
+
+            if(dynamicData.isCooking)
+            {
+                dynamicData.cookingTime += dt;
+            }
+
+            if(input.attack.IsSet)
+            {
+                dynamicData.isCooking = true;
+            }
+            else
+            {
+                if(dynamicData.isCooking)
+                {
+                    if (dynamicData.cookingTime >= commonData.cookingTime)
+                    {
+                        UnityEngine.Debug.Log($"Grenade throw {state.World.IsClient()}");
+
+                        SystemAPI.GetSingletonBuffer<UnequipStuffQueu>().Add(new UnequipStuffQueu
+                        {
+                            Owner = owner,
+                            Stuff = grenade,
+                            Position = shootStartpos
+                        });
+
+                        ecb.RemoveComponent<StuffOwner>(grenade);
+
+                        ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
+                        ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
+
+                        //ecb.AddComponent<PhysicsVelocity>(grenade);
+                        //ecb.AddComponent<PhysicsMass>(grenade);
+                        //ecb.AddComponent<PhysicsDamping>(grenade);
+                        //ecb.AddComponent<PhysicsGravityFactor>(grenade);
+
+                        ecb.SetComponent(grenade, new LocalTransform
+                        {
+                            Position = shootStartpos,
+                            Rotation = shootRotation,
+                            Scale = 1.0f
+                        });
+
+                        ecb.SetComponent(grenade, new PhysicsVelocity
+                        {
+                            Linear = math.mul(shootRotation, new float3(0f, 0f, 20f)),
+                            Angular = math.mul(shootRotation, new float3(0f, 0f, 0f))
+                        });
+
+                        //ecb.SetComponent(grenade, new PhysicsMass
+                        //{
+                        //    InverseMass = 0.02222222f,
+                        //    InverseInertia = new float3(0f, 0f, 0f),
+                        //    AngularExpansionFactor = 0.5f,
+                        //});
+
+                        //ecb.SetComponent(grenade, new PhysicsDamping
+                        //{
+                        //    Linear = 0.1f,
+                        //    Angular = 0.1f
+                        //});
+
+                        UnityEngine.Debug.Log($"Grenade thrown {state.World.IsClient()}");
+                        dynamicData.isCooking = false;
+                        dynamicData.cookingTime = 0.0f;
+                    }
+                }
+            }
+        }
     }
 
     bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)

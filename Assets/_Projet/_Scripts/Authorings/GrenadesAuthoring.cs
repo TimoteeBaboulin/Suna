@@ -12,6 +12,12 @@ public class GrenadesAuthoring : MonoBehaviour
         {
             Entity entity = GetEntity(TransformUsageFlags.Dynamic);
 
+            AddComponent(entity, new GrenadeDynamicData
+            {
+                cookingTime = 0f,
+                isCooking = false
+            });
+
             AddComponent(entity, new GrenadeDatabaseAccess());
 
             AddComponent(entity, new StuffDatabaseAccess
@@ -26,6 +32,9 @@ public class GrenadesAuthoring : MonoBehaviour
 
             AddComponent<StuffProcessPending>(entity);
             SetComponentEnabled<StuffProcessPending>(entity, true);
+
+            AddComponent<ReleasedGrenade>(entity);
+            SetComponentEnabled<ReleasedGrenade>(entity, false);
         }
     }
 }

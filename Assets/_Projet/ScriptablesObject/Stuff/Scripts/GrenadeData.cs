@@ -1,5 +1,14 @@
 using UnityEngine;
 
+public enum GrenadeTriggerType
+{
+    Timer,
+    Impact,
+    Still,
+    Bounce,
+    Proximity,
+}
+
 [CreateAssetMenu(fileName = "GrenadeData", menuName = "Stuff Data/Grenade")]
 public class GrenadeData : ScriptableObject
 {
@@ -12,4 +21,24 @@ public class GrenadeData : ScriptableObject
     public int price;
     public uint killGain = 300;
     public Vector3 _stuffLocalOffsetView; //temp
+
+    public float cookingTime = 0.3f;
+    public float impactRadius = 5f;
+
+    public GrenadeTriggerType triggerType = GrenadeTriggerType.Timer;
+    // For the timer trigger
+    public float timerTriggerDelay = 1.8f;
+
+    // For the impact trigger
+    public float maxImpactAngle = 45f;
+
+    // For the still trigger
+    public float stillTriggerDelay = .8f;
+
+    // For the bounce trigger
+    public uint bounceTriggerCount = 3;
+
+    // For the proximity trigger
+    public float proximityTriggerDistance = 5f;
+
 }

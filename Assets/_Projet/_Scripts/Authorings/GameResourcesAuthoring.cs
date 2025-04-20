@@ -170,6 +170,22 @@ public class GameResourcesAuthoring : MonoBehaviour
             }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///
+
+            BlobBuilderArray<GrenadeCommonData> grenades = builder.Allocate(ref stuffCollection.GrenadesCommonData, authoring.grenadesList.Count);
+
+            for (i = 0; i < authoring.grenadesList.Count; i++)
+            {
+                var grenadeSO = authoring.grenadesList[i];
+                grenades[i].cookingTime = grenadeSO.cookingTime;
+                grenades[i].impactRadius = grenadeSO.impactRadius;
+                grenades[i].triggerType = grenadeSO.triggerType;
+                grenades[i].timerTriggerDelay = grenadeSO.timerTriggerDelay;
+                grenades[i].maxImpactAngle = grenadeSO.maxImpactAngle;
+                grenades[i].stillTriggerDelay = grenadeSO.stillTriggerDelay;
+                grenades[i].bounceTriggerCount = grenadeSO.bounceTriggerCount;
+                grenades[i].proximityTriggerDistance = grenadeSO.proximityTriggerDistance;
+            }
 
             var blobRef = builder.CreateBlobAssetReference<StuffDatabase>(Allocator.Persistent);
             builder.Dispose();

@@ -49,6 +49,7 @@ public struct StuffOwner : IComponentData
 }
 
 [GhostEnabledBit]
+[GhostComponent]
 public struct IsStuffInHand : IComponentData, IEnableableComponent
 {
 }

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -80,6 +79,22 @@ partial struct StuffSystemClient : ISystem
             }
 
             goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.Value == Entity.Null);
+        }
+
+        //Render Thrown grenades
+        foreach (var (goRef, entityTransform, entity) in SystemAPI
+            .Query<StuffGameObjectRef, RefRO<LocalToWorld>>()
+            .WithPresent<ReleasedGrenade>()
+            .WithEntityAccess())
+        {
+            if (SystemAPI.IsComponentEnabled<ReleasedGrenade>(entity))
+            {
+                goRef.Value.SetActive(goRef.Value != null);
+                goRef.Value.transform.SetParent(null, true);
+                goRef.Value.transform.position = entityTransform.ValueRO.Position;
+                goRef.Value.transform.rotation = entityTransform.ValueRO.Rotation;
+                goRef.Value.transform.localScale = Vector3.one;
+            }
         }
 
         //Clear Stuff GameObject
