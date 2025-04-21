@@ -1,8 +1,10 @@
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -71,6 +73,8 @@ public partial struct ShootSystem : ISystem
 
                 if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) continue;
 
+                if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
+
                 // Calculate fire rate
                 if (dynamicData.firerateTimer > 0)
                     dynamicData.firerateTimer -= dt;
@@ -98,17 +102,19 @@ public partial struct ShootSystem : ISystem
                         dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;
 
-                        float2 directionalMovement = (float2) MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
+                        float2 directionalMovement = (float2)MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
                         bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
+
+                        SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
 
                         for (int i = 0; i < commonData.roundsPerShot; i++)
                         {
                             // Apply spread on raycast
                             float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                            float2 visualRecoil = recoil / 5f;
+                            float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
                             quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                             quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
-                            recoilRotation = math.mul(input.shootRotation, recoilRotation);
+                            recoilRotation = math.mul(shootRotation, recoilRotation);
 
                             localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
 
@@ -144,6 +150,7 @@ public partial struct ShootSystem : ISystem
                                 {
                                     position = hit.Position,
                                     normal = hit.SurfaceNormal,
+                                    origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
                                 };
 
                                 if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
@@ -176,11 +183,11 @@ public partial struct ShootSystem : ISystem
                 else
                 {
                     dynamicData.shotFired = false;
-
                 }
             }
 
             localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
+            SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
     }
 
@@ -244,20 +251,36 @@ public partial struct ShootSystem : ISystem
         }
     }
 
+    bool TryGetCharacterShootRotation(Entity owner, ref SystemState state, out quaternion shootRotation)
+    {
+        if (state.EntityManager.HasComponent<LocalTransform>(owner)
+            && state.EntityManager.HasComponent<CharacterViewRotation>(owner))
+        {
+            quaternion characterRotation = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Rotation;
+            quaternion viewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(owner).ValueRO.ViewRotation;
+            shootRotation = math.mul(characterRotation, viewRotation);
+            return true;
+        }
+        else
+        {
+            shootRotation = quaternion.identity;
+            return false;
+        }
+    }
+
     RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
     {
+        const int additionalRenderDelay = 1;
 
-        LocalTransform startTransform = new LocalTransform
-        {
-            Position = startPos,
-            Rotation = shootRotation,
-            Scale = 1,
-        };
+        CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
+        uint delay = interpolationDelay.Delay + additionalRenderDelay;
 
-        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-        float3 startPosition = startTransform.Position;
-        float3 endPosition = startPosition + new float3(startTransform.Forward() * range);
-        RaycastHit closestHit = default;
+        PhysicsWorldHistorySingleton collisionHistory = SystemAPI.GetSingleton<PhysicsWorldHistorySingleton>();
+        PhysicsWorld physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        NetworkTick tick = networkTime.ServerTick;
+
+        collisionHistory.GetCollisionWorldFromTick(tick, delay, ref physicsWorld, out var collWorld);
 
         CollisionFilter filter = new CollisionFilter
         {
@@ -265,15 +288,17 @@ public partial struct ShootSystem : ISystem
             CollidesWith = ~(1u << 6)
         };
 
+        float3 forward = math.mul(shootRotation, math.forward());
         RaycastInput raycastInput = new RaycastInput()
         {
-            Start = startPosition,
-            End = endPosition,
+            Start = startPos,
+            End = startPos + new float3(forward * range),
             Filter = filter //filtre pour partie du corps
         };
 
+        RaycastHit closestHit = default;
         NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-        if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
+        if (collWorld.CastRay(raycastInput, ref allHits))
         {
             // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
             float closestDist = float.MaxValue;

@@ -95,6 +95,7 @@ partial struct ProcessPendingStuffSystem : ISystem
     {
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         ref var stuffCommonDataArray = ref database.StuffDatabaseRef.Value.StuffCommonData;
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         foreach (var (dataAccessRW, processRO, ghostOwnerRW, stuff) in SystemAPI
             .Query<RefRW<StuffDatabaseAccess>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
@@ -120,8 +121,6 @@ partial struct ProcessPendingStuffSystem : ISystem
             //Rename Entity in hierarchy
             state.EntityManager.SetName(stuff, stuffData.Name.ToString());
 
-            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value);
-
             //Add stuff on player inventory
             if (processRO.ValueRO.Owner != Entity.Null)
             {
@@ -129,11 +128,16 @@ partial struct ProcessPendingStuffSystem : ISystem
                 StuffUtils.EquipNextFrame(equipStuffQueu, processRO.ValueRO.Owner, stuff, true);
             }
 
+            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);
+            
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 
-    void SpecificLoadSet(ref SystemState state, Entity stuff, ref StuffCommonData stuffData, ref StuffDatabase database)
+    void SpecificLoadSet(ref SystemState state, Entity stuff, ref StuffCommonData stuffData, ref StuffDatabase database, EntityCommandBuffer ecb)
     {
         switch (stuffData.type)
         {
@@ -146,6 +150,10 @@ partial struct ProcessPendingStuffSystem : ISystem
                     currentAmmo = data.magazineCapacity + 1, // 1 = bullet in chamber
                     remainingAmmo = data.magazineCapacity * (data.nbMagazine - 1),
                 });
+                if (data.scope.ScopeFOV != 0)
+                {
+                    ecb.AddComponent(stuff, data.scope);
+                }
                 break;
             case StuffType.MeleeWeapon:
                 SystemAPI.SetComponent(stuff, new MeleeWeaponDatabaseAccess { Value = stuffData.dataID });

@@ -12,23 +12,22 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, commonBonesName, characterEntity) in SystemAPI
-            .Query<FirstPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>>()
+        foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<FirstPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<FirstPersonCharacterModelReference>()
-            .WithAll<GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
-            GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
+            GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab, 
+                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
-            FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
-
-            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
-            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
+            FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);   
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, FirstPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
@@ -37,11 +36,30 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             }
             else
             {
-                modelReference.ModelGameObject.SetActive(true);
+                if (state.EntityManager.HasComponent<CameraIsAtached>(characterEntity))
+                {
+                    CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
+
+                    Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
+                    AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
+
+                    if (!modelReference.ModelGameObject.activeSelf)
+                    {
+                        modelReference.ModelGameObject.SetActive(true);
+                    }
+                }
+                else
+                {
+                    if (modelReference.ModelGameObject.activeSelf)
+                    {
+                        modelReference.ModelGameObject.SetActive(false);
+                    }
+                }
             }
 
-            float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = math.mul(characterTransform.ValueRO.Rotation, localViewRotation.ValueRO.ViewRotation);
+            float3 sd = math.rotate(newRotation, modelReference.ShootDelta);
+            float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition + sd; //TODO : remove +ShootDelta once we have animations
             CommonCharacterModelUtils.UpdateModelPositionAndRotation(modelReference.ModelGameObject.transform, newPosition, newRotation);
         }
 

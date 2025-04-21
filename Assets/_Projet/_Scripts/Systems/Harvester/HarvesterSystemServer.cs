@@ -121,7 +121,7 @@ partial struct HarvesterSystemServer : ISystem
                     newOwner = clientEntity,
                     character = characterEntity
                 };
-                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
                 foreach (var client in query.ToEntityArray(Allocator.Temp))
                 {
@@ -146,7 +146,7 @@ partial struct HarvesterSystemServer : ISystem
                     harvester = harvesterEntity,
                     position = corpoSpawnPosition
                 };
-                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
                 foreach (var client in query.ToEntityArray(Allocator.Temp))
                 {
@@ -199,7 +199,7 @@ partial struct HarvesterSystemServer : ISystem
                                         newOwner = clientAttached.ClientEntity,
                                         character = characterEntity
                                     };
-                                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+                                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
                                     foreach (var client in query.ToEntityArray(Allocator.Temp))
                                     {
@@ -258,7 +258,7 @@ partial struct HarvesterSystemServer : ISystem
                                         newOwner = clientAttached.ClientEntity,
                                         character = characterEntity
                                     };
-                                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+                                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
                                     foreach (var client in query.ToEntityArray(Allocator.Temp))
                                     {

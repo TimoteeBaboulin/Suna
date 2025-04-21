@@ -1,8 +1,12 @@
-﻿using Unity.Burst;
+﻿using GameNetwork.Utils;
+using Unity.Burst;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 
-[UpdateBefore(typeof(RoundSystemServer))]
+
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateAfter(typeof(RoundComponent))]
 public partial class CountPlayersSystemServer : SystemBase
 {
     protected override void OnCreate()
@@ -19,16 +23,14 @@ public partial class CountPlayersSystemServer : SystemBase
             return;
         }
 
-        if (!SystemAPI.HasComponent<PlayerCounts>(entity))
+        if (!SystemAPI.HasComponent<PlayerAliveCounts>(entity))
         {
             return;
         }
-        RefRW<PlayerCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerCounts>(entity);
-	
-	playersAliveRW.ValueRW.nativePlayersAlive = 1;
-	playersAliveRW.ValueRW.corpoPlayersAlive = 1;
 
-        //playersAliveRW.ValueRW.nativePlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Natif, World);
-        //playersAliveRW.ValueRW.corpoPlayersAlive = PlayerHelpers.CountPlayersAliveManaged(TeamSideType.Corpo, World);
+        PlayerHelpers.AliveCounts counts = PlayerHelpers.GetCurrentAliveCounts(World);
+        RefRW<PlayerAliveCounts> playersAliveRW = SystemAPI.GetComponentRW<PlayerAliveCounts>(entity);
+        playersAliveRW.ValueRW.corpoPlayersAlive = counts.corpoPlayersAlive;
+        playersAliveRW.ValueRW.nativePlayersAlive = counts.natifPlayersAlive;
     }
 }

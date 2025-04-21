@@ -1,64 +1,228 @@
-﻿using System.Collections.Generic;
+﻿using GameNetwork.Utils;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Multiplayer.Playmode;
 using Unity.NetCode;
+using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using static Unity.NetCode.ClientServerBootstrap;
 
 public static class PlayerHelpers
 {
-    /// <summary>
-    /// Function used to receive the number of players alive in a team
-    /// The function is managed so can't be used in ISystems or Burst Compiled methods
-    /// Written by Timotee
-    /// </summary>
-    static public int CountPlayersAliveManaged(TeamSideType team, World world)
+    public struct AliveCounts
     {
-	string teamName = "";
-	if (team == TeamSideType.Corpo)
-		teamName = "corpo";
-	else if (team == TeamSideType.Natif)
-		teamName = "natif";
-        List<IReadOnlyPlayer> players = GameManager.Instance.GetPlayersByTeam(teamName);
-        List<int> totalPlayerIDs = new List<int>();
+        public int natifPlayersAlive;
+        public int corpoPlayersAlive;
+    }
 
-        int count = 0;
+    public struct GlobalTeamCount
+    {
+        public int natifPlayersCount;
+        public int corpoPlayersCount;
+    }
 
-        EntityQueryDesc desc = new EntityQueryDesc
+    public struct TeamList
+    {
+        public List<IReadOnlyPlayer> natifPlayers;
+        public List<IReadOnlyPlayer> corpoPlayers;
+    }
+
+    private static TeamList _teams = new TeamList
+    {
+        natifPlayers = new List<IReadOnlyPlayer>(),
+        corpoPlayers = new List<IReadOnlyPlayer>()
+    };
+
+    private static int CountPlayersAliveForTeam(TeamSideType team, World world)
+    {
+        int aliveCount = 0;
+
+        ComponentType teamTag;
+        switch (team)
         {
-            All = new ComponentType[] { typeof(ClientComponent), typeof(GhostInstance) }
-        };
-        EntityQuery query = world.EntityManager.CreateEntityQuery(desc);
+            case TeamSideType.Corpo:
+                teamTag = ComponentType.ReadOnly<CorpoTeamTag>();
+                break;
+            case TeamSideType.Natif:
+                teamTag = ComponentType.ReadOnly<NatifTeamTag>();
+                break;
+            default:
+                Debug.LogWarning($"Team {team} does not have a defined tag component.");
+                return 0;
+        }
 
-        NativeArray<Entity> clients = query.ToEntityArray(Allocator.Temp);
-        NativeArray<GhostInstance> ghosts = query.ToComponentDataArray<GhostInstance>(Allocator.Temp);
+        EntityManager entityManager = world.EntityManager;
 
-        for (int i = 0; i < clients.Length; i++)
+        EntityQuery characterQuery = entityManager.CreateEntityQuery(new EntityQueryDesc
         {
-            bool foundPlayerId = players.Exists(
-                (obj) =>
-                {
-                    return int.Parse(obj.Id) == ghosts[i].ghostId;
-                });
-
-            if (!foundPlayerId)
-                continue;
-
-            //Debug.Log($"Found player with id {ghosts[i].ghostId}");
-
-            if (world.EntityManager.HasComponent<CharacterIsEnable>(clients[i]))
+            All = new ComponentType[]
             {
-                count++;
-            }
-        }
+            ComponentType.ReadOnly<CharacterClientAttachedComponent>(),
+            ComponentType.ReadOnly<CharacterIsEnable>(),
+            teamTag
+            },
+            Options = EntityQueryOptions.IgnoreComponentEnabledState // Allows checking enable state manually.
+        });
 
-        foreach (IReadOnlyPlayer player in players)
+        NativeArray<Entity> characterEntities = characterQuery.ToEntityArray(Allocator.Temp);
+        //Debug.Log($"[CountPlayersAlive] Filtered entity count: {characterEntities.Length} for team {team}.");
+
+        for (int i = 0; i < characterEntities.Length; i++)
         {
-            Debug.Log(player.Id);
+            Entity characterEntity = characterEntities[i];
+            if (!entityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
+            {
+                continue;
+            }
+            aliveCount++;
+
+            //Debug.Log($"[CountPlayersAlive] Counting entity {characterEntity} for team {team}.");
         }
 
-        //Debug.Log($"{count} players alive in {team.ToString()}");
+        characterEntities.Dispose();
+        return aliveCount;
+    }
 
-        return count;
+    static public IPlayer FindCurrentPlayerForNetworkId(int networkId)
+    {
+        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
+        int index = networkId;
+
+        if (RequestedPlayType == PlayType.ClientAndServer)
+        {
+            index--;
+        }
+
+        return (IPlayer)sessionPlayers[index];
+    }
+
+    static public string AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer)
+    {
+        GlobalTeamCount teamCounts = GetCurrentTeamCounts();
+
+        string assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
+            ? (UnityEngine.Random.value < 0.5f ? "Corpo" : "Natif")
+            : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? "Corpo" : "Natif");
+
+        Debug.Log(teamCounts.corpoPlayersCount);
+
+        if (readOnlyPlayer is IPlayer player)
+        {
+            player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
+        }
+
+        if (assignedTeam == "Corpo")
+        {
+            _teams.corpoPlayers.Add(readOnlyPlayer);
+        }
+        else
+        {
+            _teams.natifPlayers.Add(readOnlyPlayer);
+        }
+        return assignedTeam;
+    }
+    public static void RemovePlayer(string playerId)
+    {
+        var corpo = _teams.corpoPlayers.FirstOrDefault(p => p.Id == playerId);
+        if (corpo != null)
+        {
+            Debug.Log($"Player removed from CORPO ID {playerId} ");
+            _teams.corpoPlayers.Remove(corpo);
+            return;
+        }
+
+        var natif = _teams.natifPlayers.FirstOrDefault(p => p.Id == playerId);
+        if (natif != null)
+        {
+            Debug.Log($"Player removed from NATIF ID {playerId} ");
+            _teams.natifPlayers.Remove(natif);
+            return;
+        }
+
+        Debug.LogWarning($"[PlayerHelpers] Tried to remove {playerId} but they weren’t in any team list");
+    }
+
+
+    private static int GetPlayersAlive(TeamSideType team, World world)
+    {
+        return CountPlayersAliveForTeam(team, world);
+    }
+
+    public static AliveCounts GetCurrentAliveCounts(World world)
+    {
+        AliveCounts counts;
+        counts.natifPlayersAlive = GetPlayersAlive(TeamSideType.Natif, world);
+        counts.corpoPlayersAlive = GetPlayersAlive(TeamSideType.Corpo, world);
+        return counts;
+    }
+
+
+    public static GlobalTeamCount GetCurrentTeamCounts()
+    {
+        return new GlobalTeamCount
+        {
+            corpoPlayersCount = _teams.corpoPlayers.Count,
+            natifPlayersCount = _teams.natifPlayers.Count
+        };
+    }
+
+    public static TeamList GetTeamList()
+    {
+        return _teams;
+    }
+
+    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeam(TeamSideType teamSide)
+    {
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                return _teams.corpoPlayers;
+            case TeamSideType.Natif:
+                return _teams.natifPlayers;
+            default:
+                return Array.Empty<IReadOnlyPlayer>();
+        }
+    }
+
+    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    {
+        TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                return _teams.corpoPlayers;
+            case TeamSideType.Natif:
+                return _teams.natifPlayers;
+            default:
+                return Array.Empty<IReadOnlyPlayer>();
+        }
+    }
+
+    static public TeamSideType GetPlayerInTeam(int networkId)
+    {
+        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
+        var player = FindCurrentPlayerForNetworkId(networkId);
+
+        if (player.Properties.Count > 0)
+        {
+            Debug.Log($"Player propeties count {player.Properties.Count}");
+            string team = player.Properties["team"].Value;
+
+            if (team == "Corpo")
+            {
+                return TeamSideType.Corpo;
+            }
+            else if (team == "Natif")
+            {
+                return TeamSideType.Natif;
+            }
+            return TeamSideType.Neutre;
+        }
+        return TeamSideType.Neutre;
     }
 }

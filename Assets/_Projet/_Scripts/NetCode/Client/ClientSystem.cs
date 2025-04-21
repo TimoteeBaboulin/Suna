@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 using Unity.Transforms;
 using Unity.Mathematics;
 using Unity.VisualScripting.Dependencies.NCalc;
+using Unity.Services.Multiplayer;
+using GameNetwork.Utils;
 
 public struct ClientMessageRpcCommand : IRpcCommand
 {
@@ -33,11 +35,13 @@ public partial class ClientSystem : SystemBase
             Debug.Log($"message to client {command.ValueRO.message}");
             commandBuffer.DestroyEntity(entity);
         }
-
         if (Keyboard.current.vKey.wasPressedThisFrame)
         {
-            ClientMessageRpcCommand command = new ClientMessageRpcCommand() { message = "Client message to server BOUMBOUMBOUBm" };
-            RpcUtils.SendClientToServerRpc(ref command);
+            var localPlayer = ClientTransportHelper.instance.Session.CurrentPlayer;
+            if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
+            {
+                Debug.Log($"[Play] Local player team: {localTeam.Value}");
+            }
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();

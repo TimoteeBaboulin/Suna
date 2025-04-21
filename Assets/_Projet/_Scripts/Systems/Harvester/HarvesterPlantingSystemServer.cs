@@ -91,7 +91,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                         plantPosition = plantPosition
                     };
 
-                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<InitializedClient>().Build(ref state);
+                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
                     foreach (var client in query.ToEntityArray(Allocator.Temp))
                     {

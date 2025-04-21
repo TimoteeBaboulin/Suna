@@ -135,46 +135,49 @@ public class HUDController : MonoBehaviour
         // If too much message, delete previous ones
         //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
+        var world = World.DefaultGameObjectInjectionWorld;
+        if (world == null)
+            return;
         //----------System registering, all need to be in the right world
-        if (_inGameHUDSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_inGameHUDSystem == null && world.Name == "ClientWorld")
         {
-            _inGameHUDSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<InGameHUDSystem>();
+            _inGameHUDSystem = world.GetExistingSystemManaged<InGameHUDSystem>();
             _inGameHUDSystem.HealthChangedEvent += System_OnHealthChange;
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
             _inGameHUDSystem.AmmoChangeEvent += System_OnAmmoChange;
             _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
         }
 
-        if (_roundManagerLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_roundManagerLinkSystem == null && world.Name == "ClientWorld")
         {
-            _roundManagerLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<RoundManagerLinkSystem>();
+            _roundManagerLinkSystem = world.GetExistingSystemManaged<RoundManagerLinkSystem>();
         }
 
-        if (_errorWindowCallerSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_errorWindowCallerSystem == null && world.Name == "ClientWorld")
         {
-            _errorWindowCallerSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<ErrorWindowCallerSystem>();
+            _errorWindowCallerSystem = world.GetExistingSystemManaged<ErrorWindowCallerSystem>();
             _errorWindowCallerSystem.OnErrorMessageSent += OnErrorMessageReceived;
         }
 
-        if (_harvesterPlantingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_harvesterPlantingSystem == null && world.Name == "ClientWorld")
         {
-            _harvesterPlantingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterPlantingLinkSystem>();
+            _harvesterPlantingSystem = world.GetExistingSystemManaged<HarvesterPlantingLinkSystem>();
             _harvesterPlantingSystem.OnPlantStart += OnPlantStarts;
             _harvesterPlantingSystem.OnPlantRunning += OnPlantRunning;
             _harvesterPlantingSystem.OnPlantCancelOrEnd += OnPlantCancelOrEnd;
         }
 
-        if (_harvesterDefusingSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_harvesterDefusingSystem == null && world.Name == "ClientWorld")
         {
-            _harvesterDefusingSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<HarvesterDefusingLinkSystem>();
+            _harvesterDefusingSystem = world.GetExistingSystemManaged<HarvesterDefusingLinkSystem>();
             _harvesterDefusingSystem.OnDefuseStart += OnDefuseStarts;
             _harvesterDefusingSystem.OnDefuseRunning += OnDefuseRunning;
             _harvesterDefusingSystem.OnDefuseCancelOrEnd += OnDefuseCancelOrEnd;
         }
 
-        if (_weaponListLinkSystem == null && World.DefaultGameObjectInjectionWorld.Name == "ClientWorld")
+        if (_weaponListLinkSystem == null && world.Name == "ClientWorld")
         {
-            _weaponListLinkSystem = World.DefaultGameObjectInjectionWorld.GetExistingSystemManaged<WeaponListLinkSystem>();
+            _weaponListLinkSystem = world.GetExistingSystemManaged<WeaponListLinkSystem>();
             _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }

@@ -9,6 +9,9 @@ public class SettingsMenuController : MonoBehaviour
     private Button _saveButton;
     private Slider _sensitivitySlider;
     private FloatField _sensitivityField;
+    private Slider _volumeSlider;
+    private FloatField _volumeField;
+    private TextField _pseudoField;
 
     private void Start()
     {
@@ -22,12 +25,23 @@ public class SettingsMenuController : MonoBehaviour
         _sensitivityField = root.Q<FloatField>("SensitivityField");
         _sensitivityField.RegisterValueChangedCallback(OnSensitivityField_ValueChanged);
 
+        _volumeSlider = root.Q<Slider>("VolumeSlider");
+        _volumeSlider.RegisterValueChangedCallback(OnVolumeSlider_ValueChanged);
+
+        _volumeField = root.Q<FloatField>("VolumeField");
+        _volumeField.RegisterValueChangedCallback(OnVolumeField_ValueChanged);
+
+        _pseudoField = root.Q<TextField>("PseudoField");
+
         // Load settings
         SettingsLinkSystem mainMenuLinkSystem = World.DefaultGameObjectInjectionWorld.GetOrCreateSystemManaged<SettingsLinkSystem>();
         if (mainMenuLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
         {
             _sensitivitySlider.value = clientSettings.Sensivity;
             _sensitivityField.value = clientSettings.Sensivity;
+            _volumeSlider.value = clientSettings.Volume;
+            _volumeField.value = clientSettings.Volume;
+            _pseudoField.value = clientSettings.Pseudo.ToString();
         }
     }
 
@@ -43,6 +57,18 @@ public class SettingsMenuController : MonoBehaviour
         _sensitivityField.value = value;
     }
 
+    private void OnVolumeSlider_ValueChanged(ChangeEvent<float> evt)
+    {
+        _volumeField.value = evt.newValue;
+    }
+
+    private void OnVolumeField_ValueChanged(ChangeEvent<float> evt)
+    {
+        float value = Mathf.Clamp(evt.newValue, _volumeSlider.lowValue, _volumeSlider.highValue);
+        _volumeSlider.value = value;
+        _volumeField.value = value;
+    }
+
     private void SaveSettings()
     {
         float sensitivityValue = _sensitivitySlider.value;
@@ -53,6 +79,8 @@ public class SettingsMenuController : MonoBehaviour
         if (settingsLinkSystem.TryGetClientSettings(out ClientSettingsComponent clientSettings))
         {
             clientSettings.Sensivity = _sensitivitySlider.value;
+            clientSettings.Volume = _volumeSlider.value;
+            clientSettings.Pseudo = _pseudoField.value;
             settingsLinkSystem.UpdateClientSettings(clientSettings);
         }
     }

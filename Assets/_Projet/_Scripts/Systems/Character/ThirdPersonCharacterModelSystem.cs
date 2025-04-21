@@ -12,18 +12,22 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, modelBonesName, commonBonesName, characterEntity) in SystemAPI
-            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>>()
+        foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
-            GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
+            GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
+                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.DisableModelRendering(modelGameObject);
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
-            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
+            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones, 
+                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
 
             Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
             AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
@@ -59,24 +63,25 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (modelPrefab, modelBonesName, commonBonesName, characterEntity) in SystemAPI
-            .Query<ThirdPersonCharacterModelPrefab, RefRO<ThirdPersonCharacterModelBonesName>, RefRO<CommonCharacterModelBonesName>>()
+        foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
+            .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
-            GameObject modelGameObject = Object.Instantiate(modelPrefab.CorpoModelPrefab);
+            GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
+                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
             ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab.DeltaPosition, characterEntity, ecb);
-            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelBonesName, characterEntity, ecb);
-
-            Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
-            AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
+            ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones,
+                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
@@ -85,7 +90,25 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             }
             else
             {
-                modelReference.ModelGameObject.SetActive(true);
+                if (!state.EntityManager.HasComponent<CameraIsAtached>(characterEntity))
+                {
+                    CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
+
+                    Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
+                    AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
+
+                    if (!modelReference.ModelGameObject.activeSelf)
+                    {
+                        modelReference.ModelGameObject.SetActive(true);
+                    }
+                }
+                else
+                {
+                    if (modelReference.ModelGameObject.activeSelf)
+                    {
+                        modelReference.ModelGameObject.SetActive(false);
+                    }
+                }
             }
 
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;

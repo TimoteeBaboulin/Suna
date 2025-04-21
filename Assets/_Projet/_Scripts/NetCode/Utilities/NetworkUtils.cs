@@ -31,7 +31,7 @@ namespace GameNetwork.Utils
         //public bool IsClientLocal { get; private set; }
         //public bool AllowConnection { get; private set; } = true;
 
-        public ISession Session { get; private set; }
+        public ISession Session { get; set; }
         public NetworkEndpoint ListenEndpoint { get; private set; }
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
@@ -45,22 +45,24 @@ namespace GameNetwork.Utils
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;
 
+        public static ClientTransportHelper instance { get; set; }
+
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
             //await StartServicesAsync();
-            var gameConnection = new ClientTransportHelper();
+            instance = new ClientTransportHelper();
             // gameConnection.State = ClientConnectionState.Matchmaking;
 
-            var options = gameConnection.CreateSessionOptions();
+            var options = instance.CreateSessionOptions();
             var networkHandler = new NetworkHandler();
             options.WithNetworkHandler(networkHandler);
 
-            gameConnection.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, options);
-            gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
-            gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
-            gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
+            instance.Session = await MultiplayerService.Instance.CreateOrJoinSessionAsync(sessionId, options);
+            instance.ConnectEndpoint = await networkHandler.ConnectEndpoint;
+            instance.ListenEndpoint = await networkHandler.ListenEndpoint;
+            instance.SessionConnectionType = await networkHandler.SessionConnectionType;
 
-            return gameConnection;
+            return instance;
         }
 
         public async Task<ClientTransportHelper> CreateServerSessionAsync(SessionOptions sessionOptions)
@@ -71,9 +73,9 @@ namespace GameNetwork.Utils
 
                 Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {CurrentIP}, Port: {CurrentPort}");
 
-                var connection = new ClientTransportHelper();
+                instance = new ClientTransportHelper();
 
-                var options = connection.CreateSessionOptions();
+                var options = instance.CreateSessionOptions();
                 Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
 
                 options.MaxPlayers = sessionOptions.MaxPlayers;
@@ -84,25 +86,26 @@ namespace GameNetwork.Utils
                 Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
 
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
+                //IServerSession hostSession = await MultiplayerServerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
                     Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
-                    return connection;
+                    return instance;
                 }
 
-                connection.Session = hostSession;
+                instance.Session = hostSession;
                 Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
                 Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
 
-                connection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
-                connection.ListenEndpoint = await networkHandler.ListenEndpoint;
-                connection.SessionConnectionType = await networkHandler.SessionConnectionType;
+                instance.ConnectEndpoint = await networkHandler.ConnectEndpoint;
+                instance.ListenEndpoint = await networkHandler.ListenEndpoint;
+                instance.SessionConnectionType = await networkHandler.SessionConnectionType;
                 Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
-                    $"ConnectEndpoint={connection.ConnectEndpoint}, " +
-                    $"ListenEndpoint={connection.ListenEndpoint}, " +
-                    $"SessionConnectionType={connection.SessionConnectionType}");
+                    $"ConnectEndpoint={instance.ConnectEndpoint}, " +
+                    $"ListenEndpoint={instance.ListenEndpoint}, " +
+                    $"SessionConnectionType={instance.SessionConnectionType}");
 
-                return connection;
+                return instance;
             }
             catch (Exception ex)
             {
@@ -112,7 +115,7 @@ namespace GameNetwork.Utils
         }
         public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionID, CancellationToken cancellationToken)
         {
-            var gameConnection = new ClientTransportHelper();
+            instance = new ClientTransportHelper();
             await StartServicesAsync();
             //gameConnection.State = ClientConnectionState.Matchmaking;
 
@@ -120,13 +123,13 @@ namespace GameNetwork.Utils
             var networkHandler = new NetworkHandler();
             joinOptions.WithNetworkHandler(networkHandler);
 
-            gameConnection.Session = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionID, joinOptions);
-            gameConnection.ConnectEndpoint = await networkHandler.ConnectEndpoint;
-            gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
-            gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
+            instance.Session = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionID, joinOptions);
+            instance.ConnectEndpoint = await networkHandler.ConnectEndpoint;
+            instance.ListenEndpoint = await networkHandler.ListenEndpoint;
+            instance.SessionConnectionType = await networkHandler.SessionConnectionType;
 
-            Debug.Log($"Client joined session with code: {gameConnection.Session.Id}");
-            return gameConnection;
+            Debug.Log($"Client joined session with code: {instance.Session.Id}");
+            return instance;
         }
 
         public async Task<ClientTransportHelper> ReconnectByIdAsync(string sessionID, CancellationToken cancellationToken)
@@ -248,29 +251,11 @@ namespace GameNetwork.Utils
         public SessionOptions CreateSessionOptions()
         {
             int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
-            var options = new SessionOptions { MaxPlayers = maxPlayers };
-
-            int playersPerTeam = (maxPlayers - 1) / 2;
-
-            for (int i = 0; i < maxPlayers - 1; i++)
+            var options = new SessionOptions
             {
-                string team = i < playersPerTeam ? "corpo" : "natif";
-                options.PlayerProperties.Add(
-                    $"player{i + 1}",
-                    new PlayerProperty(team, VisibilityPropertyOptions.Public)
-                );
-            }
-
-            Debug.Log($"Create sessions with IP {CurrentIP}, Port {CurrentPort}");
-
-            //if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.ClientAndServer)
-            //{
-            //    return options.WithDirectNetwork("0.0.0.0", CurrentIP, CurrentPort);
-            //}
-            //else
-            //{
-            //}
-                return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
+                MaxPlayers = maxPlayers
+            };
+            return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
         }
     }
 }

@@ -6,8 +6,13 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public struct DestroyTag : IComponentData { }
+public struct Lifetime : IComponentData
+{
+    public float RemainingTime;
+}
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial class HitSystem : SystemBase
@@ -19,6 +24,12 @@ public partial class HitSystem : SystemBase
         RequireForUpdate<HitCommand>();
         RequireForUpdate<NetworkId>();
 
+    }
+
+    struct TracerData
+    {
+        public float3 start;
+        public float3 end;
     }
 
     protected override void OnUpdate()
@@ -33,7 +44,21 @@ public partial class HitSystem : SystemBase
 
                 float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
                 Entity hitEffect = commandBuffer.Instantiate(prefabManager.hitVisualEffect);
-
+                Entity tracerEntity = commandBuffer.Instantiate(prefabManager.tracerRoundVisualEffect);
+                float tracerSpeed = SystemAPI.GetComponentRO<TracerRoundComponent>(prefabManager.tracerRoundVisualEffect).ValueRO.speed;
+                
+                commandBuffer.SetComponent(tracerEntity, new LocalTransform
+                {
+                    Position = command.ValueRO.origin,
+                    Rotation = quaternion.identity,
+                    Scale = 1.0f
+                });
+                commandBuffer.SetComponent(tracerEntity, new TracerRoundComponent
+                {
+                    start = command.ValueRO.origin,
+                    end = command.ValueRO.position,
+                    speed = tracerSpeed
+                });
                 commandBuffer.SetComponent(hitEffect, new LocalTransform
                 {
                     Position = hitPosition,
@@ -43,6 +68,13 @@ public partial class HitSystem : SystemBase
 
 
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
+                if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
+                {
+                    commandBuffer.AddComponent(hitEffect, new Lifetime { RemainingTime = durationData.hitVFXDuration });
+                    commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
+                }
+                commandBuffer.DestroyEntity(entity);
+
             }
             commandBuffer.DestroyEntity(entity);
         }
@@ -50,8 +82,3 @@ public partial class HitSystem : SystemBase
         commandBuffer.Dispose();
     }
 }
-
-//prefabConverter = GameObject.FindFirstObjectByType<NetcodePrefabsConverter>();
-//float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
-//GameObject.Instantiate(prefabConverter.hitPrefab, new Vector3(hitPosition.x, hitPosition.y, hitPosition.z), Quaternion.identity);
-//commandBuffer.DestroyEntity(entity);
