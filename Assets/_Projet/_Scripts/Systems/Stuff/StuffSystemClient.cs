@@ -1,9 +1,7 @@
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
@@ -25,17 +23,18 @@ partial struct StuffSystemClient : ISystem
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
         //Instanciate GameObject
-        foreach (var (ownerRO, stuffDataRef, transform, stuff) in SystemAPI
+        foreach (var (dynDataRO, stuffDataRef, transform, stuff) in SystemAPI
         .Query<RefRO<StuffDynamicData>, RefRO<StuffDatabaseAccess>, RefRO<LocalToWorld>>()
         .WithNone<StuffGameObjectRef>()
         .WithDisabled<StuffProcessPending>()
         .WithEntityAccess())
         {
             StuffGameObjectRef goRef = new StuffGameObjectRef();
-            Entity owner = ownerRO.ValueRO.owner;
             ref StuffCommonData data = ref stuffDataRef.ValueRO.GetData(ref database);
+            var singletonEntity = SystemAPI.GetSingletonEntity<GameResourcesDatabase>();
+            var viewPrefabs = state.EntityManager.GetComponentObject<GameResourcesViewPrefabs>(singletonEntity);
 
-            goRef.Value = Object.Instantiate(TempsStuffPrefabSingleton.Instance.listPrefabView[stuffDataRef.ValueRO.ID]);
+            goRef.Value = Object.Instantiate(viewPrefabs.List[stuffDataRef.ValueRO.ID]);
             ecb.AddComponent(stuff, goRef);
         }
 
@@ -63,7 +62,7 @@ partial struct StuffSystemClient : ISystem
                     }
                 }
             }
-            //Si le stuff n'a pas de propriétaire et a un parent, on le drop au sol
+            //Si le stuff n'a pas de propriétaire et a un parent, on retire le parent
             else if (stuffTransform.parent != null)
             {
                 stuffTransform.SetParent(null);
@@ -75,6 +74,8 @@ partial struct StuffSystemClient : ISystem
         .Query<RefRO<StuffEntityInHandRef>, RefRW<LocalTransform>>()
         .WithEntityAccess())
         {
+            if (!state.EntityManager.HasComponent<StuffGameObjectRef>(inHandRefRO.ValueRO.Value)) continue;
+
             ref LocalTransform entityTransform = ref transformRW.ValueRW;
             Transform viewTransform = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value).Value.transform;
 

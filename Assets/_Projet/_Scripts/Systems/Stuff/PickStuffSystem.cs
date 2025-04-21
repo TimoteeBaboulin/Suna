@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -39,11 +40,7 @@ public partial struct PickStuffSystem : ISystem
                 RaycastHit hit = RayCast(startPosition, forward, 4, chara, state.EntityManager);
                 if (hit.Entity != Entity.Null)
                 {
-                    equipStuffQueue.Add(new EquipStuffQueue
-                    {
-                        Stuff = state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value,
-                        Owner = chara,
-                    });
+                    StuffUtils.EquipNextFrame(equipStuffQueue, chara, state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value, true);
 
                     ecb.DestroyEntity(hit.Entity);
                 }

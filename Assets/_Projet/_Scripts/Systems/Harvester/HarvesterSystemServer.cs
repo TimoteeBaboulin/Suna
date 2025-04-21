@@ -38,11 +38,8 @@ partial struct HarvesterSystemServer : ISystem
         {
             if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue))
             {
-                queue.Add(new GameResourcesInstantiateStuffQueue
-                {
-                    StuffName = "Harvester",
-                    Owner = Entity.Null
-                });
+                StuffUtils.InstantiateNextFrame(queue, "Harvester", float3.zero);
+                Debug.Log("ffffffffffffffffffffffffffffffffffffffffffffffffffff");
 
                 harvesterIsInstantiated = true;
                 return;

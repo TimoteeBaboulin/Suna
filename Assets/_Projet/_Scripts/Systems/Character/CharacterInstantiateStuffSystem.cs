@@ -11,6 +11,7 @@ partial struct CharacterInstantiateStuffSystem : ISystem
 
         state.RequireForUpdate(query);
         state.RequireForUpdate<GameResourcesDatabase>();
+        state.RequireForUpdate<GameResourcesInstantiateStuffQueue>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -26,11 +27,7 @@ partial struct CharacterInstantiateStuffSystem : ISystem
             for (int i = defaultStuffNames.Length - 1; i >= 0; i--)
             {
                 var name = defaultStuffNames[i];
-                stuffInstanciateQueus.Add(new GameResourcesInstantiateStuffQueue 
-                { 
-                    StuffName = name.Value, 
-                    Owner = chara 
-                });
+                StuffUtils.InstantiateNextFrame(stuffInstanciateQueus, name.Value, chara);
             }
 
             state.EntityManager.SetComponentEnabled<IsInstanciateDefaultStuff>(chara, false);

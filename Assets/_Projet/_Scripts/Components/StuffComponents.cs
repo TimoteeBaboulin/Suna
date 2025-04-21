@@ -63,6 +63,7 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
     [GhostField] public Entity Owner;
+    [GhostField] public float3 Position;
 }
 
 public struct StuffCommonData

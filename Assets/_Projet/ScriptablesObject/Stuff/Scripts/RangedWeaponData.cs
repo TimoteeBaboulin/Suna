@@ -5,7 +5,7 @@ using UnityEngine.UI;
 public class RangedWeaponData : ScriptableObject
 {
     [Header("Stuff infos")]
-    public GameObject dropedEtityPrefab;
+    public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
     public Texture2D UIImage;
     public StuffSlot location;

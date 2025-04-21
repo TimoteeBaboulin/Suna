@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
 
@@ -32,6 +33,7 @@ partial struct InstanciateEntityStuffSystem : ISystem
             // Explore Stuff Infos queue
             foreach (var instanteInfos in instantiateStuffQueue)
             {
+                            //UnityEngine.Debug.Log("Instanciate stuff " + instanteInfos.StuffName + " for " + instanteInfos.Owner);
                 // Retrieve stuff in database
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
@@ -63,13 +65,15 @@ partial struct InstanciateEntityStuffSystem : ISystem
                             ecb.SetComponentEnabled<StuffProcessPending>(stuff, true);
                             ecb.SetComponent(stuff, new StuffProcessPending 
                             { 
-                                Owner = instanteInfos.Owner ,
+                                Owner = instanteInfos.Owner,
+                                Position = instanteInfos.Position
                             });
 
                             ecb.SetComponent(stuff, new StuffDynamicData
                             {
                                 dropedEntityPrefab = stuffPrefabs[i].dropedEntityPrefab
                             });
+
                         }
                         break;
                     }
@@ -97,8 +101,8 @@ partial struct ProcessPendingStuffSystem : ISystem
         ref var stuffCommonDataArray = ref database.StuffDatabaseRef.Value.StuffCommonData;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (dataAccessRW, processRO, ghostOwnerRW, stuff) in SystemAPI
-            .Query<RefRW<StuffDatabaseAccess>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
+        foreach (var (dataAccessRW, dynDataRW, processRO, ghostOwnerRW, stuff) in SystemAPI
+            .Query<RefRW<StuffDatabaseAccess>, RefRW<StuffDynamicData>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
             .WithAll<StuffProcessPending>()
             .WithEntityAccess())
         {
@@ -127,8 +131,12 @@ partial struct ProcessPendingStuffSystem : ISystem
                 var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
                 StuffUtils.EquipNextFrame(equipStuffQueu, processRO.ValueRO.Owner, stuff, true);
             }
+            else
+            {
+                StuffUtils.InstantiateDrop(ref ecb, ref dynDataRW.ValueRW, stuff, processRO.ValueRO.Position, float3.zero, 0f);
+            }
 
-            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);
+                SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);
             
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);
         }

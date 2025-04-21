@@ -1,7 +1,8 @@
-using System.Collections.Generic;
-using UnityEngine;
+//using System.Collections.Generic;
+//using UnityEngine;
 
-public class TempsStuffPrefabSingleton : Singleton<TempsStuffPrefabSingleton>
-{
-    public List<GameObject> listPrefabView;
-}
+//public class TempsStuffPrefabSingleton : Singleton<TempsStuffPrefabSingleton>
+//{
+//    [HideInInspector]
+//    public List<GameObject> listPrefabView;
+//}

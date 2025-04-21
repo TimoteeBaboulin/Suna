@@ -29,6 +29,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             Entity rangedWeaponEntity = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic);
             Entity meleeWeaponEntity = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic);
             Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
+            List<GameObject> viewPrefabs = new();
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -40,10 +41,11 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
-                //stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
+                viewPrefabs.Add(rangedWeaponSO.viewPrefab);
+
                 prefabs.Add(new StuffEntityPrefabsBuffer
                 {
-                    dropedEntityPrefab = GetEntity(rangedWeaponSO.dropedEtityPrefab, TransformUsageFlags.Dynamic),
+                    dropedEntityPrefab = GetEntity(rangedWeaponSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
                     inHandEntityPrefab = rangedWeaponEntity
                 });
 
@@ -66,6 +68,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 var meleeWeaponSO = authoring.meleeWeaponList[i - authoring.rangedWeaponList.Count];
 
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
+
+                viewPrefabs.Add(meleeWeaponSO.viewPrefab);
 
                 prefabs.Add(new StuffEntityPrefabsBuffer 
                 { 
@@ -92,7 +96,8 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
-            //stuffs[id].viewPrefab = harvesterSO.viewPrefab;
+            viewPrefabs.Add(harvesterSO.viewPrefab);
+
             prefabs.Add(new StuffEntityPrefabsBuffer 
             { 
                 dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
@@ -169,6 +174,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             AddBlobAsset(ref blobRef, out _);
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
+            AddComponentObject(entity, new GameResourcesViewPrefabs { List = viewPrefabs });
 
             AddBuffer<GameResourcesInstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);

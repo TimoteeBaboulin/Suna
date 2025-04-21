@@ -1,14 +1,32 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using Unity.VisualScripting;
-using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public static class StuffUtils
 {
+    public static void InstantiateNextFrame(DynamicBuffer<GameResourcesInstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, Entity owner)
+    {
+        if (owner == Entity.Null) return;
+
+        instantiateStuffQueue.Add(new GameResourcesInstantiateStuffQueue
+        {
+            StuffName = stuffName,
+            Owner = owner,
+        });
+    }
+
+    public static void InstantiateNextFrame(DynamicBuffer<GameResourcesInstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, float3 position)
+    {
+        instantiateStuffQueue.Add(new GameResourcesInstantiateStuffQueue
+        {
+            StuffName = stuffName,
+            Position = position,
+        });
+    }
+
     public static void EquipNextFrame(DynamicBuffer<EquipStuffQueue> equipStuffQueue, Entity owner, Entity stuff, bool autoSwitchOn)
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
@@ -212,24 +230,35 @@ public static class StuffUtils
     LocalTransform ownerTransform,
     float impulse)
     {
-        Entity dropedStuff = ecb.Instantiate(stuffDynamicDataRef.dropedEntityPrefab);
-
-        ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuff });
-
         float3 startPosition = shootStartPosDelta.PositionDelta + ownerTransform.Position;
         quaternion shootRotation = math.mul(ownerTransform.Rotation, ownerView.ViewRotation);
         float3 forward = math.mul(shootRotation, math.forward());
 
+        InstantiateDrop(ref ecb, ref stuffDynamicDataRef, stuff, startPosition + forward, forward, impulse);
+    }
+
+    public static void InstantiateDrop(
+    ref EntityCommandBuffer ecb,
+    ref StuffDynamicData stuffDynamicDataRef,
+    Entity stuff,
+    float3 startPosition,
+    float3 direction,
+    float impulse)
+    {
+        Entity dropedStuff = ecb.Instantiate(stuffDynamicDataRef.dropedEntityPrefab);
+
+        ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuff });
+
         ecb.SetComponent(dropedStuff, new LocalTransform
         {
-            Position = startPosition + forward,
+            Position = startPosition,
             Rotation = quaternion.identity,
             Scale = 1f
         });
 
         ecb.SetComponent(dropedStuff, new PhysicsVelocity
         {
-            Linear = forward * impulse,
+            Linear = direction * impulse,
             Angular = float3.zero
         });
     }
