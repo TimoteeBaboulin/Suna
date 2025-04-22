@@ -141,12 +141,14 @@ public class HUDController : MonoBehaviour
         {
             VisualElement iconRef = icon;
             UI.SetBorderColor(ref iconRef, Color.clear);
+            UI.SetImageTintColor(ref iconRef, Color.clear);
         }
         _natifIcons = _HUD.Q<VisualElement>("NatifIcons");
         foreach (VisualElement icon in _natifIcons.Children())
         {
             VisualElement iconRef = icon;
             UI.SetBorderColor(ref iconRef, Color.clear);
+            UI.SetImageTintColor(ref iconRef, Color.clear);
         }
     }
 
@@ -225,49 +227,14 @@ public class HUDController : MonoBehaviour
         //}
 
         // Update Player Icons (should be updated only when it has to)
-        List<IReadOnlyPlayer> teamList = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
-        for (int i = 0; i < _corpoIcons.Children().Count(); i++)
+        if (world.Name == "ClientWorld")
         {
-            VisualElement icon = _corpoIcons.Q<VisualElement>("Position" + (i + 1).ToString());
-            if (i < teamList.Count)
-            {
-                if (teamList[i].Id == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
-                {
-                    UI.SetBorderColor(ref icon, Color.green);
-                }
-                else
-                {
-                    UI.SetBorderColor(ref icon, Color.gray);
-                }
-            }
-            else
-            {
-                UI.SetBorderColor(ref icon, Color.clear);
-            }
-        }
-        teamList.Clear();
-        teamList = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
-        for (int i = 0; i < _natifIcons.Children().Count(); i++)
-        {
-            VisualElement icon = _natifIcons.Q<VisualElement>("Position" + (i + 1).ToString());
-            if (i < teamList.Count)
-            {
-                if (teamList[i].Id == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
-                {
-                    UI.SetBorderColor(ref icon, Color.green);
-                }
-                else
-                {
-                    UI.SetBorderColor(ref icon, Color.gray);
-                }
-            }
-            else
-            {
-                UI.SetBorderColor(ref icon, Color.clear);
-            }
+            PlayerIconsUpdate(TeamSideType.Corpo, _corpoIcons);
+            PlayerIconsUpdate(TeamSideType.Natif, _natifIcons);
         }
     }
 
+    //----------Start of Round Phase Functions
     private void RoundPhaseUpdate(RoundComponent roundComponent)
     {
         _corpoScore.text = roundComponent.corporationScore.ToString().PadLeft(2, '0');
@@ -316,7 +283,6 @@ public class HUDController : MonoBehaviour
             }
         }
     }
-
     private void UpdateForBuyPhase(float t)
     {
         // Animation for Buy Phase
@@ -442,6 +408,7 @@ public class HUDController : MonoBehaviour
             UI.SetActive(ref _roundElement, false);
         }
     }
+    //----------End of Round Phase Functions
 
     //----------Start of Weapon List Link System
     private void OnStuffIdChange(object sender, WeaponListLinkSystem.StuffIdEventArgs args)
@@ -589,6 +556,35 @@ public class HUDController : MonoBehaviour
         ResetPlant();
     }
     //----------End of Defuse and Plant Elements System
+
+    //----------Start of Player Icons Functions
+    private void PlayerIconsUpdate(TeamSideType teamSide, VisualElement teamIcons)
+    {
+        // Corpo Team
+        IReadOnlyList<IReadOnlyPlayer> teamList = PlayerHelpers.GetPlayersByTeam(teamSide);
+        for (int i = 0; i < teamIcons.Children().Count(); i++)
+        {
+            VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
+            if (i < teamList.Count)
+            {
+                if (teamList[i].Id == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+                {
+                    UI.SetBorderColor(ref icon, Color.green);
+                }
+                else
+                {
+                    UI.SetBorderColor(ref icon, Color.gray);
+                }
+                UI.SetImageTintColor(ref icon, Color.white);
+            }
+            else
+            {
+                UI.SetBorderColor(ref icon, Color.clear);
+                UI.SetImageTintColor(ref icon, Color.clear);
+            }
+        }
+    }
+    //----------End of Player Icons Functions
 }
 
 [Serializable]
