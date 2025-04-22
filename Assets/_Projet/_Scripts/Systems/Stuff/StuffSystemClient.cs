@@ -92,6 +92,20 @@ partial struct StuffSystemClient : ISystem
         .WithPresent<IsStuffInHand>()
         .WithEntityAccess())
         {
+            if (ownerRO.ValueRO.owner != Entity.Null)
+            {
+                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(ownerRO.ValueRO.owner))
+                {
+                    CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(ownerRO.ValueRO.owner);
+                    Transform viewTransform = charaBones.WeaponSlotTransform;
+
+                    if (goRef.Value.transform.parent != viewTransform)
+                    {
+                        goRef.Value.transform.SetParent(viewTransform, false);
+                    }
+                }
+            }
+
             goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.owner == Entity.Null);
         }
 
