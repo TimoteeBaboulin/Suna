@@ -31,7 +31,7 @@ namespace GameNetwork.Utils
         //public bool IsClientLocal { get; private set; }
         //public bool AllowConnection { get; private set; } = true;
 
-        public ISession Session { get; private set; }
+        public ISession Session { get; set; }
         public NetworkEndpoint ListenEndpoint { get; private set; }
         public NetworkEndpoint ConnectEndpoint { get; private set; }
         public NetworkType SessionConnectionType { get; private set; }
@@ -45,7 +45,7 @@ namespace GameNetwork.Utils
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;
 
-        public static ClientTransportHelper instance { get; private set; }
+        public static ClientTransportHelper instance { get; set; }
 
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
@@ -253,16 +253,7 @@ namespace GameNetwork.Utils
             int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
             var options = new SessionOptions
             {
-                MaxPlayers = maxPlayers,
-                PlayerProperties = new Dictionary<string, PlayerProperty>
-        {
-            { "team", new PlayerProperty("none", VisibilityPropertyOptions.Public) }
-        }
-                //SessionProperties = new Dictionary<string, SessionProperty>
-                //{
-                //    {"CountTeamNatif", new SessionProperty("0", VisibilityPropertyOptions.Public) },
-                //    {"CountTeamCorpo", new SessionProperty("0", VisibilityPropertyOptions.Public) }
-                //}
+                MaxPlayers = maxPlayers
             };
             return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
         }

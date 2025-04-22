@@ -47,7 +47,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _Albedo:
-        m_Texture: {fileID: 2800000, guid: 6f82a160de795274ca250cd58fa13911, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3cbcaa6dedc9373439d9c5b218f4f7ac, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Displacement:
@@ -93,7 +93,7 @@ Material:
     - _EnableBlendModePreserveSpecularLighting: 1
     - _EnableFogOnTransparent: 1
     - _ExcludeFromTUAndAA: 0
-    - _Height_Scale: 0.1
+    - _Height_Scale: 0.03
     - _Layer_Count: 32
     - _MaterialID: 1
     - _MaterialTypeMask: 2
@@ -109,7 +109,7 @@ Material:
     - _RefractionModel: 0
     - _RenderQueueType: 1
     - _RequireSplitLighting: 0
-    - _Roughness_Factor: 0
+    - _Roughness_Factor: 0.1
     - _SrcBlend: 1
     - _StencilRef: 0
     - _StencilRefDepth: 8

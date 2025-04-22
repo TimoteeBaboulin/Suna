@@ -14,28 +14,53 @@ public class ThirdPersonCharacterModelUtils
         });
     }
 
-    public static void AddModelBonesComponent(in Transform modelTransform, RefRO<ThirdPersonCharacterModelBonesName> modelBonesName, 
-        in Entity characterEntity, in EntityCommandBuffer ecb)
+    public static void AddModelBonesComponent(in Transform modelTransform, in CharacterColliderBones corpoBones, in CharacterColliderBones natifBones,
+        in int networkId, in Entity characterEntity, in EntityCommandBuffer ecb)
     {
+        CharacterColliderBones bonesName = null;
+
+        TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                bonesName = corpoBones;
+                break;
+            case TeamSideType.Natif:
+                bonesName = natifBones;
+                break;
+            case TeamSideType.Neutre:
+                if ((networkId % 2) == 0)
+                {
+                    bonesName = corpoBones;
+                }
+                else
+                {
+                    bonesName = natifBones;
+                }
+                break;
+        }
+
+        if (bonesName == null) return;
+
         ecb.AddComponent(characterEntity, new ThirdPersonCharacterModelBonesTransform
         {
-            ViewBoneTransform = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ViewBoneName),
-            HeadBoneTransform = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.HeadBoneName),
-            ArmLeftBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ArmLeftBoneName0),
-            ArmLeftBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ArmLeftBoneName1),
-            ArmLeftBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ArmLeftBoneName2),
-            ArmRightBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ArmRightBoneName0),
-            ArmRightBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ArmRightBoneName1),
-            ArmRightBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ArmRightBoneName2),
-            ThoraxBoneTransform = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.ThoraxBoneName),
-            StomachBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.StomachBoneName0),
-            StomachBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.StomachBoneName1),
-            LegLeftBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.LegLeftBoneName0),
-            LegLeftBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.LegLeftBoneName1),
-            LegLeftBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.LegLeftBoneName2),
-            LegRightBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.LegRightBoneName0),
-            LegRightBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.LegRightBoneName1),
-            LegRightBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, modelBonesName.ValueRO.LegRightBoneName2),
+            HeadBoneTransform = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.Head),
+            ArmLeftBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.ArmLeft0),
+            ArmLeftBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.ArmLeft1),
+            ArmLeftBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.ArmLeft2),
+            ArmRightBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.ArmRight0),
+            ArmRightBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.ArmRight1),
+            ArmRightBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.ArmRight2),
+            ThoraxBoneTransform = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.Thorax),
+            StomachBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.Stomach0),
+            StomachBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.Stomach1),
+            LegLeftBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.LegLeft0),
+            LegLeftBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.LegLeft1),
+            LegLeftBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.LegLeft2),
+            LegRightBoneTransform0 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.LegRight0),
+            LegRightBoneTransform1 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.LegRight1),
+            LegRightBoneTransform2 = CommonCharacterModelUtils.FindBoneByName(modelTransform, bonesName.LegRight2),
         });
     }
 

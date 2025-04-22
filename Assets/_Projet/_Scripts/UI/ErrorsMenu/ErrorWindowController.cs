@@ -45,7 +45,7 @@ public class ErrorWindowController : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            await GameManager.Instance.DisconnectAndUnloadWorlds();
+          //  await GameManager.Instance.DisconnectAndUnloadWorlds();
             await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
         }
 	}
