@@ -19,7 +19,7 @@ public class CommonAutoConnect : ClientServerBootstrap
         }
         else if (Application.platform == RuntimePlatform.WindowsServer)
         {
-            AutoConnectPort = 59557; //Votre port ici
+            AutoConnectPort = 59692; //Votre port ici
             ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
 
             return true;

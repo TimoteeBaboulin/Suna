@@ -18,6 +18,7 @@ partial struct RangedWeaponSystemClient : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         //Play Sounds (Temp)
+#if !UNITY_SERVER
         foreach (var (request, soundRpc, entity) in SystemAPI
             .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<RangedWeaponSoundRpc>>()
             .WithEntityAccess())
@@ -33,15 +34,11 @@ partial struct RangedWeaponSystemClient : ISystem
                     case RangedWeaponState.Idle:
                         break;
                     case RangedWeaponState.Shoot:
-#if !UNITY_SERVER
                         rws.Shoot();
-#endif
                         break;
                     case RangedWeaponState.Reload:
-#if !UNITY_SERVER
                         Debug.Log("Son reload " + goRef);
                         rws.Reload();
-#endif
                         break;
 
                     case RangedWeaponState.Droped:
@@ -52,6 +49,7 @@ partial struct RangedWeaponSystemClient : ISystem
             }
             ecb.DestroyEntity(entity);
         }
+#endif
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
