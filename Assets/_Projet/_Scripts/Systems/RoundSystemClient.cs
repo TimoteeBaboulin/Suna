@@ -150,17 +150,19 @@ partial struct RoundSystemClient : ISystem
         component.ValueRW.currentPhase = phase;
         component.ValueRW.timer = buffer[(int)phase];
 
-        if (phase == RoundPhase.ActionPhase)
+        if (phase != RoundPhase.BuyPhase)
         {
-            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>>()
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW <SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
                     .WithAll<SpawnBarrierComponent>()
                     .WithEntityAccess())
             {
                 physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
+
+                matOverride.ValueRW.Value = 1;
             }
         }
-        else if (phase == RoundPhase.BuyPhase)
+        else
         {
             foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
                     .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
