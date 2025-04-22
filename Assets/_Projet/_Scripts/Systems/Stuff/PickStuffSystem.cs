@@ -88,6 +88,7 @@ public partial struct PickStuffSystem : ISystem
         {
             foreach (RaycastHit hit in allHits)
             {
+                    UnityEngine.Debug.Log("Hit: " + hit.Entity.Index);
                 if (entityManager.HasComponent<StuffEntityInHandRef>(hit.Entity))
                 {
                     return hit;

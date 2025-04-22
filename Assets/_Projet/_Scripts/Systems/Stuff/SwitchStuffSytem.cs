@@ -45,7 +45,7 @@ public partial struct SwitchStuffSystem : ISystem
             }
         }
 
-        ////Switch with shortcut
+        //Switch with shortcut
         foreach (var (stuffListRef, inputRef, chara) in SystemAPI
         .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
         .WithEntityAccess())
@@ -57,7 +57,7 @@ public partial struct SwitchStuffSystem : ISystem
 
             if (input.stuffLocation > 0)
             {
-                if ((int)stuffList.StuffInHandSlot == input.stuffLocation) continue;
+                if ((int)stuffList.StuffInHandSlot == input.stuffLocation - 1) continue;
 
                 StuffUtils.SwitchTo(ref state, ref stuffList, (StuffSlot)(input.stuffLocation - 1));
             }
