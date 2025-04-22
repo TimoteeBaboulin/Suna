@@ -9,7 +9,6 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class InGameHUDSystem : SystemBase
 {
-    // Events and Args
     public class HealthArgs : EventArgs { public int Health; }
     public class AmmoArgs : EventArgs { public int ammo; public int remainingAmmo; }
     public class MoneyArgs : EventArgs { public uint money; }
@@ -32,9 +31,9 @@ partial class InGameHUDSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
-        // Health, Money and Hit indicator
-        foreach (var (currentHealth, client, hasHit, stuffInHandTypeRef, stuffListRef) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterClientAttachedComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffInHandLocation>, RefRO<CharacterStuffList>>()
+
+        foreach (var (currentHealth, client, hasHit, stuffListRef) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterClientAttachedComponent>, RefRO<HasHitComponent>, RefRO<CharacterStuffList>>()
             .WithAll<GhostOwnerIsLocal>())
         {
             HealthChangedEvent?.Invoke(this, new HealthArgs { Health = (int)currentHealth.ValueRO.Value });
@@ -46,8 +45,6 @@ partial class InGameHUDSystem : SystemBase
                 HitRegister?.Invoke(this, EventArgs.Empty);
             }
         }
-
-        // Ammo for firearms
         foreach (var (weaponDataRef, stuff) in SystemAPI
             .Query<RefRO<RangedWeaponDynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
@@ -57,14 +54,13 @@ partial class InGameHUDSystem : SystemBase
             AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = weaponData.currentAmmo, remainingAmmo = weaponData.remainingAmmo });
         }
 
-        // Ammo for melee weapons
         foreach (var (stuffOwner, stuff) in SystemAPI
-            .Query<RefRO<StuffOwner>>()
+            .Query<RefRO<StuffDynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
             .WithNone<RangedWeaponDynamicData>()
             .WithEntityAccess())
         {
-            AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = 1, remainingAmmo = 0 });
+            AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = 0, remainingAmmo = 0 });
         }
     }
 }

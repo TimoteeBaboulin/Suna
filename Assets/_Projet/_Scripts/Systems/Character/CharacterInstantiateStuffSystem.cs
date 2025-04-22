@@ -11,24 +11,23 @@ partial struct CharacterInstantiateStuffSystem : ISystem
 
         state.RequireForUpdate(query);
         state.RequireForUpdate<GameResourcesDatabase>();
+        state.RequireForUpdate<GameResourcesInstantiateStuffQueue>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        var stuffInstanciateQueus = SystemAPI.GetSingletonBuffer<GameResourcesInstanciateStuffQueu>();
+        var stuffInstanciateQueus = SystemAPI.GetSingletonBuffer<GameResourcesInstantiateStuffQueue>();
 
-        foreach (var (stuffListRef, stuffInHandTypeRef, defaultStuffNames, chara) in SystemAPI
-            .Query<RefRW<CharacterStuffList>, RefRW<CharacterStuffInHandLocation>, DynamicBuffer<CharacterDefaultStuffName>>()
+        foreach (var (stuffListRef, defaultStuffNames, chara) in SystemAPI
+            .Query<RefRW<CharacterStuffList>, DynamicBuffer<CharacterDefaultStuffName>>()
             .WithAll<IsInstanciateDefaultStuff>()
             .WithEntityAccess())
         {
-            foreach (var name in defaultStuffNames)
+            //foreach (var name in defaultStuffNames)
+            for (int i = defaultStuffNames.Length - 1; i >= 0; i--)
             {
-                stuffInstanciateQueus.Add(new GameResourcesInstanciateStuffQueu 
-                { 
-                    StuffName = name.Value, 
-                    Owner = chara 
-                });
+                var name = defaultStuffNames[i];
+                StuffUtils.InstantiateNextFrame(stuffInstanciateQueus, name.Value, chara);
             }
 
             state.EntityManager.SetComponentEnabled<IsInstanciateDefaultStuff>(chara, false);

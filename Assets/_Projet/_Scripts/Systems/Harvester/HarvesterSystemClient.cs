@@ -24,8 +24,8 @@ partial class HarvesterSystemClient : SystemBase
         playerActions = input.Player;
         harvesterActions = input.Harvester;
 
-        RequireForUpdate<EquipStuffQueu>();
-        RequireForUpdate<UnequipStuffQueu>();
+        RequireForUpdate<EquipStuffQueue>();
+        RequireForUpdate<UnequipStuffQueue>();
     }
 
     private void AskForOwner(ref EntityCommandBuffer ecb)
@@ -57,17 +57,17 @@ partial class HarvesterSystemClient : SystemBase
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         NetworkTick currentTick = networkTime.ServerTick;
 
-        var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueu>();
-        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueu>();
+        var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
-        foreach ((RefRW<HarvesterComponent> harvesterRW, RefRW<StuffOwner> ownerRW, Entity harvesterEntity) in SystemAPI
-            .Query<RefRW<HarvesterComponent>, RefRW<StuffOwner>>()
+        foreach ((RefRW<HarvesterComponent> harvesterRW, RefRW<StuffDynamicData> ownerRW, Entity harvesterEntity) in SystemAPI
+            .Query<RefRW<HarvesterComponent>, RefRW<StuffDynamicData>>()
             .WithEntityAccess())
         {
             if (!EntityManager.IsComponentEnabled<IsStuffInHand>(harvesterEntity))
                 continue;
 
-            if (ownerRW.ValueRO.Value != localCharacter)
+            if (ownerRW.ValueRO.owner != localCharacter)
                 continue;
 
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
@@ -143,13 +143,8 @@ partial class HarvesterSystemClient : SystemBase
              in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
-
-            unequipStuffQueu.Add(new UnequipStuffQueu
-            {
-                Stuff = rpc.harvester,
-                Owner = rpc.harvesterOwner,
-                Position = rpc.plantPosition
-            });
+            
+            StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
 
             ecb.DestroyEntity(entity);
         }
@@ -169,25 +164,17 @@ partial class HarvesterSystemClient : SystemBase
                 continue;
             }
 
-            if (SystemAPI.HasComponent<StuffOwner>(rpc.harvester))
+            if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
             {
-                StuffOwner stuffOwner = SystemAPI.GetComponent<StuffOwner>(rpc.harvester);
+                StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
 
-                if (stuffOwner.Value != Entity.Null)
+                if (stuffOwner.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueu
-                    {
-                        Stuff = rpc.harvester,
-                        Owner = stuffOwner.Value
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
                 }
             }
 
-            equipStuffQueu.Add(new EquipStuffQueu
-            {
-                Stuff = rpc.harvester,
-                Owner = rpc.character
-            });
+            StuffUtils.EquipNextFrame(equipStuffQueu, rpc.character, rpc.harvester, true);
         }
 
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterDropped rpc, Entity entity)
@@ -205,18 +192,13 @@ partial class HarvesterSystemClient : SystemBase
                 continue;
             }
 
-            if (SystemAPI.HasComponent<StuffOwner>(rpc.harvester))
+            if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
             {
-                StuffOwner stuffOwner = SystemAPI.GetComponent<StuffOwner>(rpc.harvester);
+                StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
 
-                if (stuffOwner.Value != Entity.Null)
+                if (stuffOwner.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueu
-                    {
-                        Stuff = rpc.harvester,
-                        Owner = stuffOwner.Value,
-                        Position = rpc.position
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
                 }
                 else
                 {

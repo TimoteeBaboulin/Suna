@@ -166,12 +166,11 @@ partial class CameraSystem : SystemBase
     {
         stuffEntity = default;
 
-        if (!SystemAPI.HasComponent<CharacterStuffInHandLocation>(characterEntity)
-            || !SystemAPI.HasComponent<CharacterStuffList>(characterEntity))
+        if (!SystemAPI.HasComponent<CharacterStuffList>(characterEntity))
             return false;
 
         CharacterStuffList stuffList = SystemAPI.GetComponent<CharacterStuffList>(characterEntity);
-        stuffEntity = stuffList.Value[(int)SystemAPI.GetComponent<CharacterStuffInHandLocation>(characterEntity).Value];
+        stuffEntity = stuffList.StuffInHand;
         return true;
     }
 }

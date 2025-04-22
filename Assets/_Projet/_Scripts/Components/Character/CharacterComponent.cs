@@ -66,14 +66,20 @@ public struct CharacterDefaultStuffName : IBufferElementData
 [GhostComponent]
 public struct CharacterStuffList : IComponentData
 {
-    [GhostField] public FixedList128Bytes<Entity> Value;
-}
+    [GhostField] public FixedList128Bytes<Entity> List;
+    [GhostField] public StuffSlot StuffInHandSlot;
 
-[GhostComponent]
+    public Entity StuffInHand { get => List[(int)StuffInHandSlot]; set => List[(int)StuffInHandSlot] = value; }
 
-public struct CharacterStuffInHandLocation : IComponentData 
-{
-    [GhostField] public StuffInventoryLocation Value;
+    public Entity GetStuffInSlot(StuffSlot slot)
+    {
+        return List[(int)slot];
+    }
+
+    public void SetStuffInSlot(StuffSlot slot, Entity stuff)
+    {
+        List[(int)slot] = stuff;
+    }
 }
 
 [GhostEnabledBit]
