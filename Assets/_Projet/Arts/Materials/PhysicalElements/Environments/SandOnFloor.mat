@@ -56,7 +56,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SandTexture:
-        m_Texture: {fileID: 2800000, guid: 6f82a160de795274ca250cd58fa13911, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3cbcaa6dedc9373439d9c5b218f4f7ac, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SmallNoise:
@@ -66,10 +66,10 @@ Material:
     m_Ints: []
     m_Floats:
     - _BigNoiseScale: 2
-    - _BigNoiseTiling: 1
-    - _BlendScale: 0.03
-    - _HeightFactor: 0.54
-    - _NegativeNoiseScale: 1.09
+    - _BigNoiseTiling: 0
+    - _BlendScale: 0.11
+    - _HeightFactor: 2.28
+    - _NegativeNoiseScale: 1.04
     - _SmallNoiseScale: 0.97
     m_Colors: []
   m_BuildTextureStacks: []
