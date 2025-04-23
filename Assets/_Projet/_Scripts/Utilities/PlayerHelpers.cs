@@ -91,13 +91,7 @@ public static class PlayerHelpers
     static public IPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        int index = networkId;
-
-        if (RequestedPlayType == PlayType.ClientAndServer)
-        {
-            index--;
-        }
-
+        int index = networkId - 1 ;
         return (IPlayer)sessionPlayers[index];
     }
 
@@ -108,8 +102,6 @@ public static class PlayerHelpers
         string assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
             ? (UnityEngine.Random.value < 0.5f ? "Corpo" : "Natif")
             : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? "Corpo" : "Natif");
-
-        Debug.Log(teamCounts.corpoPlayersCount);
 
         if (readOnlyPlayer is IPlayer player)
         {
@@ -203,9 +195,47 @@ public static class PlayerHelpers
         }
     }
 
+    public static void ClearTeam(string teamName)
+    {
+        TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                _teams.corpoPlayers.Clear();
+                break;
+            case TeamSideType.Natif:
+                _teams.natifPlayers.Clear();
+                break;
+            default:
+                Array.Empty<IReadOnlyPlayer>();
+                break;
+        }
+    }
+
+    public static void ClearTeam(TeamSideType teamSide)
+    {
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                _teams.corpoPlayers.Clear();
+                break;
+            case TeamSideType.Natif:
+                _teams.natifPlayers.Clear();
+                break;
+            default:
+                Array.Empty<IReadOnlyPlayer>();
+                break;
+        }
+    }
+
+    public static void ClearTeams()
+    {
+        _teams.corpoPlayers.Clear();
+        _teams.natifPlayers.Clear();
+    }
+
     static public TeamSideType GetPlayerInTeam(int networkId)
     {
-        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
         var player = FindCurrentPlayerForNetworkId(networkId);
 
         if (player.Properties.Count > 0)
@@ -221,7 +251,6 @@ public static class PlayerHelpers
             {
                 return TeamSideType.Natif;
             }
-            return TeamSideType.Neutre;
         }
         return TeamSideType.Neutre;
     }

@@ -94,13 +94,8 @@ public class PauseMenuController : MonoBehaviour
 
     private async void OnHomeButtonClicked()
     {
-        if (GameManager.Instance != null)
-        {
-            // await GameManager.Instance.DisconnectAndUnloadWorlds();
-            await LoadUtils.QuitAsync();
-            await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
-        }
-        //SceneManager.LoadScene("MainMenu");
+        await LoadUtils.QuitAsync();
+        await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
     }
 
     private void OnPlayButtonClicked()

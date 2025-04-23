@@ -1,13 +1,19 @@
+using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
-public struct GameResourcesStuffEntityPrefabs : IComponentData
+[GhostComponent]
+public struct StuffEntityPrefabsBuffer : IBufferElementData
 {
     public Entity rangedWeaponEntityPrefab;
     public Entity meleeWeaponEntityPrefab;
     public Entity grenadesEntityPrefab;
     public Entity harvesterEntityPrefab;
+    [GhostField] public Entity dropedEntityPrefab;
+    [GhostField] public Entity inHandEntityPrefab;
 }
 
 public struct GameResourcesDatabase : IComponentData
@@ -23,8 +29,14 @@ public struct StuffDatabase
     public BlobArray<MeleeWeaponCommonData> MeleeWeaponsCommonData;
 }
 
-public struct GameResourcesInstanciateStuffQueu : IBufferElementData
+public struct GameResourcesInstantiateStuffQueue : IBufferElementData
 {
     public FixedString128Bytes StuffName;
     public Entity Owner;
+    public float3 Position;
+}
+
+public class GameResourcesViewPrefabs : IComponentData
+{
+    public List<GameObject> List;
 }

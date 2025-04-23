@@ -24,16 +24,15 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             Entity entity = GetEntity(TransformUsageFlags.None);
 
-            AddComponent(entity, new GameResourcesStuffEntityPrefabs
-            {
-                rangedWeaponEntityPrefab = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic),
-                meleeWeaponEntityPrefab = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic),
-                grenadesEntityPrefab = GetEntity(authoring.grenadesEntityPrefab, TransformUsageFlags.Dynamic),
-                harvesterEntityPrefab = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic)
-            });
-
             var builder = new BlobBuilder(Allocator.Temp);
             ref StuffDatabase stuffCollection = ref builder.ConstructRoot<StuffDatabase>();
+            DynamicBuffer<StuffEntityPrefabsBuffer> prefabs = AddBuffer<StuffEntityPrefabsBuffer>(entity);
+
+            Entity rangedWeaponEntity = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic);
+            Entity meleeWeaponEntity = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic);
+            Entity grenadeEntity = GetEntity(authoring.grenadesEntityPrefab, TransformUsageFlags.Dynamic);
+            Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
+            List<GameObject> viewPrefabs = new();
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -47,8 +46,15 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
-                stuffs[i].viewPrefab = rangedWeaponSO.viewPrefab;
-                stuffs[i].location = rangedWeaponSO.location;
+                viewPrefabs.Add(rangedWeaponSO.viewPrefab);
+
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(rangedWeaponSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = rangedWeaponEntity
+                });
+
+                stuffs[i].slot = rangedWeaponSO.location;
                 stuffs[i].type = rangedWeaponSO.type;
                 stuffs[i].side = rangedWeaponSO.side;
                 stuffs[i].deploymentSpeed = rangedWeaponSO.deploymentSpeed;
@@ -68,8 +74,15 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
 
-                stuffs[i].viewPrefab = meleeWeaponSO.viewPrefab;
-                stuffs[i].location = meleeWeaponSO.location;
+                viewPrefabs.Add(meleeWeaponSO.viewPrefab);
+
+                prefabs.Add(new StuffEntityPrefabsBuffer 
+                { 
+                    dropedEntityPrefab = GetEntity(meleeWeaponSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = meleeWeaponEntity
+                });
+
+                stuffs[i].slot = meleeWeaponSO.location;
                 stuffs[i].type = meleeWeaponSO.type;
                 stuffs[i].side = meleeWeaponSO.side;
                 stuffs[i].deploymentSpeed = meleeWeaponSO.deploymentSpeed;
@@ -86,7 +99,17 @@ public class GameResourcesAuthoring : MonoBehaviour
             for(; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count; i++)
             {
                 var grenadeSO = authoring.grenadesList[i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count];
+
                 builder.AllocateString(ref stuffs[i].Name, grenadeSO.entityName);
+
+                viewPrefabs.Add(grenadeSO.viewPrefab);
+
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(grenadeSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = grenadeEntityEntity
+                });
+
                 stuffs[i].viewPrefab = grenadeSO.viewPrefab;
                 stuffs[i].location = grenadeSO.location;
                 stuffs[i].type = grenadeSO.type;
@@ -106,8 +129,15 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
-            stuffs[id].viewPrefab = harvesterSO.viewPrefab;
-            stuffs[id].location = harvesterSO.location;
+            viewPrefabs.Add(harvesterSO.viewPrefab);
+
+            prefabs.Add(new StuffEntityPrefabsBuffer 
+            { 
+                dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                inHandEntityPrefab = harvesterEntity
+            });
+
+            stuffs[id].slot = harvesterSO.location;
             stuffs[id].type = harvesterSO.type;
             stuffs[id].side = harvesterSO.side;
             stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
@@ -193,9 +223,11 @@ public class GameResourcesAuthoring : MonoBehaviour
             AddBlobAsset(ref blobRef, out _);
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
-            AddBuffer<GameResourcesInstanciateStuffQueu>(entity);
-            AddBuffer<EquipStuffQueu>(entity);
-            AddBuffer<UnequipStuffQueu>(entity);
+            AddComponentObject(entity, new GameResourcesViewPrefabs { List = viewPrefabs });
+
+            AddBuffer<GameResourcesInstantiateStuffQueue>(entity);
+            AddBuffer<EquipStuffQueue>(entity);
+            AddBuffer<UnequipStuffQueue>(entity);
         }
     }
 }

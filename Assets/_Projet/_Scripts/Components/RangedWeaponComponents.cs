@@ -9,6 +9,11 @@ public enum RangedWeaponState
     Reload,
     Droped
 }
+public struct RangedWeaponSoundRpc : IRpcCommand
+{
+    public RangedWeaponState soudToPlay;
+    public Entity source;
+}
 
 [GhostComponent]
 public struct RangedWeaponDynamicData : IComponentData

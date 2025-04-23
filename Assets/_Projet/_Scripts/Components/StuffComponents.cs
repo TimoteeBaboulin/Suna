@@ -6,7 +6,7 @@ using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public enum StuffInventoryLocation
+public enum StuffSlot
 {
     MainWeapon,
     SecondaryWeapon,
@@ -43,9 +43,16 @@ public struct StuffDatabaseAccess : IComponentData
 }
 
 [GhostComponent]
-public struct StuffOwner : IComponentData
+public struct StuffEntityInHandRef : IComponentData
 {
     [GhostField] public Entity Value;
+}
+
+[GhostComponent]
+public struct StuffDynamicData : IComponentData
+{
+    [GhostField] public Entity owner;
+    [GhostField] public Entity dropedEntityPrefab;
 }
 
 [GhostEnabledBit]
@@ -54,17 +61,20 @@ public struct IsStuffInHand : IComponentData, IEnableableComponent
 {
 }
 
-
+[GhostEnabledBit]
+[GhostComponent]
 public struct StuffProcessPending : IComponentData, IEnableableComponent
 {
+    [GhostField] public Entity Owner;
+    [GhostField] public float3 Position;
 }
 
 public struct StuffCommonData
 {
     public BlobString Name;
-    public UnityObjectRef<GameObject> viewPrefab;
+    //public UnityObjectRef<GameObject> viewPrefab;
     //public UnityObjectRef<GameObject> UIPrefab;
-    public StuffInventoryLocation location;
+    public StuffSlot slot;
     public StuffType type;
     public TeamSideType side;
     public float deploymentSpeed;
@@ -92,6 +102,14 @@ public class StuffGameObjectRef : ICleanupComponentData
 //public class StuffUiImage : ICleanupComponentData
 //{
 //    public Image Value;
+//}
+
+//[GhostComponent(PrefabType = GhostPrefabType.AllPredicted, OwnerSendType = SendToOwnerType.SendToNonOwner)]
+
+//public struct Command : ICommandData
+//{
+//    public float3 position;
+//    public float3 normal;
 //}
 
 
