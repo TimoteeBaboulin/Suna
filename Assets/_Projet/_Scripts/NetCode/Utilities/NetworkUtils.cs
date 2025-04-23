@@ -26,11 +26,6 @@ namespace GameNetwork.Utils
 
     public class ClientTransportHelper
     {
-        //public ushort Port { get; private set; }
-        //public string IP { get; private set; }
-        //public bool IsClientLocal { get; private set; }
-        //public bool AllowConnection { get; private set; } = true;
-
         public ISession Session { get; set; }
         public NetworkEndpoint ListenEndpoint { get; private set; }
         public NetworkEndpoint ConnectEndpoint { get; private set; }

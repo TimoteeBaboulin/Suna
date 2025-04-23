@@ -27,7 +27,7 @@ partial struct HarvesterSystemServer : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
-        if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueu>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueu>(out var unequipStuffQueu))
+        if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueue>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueue>(out var unequipStuffQueu))
         {
             // Debug.Log("Can't handle harvester spawn since equip and unequip queues are not loaded yet");
             return;
@@ -36,13 +36,9 @@ partial struct HarvesterSystemServer : ISystem
 
         if (!harvesterIsInstantiated)
         {
-            if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstanciateStuffQueu>(out var queue))
+            if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue))
             {
-                queue.Add(new GameResourcesInstanciateStuffQueu
-                {
-                    StuffName = "Harvester",
-                    Owner = Entity.Null
-                });
+                StuffUtils.InstantiateNextFrame(queue, "Harvester", new float3(40f,0f,2f));
 
                 harvesterIsInstantiated = true;
                 return;
@@ -95,8 +91,8 @@ partial struct HarvesterSystemServer : ISystem
             corpoEntities.Add(clientEntity);
         }
 
-        foreach ((RefRW<HarvesterComponent> harvesterRW, RefRO<StuffOwner> ownerRO, Entity harvesterEntity) in SystemAPI
-            .Query<RefRW<HarvesterComponent>, RefRO<StuffOwner>>()
+        foreach ((RefRW<HarvesterComponent> harvesterRW, RefRO<StuffDynamicData> ownerRO, Entity harvesterEntity) in SystemAPI
+            .Query<RefRW<HarvesterComponent>, RefRO<StuffDynamicData>>()
             .WithAll<HarvesterRespawn>()
             .WithEntityAccess())
         {
@@ -108,19 +104,12 @@ partial struct HarvesterSystemServer : ISystem
                 Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
                 corpoEntities.RemoveAt(random);
 
-                if (ownerRO.ValueRO.Value != Entity.Null)
+                if (ownerRO.ValueRO.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueu
-                    {
-                        Owner = ownerRO.ValueRO.Value,
-                        Stuff = harvesterEntity
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, ownerRO.ValueRO.owner, harvesterEntity);
                 }
-                equipStuffQueu.Add(new EquipStuffQueu
-                {
-                    Stuff = harvesterEntity,
-                    Owner = characterEntity
-                });
+
+                StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
 
                 RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                 {
@@ -137,13 +126,12 @@ partial struct HarvesterSystemServer : ISystem
             }
             else
             {
-                if (ownerRO.ValueRO.Value != Entity.Null)
+                if (ownerRO.ValueRO.owner != Entity.Null)
                 {
-                    unequipStuffQueu.Add(new UnequipStuffQueu
+                    unequipStuffQueu.Add(new UnequipStuffQueue
                     {
-                        Owner = ownerRO.ValueRO.Value,
+                        Owner = ownerRO.ValueRO.owner,
                         Stuff = harvesterEntity,
-                        Position = corpoSpawnPosition
                     });
                 }
                 harvesterRW.ValueRW.DroppedTick = currentTick;
@@ -174,14 +162,14 @@ partial struct HarvesterSystemServer : ISystem
                 {
                     //Other harvesters (owned or unowned)
                     foreach (var (harvesterRW, ownerRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<StuffOwner>>()
+                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<StuffDynamicData>>()
                         .WithNone<HarvesterPlanting, HarvesterRespawn>()
                         .WithEntityAccess())
                     {
                         if (!harvesterRW.ValueRO.IsActive)
                             continue;
 
-                        if (ownerRW.ValueRO.Value == Entity.Null)
+                        if (ownerRW.ValueRO.owner == Entity.Null)
                         {
                             if (currentTick.TicksSince(harvesterRW.ValueRO.DroppedTick) < 15)
                                 continue;
@@ -198,11 +186,9 @@ partial struct HarvesterSystemServer : ISystem
                                     //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-                                    equipStuffQueu.Add(new EquipStuffQueu
-                                    {
-                                        Stuff = harvesterEntity,
-                                        Owner = characterEntity
-                                    });
+
+                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
+
                                     RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                                     {
                                         harvester = harvesterEntity,
@@ -235,14 +221,14 @@ partial struct HarvesterSystemServer : ISystem
                 {
                     //Other harvesters (owned or unowned)
                     foreach (var (harvesterRW, ownerRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<StuffOwner>>()
+                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<StuffDynamicData>>()
                         .WithNone<HarvesterPlanting, HarvesterRespawn>()
                         .WithEntityAccess())
                     {
                         if (!harvesterRW.ValueRO.IsActive)
                             continue;
 
-                        if (ownerRW.ValueRO.Value == Entity.Null)
+                        if (ownerRW.ValueRO.owner == Entity.Null)
                         {
                             if (currentTick.TicksSince(harvesterRW.ValueRO.DroppedTick) < 1)
                                 continue;
@@ -259,11 +245,9 @@ partial struct HarvesterSystemServer : ISystem
                                     //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
                                     //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
                                     //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-                                    equipStuffQueu.Add(new EquipStuffQueu
-                                    {
-                                        Stuff = harvesterEntity,
-                                        Owner = characterEntity
-                                    });
+    
+                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
+
                                     RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
                                     {
                                         harvester = harvesterEntity,
@@ -303,18 +287,18 @@ partial struct HarvesterSystemServer : ISystem
         {
             ecb.DestroyEntity(entity);
 
-            foreach ((RefRO<HarvesterComponent> harvester, RefRO<StuffOwner> ownerRO, Entity harvesterEntity) in SystemAPI
-                .Query<RefRO<HarvesterComponent>, RefRO<StuffOwner>>()
+            foreach ((RefRO<HarvesterComponent> harvester, RefRO<StuffDynamicData> ownerRO, Entity harvesterEntity) in SystemAPI
+                .Query<RefRO<HarvesterComponent>, RefRO<StuffDynamicData>>()
                 .WithEntityAccess())
             {
-                if (ownerRO.ValueRO.Value == Entity.Null)
+                if (ownerRO.ValueRO.owner == Entity.Null)
                     continue;
 
                 RpcHarvesterOwnerChange response = new RpcHarvesterOwnerChange
                 {
                     harvester = harvesterEntity,
-                    newOwner = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(ownerRO.ValueRO.Value).ValueRO.ClientEntity,
-                    character = ownerRO.ValueRO.Value
+                    newOwner = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(ownerRO.ValueRO.owner).ValueRO.ClientEntity,
+                    character = ownerRO.ValueRO.owner
                 };
 
                 Entity rpcEntity = ecb.CreateEntity();

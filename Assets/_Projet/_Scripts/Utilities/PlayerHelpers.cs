@@ -109,8 +109,6 @@ public static class PlayerHelpers
             ? (UnityEngine.Random.value < 0.5f ? "Corpo" : "Natif")
             : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? "Corpo" : "Natif");
 
-        Debug.Log(teamCounts.corpoPlayersCount);
-
         if (readOnlyPlayer is IPlayer player)
         {
             player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
@@ -201,6 +199,45 @@ public static class PlayerHelpers
             default:
                 return Array.Empty<IReadOnlyPlayer>();
         }
+    }
+
+    public static void ClearTeam(string teamName)
+    {
+        TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                _teams.corpoPlayers.Clear();
+                break;
+            case TeamSideType.Natif:
+                _teams.natifPlayers.Clear();
+                break;
+            default:
+                Array.Empty<IReadOnlyPlayer>();
+                break;
+        }
+    }
+
+    public static void ClearTeam(TeamSideType teamSide)
+    {
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                _teams.corpoPlayers.Clear();
+                break;
+            case TeamSideType.Natif:
+                _teams.natifPlayers.Clear();
+                break;
+            default:
+                Array.Empty<IReadOnlyPlayer>();
+                break;
+        }
+    }
+
+    public static void ClearTeams()
+    {
+        _teams.corpoPlayers.Clear();
+        _teams.natifPlayers.Clear();
     }
 
     static public TeamSideType GetPlayerInTeam(int networkId)

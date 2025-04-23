@@ -165,17 +165,23 @@ namespace GameNetwork.Utils
             {
                 ClientTransportHelper.instance.Session.RemovedFromSession -= OnSessionLeft;
 
-                if (ClientTransportHelper.instance.Session.IsHost)
+                if (ClientTransportHelper.instance.Session.IsHost ||
+                    RequestedPlayType == PlayType.ClientAndServer)
                 {
                     ClientTransportHelper.SessionID = null;
                 }
 
-                if (ClientTransportHelper.instance.Session.IsHost)
+                if (ClientTransportHelper.instance.Session.IsHost ||
+                    RequestedPlayType == PlayType.ClientAndServer)
+                {
                     await ClientTransportHelper.instance.Session.AsHost().DeleteAsync();
+                }
                 else
+                {
                     await ClientTransportHelper.instance.Session.LeaveAsync();
+                }
 
-               ClientTransportHelper.instance.Session = null;
+                ClientTransportHelper.instance.Session = null;
             }
         }
 

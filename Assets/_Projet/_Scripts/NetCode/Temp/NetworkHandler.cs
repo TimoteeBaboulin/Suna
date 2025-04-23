@@ -1,4 +1,4 @@
-using GameNetwork.Utils;
+﻿using GameNetwork.Utils;
 using System;
 using System.Threading.Tasks;
 using Unity.NetCode;

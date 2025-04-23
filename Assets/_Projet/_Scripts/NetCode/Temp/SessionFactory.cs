@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
@@ -36,13 +37,13 @@ public class ServerSessionFactory
             session.RemovedFromSession += OnRemovedFromSession;
             session.SessionPropertiesChanged += OnSessionPropertiesChanged;
             session.StateChanged += OnStateChanged;
+            session.Deleted += OnSessionDeleted;
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
             Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
             Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
             Debug.Log($"[ServerSessionFactory] Created session with NB properties: {session.Properties.Count}");
-            Debug.Log($"[ServerSessionFactory] session.Players.Coun: {session.Players.Count}");
 
             for (int i = 0; i < session.Players.Count; i++)
             {
@@ -60,6 +61,12 @@ public class ServerSessionFactory
             Debug.LogError($"[ServerSessionFactory] Error creating session: {ex}");
             return null;
         }
+    }
+
+    private static void OnSessionDeleted()
+    {
+        Debug.Log($"[OnSessionDeleted] session deleted.");
+        PlayerHelpers.ClearTeams();
     }
 
     private static void OnPlayerJoined(string playerId)

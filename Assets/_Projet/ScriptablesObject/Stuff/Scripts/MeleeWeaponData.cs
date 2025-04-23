@@ -5,9 +5,10 @@ using UnityEngine.UI;
 public class MeleeWeaponData : ScriptableObject
 {
     [Header("Stuff infos")]
+    public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
     public Image UIImage;
-    public StuffInventoryLocation location;
+    public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
     public string entityName;

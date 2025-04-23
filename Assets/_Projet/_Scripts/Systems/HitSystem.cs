@@ -66,6 +66,7 @@ public partial class HitSystem : SystemBase
                     Scale = 1.0f
                 });
 
+
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
                 if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
                 {
@@ -73,7 +74,9 @@ public partial class HitSystem : SystemBase
                     commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
                 }
                 commandBuffer.DestroyEntity(entity);
+
             }
+            commandBuffer.DestroyEntity(entity);
         }
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
