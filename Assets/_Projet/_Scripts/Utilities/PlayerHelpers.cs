@@ -91,11 +91,17 @@ public static class PlayerHelpers
     static public IPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        int index = networkId;
+        int index = networkId - 1;
 
-        if (RequestedPlayType == PlayType.ClientAndServer)
+        if (RequestedPlayType == PlayType.Server && networkId == 1)
         {
-            index--;
+            index = networkId;
+        }
+
+        if (index < 0 || index >= sessionPlayers.Count)
+        {
+            Debug.LogError($"FindCurrentPlayerForNetworkId: index {index} hors limites (sessionPlayers.Count = {sessionPlayers.Count}) pour networkId {networkId}.");
+            return null;
         }
 
         return (IPlayer)sessionPlayers[index];
