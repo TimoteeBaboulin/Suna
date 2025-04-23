@@ -17,45 +17,24 @@ partial struct CommonCharacterColliderSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (characterCollider, entity) in SystemAPI
-            .Query<RefRW<CharacterColliderComponent>>()
+        foreach (var(characterCollider, ghostOwner, entity) in SystemAPI
+            .Query<RefRW<CharacterColliderComponent>, RefRO<GhostOwner>>()
             .WithAll<CharacterColliderInitEntityTag>()
             .WithEntityAccess())
         {
             if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
 
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.HeadEntity,
-                prefabsData.CorpoHeadCollider, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity0,
-                prefabsData.CorpoArmCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity1,
-                prefabsData.CorpoArmCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity2,
-                prefabsData.CorpoArmCollider2, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity0,
-                prefabsData.CorpoArmCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity1,
-                prefabsData.CorpoArmCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity2,
-                prefabsData.CorpoArmCollider2, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ThoraxEntity,
-                prefabsData.CorpoThoraxCollider, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.StomachEntity0,
-                prefabsData.CorpoStomachCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.StomachEntity1,
-                prefabsData.CorpoStomachCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity0,
-                prefabsData.CorpoLegCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity1,
-                prefabsData.CorpoLegCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity2,
-                prefabsData.CorpoLegCollider2, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity0,
-                prefabsData.CorpoLegCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity1,
-                prefabsData.CorpoLegCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity2,
-                prefabsData.CorpoLegCollider2, entity, ecb, state.EntityManager);
+            TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+
+            switch (teamSide)
+            {
+                case TeamSideType.Corpo:
+                    CharacterColliderUtils.InstantiateCorpoCollider(characterCollider, entity, prefabsData, ecb, state.EntityManager);
+                    break;
+                case TeamSideType.Natif:
+                    CharacterColliderUtils.InstantiateNatifCollider(characterCollider, entity, prefabsData, ecb, state.EntityManager);
+                    break;
+            }
 
             ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
         }

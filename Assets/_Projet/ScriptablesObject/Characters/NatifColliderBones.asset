@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed7d57b8491138046bbe24a5d43cd25a, type: 3}
+  m_Name: NatifColliderBones
+  m_EditorClassIdentifier: 
+  Head: J_HEAD
+  ArmLeft0: J_SHOULDER_L
+  ArmLeft1: J_KNEE_L
+  ArmLeft2: J_WRIST_L
+  ArmRight0: J_SHOULDER_R
+  ArmRight1: J_KNEE_R
+  ArmRight2: J_WRIST_R
+  Thorax: J_CHEST01
+  Stomach0: J_HIP
+  Stomach1: J_PELVIS
+  LegLeft0: J_LEG_L
+  LegLeft1: J_KNEE_L1
+  LegLeft2: J_ANKLE_L
+  LegRight0: J_LEG_R
+  LegRight1: J_KNEE_R1
+  LegRight2: J_ANKLE_R

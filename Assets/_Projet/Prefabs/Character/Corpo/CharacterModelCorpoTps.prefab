@@ -103,7 +103,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5228147864100002863}
-  - component: {fileID: 8355808151435076050}
   m_Layer: 0
   m_Name: J_SK_SHOULDER_L
   m_TagString: Untagged
@@ -127,29 +126,6 @@ Transform:
   - {fileID: 8632698104664179084}
   m_Father: {fileID: 9218596052874268350}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &8355808151435076050
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 668836678006875221}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.051028892
-  m_Height: 0.4944162
-  m_Direction: 0
-  m_Center: {x: -0.19712825, y: 0.0022630095, z: -0.0005365908}
 --- !u!1 &819083990952608911
 GameObject:
   m_ObjectHideFlags: 0
