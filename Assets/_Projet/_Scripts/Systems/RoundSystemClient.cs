@@ -141,6 +141,31 @@ partial struct RoundSystemClient : ISystem
 
                 break;
         }
+
+        foreach ((CharacterMoney moneyComponent, ClientComponent client, Entity clientEntity) in
+            SystemAPI.Query<CharacterMoney, ClientComponent>()
+            .WithEntityAccess())
+        {
+            CharacterMoney updatedMoneyComponent = moneyComponent;
+
+            if (client.team == team)
+            {
+                updatedMoneyComponent.money += (uint)component.ValueRO.victoryCredits;
+
+                if (updatedMoneyComponent.money > updatedMoneyComponent.maxMoney)
+                    updatedMoneyComponent.money = updatedMoneyComponent.maxMoney;
+            }
+            else
+            {
+                uint lossStreakBonus = (uint)(component.ValueRO.lossStreakBonus * (client.team == TeamSideType.Corpo ? component.ValueRO.corporationLossStreak : component.ValueRO.nativeLossStreak));
+                updatedMoneyComponent.money += (uint)component.ValueRO.lossCredits + lossStreakBonus;
+
+                if (updatedMoneyComponent.money > updatedMoneyComponent.maxMoney)
+                    updatedMoneyComponent.money = updatedMoneyComponent.maxMoney;
+            }
+
+            SystemAPI.SetComponent(clientEntity, updatedMoneyComponent);
+        }
     }
     public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
