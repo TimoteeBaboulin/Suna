@@ -1,8 +1,9 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 partial struct CommonCharacterColliderSystem : ISystem
 {
@@ -24,37 +25,37 @@ partial struct CommonCharacterColliderSystem : ISystem
             if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
 
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.HeadEntity,
-                prefabsData.CharacterHeadCollider, entity, ecb, state.EntityManager);
+                prefabsData.CorpoHeadCollider, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity0,
-                prefabsData.CharacterArmCollider0, entity, ecb, state.EntityManager);
+                prefabsData.CorpoArmCollider0, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity1,
-                prefabsData.CharacterArmCollider1, entity, ecb, state.EntityManager);
+                prefabsData.CorpoArmCollider1, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity2,
-                prefabsData.CharacterArmCollider2, entity, ecb, state.EntityManager);
+                prefabsData.CorpoArmCollider2, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity0,
-                prefabsData.CharacterArmCollider0, entity, ecb, state.EntityManager);
+                prefabsData.CorpoArmCollider0, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity1,
-                prefabsData.CharacterArmCollider1, entity, ecb, state.EntityManager);
+                prefabsData.CorpoArmCollider1, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity2,
-                prefabsData.CharacterArmCollider2, entity, ecb, state.EntityManager);
+                prefabsData.CorpoArmCollider2, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ThoraxEntity,
-                prefabsData.CharacterThoraxCollider, entity, ecb, state.EntityManager);
+                prefabsData.CorpoThoraxCollider, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.StomachEntity0,
-                prefabsData.CharacterStomachCollider0, entity, ecb, state.EntityManager);
+                prefabsData.CorpoStomachCollider0, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.StomachEntity1,
-                prefabsData.CharacterStomachCollider1, entity, ecb, state.EntityManager);
+                prefabsData.CorpoStomachCollider1, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity0,
-                prefabsData.CharacterLegCollider0, entity, ecb, state.EntityManager);
+                prefabsData.CorpoLegCollider0, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity1,
-                prefabsData.CharacterLegCollider1, entity, ecb, state.EntityManager);
+                prefabsData.CorpoLegCollider1, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity2,
-                prefabsData.CharacterLegCollider2, entity, ecb, state.EntityManager);
+                prefabsData.CorpoLegCollider2, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity0,
-                prefabsData.CharacterLegCollider0, entity, ecb, state.EntityManager);
+                prefabsData.CorpoLegCollider0, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity1,
-                prefabsData.CharacterLegCollider1, entity, ecb, state.EntityManager);
+                prefabsData.CorpoLegCollider1, entity, ecb, state.EntityManager);
             CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity2,
-                prefabsData.CharacterLegCollider2, entity, ecb, state.EntityManager);
+                prefabsData.CorpoLegCollider2, entity, ecb, state.EntityManager);
 
             ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
         }

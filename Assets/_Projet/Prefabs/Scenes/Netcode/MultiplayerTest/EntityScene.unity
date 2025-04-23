@@ -1372,16 +1372,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Client: {fileID: 3792611864182489402, guid: 39feb9559076cec40a82e01fd155145c, type: 3}
   Character: {fileID: 2584918407947073280, guid: c377a8ea0ba8a164abbbccae22e66525, type: 3}
-  CharacterHeadCollider: {fileID: 7412152404001876113, guid: 97b847aca013df44495092b0ce5cee75, type: 3}
-  CharacterArmCollider0: {fileID: 7412152404001876113, guid: d4f3d4cf7fd678345968e36eea321d6a, type: 3}
-  CharacterArmCollider1: {fileID: 7412152404001876113, guid: 608e518e0f7ebdb4097c026b09eea8ad, type: 3}
-  CharacterArmCollider2: {fileID: 7412152404001876113, guid: 41a603db882fae94fa98f582e5dcf444, type: 3}
-  CharacterThoraxCollider: {fileID: 7412152404001876113, guid: 1ec1552322834524190b32b84e959561, type: 3}
-  CharacterStomachCollider0: {fileID: 7412152404001876113, guid: e318ad3df5fdd7f47b6e648c8810227d, type: 3}
-  CharacterStomachCollider1: {fileID: 7412152404001876113, guid: f1791ca2be987d24d93f388ae474ea1e, type: 3}
-  CharacterLegCollider0: {fileID: 7412152404001876113, guid: 0c51bcdc5bf8806429c2aec5f0ed6195, type: 3}
-  CharacterLegCollider1: {fileID: 7412152404001876113, guid: b5b1aa861c0ecc54fb9411dc65c66bb7, type: 3}
-  CharacterLegCollider2: {fileID: 7412152404001876113, guid: 9c86b15e37c05504993de09b3c7f5687, type: 3}
+  CorpoHeadCollider: {fileID: 7412152404001876113, guid: 97b847aca013df44495092b0ce5cee75, type: 3}
+  CorpoArmCollider0: {fileID: 7412152404001876113, guid: d4f3d4cf7fd678345968e36eea321d6a, type: 3}
+  CorpoArmCollider1: {fileID: 7412152404001876113, guid: 608e518e0f7ebdb4097c026b09eea8ad, type: 3}
+  CorpoArmCollider2: {fileID: 7412152404001876113, guid: 41a603db882fae94fa98f582e5dcf444, type: 3}
+  CorpoThoraxCollider: {fileID: 7412152404001876113, guid: 1ec1552322834524190b32b84e959561, type: 3}
+  CorpoStomachCollider0: {fileID: 7412152404001876113, guid: e318ad3df5fdd7f47b6e648c8810227d, type: 3}
+  CorpoStomachCollider1: {fileID: 7412152404001876113, guid: f1791ca2be987d24d93f388ae474ea1e, type: 3}
+  CorpoLegCollider0: {fileID: 7412152404001876113, guid: 0c51bcdc5bf8806429c2aec5f0ed6195, type: 3}
+  CorpoLegCollider1: {fileID: 7412152404001876113, guid: b5b1aa861c0ecc54fb9411dc65c66bb7, type: 3}
+  CorpoLegCollider2: {fileID: 7412152404001876113, guid: 9c86b15e37c05504993de09b3c7f5687, type: 3}
+  NatifHeadCollider: {fileID: 0}
+  NatifArmCollider0: {fileID: 0}
+  NatifArmCollider1: {fileID: 0}
+  NatifArmCollider2: {fileID: 0}
+  NatifThoraxCollider: {fileID: 0}
+  NatifStomachCollider0: {fileID: 0}
+  NatifStomachCollider1: {fileID: 0}
+  NatifLegCollider0: {fileID: 0}
+  NatifLegCollider1: {fileID: 0}
+  NatifLegCollider2: {fileID: 0}
   hitPrefab: {fileID: 5024009746357069194, guid: ec3f674830402cc45bce805cf6493db7, type: 3}
   tracerRoundVfxPrefab: {fileID: 3143316938241504559, guid: e6e4c0d40c4e8c249a54b4a2e156b212, type: 3}
 --- !u!4 &1917095821

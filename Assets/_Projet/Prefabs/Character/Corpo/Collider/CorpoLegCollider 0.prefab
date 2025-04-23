@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6936694862184400581}
   - component: {fileID: 35335452385434871}
   m_Layer: 0
-  m_Name: StomachCollider 1
+  m_Name: CorpoLegCollider 0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -52,10 +52,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.097950116
-  m_Height: 0.3818262
-  m_Direction: 0
-  m_Center: {x: -0.0007765144, y: 0.085504055, z: 0.017165184}
+  m_Radius: 0.07324892
+  m_Height: 0.36210018
+  m_Direction: 1
+  m_Center: {x: -0.00068493205, y: -0.14015818, z: -0.0023970597}
 --- !u!114 &35335452385434871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -68,5 +68,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31962f8b3a4b49147bf45c101ee4d6d6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ColliderType: 3
+  ColliderType: 4
   ColliderData: {fileID: 11400000, guid: e107c67d2c6e401448addd44887680e3, type: 2}
