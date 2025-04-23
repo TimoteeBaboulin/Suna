@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9087616358337365402}
   - component: {fileID: 1729452394516218260}
   - component: {fileID: 4327911145042526415}
+  - component: {fileID: 205495343850884733}
   m_Layer: 0
   m_Name: Poutre_bois
   m_TagString: Untagged
@@ -86,3 +87,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1652712579 &205495343850884733
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3155284860768586946}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 1729452394516218260}
+    m_RolesMask: 1

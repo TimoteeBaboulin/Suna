@@ -524,6 +524,7 @@ GameObject:
   - component: {fileID: 6009977201395324012}
   - component: {fileID: 8209264203462586994}
   - component: {fileID: 319141577020414791}
+  - component: {fileID: 692219619420104290}
   m_Layer: 0
   m_Name: barrieres_bomb
   m_TagString: Untagged
@@ -599,6 +600,17 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1652712579 &692219619420104290
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8454441868078315476}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 8209264203462586994}
+    m_RolesMask: 1
 --- !u!1 &8547219005878206515
 GameObject:
   m_ObjectHideFlags: 0

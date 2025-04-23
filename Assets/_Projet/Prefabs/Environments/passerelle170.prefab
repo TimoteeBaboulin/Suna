@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6026014719074621976}
   - component: {fileID: 8449881684279148358}
   - component: {fileID: 1106947755981457399}
+  - component: {fileID: 9118049827539097962}
   m_Layer: 0
   m_Name: passerelle170
   m_TagString: Untagged
@@ -86,3 +87,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1652712579 &9118049827539097962
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 601544237732092595}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 8449881684279148358}
+    m_RolesMask: 1

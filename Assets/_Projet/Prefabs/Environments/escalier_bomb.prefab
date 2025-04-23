@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6275251595303872718}
   - component: {fileID: 5755398492252363278}
   - component: {fileID: 690648773026429058}
+  - component: {fileID: 7786795981492082857}
   m_Layer: 0
   m_Name: escalier_bomb
   m_TagString: Untagged
@@ -86,3 +87,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1652712579 &7786795981492082857
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3439866194628290923}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 5755398492252363278}
+    m_RolesMask: 1

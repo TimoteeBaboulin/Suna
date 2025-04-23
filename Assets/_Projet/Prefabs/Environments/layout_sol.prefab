@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5287242227749458977}
   - component: {fileID: 9141955173497534984}
   - component: {fileID: 396935854863842563}
+  - component: {fileID: 7832818153706533848}
   m_Layer: 0
   m_Name: layout_sol
   m_TagString: Untagged
@@ -87,3 +88,14 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1652712579 &7832818153706533848
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7963291404316107747}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 9141955173497534984}
+    m_RolesMask: 1
