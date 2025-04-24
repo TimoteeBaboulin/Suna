@@ -46,7 +46,7 @@ public partial class FloatingWindow : SafeVisualElement
 
     protected override void OnInit()
     {
-        StyleSheet floatingWindowStyleSheet = Addressables.LoadAssetAsync<StyleSheet>("floating-window").WaitForCompletion();
+        StyleSheet floatingWindowStyleSheet = Addressables.LoadAssetAsync<StyleSheet>("style-sheet-floating-window").WaitForCompletion();
         if (floatingWindowStyleSheet != null)
         {
             styleSheets.Add(floatingWindowStyleSheet);

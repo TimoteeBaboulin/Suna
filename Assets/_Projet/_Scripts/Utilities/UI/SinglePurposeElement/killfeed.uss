@@ -1,0 +1,36 @@
+.killfeed {
+	right: 0px;
+	flex-direction: row;
+	width: 337px;
+	height: 37px;
+	margin-bottom: 15px;
+}
+
+.killfeed-background {
+	flex-grow: 1;
+	height: 100%;
+	justify-content: center;
+}
+
+.killfeed-killer-background {
+	flex-grow: 1;
+	height: 100%;
+	width: 67%;
+	justify-content: center;
+}
+
+.killfeed-label {
+	position: Absolute;
+	font-size: 20px;
+	color: #fff;
+}
+
+.killfeed-label-killer-name {
+	-unity-text-align: middle-left;
+	left: 20px;
+}
+
+.killfeed-label-victim-name {
+	-unity-text-align: middle-right;
+	right: 20px;
+}

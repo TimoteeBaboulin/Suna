@@ -70,4 +70,5 @@
             <engine:Label text="Press B to Open Shop" name="RoundBuyLabel" style="position: relative;" />
         </engine:VisualElement>
     </engine:VisualElement>
+    <engine:VisualElement name="KillFeedContainer" style="flex-grow: 1; position: absolute; top: 20px; right: 20px;" />
 </engine:UXML>

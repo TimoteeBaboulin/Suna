@@ -80,6 +80,8 @@ public class HUDController : MonoBehaviour
     private VisualElement _corpoIcons;
     private VisualElement _natifIcons;
 
+    // KillFeed
+    private VisualElement _killFeedContainer;
 
     private void Awake()
     {
@@ -150,6 +152,9 @@ public class HUDController : MonoBehaviour
             UI.SetBorderColor(ref iconRef, Color.clear);
             UI.SetImageTintColor(ref iconRef, Color.clear);
         }
+
+        // Initialize KillFeed
+        _killFeedContainer = _HUD.Q<VisualElement>("KillFeedContainer");
     }
 
     private void Update()
@@ -585,6 +590,13 @@ public class HUDController : MonoBehaviour
         }
     }
     //----------End of Player Icons Functions
+
+    //----------Start of KillFeed Functions
+    private void InitializeNewKillFeed()
+    {
+        KillFeedElement element = new();
+    }
+    //----------End of KillFeed Functions
 }
 
 [Serializable]
