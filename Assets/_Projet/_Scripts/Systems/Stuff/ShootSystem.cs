@@ -201,6 +201,8 @@ public partial struct ShootSystem : ISystem
             ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref sddRW.ValueRO.owner;
 
+            if (owner == Entity.Null) continue;
+
             RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
             // Retrieve player input
@@ -210,12 +212,6 @@ public partial struct ShootSystem : ISystem
             if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
 
             if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
-
-            ecb.SetComponent(grenade, new PhysicsVelocity
-            {
-                Linear = math.mul(shootRotation, new float3(0f, 0f, 0f)),
-                Angular = math.mul(shootRotation, new float3(0f, 0f, 0f))
-            });
 
             if (dynamicData.isCooking)
             {

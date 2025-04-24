@@ -81,8 +81,19 @@ partial struct StuffSystemClient : ISystem
 
             if (viewTransform.parent == null)
             {
+                Debug.Log($"Moving stuff {stuff}");
+
                 viewTransform.position = entityTransform.Position;
                 viewTransform.rotation = entityTransform.Rotation;
+
+                if (state.EntityManager.HasComponent<ReleasedGrenade>(stuff))
+                {
+                    if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(stuff))
+                    {
+                        Debug.Log("Changing scale of grenade");
+                        viewTransform.localScale = Vector3.one * 50;
+                    }
+                }
             }
         }
 
