@@ -7,20 +7,20 @@ using Unity.Transforms;
 
 public static class StuffUtils
 {
-    public static void InstantiateNextFrame(DynamicBuffer<GameResourcesInstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, Entity owner)
+    public static void InstantiateNextFrame(DynamicBuffer<InstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, Entity owner)
     {
         if (owner == Entity.Null) return;
 
-        instantiateStuffQueue.Add(new GameResourcesInstantiateStuffQueue
+        instantiateStuffQueue.Add(new InstantiateStuffQueue
         {
             StuffName = stuffName,
             Owner = owner,
         });
     }
 
-    public static void InstantiateNextFrame(DynamicBuffer<GameResourcesInstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, float3 position)
+    public static void InstantiateNextFrame(DynamicBuffer<InstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, float3 position)
     {
-        instantiateStuffQueue.Add(new GameResourcesInstantiateStuffQueue
+        instantiateStuffQueue.Add(new InstantiateStuffQueue
         {
             StuffName = stuffName,
             Position = position,

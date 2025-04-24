@@ -11,8 +11,8 @@ partial struct InstanciateEntityStuffSystem : ISystem
         state.RequireForUpdate<StuffEntityPrefabsBuffer>();
         state.RequireForUpdate<GameResourcesDatabase>();
 
-        EntityQuery query = state.GetEntityQuery(typeof(GameResourcesInstantiateStuffQueue));
-        query.SetChangedVersionFilter(typeof(GameResourcesInstantiateStuffQueue));
+        EntityQuery query = state.GetEntityQuery(typeof(InstantiateStuffQueue));
+        query.SetChangedVersionFilter(typeof(InstantiateStuffQueue));
         state.RequireForUpdate(query);
     }
 
@@ -26,14 +26,14 @@ partial struct InstanciateEntityStuffSystem : ISystem
         foreach (var (databaseRO, stuffPrefabs, instantiateStuffQueue) in SystemAPI.Query<
             RefRO<GameResourcesDatabase>,
             DynamicBuffer<StuffEntityPrefabsBuffer>,
-            DynamicBuffer<GameResourcesInstantiateStuffQueue>>())
+            DynamicBuffer<InstantiateStuffQueue>>())
         {
             ref var stuffCommonDataArray = ref databaseRO.ValueRO.StuffDatabaseRef.Value.StuffCommonData;
 
             // Explore Stuff Infos queue
             foreach (var instanteInfos in instantiateStuffQueue)
             {
-                            //UnityEngine.Debug.Log("Instanciate stuff " + instanteInfos.StuffName + " for " + instanteInfos.Owner);
+                //UnityEngine.Debug.Log("Instanciate stuff " + instanteInfos.StuffName + " for " + instanteInfos.Owner);
                 // Retrieve stuff in database
                 for (int i = 0; i < stuffCommonDataArray.Length; i++)
                 {
@@ -63,8 +63,8 @@ partial struct InstanciateEntityStuffSystem : ISystem
                             });
 
                             ecb.SetComponentEnabled<StuffProcessPending>(stuff, true);
-                            ecb.SetComponent(stuff, new StuffProcessPending 
-                            { 
+                            ecb.SetComponent(stuff, new StuffProcessPending
+                            {
                                 Owner = instanteInfos.Owner,
                                 Position = instanteInfos.Position
                             });
@@ -125,6 +125,7 @@ partial struct ProcessPendingStuffSystem : ISystem
             //Rename Entity in hierarchy
             state.EntityManager.SetName(stuff, stuffData.Name.ToString());
 
+            ecb.AddComponent(stuff, new SoundEmitter { keyGroup = stuffData.Name.ToString() });
             //Add stuff on player inventory
             if (processRO.ValueRO.Owner != Entity.Null)
             {
@@ -136,8 +137,8 @@ partial struct ProcessPendingStuffSystem : ISystem
                 StuffUtils.InstantiateDrop(ref ecb, ref dynDataRW.ValueRW, stuff, processRO.ValueRO.Position, float3.zero, 0f);
             }
 
-                SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);
-            
+            SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);
+
             SystemAPI.SetComponentEnabled<StuffProcessPending>(stuff, false);
         }
 

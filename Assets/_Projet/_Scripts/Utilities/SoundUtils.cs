@@ -1,0 +1,135 @@
+#if !UNITY_SERVER
+using System;
+
+using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
+using UnityEditor.PackageManager;
+using UnityEngine;
+
+[Serializable]
+public class SoundMapping
+{
+    public string keyAction;
+    public AK.Wwise.Event sound;
+}
+
+[Serializable]
+public class SoundGroupMapping
+{
+    public string keyGroup;
+    public List<SoundMapping> maping = new();
+}
+public static class SoundUtils
+{
+    public static void SetMappingList(string keyGroup, in List<SoundMapping> soundList, List<SoundGroupMapping> soundGroupMapping)
+    {
+        List<SoundMapping> soundMaping = new List<SoundMapping>();
+        foreach (var sound in soundList)
+        {
+            soundMaping.Add(new SoundMapping
+            {
+                keyAction = sound.keyAction,
+                sound = sound.sound
+            });
+        }
+
+        soundGroupMapping.Add(new SoundGroupMapping
+        {
+            keyGroup = keyGroup,
+            maping = soundMaping
+        });
+    }
+public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soundList)
+    {
+
+        SoundRegister soundRegister = new SoundRegister();
+        Dictionary<string, AK.Wwise.Event> bank = soundRegister.bank;
+        foreach (var pair in soundList)
+        {
+            if (!bank.ContainsKey(keyGroup + pair.keyAction))
+                bank.Add(keyGroup + pair.keyAction, pair.sound);
+        }
+
+        return soundRegister;
+    }
+
+    public static SoundRegister SetGroupRegister(List<SoundGroupMapping> soundGroupList)
+    {
+        SoundRegister soundRegister = new SoundRegister();
+        Dictionary<string, AK.Wwise.Event> bank = soundRegister.bank;
+        foreach (var soundList in soundGroupList)
+        {
+            foreach (var pair in soundList.maping)
+            {
+                if (!bank.ContainsKey(soundList.keyGroup + pair.keyAction))
+                    bank.Add(soundList.keyGroup + pair.keyAction, pair.sound);
+            }
+        }
+        return soundRegister;
+    }
+
+    //The entity holding the soundBuffer must have SoundAuthoring attached
+    public static void Play(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
+    {
+        soundQueue.Add(new SoundQueue()
+        {
+            keyGroup = emitter.keyGroup,
+            keyAction = keyAction,
+            pos = pos
+        });
+
+    }
+
+    //The entity holding the soundBuffer must have SoundAuthoring attached
+    public static void PlayAtEmitter(ref SystemState state, DynamicBuffer<SoundQueue> soundQueue, Entity entity, FixedString32Bytes keyAction)
+    {
+        if (state.EntityManager.HasComponent<SoundEmitter>(entity))
+        {
+
+            SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
+
+            if (state.EntityManager.HasComponent<LocalToWorld>(entity))
+            {
+                LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
+                Play(soundQueue, emitter, keyAction, transform.Position);
+
+            }
+        }
+    }
+
+    public static void Play(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos)
+    {
+        SoundRpc soundRpc = new SoundRpc()
+        {
+            keyGroup = keyGroup,
+            keyAction = keyAction,
+            pos = pos
+        };
+        RpcUtils.SendServerToClientRpc(ref soundRpc);
+    }
+
+    public static void Play(in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
+    {
+        Play(emitter.keyGroup, keyAction, pos);
+    }
+
+    public static void PlayAtEmitter(ref SystemState state, FixedString32Bytes keyAction, Entity entity)
+    {
+        if (state.EntityManager.HasComponent<SoundEmitter>(entity))
+        {
+            SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
+
+            if (state.EntityManager.HasComponent<LocalToWorld>(entity))
+            {
+                LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
+                Play(emitter.keyGroup, keyAction, transform.Position);
+            }
+        }
+
+    }
+}
+#endif

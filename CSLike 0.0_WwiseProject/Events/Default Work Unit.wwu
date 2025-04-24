@@ -3,61 +3,77 @@
 	<Events>
 		<WorkUnit Name="Default Work Unit" ID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" PersistMode="Standalone">
 			<ChildrenList>
-				<Event Name="Pistol_Shoot" ID="{CA6569CF-2856-4F7C-9E9F-530727951166}">
+				<Folder Name="Character" ID="{424C2DB0-F99E-4864-B307-05FC5351842D}" ShortID="84637959">
 					<ChildrenList>
-						<Action Name="" ID="{666E3B21-005B-4CDE-AAA1-D523B497B5E7}" ShortID="954496367">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="pistol_shoot" ID="{3B129407-21A2-4B2B-80A8-9726A4351553}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
+						<Event Name="Footstep" ID="{3789329B-96A7-4FD2-B954-2E5B638B2771}">
+							<ChildrenList>
+								<Action Name="" ID="{524EFAEA-EECF-48AB-BF78-669742CB9345}" ShortID="95373067">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
 					</ChildrenList>
-				</Event>
-				<Event Name="Pistol_Reload" ID="{99BD317C-041B-4F2F-9D59-4C0543E9F945}">
+				</Folder>
+				<Folder Name="Stuff" ID="{8364A492-1F2E-42EE-BC8A-9FC8ED7AA103}" ShortID="423823699">
 					<ChildrenList>
-						<Action Name="" ID="{051736A9-651D-42A4-9DD8-C08E38D1BCEB}" ShortID="743739476">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="pistol_worldreload" ID="{CC435951-8D78-420A-B240-2DA2D46AE172}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
+						<Folder Name="SMG" ID="{CD618003-72FE-4069-A83F-D5A5174D61CD}" ShortID="936806921">
+							<ChildrenList>
+								<Event Name="SMG_Shoot" ID="{4D46279A-6FA5-45FF-BEE1-8AA41BDABB7C}">
+									<ChildrenList>
+										<Action Name="" ID="{E69522AD-CD8A-4062-B5B6-9C7053011C61}" ShortID="458072047">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="smg_shoot" ID="{9527AB01-F0DD-4FA4-B11B-A9AA3467E616}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="SMG_Reload" ID="{4B5F504C-ABA9-4881-9037-49464FFF5B5F}">
+									<ChildrenList>
+										<Action Name="" ID="{C3B8A67E-6FE5-4489-8378-0E129E0AB988}" ShortID="442628448">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="smg_clip_in" ID="{EB59BBA8-1FDE-477C-908B-03CFA1133451}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+						<Folder Name="LP17" ID="{81A9CB79-AAA1-4829-A0CD-724EC0459F51}" ShortID="514328079">
+							<ChildrenList>
+								<Event Name="Pistol_Shoot" ID="{CA6569CF-2856-4F7C-9E9F-530727951166}">
+									<ChildrenList>
+										<Action Name="" ID="{666E3B21-005B-4CDE-AAA1-D523B497B5E7}" ShortID="954496367">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="pistol_shoot" ID="{3B129407-21A2-4B2B-80A8-9726A4351553}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Pistol_Reload" ID="{99BD317C-041B-4F2F-9D59-4C0543E9F945}">
+									<ChildrenList>
+										<Action Name="" ID="{051736A9-651D-42A4-9DD8-C08E38D1BCEB}" ShortID="743739476">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="pistol_worldreload" ID="{CC435951-8D78-420A-B240-2DA2D46AE172}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
-				</Event>
-				<Event Name="Rifle_Shoot" ID="{4D46279A-6FA5-45FF-BEE1-8AA41BDABB7C}">
-					<ChildrenList>
-						<Action Name="" ID="{E69522AD-CD8A-4062-B5B6-9C7053011C61}" ShortID="458072047">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="smg_shoot" ID="{9527AB01-F0DD-4FA4-B11B-A9AA3467E616}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Event Name="Rifle_Reload" ID="{4B5F504C-ABA9-4881-9037-49464FFF5B5F}">
-					<ChildrenList>
-						<Action Name="" ID="{C3B8A67E-6FE5-4489-8378-0E129E0AB988}" ShortID="442628448">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="smg_clip_in" ID="{EB59BBA8-1FDE-477C-908B-03CFA1133451}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
-				<Event Name="Footstep" ID="{3789329B-96A7-4FD2-B954-2E5B638B2771}">
-					<ChildrenList>
-						<Action Name="" ID="{524EFAEA-EECF-48AB-BF78-669742CB9345}" ShortID="95373067">
-							<ReferenceList>
-								<Reference Name="Target">
-									<ObjectRef Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-								</Reference>
-							</ReferenceList>
-						</Action>
-					</ChildrenList>
-				</Event>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

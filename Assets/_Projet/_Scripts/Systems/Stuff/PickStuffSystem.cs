@@ -15,6 +15,7 @@ public partial struct PickStuffSystem : ISystem
     {
         state.RequireForUpdate<CharacterStuffList>();
         state.RequireForUpdate<CharacterInput>();
+        state.RequireForUpdate<EquipStuffQueue>();
     }
 
     public void OnUpdate(ref SystemState state)

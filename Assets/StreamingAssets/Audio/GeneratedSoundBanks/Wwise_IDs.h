@@ -16,8 +16,8 @@ namespace AK
         static const AkUniqueID FOOTSTEP = 1866025847U;
         static const AkUniqueID PISTOL_RELOAD = 1068215004U;
         static const AkUniqueID PISTOL_SHOOT = 2124970216U;
-        static const AkUniqueID RIFLE_RELOAD = 3214964847U;
-        static const AkUniqueID RIFLE_SHOOT = 1117295805U;
+        static const AkUniqueID SMG_RELOAD = 2642532248U;
+        static const AkUniqueID SMG_SHOOT = 1025907732U;
     } // namespace EVENTS
 
     namespace BANKS

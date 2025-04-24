@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 83116796964684946}
   - component: {fileID: -6973842412677936793}
   - component: {fileID: -6694408855904912524}
+  - component: {fileID: 4229965099238871835}
   - component: {fileID: -3082015202078521043}
   - component: {fileID: 4583230652430996553}
   m_Layer: 0
@@ -60,6 +61,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   harvester: {fileID: 11400000, guid: 8641a930c8507084caa6fd98c321c55d, type: 2}
+--- !u!114 &4229965099238871835
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 521297520866367205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae05f61d27cb7a46b9a01b8376485e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Name: 
+  soundList:
+  - key: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: c56b3dd33189b2646ae0b3b53269bd94, type: 2}
 --- !u!114 &-3082015202078521043
 MonoBehaviour:
   m_ObjectHideFlags: 0

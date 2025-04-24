@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,4 +26,10 @@ public class MeleeWeaponData : ScriptableObject
     public float range;
     public float strikeRate;
     public float strongStrikeRate;
+
+#if !UNITY_SERVER
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
+#endif
 }

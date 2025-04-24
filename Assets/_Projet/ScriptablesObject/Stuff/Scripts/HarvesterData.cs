@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,4 +22,10 @@ public class HarvesterData : ScriptableObject
     [Header("Static Data")]
     public float defuseRange;
     public float pickupDistance;
+
+#if !UNITY_SERVER
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
+#endif
 }

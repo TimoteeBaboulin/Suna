@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -99,4 +100,10 @@ public class RangedWeaponData : ScriptableObject
 
     //Accessor
     public int MaxAmmo { get => nbMagazine * magazineCapacity + 1; }
+
+#if !UNITY_SERVER
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
+#endif
 }
