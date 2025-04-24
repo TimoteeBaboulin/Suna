@@ -19,7 +19,7 @@ partial struct CommonCharacterColliderSystem : ISystem
 
         foreach (var(characterCollider, ghostOwner, entity) in SystemAPI
             .Query<RefRW<CharacterColliderComponent>, RefRO<GhostOwner>>()
-            .WithAll<CharacterColliderInitEntityTag>()
+            .WithAll<ThirdPersonCharacterModelBonesTransform, CharacterColliderInitEntityTag>()
             .WithEntityAccess())
         {
             if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
@@ -39,13 +39,9 @@ partial struct CommonCharacterColliderSystem : ISystem
             ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
         }
 
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
-
-        ecb = new EntityCommandBuffer(Allocator.Temp);
-
         foreach (var (characterCollider, modelBones) in SystemAPI
-            .Query<RefRO<CharacterColliderComponent>, ThirdPersonCharacterModelBonesTransform>())
+            .Query<RefRO<CharacterColliderComponent>, ThirdPersonCharacterModelBonesTransform>()
+            .WithNone<CharacterColliderInitEntityTag>())
         {
             CharacterColliderUtils.SetTransform(characterCollider.ValueRO.HeadEntity, modelBones.HeadBoneTransform, ecb, state.EntityManager);
             CharacterColliderUtils.SetTransform(characterCollider.ValueRO.ArmLeftEntity0, modelBones.ArmLeftBoneTransform0, ecb, state.EntityManager);
