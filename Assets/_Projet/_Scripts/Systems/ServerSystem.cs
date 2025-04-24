@@ -172,6 +172,11 @@ public partial class SessionStatusSystem : SystemBase
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
 
+
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts in Session property: " +
+                $"{ClientTransportHelper.instance.Session.AsHost().Properties["CountTeamNatif"].Value}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts in Session property: " +
+                $"{ClientTransportHelper.instance.Session.AsHost().Properties["CountTeamCorpo"].Value}");
             //PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");
