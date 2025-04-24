@@ -10,6 +10,7 @@ Shader "Custom/SandInTiles"
 
         _SandTexture("Sand Texture", 2D) = "white"
         _SandNormal("Sand Normal", 2D) = "white"
+        _SandRoughness("Sand Roughness", 2D) = "white"
 
         _Noises("Noise Texture", 2D) = "white"
 
@@ -17,6 +18,8 @@ Shader "Custom/SandInTiles"
         _BlendScale("Blend Scale", float) = 0.05
 
         _BigNoiseTiling("Tiling Factor", float) = 4
+        _Sharpness("Sharpness", float) = 1
+        _TextureScale("Material Scale", float) = 1
 
         _BigNoiseScale("Big Noise Scale", float) = 2
         _SmallNoiseScale("Small Noise Scale", float) = 1
@@ -47,6 +50,7 @@ Shader "Custom/SandInTiles"
             #pragma shader_feature _ _FORWARD_PLUS
             #pragma shader_feature_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma shader_feature_fragment _ADDITIONAL_LIGHT_SHADOWS
+            #pragma shader_feature_fragment _ _SHADOWS_SOFT
             #pragma target 3.0
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -55,21 +59,27 @@ Shader "Custom/SandInTiles"
             TEXTURE2D(_FloorAlbedo); SAMPLER(sampler_FloorAlbedo);
             TEXTURE2D(_FloorRoughness);
             TEXTURE2D(_FloorNormal); SAMPLER(sampler_FloorNormal);
-            TEXTURE2D(_FloorHeight);
+            TEXTURE2D(_FloorHeight); SAMPLER(sampler_FloorHeight);
 
             TEXTURE2D(_SandTexture); SAMPLER(sampler_SandTexture);
             TEXTURE2D(_SandNormal); SAMPLER(sampler_SandNormal);
+            TEXTURE2D(_SandRoughness);
 
             TEXTURE2D(_Noises); SAMPLER(sampler_Noises);
 
-            float _HeightFactor;
-            float _BlendScale;
+            CBUFFER_START(UnityPerMaterial)
+                float _HeightFactor;
+                float _BlendScale;
 
-            float _BigNoiseTiling;
+                float _BigNoiseTiling;
 
-            float _BigNoiseScale;
-            float _SmallNoiseScale;
-            float _NegativeNoiseScale;
+                float _BigNoiseScale;
+                float _SmallNoiseScale;
+                float _NegativeNoiseScale;
+
+                float _Sharpness;
+                float _TextureScale;
+            CBUFFER_END
 
             struct VertexInput
             {
@@ -114,10 +124,10 @@ Shader "Custom/SandInTiles"
 
                 VertexPositionInputs vpi = GetVertexPositionInputs(input.vertex.xyz);
 
-                vo.pos = TransformObjectToHClip(input.vertex.xyz);
+                vo.pos = vpi.positionCS;
                 vo.normScreen = normalize(mul(UNITY_MATRIX_IT_MV, float4(input.normal, 1)).xyz);
                 vo.uv = input.textureUV;
-                vo.worldPos = mul(unity_ObjectToWorld, input.vertex);
+                vo.worldPos = float4(vpi.positionWS, 0);
                 vo.screenPos = ComputeScreenPos(vo.pos);
 
                 VertexNormalInputs tbn = GetVertexNormalInputs(input.normal, input.tangent);
@@ -137,26 +147,97 @@ Shader "Custom/SandInTiles"
                 return vo;
             }
 
-            float4 SurfaceFragment (VertexOutput input) : SV_Target
+            float4 SurfaceFragment(VertexOutput input) : SV_Target
             {
                 float3x3 TBN = float3x3(input.worldTangent, input.worldBitangent, input.worldNormal);
 
+                float2 uvFrontGround = input.worldPos.xy * _TextureScale;
+                float2 uvSideGround = input.worldPos.zy * _TextureScale;
+                float2 uvTopGround = input.worldPos.xz * _TextureScale;
+
+                float2 uvFrontSand = input.worldPos.xy * _TextureScale * 4;
+                float2 uvSideSand = input.worldPos.zy * _TextureScale * 4;
+                float2 uvTopSand = input.worldPos.xz * _TextureScale * 4;
+
+                float4 colorFrontGround = SAMPLE_TEXTURE2D(_FloorAlbedo, sampler_FloorAlbedo, uvFrontGround);
+                float4 colorSideGround = SAMPLE_TEXTURE2D(_FloorAlbedo, sampler_FloorAlbedo, uvSideGround);
+                float4 colorTopGround = SAMPLE_TEXTURE2D(_FloorAlbedo, sampler_FloorAlbedo, uvTopGround);
+
+                float3 normalFrontGround = SAMPLE_TEXTURE2D(_FloorNormal, sampler_FloorNormal, uvFrontGround).xyz;
+                float3 normalSideGround = SAMPLE_TEXTURE2D(_FloorNormal, sampler_FloorNormal, uvSideGround).xyz;
+                float3 normalTopGround = SAMPLE_TEXTURE2D(_FloorNormal, sampler_FloorNormal, uvTopGround).xyz;
+
+                float heightFront = SAMPLE_TEXTURE2D(_FloorHeight, sampler_FloorHeight, uvFrontGround).x;
+                float heightSide = SAMPLE_TEXTURE2D(_FloorHeight, sampler_FloorHeight, uvSideGround).x;
+                float heightTop = SAMPLE_TEXTURE2D(_FloorHeight, sampler_FloorHeight, uvTopGround).x;
+
+                float roughnessFrontGround = SAMPLE_TEXTURE2D(_FloorRoughness, sampler_FloorHeight, uvFrontGround).x;
+                float roughnessSideGround = SAMPLE_TEXTURE2D(_FloorRoughness, sampler_FloorHeight, uvSideGround).x;
+                float roughnessTopGround = SAMPLE_TEXTURE2D(_FloorRoughness, sampler_FloorHeight, uvTopGround).x;
+
+                float4 colorFrontSand = SAMPLE_TEXTURE2D(_SandTexture, sampler_SandTexture, uvFrontSand);
+                float4 colorSideSand = SAMPLE_TEXTURE2D(_SandTexture, sampler_SandTexture, uvSideSand);
+                float4 colorTopSand = SAMPLE_TEXTURE2D(_SandTexture, sampler_SandTexture, uvTopSand);
+
+                float3 normalFrontSand = SAMPLE_TEXTURE2D(_SandNormal, sampler_SandNormal, uvFrontSand).xyz;
+                float3 normalSideSand = SAMPLE_TEXTURE2D(_SandNormal, sampler_SandNormal, uvSideSand).xyz;
+                float3 normalTopSand = SAMPLE_TEXTURE2D(_SandNormal, sampler_SandNormal, uvTopSand).xyz;
+
+                float roughnessFrontSand = SAMPLE_TEXTURE2D(_SandRoughness, sampler_FloorHeight, uvFrontSand).x;
+                float roughnessSideSand = SAMPLE_TEXTURE2D(_SandRoughness, sampler_FloorHeight, uvSideSand).x;
+                float roughnessTopSand = SAMPLE_TEXTURE2D(_SandRoughness, sampler_FloorHeight, uvTopSand).x;
+
+                float3 weights = input.worldNormal;
+                weights = abs(weights);
+                weights = pow(weights, _Sharpness);
+                weights = weights / (weights.x + weights.y + weights.z);
+
+                colorFrontGround *= weights.z;
+                colorSideGround *= weights.x;
+                colorTopGround *= weights.y;
+                colorFrontSand *= weights.z;
+                colorSideSand *= weights.x;
+                colorTopSand *= weights.y;
+                normalFrontGround *= weights.z;
+                normalSideGround *= weights.x;
+                normalTopGround *= weights.y;
+                normalFrontSand *= weights.z;
+                normalSideSand *= weights.x;
+                normalTopSand *= weights.y;
+                heightFront *= weights.z;
+                heightSide *= weights.x;
+                heightTop *= weights.y;
+                roughnessFrontGround *= weights.z;
+                roughnessSideGround *= weights.x;
+                roughnessTopGround *= weights.y;
+                roughnessFrontSand *= weights.z;
+                roughnessSideSand *= weights.x;
+                roughnessTopSand *= weights.y;
+
+                float4 groundColor = colorFrontGround + colorSideGround + colorTopGround;
+                float4 sandColor = colorFrontSand + colorSideSand + colorTopSand;
+                float3 groundNormal = mul(TBN, (normalFrontGround + normalSideGround + normalTopGround).xyz);
+                float3 sandNormal = mul(TBN, (normalFrontSand + normalSideSand + normalTopSand).xyz);
+                float floorHeight = heightFront + heightSide + heightTop;
+                float groundRoughness = roughnessFrontGround + roughnessSideGround + roughnessTopGround;
+                float sandRoughness = roughnessFrontSand + roughnessSideSand + roughnessTopSand;
+
                 InputData lighting = (InputData) 0;
                 lighting.positionWS = input.worldPos.xyz;
+                lighting.positionCS = input.pos;
                 lighting.normalWS = normalize(input.worldNormal);
-                lighting.viewDirectionWS = GetWorldSpaceViewDir(input.worldPos).xyz;
+                lighting.viewDirectionWS = GetWorldSpaceNormalizeViewDir(input.worldPos);
                 lighting.fogCoord = input.fogFactorAndVertexLight.x;
                 lighting.vertexLighting = input.fogFactorAndVertexLight.yzw;
-                lighting.shadowCoord = input.shadowCoord;
                 lighting.bakedGI = SAMPLE_GI(input.lightmapUV, input.vertexSH, lighting.normalWS);
                 
-                // #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
-                //     lighting.shadowCoord = input.shadowCoord;
-                // #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
-                //     lighting.shadowCoord = TransformWorldToShadowCoord(lighting.worldPos);
-                // #else
-                //     lighting.shadowCoord = float4(0, 0, 0, 0);
-                // #endif
+                 #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
+                     lighting.shadowCoord = input.shadowCoord;
+                 #elif defined(MAIN_LIGHT_CALCULATE_SHADOWS)
+                     lighting.shadowCoord = TransformWorldToShadowCoord(lighting.positionWS);
+                 #else
+                     lighting.shadowCoord = float4(0, 0, 0, 0);
+                 #endif
 
                 SurfaceData surface = (SurfaceData) 0;
 
@@ -169,20 +250,14 @@ Shader "Custom/SandInTiles"
                                 +  pow(noiseData.r, _SmallNoiseScale)
                                 -  pow(noiseData.g, _NegativeNoiseScale);
 
-                float floorHeight = SAMPLE_TEXTURE2D(_FloorHeight, sampler_FloorAlbedo, input.uv).r;
-
-                float3 floorColor = SAMPLE_TEXTURE2D(_FloorAlbedo, sampler_FloorAlbedo, input.uv).rgb;
-                float3 sandColor = SAMPLE_TEXTURE2D(_SandTexture, sampler_SandTexture, input.uv).rgb;
-
-                float3 floorNormal = mul(TBN, SAMPLE_TEXTURE2D(_FloorNormal, sampler_FloorNormal, input.uv).xyz);
-                float3 sandNormal = mul(TBN, SAMPLE_TEXTURE2D(_SandNormal, sampler_SandNormal, input.uv).xyz);
-
-                surface.albedo = lerp(sandColor, floorColor, saturate((floorHeight - (sandHeight * _HeightFactor)) / _BlendScale));
-                surface.normalTS = lerp(sandNormal, floorNormal, saturate((floorHeight - (sandHeight * _HeightFactor)) / _BlendScale));
+                float lerpFactor = saturate((floorHeight - (sandHeight * _HeightFactor)) / _BlendScale);
+                surface.albedo = lerp(sandColor, groundColor, lerpFactor);
+                surface.normalTS = lerp(sandNormal, groundNormal, lerpFactor);
                 surface.alpha = 1;     
                 surface.occlusion = 1;
-                surface.smoothness = SAMPLE_TEXTURE2D(_FloorRoughness, sampler_FloorAlbedo, input.uv).r;
+                surface.smoothness = lerp(sandRoughness, groundRoughness, lerpFactor);
 
+                // return float4(surface.normalTS, 1);
                 return UniversalFragmentPBR(lighting, surface);
             }
 
