@@ -91,13 +91,7 @@ public static class PlayerHelpers
     static public IPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        int index = networkId;
-
-        if (RequestedPlayType == PlayType.ClientAndServer)
-        {
-            index--;
-        }
-
+        int index = networkId - 1 ;
         return (IPlayer)sessionPlayers[index];
     }
 
@@ -242,7 +236,6 @@ public static class PlayerHelpers
 
     static public TeamSideType GetPlayerInTeam(int networkId)
     {
-        var sessionPlayers = ClientTransportHelper.instance.Session.Players;
         var player = FindCurrentPlayerForNetworkId(networkId);
 
         if (player.Properties.Count > 0)
@@ -258,7 +251,6 @@ public static class PlayerHelpers
             {
                 return TeamSideType.Natif;
             }
-            return TeamSideType.Neutre;
         }
         return TeamSideType.Neutre;
     }
