@@ -12,9 +12,11 @@ public enum GrenadeTriggerType
 [CreateAssetMenu(fileName = "GrenadeData", menuName = "Stuff Data/Grenade")]
 public class GrenadeData : ScriptableObject
 {
+    public GameObject dropedEntityPrefab;
+    public GameObject grenadeThrownPrefab;
     public GameObject viewPrefab;
     public Texture2D UIImage;
-    public StuffInventoryLocation location;
+    public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
     public string entityName;

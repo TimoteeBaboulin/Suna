@@ -107,20 +107,16 @@ public class GameResourcesAuthoring : MonoBehaviour
                 prefabs.Add(new StuffEntityPrefabsBuffer
                 {
                     dropedEntityPrefab = GetEntity(grenadeSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
-                    inHandEntityPrefab = grenadeEntityEntity
+                    inHandEntityPrefab = grenadeEntity,
+                    thrownGrenadeEntityPrefab = GetEntity(grenadeSO.grenadeThrownPrefab, TransformUsageFlags.Dynamic)
                 });
 
-                stuffs[i].viewPrefab = grenadeSO.viewPrefab;
-                stuffs[i].location = grenadeSO.location;
+                stuffs[i].slot = grenadeSO.location;
                 stuffs[i].type = grenadeSO.type;
                 stuffs[i].side = grenadeSO.side;
-                //stuffs[i].deploymentSpeed = 0;
-                //stuffs[i].storageSpeed = 0;
                 stuffs[i].price = grenadeSO.price;
                 stuffs[i]._stuffLocalOffsetView = grenadeSO._stuffLocalOffsetView;
                 stuffs[i].killGain = grenadeSO.killGain;
-                //stuffs[i].canADS = false;
-                //stuffs[i].ADSFOV = 0;
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count;
             }
 

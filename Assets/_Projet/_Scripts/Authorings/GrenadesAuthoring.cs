@@ -25,7 +25,8 @@ public class GrenadesAuthoring : MonoBehaviour
                 IsConnectedToDatabase = false,
                 NameInDatabase = authoring.grenade != null ? authoring.grenade.entityName : ""
             });
-            AddComponent(entity, new StuffOwner());
+
+            AddComponent(entity, new StuffDynamicData());
 
             AddComponent<IsStuffInHand>(entity);
             SetComponentEnabled<IsStuffInHand>(entity, false);

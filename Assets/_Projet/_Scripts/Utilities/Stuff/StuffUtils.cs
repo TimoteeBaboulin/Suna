@@ -246,6 +246,7 @@ public static class StuffUtils
     float impulse)
     {
         Entity dropedStuff = ecb.Instantiate(stuffDynamicDataRef.dropedEntityPrefab);
+        ecb.SetName(dropedStuff, "Drop");
 
         ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuff });
 

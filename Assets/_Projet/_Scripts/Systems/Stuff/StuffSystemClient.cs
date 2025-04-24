@@ -86,6 +86,27 @@ partial struct StuffSystemClient : ISystem
             }
         }
 
+        //foreach (var (inHandRefRO, transformRW, entity) in SystemAPI
+        //    .Query<RefRO<StuffEntityInHandRef>, RefRW<LocalTransform>>()
+        //    .WithPresent<ReleasedGrenade>()
+        //    .WithEntityAccess())
+        //{
+        //    if (!state.EntityManager.HasComponent<StuffGameObjectRef>(inHandRefRO.ValueRO.Value)) continue;
+
+        //    if (SystemAPI.IsComponentEnabled<ReleasedGrenade>(entity))
+        //    {
+        //        ref LocalTransform entityTransform = ref transformRW.ValueRW;
+        //        Transform viewTransform = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value).Value.transform;
+
+        //        if (viewTransform.parent == null)
+        //        {
+        //            viewTransform.position = entityTransform.Position;
+        //            viewTransform.rotation = entityTransform.Rotation;
+        //            viewTransform.localScale = Vector3.one;
+        //        }
+        //    }
+        //}
+
         //Display stuff
         foreach (var (goRef, ownerRO, entity) in SystemAPI
         .Query<StuffGameObjectRef, RefRO<StuffDynamicData>>()

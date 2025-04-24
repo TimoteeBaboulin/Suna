@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Networking.Transport;
 using Unity.Physics;
 using Unity.Services.Multiplayer;
 using Unity.Transforms;
@@ -190,17 +191,15 @@ public partial struct ShootSystem : ISystem
             SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
 
-        foreach(var (dynamicDataRW, databaseAccessRO, ownerRef, grenade) in SystemAPI
-            .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRW<StuffOwner>>()
+        foreach(var (dynamicDataRW, databaseAccessRO, sddRW, grenade) in SystemAPI
+            .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRW<StuffDynamicData>>()
             .WithAll<IsStuffInHand, Simulate>()
             .WithDisabled<ReleasedGrenade>()
             .WithEntityAccess())
         {
-            Debug.Log("JA");
-
             ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
-            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+            ref readonly Entity owner = ref sddRW.ValueRO.owner;
 
             RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
@@ -212,7 +211,13 @@ public partial struct ShootSystem : ISystem
 
             if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
 
-            if(dynamicData.isCooking)
+            ecb.SetComponent(grenade, new PhysicsVelocity
+            {
+                Linear = math.mul(shootRotation, new float3(0f, 0f, 0f)),
+                Angular = math.mul(shootRotation, new float3(0f, 0f, 0f))
+            });
+
+            if (dynamicData.isCooking)
             {
                 dynamicData.cookingTime += dt;
             }
@@ -227,52 +232,47 @@ public partial struct ShootSystem : ISystem
                 {
                     if (dynamicData.cookingTime >= commonData.cookingTime)
                     {
-                        UnityEngine.Debug.Log($"Grenade throw {state.World.IsClient()}");
+                        GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+                        DynamicBuffer<LinkedEntityGroup> linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(owner);
+                        CharacterStuffList characterStuffList = SystemAPI.GetComponent<CharacterStuffList>(owner);
+                        GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(grenade);
+                        ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
 
-                        SystemAPI.GetSingletonBuffer<UnequipStuffQueu>().Add(new UnequipStuffQueu
+                        //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
+                        StuffUtils.UnequipUnsafe(ref state, ref database, owner, grenade);
+
+                        if(characterStuffList.List[(int)StuffSlot.MainWeapon] != Entity.Null)
                         {
-                            Owner = owner,
-                            Stuff = grenade,
-                            Position = shootStartpos
-                        });
+                            StuffUtils.SwitchTo(ref state, ref characterStuffList, StuffSlot.MainWeapon);
+                        }
+                        else
+                        {
+                            StuffUtils.SwitchTo(ref state, ref characterStuffList, StuffSlot.SecondaryWeapon);
+                        }
 
-                        ecb.RemoveComponent<StuffOwner>(grenade);
+                        //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
+
+                        Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
+                        ecb.SetName(thrownGrenade, "Thrown Grenade");
+
+                        ecb.AddComponent(thrownGrenade, new StuffEntityInHandRef { Value = grenade });
 
                         ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
                         ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
 
-                        //ecb.AddComponent<PhysicsVelocity>(grenade);
-                        //ecb.AddComponent<PhysicsMass>(grenade);
-                        //ecb.AddComponent<PhysicsDamping>(grenade);
-                        //ecb.AddComponent<PhysicsGravityFactor>(grenade);
-
-                        ecb.SetComponent(grenade, new LocalTransform
+                        ecb.SetComponent(thrownGrenade, new LocalTransform
                         {
                             Position = shootStartpos,
                             Rotation = shootRotation,
                             Scale = 1.0f
                         });
 
-                        ecb.SetComponent(grenade, new PhysicsVelocity
+                        ecb.SetComponent(thrownGrenade, new PhysicsVelocity
                         {
                             Linear = math.mul(shootRotation, new float3(0f, 0f, 20f)),
                             Angular = math.mul(shootRotation, new float3(0f, 0f, 0f))
                         });
 
-                        //ecb.SetComponent(grenade, new PhysicsMass
-                        //{
-                        //    InverseMass = 0.02222222f,
-                        //    InverseInertia = new float3(0f, 0f, 0f),
-                        //    AngularExpansionFactor = 0.5f,
-                        //});
-
-                        //ecb.SetComponent(grenade, new PhysicsDamping
-                        //{
-                        //    Linear = 0.1f,
-                        //    Angular = 0.1f
-                        //});
-
-                        UnityEngine.Debug.Log($"Grenade thrown {state.World.IsClient()}");
                         dynamicData.isCooking = false;
                         dynamicData.cookingTime = 0.0f;
                     }

@@ -8,12 +8,9 @@ using UnityEngine;
 [GhostComponent]
 public struct StuffEntityPrefabsBuffer : IBufferElementData
 {
-    public Entity rangedWeaponEntityPrefab;
-    public Entity meleeWeaponEntityPrefab;
-    public Entity grenadesEntityPrefab;
-    public Entity harvesterEntityPrefab;
     [GhostField] public Entity dropedEntityPrefab;
     [GhostField] public Entity inHandEntityPrefab;
+    [GhostField] public Entity thrownGrenadeEntityPrefab; //Only useful for grenades but I didn't have time to refactor this, sorry
 }
 
 public struct GameResourcesDatabase : IComponentData
