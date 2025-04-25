@@ -10,6 +10,7 @@ using Unity.NetCode;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
 public static class PlayerHelpers
@@ -91,7 +92,12 @@ public static class PlayerHelpers
     static public IPlayer FindCurrentPlayerForNetworkId(int networkId)
     {
         var sessionPlayers = ClientTransportHelper.instance.Session.Players;
-        int index = networkId - 1 ;
+        int index = networkId - 1;
+
+        if (RequestedPlayType == PlayType.Server)
+        {
+            index = networkId;
+        }
         return (IPlayer)sessionPlayers[index];
     }
 
@@ -111,11 +117,18 @@ public static class PlayerHelpers
         if (assignedTeam == "Corpo")
         {
             _teams.corpoPlayers.Add(readOnlyPlayer);
+            var session = ClientTransportHelper.instance.Session.AsHost();
+            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
+            session.SavePropertiesAsync();
         }
         else
         {
             _teams.natifPlayers.Add(readOnlyPlayer);
+            var session = ClientTransportHelper.instance.Session.AsHost();
+            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
+            session.SavePropertiesAsync();
         }
+
         return assignedTeam;
     }
     public static void RemovePlayer(string playerId)
@@ -125,6 +138,9 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from CORPO ID {playerId} ");
             _teams.corpoPlayers.Remove(corpo);
+            var session = ClientTransportHelper.instance.Session.AsHost();
+            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
+            session.SavePropertiesAsync();
             return;
         }
 
@@ -133,6 +149,9 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from NATIF ID {playerId} ");
             _teams.natifPlayers.Remove(natif);
+            var session = ClientTransportHelper.instance.Session.AsHost();
+            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
+            session.SavePropertiesAsync();
             return;
         }
 
@@ -192,6 +211,33 @@ public static class PlayerHelpers
                 return _teams.natifPlayers;
             default:
                 return Array.Empty<IReadOnlyPlayer>();
+        }
+    }
+
+    public static int GetPlayersCountByTeamOnClient(string teamName)
+    {
+        TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamCorpo"].Value);
+            case TeamSideType.Natif:
+                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamNatif"].Value);
+            default:
+                return 0;
+        }
+    }
+
+    public static int GetPlayersCountByTeamOnClient(TeamSideType teamSide)
+    {
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamCorpo"].Value);
+            case TeamSideType.Natif:
+                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamNatif"].Value);
+            default:
+                return 0;
         }
     }
 

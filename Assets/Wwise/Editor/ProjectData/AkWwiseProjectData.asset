@@ -24,7 +24,7 @@ MonoBehaviour:
     ParentPath: Virtual Acoustics\Default Work Unit
     guid: 08afa1427da885468a183996e3a2c432
     GuidInternal: 
-    m_lastTime: -8584563882241376924
+    m_lastTime: -8584560549817897771
     List: []
   AuxBusWwu:
   - PhysicalPath: Master-Mixer Hierarchy\Default Work Unit.wwu
@@ -38,7 +38,7 @@ MonoBehaviour:
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
     guid: 6924ad1a7785a4489344f7ee45689393
     GuidInternal: 
-    m_lastTime: -8584563882241626775
+    m_lastTime: -8584560549818424371
     List:
     - name: Master Audio Bus
       guid: d8a41415a61d2a41a17e75ca0c2149f3
@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584563882241398238
+    m_lastTime: -8584560124826439443
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -94,8 +94,25 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584563882242000966
+    m_lastTime: -8584560124826830927
     List:
+    - name: Character
+      guid: b02d4c429ef96448b30705fc5351842d
+      id: 436743010
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Character
+        ObjectType: 4
+        guid: b02d4c429ef96448b30705fc5351842d
+      Path: Events\Default Work Unit\Character
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Footstep
       guid: 9b328937a796d24fb9542e5b638b2771
       id: 1866025847
@@ -106,13 +123,36 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Character
+        ObjectType: 4
+        guid: b02d4c429ef96448b30705fc5351842d
       - ElementName: Footstep
         ObjectType: 3
         guid: 9b328937a796d24fb9542e5b638b2771
-      Path: Events\Default Work Unit\Footstep
+      Path: Events\Default Work Unit\Character\Footstep
       maxAttenuation: 0
       maxDuration: 0.5611338
       minDuration: 0.5611338
+    - name: LP17
+      guid: 79cba981a1aa2948a0cd724ec0459f51
+      id: 1599998537
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: LP17
+        ObjectType: 4
+        guid: 79cba981a1aa2948a0cd724ec0459f51
+      Path: Events\Default Work Unit\Stuff\LP17
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Pistol_Reload
       guid: 7c31bd991b042f4f9d594c0543e9f945
       id: 1068215004
@@ -123,10 +163,16 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: LP17
+        ObjectType: 4
+        guid: 79cba981a1aa2948a0cd724ec0459f51
       - ElementName: Pistol_Reload
         ObjectType: 3
         guid: 7c31bd991b042f4f9d594c0543e9f945
-      Path: Events\Default Work Unit\Pistol_Reload
+      Path: Events\Default Work Unit\Stuff\LP17\Pistol_Reload
       maxAttenuation: 0
       maxDuration: 0.69659865
       minDuration: 0.69659865
@@ -140,16 +186,22 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: LP17
+        ObjectType: 4
+        guid: 79cba981a1aa2948a0cd724ec0459f51
       - ElementName: Pistol_Shoot
         ObjectType: 3
         guid: cf6965ca56287c4f9e9f530727951166
-      Path: Events\Default Work Unit\Pistol_Shoot
+      Path: Events\Default Work Unit\Stuff\LP17\Pistol_Shoot
       maxAttenuation: 0
       maxDuration: 2.0273924
       minDuration: 2.0273924
-    - name: Rifle_Reload
-      guid: 4c505f4ba9ab8148903749464fff5b5f
-      id: 3214964847
+    - name: SMG
+      guid: 038061cdfe726940a83fd5a5174d61cd
+      id: 510683180
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -157,16 +209,42 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Rifle_Reload
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: SMG
+        ObjectType: 4
+        guid: 038061cdfe726940a83fd5a5174d61cd
+      Path: Events\Default Work Unit\Stuff\SMG
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: SMG_Reload
+      guid: 4c505f4ba9ab8148903749464fff5b5f
+      id: 2642532248
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: SMG
+        ObjectType: 4
+        guid: 038061cdfe726940a83fd5a5174d61cd
+      - ElementName: SMG_Reload
         ObjectType: 3
         guid: 4c505f4ba9ab8148903749464fff5b5f
-      Path: Events\Default Work Unit\Rifle_Reload
+      Path: Events\Default Work Unit\Stuff\SMG\SMG_Reload
       maxAttenuation: 0
       maxDuration: 0.23832199
       minDuration: 0.23832199
-    - name: Rifle_Shoot
+    - name: SMG_Shoot
       guid: 9a27464da56fff45bee18aa41bdabb7c
-      id: 1117295805
+      id: 1025907732
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -174,13 +252,36 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Rifle_Shoot
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: SMG
+        ObjectType: 4
+        guid: 038061cdfe726940a83fd5a5174d61cd
+      - ElementName: SMG_Shoot
         ObjectType: 3
         guid: 9a27464da56fff45bee18aa41bdabb7c
-      Path: Events\Default Work Unit\Rifle_Shoot
+      Path: Events\Default Work Unit\Stuff\SMG\SMG_Shoot
       maxAttenuation: 0
       maxDuration: 2.970771
       minDuration: 2.970771
+    - name: Stuff
+      guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      id: 1883833725
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      Path: Events\Default Work Unit\Stuff
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:
@@ -193,7 +294,7 @@ MonoBehaviour:
     ParentPath: Game Parameters\Default Work Unit
     guid: 68c92b51ba44254fa885c7d3ea087ecf
     GuidInternal: 
-    m_lastTime: -8584563882242000966
+    m_lastTime: -8584560549819101795
     List: []
   StateWwu:
   - PhysicalPath: States\Default Work Unit.wwu
@@ -207,7 +308,7 @@ MonoBehaviour:
     ParentPath: States\Default Work Unit
     guid: e85b3507f3e0324ea153a56a0269a3da
     GuidInternal: 
-    m_lastTime: -8584563882241398238
+    m_lastTime: -8584560549817927692
     List: []
   SwitchWwu:
   - PhysicalPath: Switches\Default Work Unit.wwu
@@ -221,7 +322,7 @@ MonoBehaviour:
     ParentPath: Switches\Default Work Unit
     guid: f977118fece93c47b14a1fe666ca9f29
     GuidInternal: 
-    m_lastTime: -8584563882241386901
+    m_lastTime: -8584560549817917715
     List: []
   TriggerWwu:
   - PhysicalPath: Triggers\Default Work Unit.wwu
@@ -235,10 +336,10 @@ MonoBehaviour:
     ParentPath: Triggers\Default Work Unit
     guid: 3b0370d94aa350408e9b99db2bcef2b0
     GuidInternal: 
-    m_lastTime: -8584563882241386901
+    m_lastTime: -8584560549817907744
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 0e0000000f000000
+  ExpandedWaapiItemIds: 0500000006000000080000000b0000000c00000018000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

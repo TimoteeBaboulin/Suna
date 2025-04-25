@@ -12,6 +12,7 @@ public partial struct DropStuffSystem : ISystem
     {
         state.RequireForUpdate<CharacterStuffList>();
         state.RequireForUpdate<CharacterInput>();
+        state.RequireForUpdate<UnequipStuffQueue>();
     }
 
     public void OnUpdate(ref SystemState state)

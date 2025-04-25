@@ -5,7 +5,8 @@
 			<ChildrenList>
 				<SoundBank Name="DefaultBank" ID="{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}">
 					<ObjectInclusionList>
-						<ObjectRef Name="SFX" ID="{BA74B0CB-0B2C-488D-953A-ED9B6BCC94B0}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Stuff" ID="{8364A492-1F2E-42EE-BC8A-9FC8ED7AA103}" WorkUnitID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Character" ID="{424C2DB0-F99E-4864-B307-05FC5351842D}" WorkUnitID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

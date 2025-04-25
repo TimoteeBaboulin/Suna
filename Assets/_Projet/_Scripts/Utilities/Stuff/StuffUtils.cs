@@ -7,20 +7,20 @@ using Unity.Transforms;
 
 public static class StuffUtils
 {
-    public static void InstantiateNextFrame(DynamicBuffer<GameResourcesInstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, Entity owner)
+    public static void InstantiateNextFrame(DynamicBuffer<InstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, Entity owner)
     {
         if (owner == Entity.Null) return;
 
-        instantiateStuffQueue.Add(new GameResourcesInstantiateStuffQueue
+        instantiateStuffQueue.Add(new InstantiateStuffQueue
         {
             StuffName = stuffName,
             Owner = owner,
         });
     }
 
-    public static void InstantiateNextFrame(DynamicBuffer<GameResourcesInstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, float3 position)
+    public static void InstantiateNextFrame(DynamicBuffer<InstantiateStuffQueue> instantiateStuffQueue, FixedString128Bytes stuffName, float3 position)
     {
-        instantiateStuffQueue.Add(new GameResourcesInstantiateStuffQueue
+        instantiateStuffQueue.Add(new InstantiateStuffQueue
         {
             StuffName = stuffName,
             Position = position,
@@ -98,7 +98,6 @@ public static class StuffUtils
                 0f
             );
         }
-
         // Add the stuff in player inventory
         ownerStuffListRef.SetStuffInSlot(stuffDataRef.slot, stuff);
 
@@ -109,8 +108,8 @@ public static class StuffUtils
         stuffGhostOwnerRef.NetworkId = ownerGhostOwner.NetworkId;
         linkedEntityGroup.Add(new LinkedEntityGroup { Value = stuff });
 
-        SwitchTo(ref state, ref ownerStuffListRef, stuffDataRef.slot);
-
+        if (autoSwitchOn)
+            SwitchTo(ref state, ref ownerStuffListRef, stuffDataRef.slot);
     }
 
     public static void UnequipNextFrame(DynamicBuffer<UnequipStuffQueue> unequipStuffQueue, Entity owner, Entity stuff)
@@ -174,7 +173,6 @@ public static class StuffUtils
         }
 
         stuffDynamicDataRef.owner = Entity.Null;
-
         //Network
         stuffGhostOwnerRef.NetworkId = -1;
         for (int i = 0; i < linkedEntityGroup.Length; i++)
@@ -317,11 +315,6 @@ public static class StuffUtils
         if (nextStuff == Entity.Null) return;
 
         stuffList.StuffInHandSlot = slotToSwitch;
-
-        if (previousStuff != Entity.Null)
-            state.EntityManager.SetComponentEnabled<IsStuffInHand>(previousStuff, false);
-
-        state.EntityManager.SetComponentEnabled<IsStuffInHand>(nextStuff, true);
     }
 
     public static void Destroy(ref SystemState state, Entity stuff)

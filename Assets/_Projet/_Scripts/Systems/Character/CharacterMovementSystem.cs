@@ -22,6 +22,7 @@ public partial struct CharacterMovementSystem : ISystem
             LocalTransform,
             PhysicsVelocity>(); //Reduce this to only playerInputData to get only the player, all the rest is useful but not needed
         state.RequireForUpdate(state.GetEntityQuery(builder));
+        state.RequireForUpdate<GameResourcesDatabase>();
     }
 
     [BurstCompile]

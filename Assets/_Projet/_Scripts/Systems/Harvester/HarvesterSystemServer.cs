@@ -36,7 +36,7 @@ partial struct HarvesterSystemServer : ISystem
 
         if (!harvesterIsInstantiated)
         {
-            if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue))
+            if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue))
             {
                 StuffUtils.InstantiateNextFrame(queue, "Harvester", new float3(40f,0f,2f));
 

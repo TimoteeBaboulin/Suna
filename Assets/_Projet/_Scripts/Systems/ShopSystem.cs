@@ -34,7 +34,7 @@ partial class ShopSystem : SystemBase
                     continue;
                 }
 
-                if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue) && money.ValueRW.money >= dataReceived)
+                if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.ValueRW.money >= dataReceived)
                 {
                     StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, characterAttached.ValueRO.Value);
 
