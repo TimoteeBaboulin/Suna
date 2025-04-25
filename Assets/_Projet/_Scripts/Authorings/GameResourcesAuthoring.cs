@@ -98,35 +98,6 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
 
                 SoundUtils.SetMappingList(meleeWeaponSO.entityName, meleeWeaponSO.soundList, soundGroupMapping);
-                }
-
-            {
-                int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count;
-                var harvesterSO = authoring.harvester;
-
-                builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
-
-                viewPrefabs.Add(harvesterSO.viewPrefab);
-
-                prefabs.Add(new StuffEntityPrefabsBuffer
-                {
-                    dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
-                    inHandEntityPrefab = harvesterEntity
-                });
-
-                stuffs[id].slot = harvesterSO.location;
-                stuffs[id].type = harvesterSO.type;
-                stuffs[id].side = harvesterSO.side;
-                stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
-                stuffs[id].storageSpeed = harvesterSO.storageSpeed;
-                stuffs[id].price = harvesterSO.price;
-                stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
-                stuffs[id].killGain = harvesterSO.killGain;
-                stuffs[id].canADS = false;
-                stuffs[id].ADSFOV = 0;
-
-                SoundUtils.SetMappingList(harvesterSO.entityName, harvesterSO.soundList, soundGroupMapping);
-                stuffs[id].dataID = 0;
             }
 
             for(; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count; i++)
@@ -153,31 +124,34 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count;
             }
 
-            int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count;
-            var harvesterSO = authoring.harvester;
+            {
+                int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count;
+                var harvesterSO = authoring.harvester;
 
-            builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
+                builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
-            viewPrefabs.Add(harvesterSO.viewPrefab);
+                viewPrefabs.Add(harvesterSO.viewPrefab);
 
-            prefabs.Add(new StuffEntityPrefabsBuffer 
-            { 
-                dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
-                inHandEntityPrefab = harvesterEntity
-            });
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = harvesterEntity
+                });
 
-            stuffs[id].slot = harvesterSO.location;
-            stuffs[id].type = harvesterSO.type;
-            stuffs[id].side = harvesterSO.side;
-            stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
-            stuffs[id].storageSpeed = harvesterSO.storageSpeed;
-            stuffs[id].price = harvesterSO.price;
-            stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
-            stuffs[id].killGain = harvesterSO.killGain;
-            stuffs[id].canADS = false;
-            stuffs[id].ADSFOV = 0;
+                stuffs[id].slot = harvesterSO.location;
+                stuffs[id].type = harvesterSO.type;
+                stuffs[id].side = harvesterSO.side;
+                stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
+                stuffs[id].storageSpeed = harvesterSO.storageSpeed;
+                stuffs[id].price = harvesterSO.price;
+                stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
+                stuffs[id].killGain = harvesterSO.killGain;
+                stuffs[id].canADS = false;
+                stuffs[id].ADSFOV = 0;
 
-            stuffs[id].dataID = 0;
+                SoundUtils.SetMappingList(harvesterSO.entityName, harvesterSO.soundList, soundGroupMapping);
+                stuffs[id].dataID = 0;
+            }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
