@@ -68,10 +68,11 @@ public class ConnectionHandlerNew : MonoBehaviour
             {
                 foreach (var joinedSessionID in listOfJoinedSession)
                 {
+                    sessionTransport = await new ClientTransportHelper().ReconnectByIdAsync(joinedSessionID, token);
+                    
                     if (ClientTransportHelper.instance.Session.Id == joinedSessionID)
                     {
                         Debug.Log($"found session already joined{joinedSessionID}");
-                        sessionTransport = await new ClientTransportHelper().ReconnectByIdAsync(joinedSessionID, token);
                         break;
                     }
                 }
