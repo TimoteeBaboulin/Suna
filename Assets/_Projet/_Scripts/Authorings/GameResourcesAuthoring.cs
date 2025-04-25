@@ -203,8 +203,10 @@ public class GameResourcesAuthoring : MonoBehaviour
             for (i = 0; i < authoring.grenadesList.Count; i++)
             {
                 var grenadeSO = authoring.grenadesList[i];
+                grenades[i].grenadeType = grenadeSO.grenadeType;
                 grenades[i].cookingTime = grenadeSO.cookingTime;
                 grenades[i].impactRadius = grenadeSO.impactRadius;
+                grenades[i].inflictedDamage = grenadeSO.damageInflicted;
                 grenades[i].triggerType = grenadeSO.triggerType;
                 grenades[i].timerTriggerDelay = grenadeSO.timerTriggerDelay;
                 grenades[i].maxImpactAngle = grenadeSO.maxImpactAngle;

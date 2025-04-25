@@ -200,6 +200,7 @@ public partial struct ShootSystem : ISystem
             ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref sddRW.ValueRO.owner;
+            Entity originalOwner = owner;
 
             if (owner == Entity.Null) continue;
 
@@ -235,7 +236,7 @@ public partial struct ShootSystem : ISystem
                         ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
 
                         //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
-                        StuffUtils.UnequipUnsafe(ref state, ref database, owner, grenade);
+                        StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
 
                         if(characterStuffList.List[(int)StuffSlot.MainWeapon] != Entity.Null)
                         {
@@ -255,6 +256,8 @@ public partial struct ShootSystem : ISystem
 
                         ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
                         ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
+
+                        //sddRW.ValueRW.owner = originalOwner;
 
                         ecb.SetComponent(thrownGrenade, new LocalTransform
                         {

@@ -81,42 +81,18 @@ partial struct StuffSystemClient : ISystem
 
             if (viewTransform.parent == null)
             {
-                Debug.Log($"Moving stuff {stuff}");
-
                 viewTransform.position = entityTransform.Position;
                 viewTransform.rotation = entityTransform.Rotation;
 
-                if (state.EntityManager.HasComponent<ReleasedGrenade>(stuff))
+                if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
                 {
-                    if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(stuff))
+                    if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
                     {
-                        Debug.Log("Changing scale of grenade");
-                        viewTransform.localScale = Vector3.one * 50;
+                        viewTransform.localScale = Vector3.one * .8f;
                     }
                 }
             }
         }
-
-        //foreach (var (inHandRefRO, transformRW, entity) in SystemAPI
-        //    .Query<RefRO<StuffEntityInHandRef>, RefRW<LocalTransform>>()
-        //    .WithPresent<ReleasedGrenade>()
-        //    .WithEntityAccess())
-        //{
-        //    if (!state.EntityManager.HasComponent<StuffGameObjectRef>(inHandRefRO.ValueRO.Value)) continue;
-
-        //    if (SystemAPI.IsComponentEnabled<ReleasedGrenade>(entity))
-        //    {
-        //        ref LocalTransform entityTransform = ref transformRW.ValueRW;
-        //        Transform viewTransform = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value).Value.transform;
-
-        //        if (viewTransform.parent == null)
-        //        {
-        //            viewTransform.position = entityTransform.Position;
-        //            viewTransform.rotation = entityTransform.Rotation;
-        //            viewTransform.localScale = Vector3.one;
-        //        }
-        //    }
-        //}
 
         //Display stuff
         foreach (var (goRef, ownerRO, entity) in SystemAPI

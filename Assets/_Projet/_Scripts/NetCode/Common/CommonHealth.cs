@@ -117,10 +117,9 @@ public partial struct ApplyDamageSystem : ISystem
     {
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
-        ComponentLookup<CharacterMoney> moneyLookup = state.GetComponentLookup<CharacterMoney>();
-        ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
-        ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
-        ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
+        //ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
+        //ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
+        //ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
 
         EntityQuery query = state.GetEntityQuery(typeof(StuffDatabaseAccess));
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
@@ -135,23 +134,74 @@ public partial struct ApplyDamageSystem : ISystem
 
         entities.Dispose();
 
-        ApplyDamageJob job = new ApplyDamageJob
+        //ApplyDamageJob job = new ApplyDamageJob
+        //{
+        //    CurrentTick = currentTick,
+        //    MoneyLookup = moneyLookup,
+        //    ClientAttachedComponents = ccacLookup,
+        //    StuffListLookup = stuffListLookup,
+        //    InHandLookup = inHandLookup,
+        //    CommonDataMap = commonDataMap,
+        //    ECB = ecb.AsParallelWriter()
+        //};
+
+        DamageSourceJob damageSourceJob = new DamageSourceJob
         {
-            CurrentTick = currentTick,
-            MoneyLookup = moneyLookup,
-            ClientAttachedComponents = ccacLookup,
-            StuffListLookup = stuffListLookup,
-            InHandLookup = inHandLookup,
-            CommonDataMap = commonDataMap,
-            ECB = ecb.AsParallelWriter()
+            CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
+            MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
+            ecb = ecb.AsParallelWriter()
         };
-        state.Dependency = job.ScheduleParallel(state.Dependency);
+
+        state.Dependency = damageSourceJob.ScheduleParallel(state.Dependency);
         state.Dependency.Complete();
 
         commonDataMap.Dispose();
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+}
+
+[WithNone(typeof(HasNoHealthTag))]
+public partial struct DamageSourceJob : IJobEntity
+{
+    [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
+    [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
+
+    public EntityCommandBuffer.ParallelWriter ecb;
+
+    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, RefRW<ApplyDamage> damageComponent)
+    {
+        Entity target = damageComponent.ValueRO.targetEntity;
+
+        if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth)) return;
+
+        targetHealth.Value -= damageComponent.ValueRO.damage;
+
+        if(targetHealth.Value <= 0)
+        {
+            targetHealth.Value = 0;
+            ecb.AddComponent<HasNoHealthTag>(sortKey, target);
+
+            Entity source = damageComponent.ValueRO.playerSource;
+
+            if (source != Entity.Null)
+            {
+                if (MoneyLookup.TryGetComponent(source, out var cm))
+                {
+                    cm.money += damageComponent.ValueRO.killReward;
+                    ecb.SetComponent(sortKey, source, cm);
+                }
+            }
+        }
+
+        if (damageComponent.ValueRO.grenade != Entity.Null)
+        {
+            //TODO : Make sure the grenade is actually destroyed (because of CleanupComponent)
+            ecb.DestroyEntity(sortKey, damageComponent.ValueRO.grenade);
+        }
+
+        ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
     }
 }
 

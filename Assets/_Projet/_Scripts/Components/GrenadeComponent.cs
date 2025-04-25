@@ -8,12 +8,17 @@ public struct GrenadeDynamicData : IComponentData
 {
     public float cookingTime;
     public bool isCooking;
+
+    public float thrownForTime;
 }
 
 public struct GrenadeCommonData
 {
+    public GrenadeType grenadeType;
+
     public float cookingTime;
     public float impactRadius;
+    public float inflictedDamage;
 
     public GrenadeTriggerType triggerType;
     public float timerTriggerDelay;

@@ -100,6 +100,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
             {
                 timeSinceLastShoot = 1.0f
             });
+
+            AddComponent<Damageable>(entity);
+            SetComponentEnabled<Damageable>(entity, true);
         }
     }
 }

@@ -9,6 +9,11 @@ public enum GrenadeTriggerType
     Proximity,
 }
 
+public enum GrenadeType
+{
+    Frag,
+}
+
 [CreateAssetMenu(fileName = "GrenadeData", menuName = "Stuff Data/Grenade")]
 public class GrenadeData : ScriptableObject
 {
@@ -18,6 +23,7 @@ public class GrenadeData : ScriptableObject
     public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
+    public GrenadeType grenadeType;
     public TeamSideType side;
     public string entityName;
     public int price;
@@ -26,6 +32,7 @@ public class GrenadeData : ScriptableObject
 
     public float cookingTime = 0.3f;
     public float impactRadius = 5f;
+    public float damageInflicted = 80f;
 
     public GrenadeTriggerType triggerType = GrenadeTriggerType.Timer;
     // For the timer trigger

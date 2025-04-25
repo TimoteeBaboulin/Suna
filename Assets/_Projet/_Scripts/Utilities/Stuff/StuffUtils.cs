@@ -139,6 +139,24 @@ public static class StuffUtils
         state.EntityManager.SetComponentData(stuff, stuffGhostOwner);
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
     }
+
+    public static void ThrowUnsafe(ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff)
+    {
+        if (owner == Entity.Null || stuff == Entity.Null) return;
+
+        var linkedEntityGroup = state.EntityManager.GetBuffer<LinkedEntityGroup>(owner);
+        var ownerStuffList = state.EntityManager.GetComponentData<CharacterStuffList>(owner);
+        var stuffGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(stuff);
+        var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
+        ref var stuffData = ref state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuff).GetData(ref database);
+
+        Throw(linkedEntityGroup, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff);
+
+        state.EntityManager.SetComponentData(owner, ownerStuffList);
+        state.EntityManager.SetComponentData(stuff, stuffGhostOwner);
+        state.EntityManager.SetComponentData(stuff, stuffDynamicData);
+    }
+
     public static void Unequip(
         DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
         ref CharacterStuffList ownerStuffListRef,
@@ -156,6 +174,33 @@ public static class StuffUtils
         }
 
         stuffDynamicDataRef.owner = Entity.Null;
+
+        //Network
+        stuffGhostOwnerRef.NetworkId = -1;
+        for (int i = 0; i < linkedEntityGroup.Length; i++)
+        {
+            if (linkedEntityGroup[i].Value == stuff)
+            {
+                linkedEntityGroup.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    public static void Throw(DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
+        ref CharacterStuffList ownerStuffListRef,
+        ref GhostOwner stuffGhostOwnerRef,
+        ref StuffDynamicData stuffDynamicDataRef,
+        ref StuffCommonData stuffDataRef,
+        Entity owner,
+        Entity stuff)
+    {
+        if (owner == Entity.Null || stuff == Entity.Null) return;
+
+        if (ownerStuffListRef.GetStuffInSlot(stuffDataRef.slot) == stuff)
+        {
+            ownerStuffListRef.SetStuffInSlot(stuffDataRef.slot, Entity.Null);
+        }
 
         //Network
         stuffGhostOwnerRef.NetworkId = -1;
