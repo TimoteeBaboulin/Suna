@@ -12,6 +12,7 @@ public enum GrenadeTriggerType
 public enum GrenadeType
 {
     Frag,
+    Flashbang,
 }
 
 [CreateAssetMenu(fileName = "GrenadeData", menuName = "Stuff Data/Grenade")]

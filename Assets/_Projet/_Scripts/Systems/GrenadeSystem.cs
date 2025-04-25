@@ -20,8 +20,8 @@ public partial class GrenadeSystem : SystemBase
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
         var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
-        foreach (var (dynamicDataRW, databaseAccessRO, sddRW, grenade) in SystemAPI
-            .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRW<StuffDynamicData>>()
+        foreach (var (dynamicDataRW, databaseAccessRO, sddRW, released, grenade) in SystemAPI
+            .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRO<StuffDynamicData>, RefRO<ReleasedGrenade>>()
             .WithAll<ReleasedGrenade, Simulate>()
             .WithEntityAccess())
         {
@@ -68,14 +68,14 @@ public partial class GrenadeSystem : SystemBase
                                 Entity damageSource = commandBuffer.CreateEntity();
                                 commandBuffer.SetName(damageSource, "Damage Source");
 
-                                Debug.Log($"Grenade hit {entity} with {grenade} at distance {hit.Distance} (source : {sddRW.ValueRO.owner})");
+                                Debug.Log($"Grenade hit {entity} with {grenade} at distance {hit.Distance} (source : {released.ValueRO.thrower})");
                                 Debug.Log($"Grenade position : {grenadePos}, hit position : {hit.Position}");
 
                                 commandBuffer.AddComponent(damageSource, new ApplyDamage
                                 {
                                     source = DamageSource.Grenade,
                                     grenade = grenade,
-                                    playerSource = sddRW.ValueRO.owner,
+                                    playerSource = released.ValueRO.thrower,
                                     targetEntity = entity,
                                     killReward = stuffCommonData.killGain,
                                     damage = math.saturate(math.lerp(1f, 0f, hit.Distance / radius)) * grenadeCommonData.inflictedDamage
@@ -87,6 +87,37 @@ public partial class GrenadeSystem : SystemBase
 
                         commandBuffer.DestroyEntity(thrownGrenade);
                         if (!hasAppliedDamage) commandBuffer.DestroyEntity(grenade);
+                    }
+
+                    if(grenadeCommonData.grenadeType == GrenadeType.Flashbang)
+                    {
+                        var hits = new NativeList<DistanceHit>(Allocator.Temp);
+                        float3 grenadePos = SystemAPI.GetComponent<LocalTransform>(thrownGrenade).Position;
+                        float radius = grenadeCommonData.impactRadius;
+                        CollisionFilter filter = new CollisionFilter
+                        {
+                            BelongsTo = ~0u,
+                            CollidesWith = (1u << 6)
+                        };
+                        if (SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(grenadePos, radius, ref hits, filter))
+                        {
+                            foreach (var hit in hits)
+                            {
+                                var entity = hit.Entity;
+                                if (!SystemAPI.HasComponent<Damageable>(entity) || !SystemAPI.IsComponentEnabled<Damageable>(entity)) continue;
+                                    
+                                float currentEffect = SystemAPI.GetComponent<FlashGrenadeEffect>(entity).intensity;
+
+                                commandBuffer.AddComponent(entity, new FlashGrenadeEffect
+                                {
+                                    intensity = math.max(currentEffect, (grenadeCommonData.impactRadius - hit.Distance) / grenadeCommonData.impactRadius) //Result between 0 and 1 0 = no effect, 1 = full effect
+                                    // The use of max makes so that effects are not stacked or reset
+                                });
+                            }
+                        }
+
+                        commandBuffer.DestroyEntity(thrownGrenade);
+                        commandBuffer.DestroyEntity(grenade);
                     }
                 }
             }

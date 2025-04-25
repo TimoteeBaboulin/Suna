@@ -40,4 +40,8 @@ public struct GrenadeDatabaseAccess : IComponentData
 }
 
 [GhostEnabledBit]
-public struct ReleasedGrenade : IComponentData, IEnableableComponent {}
+[GhostComponent]
+public struct ReleasedGrenade : IComponentData, IEnableableComponent 
+{
+    [GhostField] public Entity thrower;
+}

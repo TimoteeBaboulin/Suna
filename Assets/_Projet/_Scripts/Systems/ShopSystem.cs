@@ -27,18 +27,22 @@ partial class ShopSystem : SystemBase
 
             uint dataReceived = FindPriceByName(command.ValueRO.weaponData.ToString());
 
-            foreach (var (characterAttached, money, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRW<CharacterMoney>, RefRO<GhostOwner>>())
+            foreach (var (characterAttached, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRO<GhostOwner>>())
             {
                 if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
                 {
                     continue;
                 }
 
-                if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.ValueRW.money >= dataReceived)
-                {
-                    StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, characterAttached.ValueRO.Value);
+                Entity character = characterAttached.ValueRO.Value;
+                CharacterMoney money = SystemAPI.GetComponent<CharacterMoney>(character);
 
-                    money.ValueRW.money -= dataReceived;
+                if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.money >= dataReceived)
+                {
+                    StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, character);
+
+                    money.money -= dataReceived;
+                    commandBuffer.SetComponent(character, money);
 
                     break;
                 }

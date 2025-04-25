@@ -23,6 +23,7 @@ public class ShopController : MonoBehaviour
     [SerializeField] private RangedWeaponData fakir;
     [SerializeField] private RangedWeaponData banduka;
     [SerializeField] private GrenadeData heGrenade;
+    [SerializeField] private GrenadeData flashbang;
     [SerializeField] private RangedWeaponData SMG;
     [SerializeField] private RangedWeaponData Sniper;
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
@@ -53,7 +54,7 @@ public class ShopController : MonoBehaviour
         CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = Sniper;
         CreateShopLine(out line); shopmenu.Add(line);
         CreateShopButton(out button, 10); line.Add(button); grenadeDict[button] = heGrenade;
-        CreateShopButton(out button, 10); line.Add(button);
+        CreateShopButton(out button, 10); line.Add(button); grenadeDict[button] = flashbang;
         CreateShopButton(out button, 10); line.Add(button);
 
         List<Button> buttonList = shopmenu.Query<Button>().ToList();

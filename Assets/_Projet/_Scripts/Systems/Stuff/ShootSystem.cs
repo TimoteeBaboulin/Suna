@@ -54,6 +54,7 @@ public partial struct ShootSystem : ISystem
         {
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
+            ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(weapon).GetData(ref grd);
             ref readonly Entity owner = ref ownerRef.ValueRO.owner;
 
             if (owner == Entity.Null) continue;
@@ -125,50 +126,57 @@ public partial struct ShootSystem : ISystem
                             RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
 
                             // Apply damage to the target player
-                            if (state.World.IsServer())
+                            if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                             {
-                                if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
-                                {
-                                    RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                                    = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                                RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                                    if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                                        && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
-                                        && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                                if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                                    && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                                    && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                                {
+                                    SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                        = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+
+                                    //ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                    //{
+                                    //    Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                    //});
+                                    //ecb.SetComponent(owner, new HasHitComponent { Value = true });
+
+                                    Entity damageSource = ecb.CreateEntity();
+                                    ecb.AddComponent(damageSource, new ApplyDamage
                                     {
-                                        SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
-                                            = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
-
-                                        ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
-                                        {
-                                            Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
-                                        });
-                                        ecb.SetComponent(owner, new HasHitComponent { Value = true });
-                                    }
+                                        source = DamageSource.Weapon,
+                                        damage = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier,
+                                        playerSource = owner,
+                                        targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
+                                        killReward = stuffCommonData.killGain,
+                                        weapon = Entity.Null, //TODO : Store the player weapon entity here
+                                    });
                                 }
-
-                                // === VISUEL ===
-                                HitCommand hc = new HitCommand()
-                                {
-                                    position = hit.Position,
-                                    normal = hit.SurfaceNormal,
-                                    origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
-                                };
-
-                                if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                      // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
-                                {
-                                    RpcUtils.SendServerToClientRpc(ref hc);
-                                }
-
-                                // === FIN VISUEL ===
-
-                                // === SON ===
-                                //SoundUtils.PlayAtEntityPosition(ref state, soundQueue, weapon, "Shoot");
-                                SoundUtils.PlayAtEmitter(ref state, "Shoot", weapon);
-                                // === FIN SON ===
-
                             }
+
+                            // === VISUEL ===
+                            HitCommand hc = new HitCommand()
+                            {
+                                position = hit.Position,
+                                normal = hit.SurfaceNormal,
+                                origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                            };
+
+                            if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                    // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                            {
+                                RpcUtils.SendServerToClientRpc(ref hc);
+                            }
+
+                            // === FIN VISUEL ===
+
+                            // === SON ===
+                            //SoundUtils.PlayAtEntityPosition(ref state, soundQueue, weapon, "Shoot");
+                            SoundUtils.PlayAtEmitter(ref state, "Shoot", weapon);
+                            // === FIN SON ===
                         }
 
                         dynamicData.timeSinceLastFire = 0f;
@@ -197,7 +205,6 @@ public partial struct ShootSystem : ISystem
             ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref readonly Entity owner = ref sddRW.ValueRO.owner;
-            Entity originalOwner = owner;
 
             if (owner == Entity.Null) continue;
 
@@ -252,6 +259,8 @@ public partial struct ShootSystem : ISystem
                         ecb.AddComponent(thrownGrenade, new StuffEntityInHandRef { Value = grenade });
 
                         ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
+
+                        ecb.SetComponent(grenade, new ReleasedGrenade { thrower = owner });
                         ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
 
                         //sddRW.ValueRW.owner = originalOwner;

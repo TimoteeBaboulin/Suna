@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 public struct MaxHealthComponent : IComponentData
 {
@@ -176,16 +177,19 @@ public partial struct DamageSourceJob : IJobEntity
 
         if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth)) return;
 
-        targetHealth.Value -= damageComponent.ValueRO.damage;
+        Debug.Log($"Applying {damageComponent.ValueRO.damage} damage to {target} from {entity}");
 
-        if(targetHealth.Value <= 0)
+        targetHealth.Value -= damageComponent.ValueRO.damage;
+        ecb.SetComponent(sortKey, target, targetHealth);
+
+        if (targetHealth.Value <= 0)
         {
             targetHealth.Value = 0;
             ecb.AddComponent<HasNoHealthTag>(sortKey, target);
 
             Entity source = damageComponent.ValueRO.playerSource;
 
-            if (source != Entity.Null)
+            if (source != Entity.Null && source != target) //If the source is not null and if the source is the different than the target
             {
                 if (MoneyLookup.TryGetComponent(source, out var cm))
                 {
@@ -197,7 +201,6 @@ public partial struct DamageSourceJob : IJobEntity
 
         if (damageComponent.ValueRO.grenade != Entity.Null)
         {
-            //TODO : Make sure the grenade is actually destroyed (because of CleanupComponent)
             ecb.DestroyEntity(sortKey, damageComponent.ValueRO.grenade);
         }
 
