@@ -96,10 +96,7 @@ public static class PlayerHelpers
 
         if (RequestedPlayType == PlayType.Server)
         {
-            if (networkId > 1)
-            {
-                index = networkId;
-            }
+            index = networkId;
         }
         return (IPlayer)sessionPlayers[index];
     }
