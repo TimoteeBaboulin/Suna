@@ -70,7 +70,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     targetWeaponEntity = stuffListRW.ValueRO.GetStuffInSlot(switchToLocation);
 
                     SystemAPI.GetComponentRW<CharacterStuffList>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
-                    SystemAPI.SetComponentEnabled<IsStuffInHand>(targetWeaponEntity, true);
 
                     var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
                     unequipStuffQueu.Add(new UnequipStuffQueue

@@ -1,4 +1,3 @@
-#if !UNITY_SERVER
 using System.Collections.Generic;
 using System;
 using UnityEngine;
@@ -7,6 +6,7 @@ using UnityEngine.InputSystem;
 
 public class SoundManager : Singleton<SoundManager>
 {
+#if !UNITY_SERVER
 
     public Dictionary<string, AK.Wwise.Event> bank = new();
 
@@ -34,13 +34,5 @@ public class SoundManager : Singleton<SoundManager>
             Debug.LogWarning($"Sound {key} not found in bank Dictionary");
         }
     }
-
-    public static bool TryGetBank(out SoundManager sm)
-    {
-        sm = null;
-        sm = Instance.bank;
-        return true;
-        return false;
-    }
-}
 #endif
+}

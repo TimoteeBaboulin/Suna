@@ -15,7 +15,7 @@ public partial struct SoundBankSystemClient : ISystem
     public void OnUpdate(ref SystemState state)
     {
 
-        if (SoundManager.TryGetBank(out var bank)) return;
+        var bank = SoundManager.Instance.bank;
 
         var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);

@@ -20,9 +20,9 @@ MonoBehaviour:
       guid: 
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "\b\0\0B}\0\0F\0\x189\0\u38842"
+      guid: d00bf00fe8d07242
     ParentPath: Virtual Acoustics\Default Work Unit
-    guid: "\b\0\0B}\0\0F\0\x189\0\u38842"
+    guid: d00bf00fe8d07242
     GuidInternal: 
     m_lastTime: -8584563882241376924
     List: []
@@ -31,253 +31,253 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Master-Mixer Hierarchy
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "i$\0\x1Aw\0\0H\0D\U001EE168\0\0"
+      guid: 6924ad1a7785a4489344f7ee45689393
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
-    guid: "i$\0\x1Aw\0\0H\0D\U001EE168\0\0"
+    guid: 6924ad1a7785a4489344f7ee45689393
     GuidInternal: 
     m_lastTime: -8584563882241626775
     List:
     - name: Master Audio Bus
-      guid: "\u0624\x14\x15\0\x1D*A\0~u\u028C!I\U000E9933"
+      guid: d8a41415a61d2a41a17e75ca0c2149f3
       id: 3803692087
       PathAndIcons:
       - ElementName: Master-Mixer Hierarchy
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "i$\0\x1Aw\0\0H\0D\U001EE168\0\0"
+        guid: 6924ad1a7785a4489344f7ee45689393
       - ElementName: Master Audio Bus
         ObjectType: 2
-        guid: "\u0624\x14\x15\0\x1D*A\0~u\u028C!I\U000D0874"
+        guid: d8a41415a61d2a41a17e75ca0c2149f3
       Path: Master-Mixer Hierarchy\Default Work Unit\Master Audio Bus
   BankWwu:
   - PhysicalPath: SoundBanks\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: SoundBanks
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "\0`h\0\0\u0421N\0 \0\U00107806@"
+      guid: ba60688da2d0e14e9c2083f407a04640
     ParentPath: SoundBanks\Default Work Unit
-    guid: "\0`h\0\0\u0421N\0 \0\U00107806@"
+    guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
     m_lastTime: -8584561582264686875
     List:
     - name: DefaultBank
-      guid: "\0\0k\0\r\0\U000477C1jZ\0\u055C\x1E"
+      guid: bc866bf90dfff1479f016a5a99d55c1e
       id: 187290962
       PathAndIcons:
       - ElementName: SoundBanks
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "\0`h\0\0\u0421N\0 \0\U00107806@"
+        guid: ba60688da2d0e14e9c2083f407a04640
       - ElementName: DefaultBank
         ObjectType: 7
-        guid: "\0\0k\0\r\0\U000477C1jZ\0\u055C\x1E"
+        guid: bc866bf90dfff1479f016a5a99d55c1e
       Path: SoundBanks\Default Work Unit\DefaultBank
   EventWwu:
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: Events
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+      guid: 796a3769bf4c0c43b6db861a3b5a440a
     ParentPath: Events\Default Work Unit
-    guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+    guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
     m_lastTime: -8584561582264265627
     List:
     - name: Character
-      guid: "\0-LB\0\0dH\0\a\x05\0SQ\0-"
+      guid: b02d4c429ef96448b30705fc5351842d
       id: 436743010
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Character
         ObjectType: 4
-        guid: "\0-LB\0\0dH\0\a\x05\0SQ\0-"
+        guid: b02d4c429ef96448b30705fc5351842d
       Path: Events\Default Work Unit\Character
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
     - name: Footstep
-      guid: "\02\07\0\0\u048F\0T.[c\0'q"
+      guid: 9b328937a796d24fb9542e5b638b2771
       id: 1866025847
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Character
         ObjectType: 4
-        guid: "\0-LB\0\0dH\0\a\x05\0SQ\0-"
+        guid: b02d4c429ef96448b30705fc5351842d
       - ElementName: Footstep
         ObjectType: 3
-        guid: "\02\07\0\0\u048F\0T.[c\0'q"
+        guid: 9b328937a796d24fb9542e5b638b2771
       Path: Events\Default Work Unit\Character\Footstep
       maxAttenuation: 0
       maxDuration: 0.5611338
       minDuration: 0.5611338
     - name: LP17
-      guid: "y\u02E9\0\0\0)H\0\u0372N\x05\0Q"
+      guid: 79cba981a1aa2948a0cd724ec0459f51
       id: 1599998537
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       - ElementName: LP17
         ObjectType: 4
-        guid: "y\u02E9\0\0\0)H\0\u0372N\x05\0Q"
+        guid: 79cba981a1aa2948a0cd724ec0459f51
       Path: Events\Default Work Unit\Stuff\LP17
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
     - name: Pistol_Reload
-      guid: "|1\0\0\e\x04/O\0YL\x05C\u9E45"
+      guid: 7c31bd991b042f4f9d594c0543e9f945
       id: 1068215004
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       - ElementName: LP17
         ObjectType: 4
-        guid: "y\u02E9\0\0\0)H\0\u0372N\x05\0Q"
+        guid: 79cba981a1aa2948a0cd724ec0459f51
       - ElementName: Pistol_Reload
         ObjectType: 3
-        guid: "|1\0\0\e\x04/O\0YL\x05C\u9E45"
+        guid: 7c31bd991b042f4f9d594c0543e9f945
       Path: Events\Default Work Unit\Stuff\LP17\Pistol_Reload
       maxAttenuation: 0
       maxDuration: 0.69659865
       minDuration: 0.69659865
     - name: Pistol_Shoot
-      guid: "\u03E9e\u0296(|O\0\0S\a'\0\x11f"
+      guid: cf6965ca56287c4f9e9f530727951166
       id: 2124970216
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       - ElementName: LP17
         ObjectType: 4
-        guid: "y\u02E9\0\0\0)H\0\u0372N\x05\0Q"
+        guid: 79cba981a1aa2948a0cd724ec0459f51
       - ElementName: Pistol_Shoot
         ObjectType: 3
-        guid: "\u03E9e\u0296(|O\0\0S\a'\0\x11f"
+        guid: cf6965ca56287c4f9e9f530727951166
       Path: Events\Default Work Unit\Stuff\LP17\Pistol_Shoot
       maxAttenuation: 0
       maxDuration: 2.0273924
       minDuration: 2.0273924
     - name: SMG
-      guid: "\x03\0a\u037Eri@\0?\u0565\x17Ma\u0369"
+      guid: 038061cdfe726940a83fd5a5174d61cd
       id: 510683180
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       - ElementName: SMG
         ObjectType: 4
-        guid: "\x03\0a\u037Eri@\0?\u0565\x17Ma\u0350"
+        guid: 038061cdfe726940a83fd5a5174d61cd
       Path: Events\Default Work Unit\Stuff\SMG
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
     - name: SMG_Reload
-      guid: "LP_K\0\0\0H\07IFO\0[_"
+      guid: 4c505f4ba9ab8148903749464fff5b5f
       id: 2642532248
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       - ElementName: SMG
         ObjectType: 4
-        guid: "\x03\0a\u037Eri@\0?\u0565\x17Ma\u0345"
+        guid: 038061cdfe726940a83fd5a5174d61cd
       - ElementName: SMG_Reload
         ObjectType: 3
-        guid: "LP_K\0\0\0H\07IFO\0[_"
+        guid: 4c505f4ba9ab8148903749464fff5b5f
       Path: Events\Default Work Unit\Stuff\SMG\SMG_Reload
       maxAttenuation: 0
       maxDuration: 0.23832199
       minDuration: 0.23832199
     - name: SMG_Shoot
-      guid: "\0'FM\0o\0E\0\u12A4\e\u06BB|"
+      guid: 9a27464da56fff45bee18aa41bdabb7c
       id: 1025907732
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       - ElementName: SMG
         ObjectType: 4
-        guid: "\x03\0a\u037Eri@\0?\u0565\x17Ma\u0345"
+        guid: 038061cdfe726940a83fd5a5174d61cd
       - ElementName: SMG_Shoot
         ObjectType: 3
-        guid: "\0'FM\0o\0E\0\u12A4\e\u06BB|"
+        guid: 9a27464da56fff45bee18aa41bdabb7c
       Path: Events\Default Work Unit\Stuff\SMG\SMG_Shoot
       maxAttenuation: 0
       maxDuration: 2.970771
       minDuration: 2.970771
     - name: Stuff
-      guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+      guid: 92a464832e1fee42bc8a9fc8ed7aa103
       id: 1883833725
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
-        guid: 
+        guid: 00000000000000000000000000000000
       - ElementName: Default Work Unit
         ObjectType: 12
-        guid: "yj7i\0L\fC\0\u06C6\x1A;ZD\n"
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
       - ElementName: Stuff
         ObjectType: 4
-        guid: "\0\0d\0.\x1F\uE0BC\0\0\u022Dz\0\x03"
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
       Path: Events\Default Work Unit\Stuff
       maxAttenuation: 0
       maxDuration: -1
@@ -287,12 +287,12 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Game Parameters
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "h\u026BQ\0D%O\0\0\u01D3\uA23E\u03D0"
+      guid: 68c92b51ba44254fa885c7d3ea087ecf
     ParentPath: Game Parameters\Default Work Unit
-    guid: "h\u026BQ\0D%O\0\0\u01D3\uA23E\u03C7"
+    guid: 68c92b51ba44254fa885c7d3ea087ecf
     GuidInternal: 
     m_lastTime: -8584563882242000966
     List: []
@@ -301,12 +301,12 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: States
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "\u86F5\a\U000E0C8E\0S\0j\x02i\0\u0690"
+      guid: e85b3507f3e0324ea153a56a0269a3da
     ParentPath: States\Default Work Unit
-    guid: "\u86F5\a\U000E0C8E\0S\0j\x02i\0\u0687"
+    guid: e85b3507f3e0324ea153a56a0269a3da
     GuidInternal: 
     m_lastTime: -8584563882241398238
     List: []
@@ -315,12 +315,12 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Switches
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: "\0w\x11\0\uCA7CG\0J\x1F\u698A\0)"
+      guid: f977118fece93c47b14a1fe666ca9f29
     ParentPath: Switches\Default Work Unit
-    guid: "\0w\x11\0\uCA7CG\0J\x1F\u698A\0)"
+    guid: f977118fece93c47b14a1fe666ca9f29
     GuidInternal: 
     m_lastTime: -8584563882241386901
     List: []
@@ -329,17 +329,17 @@ MonoBehaviour:
     PathAndIcons:
     - ElementName: Triggers
       ObjectType: 5
-      guid: 
+      guid: 00000000000000000000000000000000
     - ElementName: Default Work Unit
       ObjectType: 12
-      guid: ";\x03p\u064A\0P@\0\0\0\u06EB\u03B2\0"
+      guid: 3b0370d94aa350408e9b99db2bcef2b0
     ParentPath: Triggers\Default Work Unit
-    guid: ";\x03p\u064A\0P@\0\0\0\u06EB\u03B2\0"
+    guid: 3b0370d94aa350408e9b99db2bcef2b0
     GuidInternal: 
     m_lastTime: -8584563882241386901
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 050000000600000008000000090000000b0000000e0000000f000000180000001c000000
+  ExpandedWaapiItemIds: 05000000060000000800000018000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0
