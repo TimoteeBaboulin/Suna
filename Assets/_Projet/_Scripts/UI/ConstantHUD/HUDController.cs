@@ -79,6 +79,7 @@ public class HUDController : MonoBehaviour
     // Player Icons
     private VisualElement _corpoIcons;
     private VisualElement _natifIcons;
+    private PlayerIconsLinkSystem _playerIconsLinkSystem;
 
     // KillFeed
     private VisualElement _killFeedContainer;
@@ -208,6 +209,12 @@ public class HUDController : MonoBehaviour
             _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
+
+        if (_playerIconsLinkSystem == null && world.Name == "ClientWorld")
+        {
+            _playerIconsLinkSystem = world.GetExistingSystemManaged<PlayerIconsLinkSystem>();
+            _playerIconsLinkSystem.PlayersInPartyEvent += OnPlayersInPartyEvent; ;
+        }
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -230,13 +237,6 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
-
-        // Update Player Icons (should be updated only when it has to)
-        if (world.Name == "ClientWorld")
-        {
-            PlayerIconsUpdate(TeamSideType.Corpo, _corpoIcons);
-            PlayerIconsUpdate(TeamSideType.Natif, _natifIcons);
-        }
     }
 
     //----------Start of Round Phase Functions
@@ -563,16 +563,18 @@ public class HUDController : MonoBehaviour
     //----------End of Defuse and Plant Elements System
 
     //----------Start of Player Icons Functions
-    private void PlayerIconsUpdate(TeamSideType teamSide, VisualElement teamIcons)
+    private void OnPlayersInPartyEvent(object sender, PlayerIconsLinkSystem.PlayersInPartyArgs args)
     {
-        // Corpo Team
-        IReadOnlyList<IReadOnlyPlayer> teamList = PlayerHelpers.GetPlayersByTeam(teamSide);
+        PlayerIconsUpdate(args.PlayersNetworkId, args.PlayersTeam == TeamSideType.Corpo ? _corpoIcons : _natifIcons);
+    }
+    private void PlayerIconsUpdate(List<string> ids, VisualElement teamIcons)
+    {
         for (int i = 0; i < teamIcons.Children().Count(); i++)
         {
             VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
-            if (i < teamList.Count)
+            if (i < ids.Count)
             {
-                if (teamList[i].Id == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+                if (ids[i] == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
                 {
                     UI.SetBorderColor(ref icon, Color.green);
                 }
