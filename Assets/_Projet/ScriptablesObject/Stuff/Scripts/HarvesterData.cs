@@ -23,9 +23,6 @@ public class HarvesterData : ScriptableObject
     public float defuseRange;
     public float pickupDistance;
 
-#if !UNITY_SERVER
-
     [Header("Sounds")]
     public List<SoundMapping> soundList = new List<SoundMapping>();
-#endif
 }

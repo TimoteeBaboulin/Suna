@@ -1,4 +1,4 @@
-#if !UNITY_SERVER
+
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -14,9 +14,10 @@ public partial struct SoundBankSystemClient : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+#if !UNITY_SERVER
 
         var bank = SoundManager.Instance.bank;
-
+#endif
         var ecb = SystemAPI.GetSingleton<BeginSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);
 
@@ -24,6 +25,7 @@ public partial struct SoundBankSystemClient : ISystem
             .Query<SoundRegister>()
             .WithEntityAccess())
         {
+#if !UNITY_SERVER
 
             foreach (var pair in register.bank)
             {
@@ -31,6 +33,7 @@ public partial struct SoundBankSystemClient : ISystem
             }
 
             register.bank.Clear();
+#endif
             ecb.RemoveComponent<SoundRegister>(entity);
         }
     }
@@ -76,7 +79,9 @@ public partial struct SoundPlayQueueSystemClient : ISystem
         {
             foreach (var soundInfos in soundQueue)
             {
+#if !UNITY_SERVER
                 soundManager.Play(soundInfos.keyGroup.ToString(), soundInfos.keyAction.ToString(), soundInfos.pos);
+#endif
             }
             soundQueue.Clear();
         }
@@ -102,9 +107,9 @@ partial struct SoundPlayRPCSystemClient : ISystem
             .WithEntityAccess())
         {
             if (request.ValueRO.IsConsumed) continue;
-
+#if !UNITY_SERVER
             soundManager.Play(soundRpc.ValueRO.keyGroup.ToString(), soundRpc.ValueRO.keyAction.ToString(), soundRpc.ValueRO.pos);
-
+#endif
             ecb.DestroyEntity(entity);
         }
 
@@ -112,7 +117,6 @@ partial struct SoundPlayRPCSystemClient : ISystem
         ecb.Dispose();
     }
 }
-#endif
 
 
 

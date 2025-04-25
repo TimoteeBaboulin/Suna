@@ -30,10 +30,8 @@ public class GameResourcesAuthoring : MonoBehaviour
             Entity meleeWeaponEntity = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic);
             Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
             List<GameObject> viewPrefabs = new();
-#if !UNITY_SERVER
 
             List<SoundGroupMapping> soundGroupMapping = new();
-#endif
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + 1);
@@ -62,10 +60,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].killGain = rangedWeaponSO.killGain;
                 stuffs[i].canADS = rangedWeaponSO.canADS;
                 stuffs[i].ADSFOV = rangedWeaponSO.ADSFOV;
-#if !UNITY_SERVER
 
                 SoundUtils.SetMappingList(rangedWeaponSO.entityName, rangedWeaponSO.soundList, soundGroupMapping);
-#endif
                 stuffs[i].dataID = i;
             }
 
@@ -95,10 +91,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].ADSFOV = 0;
 
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
-#if !UNITY_SERVER
 
                 SoundUtils.SetMappingList(meleeWeaponSO.entityName, meleeWeaponSO.soundList, soundGroupMapping);
-#endif
                 }
 
             {
@@ -125,10 +119,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[id].killGain = harvesterSO.killGain;
                 stuffs[id].canADS = false;
                 stuffs[id].ADSFOV = 0;
-#if !UNITY_SERVER
 
                 SoundUtils.SetMappingList(harvesterSO.entityName, harvesterSO.soundList, soundGroupMapping);
-#endif
                 stuffs[id].dataID = 0;
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,10 +181,8 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
             AddComponentObject(entity, new GameResourcesViewPrefabs { List = viewPrefabs });
-#if !UNITY_SERVER
             
             AddComponentObject(entity, SoundUtils.SetGroupRegister(soundGroupMapping));
-#endif
             AddBuffer<InstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);
             AddBuffer<UnequipStuffQueue>(entity);

@@ -27,9 +27,6 @@ public class MeleeWeaponData : ScriptableObject
     public float strikeRate;
     public float strongStrikeRate;
 
-#if !UNITY_SERVER
-
     [Header("Sounds")]
     public List<SoundMapping> soundList = new List<SoundMapping>();
-#endif
 }

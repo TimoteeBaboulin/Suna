@@ -21,7 +21,7 @@ public class CommonAutoConnect : ClientServerBootstrap
         {
             //Debug : 59692
             //Thomas : 59557
-            AutoConnectPort = 59557; //Votre port ici
+            AutoConnectPort = 59692; //Votre port ici
             ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
 
             return true;

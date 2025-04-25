@@ -61,10 +61,8 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
-#if !UNITY_SERVER
 
                     SoundUtils.PlayAtEmitter(ref state, soundQueue, weapon, "Reload");
-#endif
 
                 }
             }

@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class SoundList : MonoBehaviour
 {
-#if !UNITY_SERVER
-
     public bool autoCreateEntityEmitter;
     public string keyGroup;
     public List<SoundMapping> soundList = new List<SoundMapping>();
@@ -14,12 +12,14 @@ public class SoundList : MonoBehaviour
 
     private void Awake()
     {
+#if !UNITY_SERVER
         var bank = SoundManager.Instance.bank;
         foreach (var pair in soundList)
         {
             if (!bank.ContainsKey(keyGroup + pair.keyAction))
                 bank.Add(keyGroup + pair.keyAction, pair.sound);
         }
+#endif
         //soundList.Clear();
     }
 
@@ -41,5 +41,4 @@ public class SoundList : MonoBehaviour
             });
         }
     }
-#endif
 }

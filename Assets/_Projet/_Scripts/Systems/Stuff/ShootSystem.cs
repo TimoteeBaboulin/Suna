@@ -164,9 +164,7 @@ public partial struct ShootSystem : ISystem
 
                                 // === SON ===
                                 //SoundUtils.PlayAtEntityPosition(ref state, soundQueue, weapon, "Shoot");
-#if !UNITY_SERVER
                                 SoundUtils.PlayAtEmitter(ref state, "Shoot", weapon);
-#endif
                                 // === FIN SON ===
 
                             }

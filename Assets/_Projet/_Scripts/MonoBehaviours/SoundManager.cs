@@ -7,9 +7,8 @@ using UnityEngine.InputSystem;
 public class SoundManager : Singleton<SoundManager>
 {
 #if !UNITY_SERVER
-
     public Dictionary<string, AK.Wwise.Event> bank = new();
-
+#endif
     GameObject go;
 
     protected override void Awake()
@@ -21,9 +20,8 @@ public class SoundManager : Singleton<SoundManager>
 
     public void Play(string keyGroup, string keyAction, Vector3 pos)
     {
-
         string key = keyGroup + keyAction;
-
+#if !UNITY_SERVER
         if (bank.TryGetValue(key, out AK.Wwise.Event sound))
         {
             go.transform.position = pos;
@@ -33,6 +31,6 @@ public class SoundManager : Singleton<SoundManager>
         {
             Debug.LogWarning($"Sound {key} not found in bank Dictionary");
         }
-    }
 #endif
+    }
 }

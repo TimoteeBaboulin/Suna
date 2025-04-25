@@ -1,16 +1,10 @@
-using System;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
 class SoundAuthoring : MonoBehaviour
 {
-#if !UNITY_SERVER
-
     public SoundGroupMapping soundMaping;
-#endif
 }
-#if !UNITY_SERVER
 
 class SoundAuthoringBaker : Baker<SoundAuthoring>
 {
@@ -26,4 +20,3 @@ class SoundAuthoringBaker : Baker<SoundAuthoring>
         });
     }
 }
-#endif

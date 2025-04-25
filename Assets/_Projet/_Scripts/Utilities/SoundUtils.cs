@@ -1,4 +1,3 @@
-#if !UNITY_SERVER
 using System;
 
 using System.Collections.Generic;
@@ -11,7 +10,9 @@ using Unity.Transforms;
 public class SoundMapping
 {
     public string keyAction;
+#if !UNITY_SERVER
     public AK.Wwise.Event sound;
+#endif
 }
 
 [Serializable]
@@ -30,7 +31,9 @@ public static class SoundUtils
             soundMaping.Add(new SoundMapping
             {
                 keyAction = sound.keyAction,
+#if !UNITY_SERVER
                 sound = sound.sound
+#endif
             });
         }
 
@@ -44,19 +47,23 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
     {
 
         SoundRegister soundRegister = new SoundRegister();
+#if !UNITY_SERVER
         Dictionary<string, AK.Wwise.Event> bank = soundRegister.bank;
         foreach (var pair in soundList)
         {
             if (!bank.ContainsKey(keyGroup + pair.keyAction))
                 bank.Add(keyGroup + pair.keyAction, pair.sound);
         }
-
+#endif
         return soundRegister;
     }
 
     public static SoundRegister SetGroupRegister(List<SoundGroupMapping> soundGroupList)
     {
         SoundRegister soundRegister = new SoundRegister();
+
+#if !UNITY_SERVER
+
         Dictionary<string, AK.Wwise.Event> bank = soundRegister.bank;
         foreach (var soundList in soundGroupList)
         {
@@ -66,6 +73,7 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
                     bank.Add(soundList.keyGroup + pair.keyAction, pair.sound);
             }
         }
+#endif
         return soundRegister;
     }
 
@@ -129,4 +137,3 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
 
     }
 }
-#endif
