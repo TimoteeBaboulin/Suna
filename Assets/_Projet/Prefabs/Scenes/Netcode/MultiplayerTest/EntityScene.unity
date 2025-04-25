@@ -290,7 +290,7 @@ GameObject:
   - component: {fileID: 273525386}
   - component: {fileID: 273525385}
   - component: {fileID: 273525390}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Spawn Barrier Corpo A Flank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -778,7 +778,7 @@ GameObject:
   - component: {fileID: 1149339947}
   - component: {fileID: 1149339946}
   - component: {fileID: 1149339951}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Spawn Barrier Corpo A Flank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1118,7 +1118,7 @@ GameObject:
   - component: {fileID: 1706647347}
   - component: {fileID: 1706647346}
   - component: {fileID: 1706647351}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Spawn Barrier Corpo A Flank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1489,7 +1489,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
       propertyPath: '_phaseTimes.Array.data[3]'
-      value: 3000
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8191335809467619837, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1603,7 +1603,7 @@ GameObject:
   - component: {fileID: 2084329648}
   - component: {fileID: 2084329647}
   - component: {fileID: 2084329652}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Spawn Barrier Corpo A Flank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
