@@ -155,9 +155,9 @@ Shader "Custom/SandInTiles"
                 float2 uvSideGround = input.worldPos.zy * _TextureScale;
                 float2 uvTopGround = input.worldPos.xz * _TextureScale;
 
-                float2 uvFrontSand = input.worldPos.xy * _TextureScale * 4;
-                float2 uvSideSand = input.worldPos.zy * _TextureScale * 4;
-                float2 uvTopSand = input.worldPos.xz * _TextureScale * 4;
+                float2 uvFrontSand = input.worldPos.xy * _TextureScale;
+                float2 uvSideSand = input.worldPos.zy * _TextureScale;
+                float2 uvTopSand = input.worldPos.xz * _TextureScale;
 
                 float4 colorFrontGround = SAMPLE_TEXTURE2D(_FloorAlbedo, sampler_FloorAlbedo, uvFrontGround);
                 float4 colorSideGround = SAMPLE_TEXTURE2D(_FloorAlbedo, sampler_FloorAlbedo, uvSideGround);
