@@ -85,10 +85,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent(entity, new CharacterClientAttachedComponent { ClientEntity = Entity.Null });
 
             CharacterStuffList stuff = new CharacterStuffList();
-            for (int i = 0; i < (int)StuffInventoryLocation.nbLocation; i++) stuff.Value.Add(Entity.Null);
+            for (int i = 0; i < (int)StuffSlot.nbLocation; i++) stuff.List.Add(Entity.Null);
             AddComponent(entity, stuff);
-            
-            AddComponent(entity, new CharacterStuffInHandLocation());
 
             AddComponent(entity, new CharacterShootStartPositionDelta { PositionDelta = cca.shootStartpos.position });
 

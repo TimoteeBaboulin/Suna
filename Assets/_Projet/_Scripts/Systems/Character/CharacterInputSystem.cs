@@ -47,13 +47,18 @@ public partial class CharacterInputSystem : SystemBase
         selectedLocation = actions.SelectSecondWeapon.WasPressedThisFrame() ? 2: selectedLocation;
         selectedLocation = actions.SelectMelee.WasPressedThisFrame() ? 3: selectedLocation;
 
+        bool isDropPressed = actions.Drop.WasPressedThisFrame();
+        bool isInteractPressed = actions.Interact.WasPressedThisFrame();
+
+
+
         foreach (var (controller, input, harvesterActions) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<PlayerHarvesterActions>>()
             .WithAll<CharacterIsEnable, GhostOwnerIsLocal>()) //GhostOwnerIsLocal clients cannot affect other clients data, can only change this if you're the owner and the local player
         {
             bool plantingOrDefusing = harvesterActions.ValueRO.IsDefusing || harvesterActions.ValueRO.IsPlanting;
 
-            input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0,0);
+            input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0, 0);
 
             input.ValueRW.look = math.radians(CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity);
 
@@ -141,6 +146,24 @@ public partial class CharacterInputSystem : SystemBase
             }
 
             input.ValueRW.stuffLocation = selectedLocation;
+
+            if (isDropPressed && !plantingOrDefusing)
+            {
+                input.ValueRW.drop.Set();
+            }
+            else
+            {
+                input.ValueRW.drop = default;
+            }
+
+            if (isInteractPressed && !plantingOrDefusing)
+            {
+                input.ValueRW.interact.Set();
+            }
+            else
+            {
+                input.ValueRW.interact = default;
+            }
         }
 
         foreach (var input in SystemAPI

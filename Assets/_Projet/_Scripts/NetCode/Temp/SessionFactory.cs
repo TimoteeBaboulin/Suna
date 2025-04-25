@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
 public class ServerSessionFactory
@@ -29,6 +30,9 @@ public class ServerSessionFactory
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
             session = serverSession.Session.AsHost();
+            session.SetProperty("CountTeamNatif", new SessionProperty(PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
+            session.SetProperty("CountTeamCorpo", new SessionProperty(PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
+            await session.SavePropertiesAsync();
 
             session.PlayerJoined += OnPlayerJoined;
             session.PlayerLeaving += OnPlayerLeaving;
@@ -36,13 +40,13 @@ public class ServerSessionFactory
             session.RemovedFromSession += OnRemovedFromSession;
             session.SessionPropertiesChanged += OnSessionPropertiesChanged;
             session.StateChanged += OnStateChanged;
+            session.Deleted += OnSessionDeleted;
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
             Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
             Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
             Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
             Debug.Log($"[ServerSessionFactory] Created session with NB properties: {session.Properties.Count}");
-            Debug.Log($"[ServerSessionFactory] session.Players.Coun: {session.Players.Count}");
 
             for (int i = 0; i < session.Players.Count; i++)
             {
@@ -60,6 +64,12 @@ public class ServerSessionFactory
             Debug.LogError($"[ServerSessionFactory] Error creating session: {ex}");
             return null;
         }
+    }
+
+    private static void OnSessionDeleted()
+    {
+        Debug.Log($"[OnSessionDeleted] session deleted.");
+        PlayerHelpers.ClearTeams();
     }
 
     private static void OnPlayerJoined(string playerId)
@@ -98,23 +108,27 @@ public class ServerSessionFactory
         Debug.Log($"[OnPlayerLeaving] Player with NetworkId {playerId} is leaving the session.");
     }
 
-    static private void OnPlayerHasLeft(string playerId)
+    static private async void OnPlayerHasLeft(string playerId)
     {
-        Debug.Log($"[SessionStatusSystem] Player with NetworkId {playerId} has left the session.");
-        session.RemovePlayerAsync(playerId);
+        Debug.Log($"[OnPlayerHasLeft] Player with NetworkId {playerId} has left the session.");
+        await session.RemovePlayerAsync(playerId);
+        await session.RefreshAsync();
+
         var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
-        Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
+        Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamCorpo roster size: {listCorpo.Count}");
         var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
-        Debug.Log($"[SessionStatusSystem] → CountTeamNatif roster size: {listNatif.Count}");
+        Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamNatif roster size: {listNatif.Count}");
 
         if (listCorpo.Count > 0)
         {
             foreach (var playersCorpo in listCorpo)
             {
+                Debug.Log($"[SessionStatusSystem] CORPO := {playerId}→ COMPARING : {playersCorpo.Id}");
+
                 if (playersCorpo.Id == playerId)
                 {
-                    Debug.Log($"[SessionStatusSystem] → found corpo : {playerId}");
-                    PlayerHelpers.RemovePlayer(playerId);
+                    Debug.Log($"[SessionStatusSystem] → found corpo : {playersCorpo.Id}");
+                    PlayerHelpers.RemovePlayer(playersCorpo.Id);
                     break;
                 }
             }
@@ -128,10 +142,11 @@ public class ServerSessionFactory
         {
             foreach (var playersNatif in listNatif)
             {
+                Debug.Log($"[SessionStatusSystem] NATIF := {playerId}→ COMPARING : {playersNatif.Id}");
                 if (playersNatif.Id == playerId)
                 {
-                    Debug.Log($"[SessionStatusSystem] → found Natif : {playerId}");
-                    PlayerHelpers.RemovePlayer(playerId);
+                    Debug.Log($"[SessionStatusSystem] → found Natif : {playersNatif.Id}");
+                    PlayerHelpers.RemovePlayer(playersNatif.Id);
                     break;
                 }
             }
@@ -140,7 +155,7 @@ public class ServerSessionFactory
         {
             Debug.Log($"[SessionStatusSystem]   – No players in Natif to check");
         }
-        //session.RefreshAsync();
+
     }
 
     static private void OnRemovedFromSession()

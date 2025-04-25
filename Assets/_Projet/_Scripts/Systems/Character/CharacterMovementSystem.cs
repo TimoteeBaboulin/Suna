@@ -33,12 +33,12 @@ public partial struct CharacterMovementSystem : ISystem
         NativeHashMap<Entity, RangedWeaponCommonData> weaponData = new(10, Allocator.TempJob); //Do I need more than 10 ? Since there's 10 players playing top
 
         foreach (var (databaseAccessRO, ownerRef, weapon) in SystemAPI
-        .Query<RefRO<RangedWeaponDatabaseAccess>, RefRW<StuffOwner>>()
+        .Query<RefRO<RangedWeaponDatabaseAccess>, RefRW<StuffDynamicData>>()
         .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref database);
-            ref readonly Entity owner = ref ownerRef.ValueRO.Value;
+            ref readonly Entity owner = ref ownerRef.ValueRO.owner;
 
             weaponData[owner] = commonData;
         }
