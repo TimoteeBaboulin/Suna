@@ -34,12 +34,13 @@ public partial struct ShootSystem : ISystem
     {
         // Avoid repetition on the server due to the difference in framerate with the client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
+
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
         //Get ECB
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-
         float dt = SystemAPI.Time.DeltaTime;
 
         var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
@@ -162,12 +163,8 @@ public partial struct ShootSystem : ISystem
                                 // === FIN VISUEL ===
 
                                 // === SON ===
-                                RangedWeaponSoundRpc soundRpc = new RangedWeaponSoundRpc()
-                                {
-                                    soudToPlay = RangedWeaponState.Shoot,
-                                    source = weapon
-                                };
-                                RpcUtils.SendServerToClientRpc(ref soundRpc);
+                                //SoundUtils.PlayAtEntityPosition(ref state, soundQueue, weapon, "Shoot");
+                                SoundUtils.PlayAtEmitter(ref state, "Shoot", weapon);
                                 // === FIN SON ===
 
                             }
@@ -270,7 +267,7 @@ public partial struct ShootSystem : ISystem
 
     RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
     {
-        const int additionalRenderDelay = 1;
+        const int additionalRenderDelay = 2;
 
         CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
         uint delay = interpolationDelay.Delay + additionalRenderDelay;

@@ -81,5 +81,22 @@ public partial struct SwitchStuffSystem : ISystem
                 }
             }
         }
+
+        //Auto enable/disable IsStuffInHand
+        foreach (var (dynData, stuff) in SystemAPI
+        .Query<RefRO<StuffDynamicData>>()
+        .WithPresent<IsStuffInHand>()
+        .WithEntityAccess())
+        {
+            if (dynData.ValueRO.owner != Entity.Null)
+            {
+                Entity stuffInHand = state.EntityManager.GetComponentData<CharacterStuffList>(dynData.ValueRO.owner).StuffInHand;
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(stuff, stuffInHand == stuff);
+            }
+            else
+            {
+                state.EntityManager.SetComponentEnabled<IsStuffInHand>(stuff, false);
+            }
+        }
     }
 }

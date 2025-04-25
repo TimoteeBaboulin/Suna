@@ -31,6 +31,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
             List<GameObject> viewPrefabs = new();
 
+            List<SoundGroupMapping> soundGroupMapping = new();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + 1);
@@ -60,6 +61,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].canADS = rangedWeaponSO.canADS;
                 stuffs[i].ADSFOV = rangedWeaponSO.ADSFOV;
 
+                SoundUtils.SetMappingList(rangedWeaponSO.entityName, rangedWeaponSO.soundList, soundGroupMapping);
                 stuffs[i].dataID = i;
             }
 
@@ -71,8 +73,8 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 viewPrefabs.Add(meleeWeaponSO.viewPrefab);
 
-                prefabs.Add(new StuffEntityPrefabsBuffer 
-                { 
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
                     dropedEntityPrefab = GetEntity(meleeWeaponSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
                     inHandEntityPrefab = meleeWeaponEntity
                 });
@@ -89,34 +91,38 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].ADSFOV = 0;
 
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
+
+                SoundUtils.SetMappingList(meleeWeaponSO.entityName, meleeWeaponSO.soundList, soundGroupMapping);
+                }
+
+            {
+                int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count;
+                var harvesterSO = authoring.harvester;
+
+                builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
+
+                viewPrefabs.Add(harvesterSO.viewPrefab);
+
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = harvesterEntity
+                });
+
+                stuffs[id].slot = harvesterSO.location;
+                stuffs[id].type = harvesterSO.type;
+                stuffs[id].side = harvesterSO.side;
+                stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
+                stuffs[id].storageSpeed = harvesterSO.storageSpeed;
+                stuffs[id].price = harvesterSO.price;
+                stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
+                stuffs[id].killGain = harvesterSO.killGain;
+                stuffs[id].canADS = false;
+                stuffs[id].ADSFOV = 0;
+
+                SoundUtils.SetMappingList(harvesterSO.entityName, harvesterSO.soundList, soundGroupMapping);
+                stuffs[id].dataID = 0;
             }
-
-            int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count;
-            var harvesterSO = authoring.harvester;
-
-            builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
-
-            viewPrefabs.Add(harvesterSO.viewPrefab);
-
-            prefabs.Add(new StuffEntityPrefabsBuffer 
-            { 
-                dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
-                inHandEntityPrefab = harvesterEntity
-            });
-
-            stuffs[id].slot = harvesterSO.location;
-            stuffs[id].type = harvesterSO.type;
-            stuffs[id].side = harvesterSO.side;
-            stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
-            stuffs[id].storageSpeed = harvesterSO.storageSpeed;
-            stuffs[id].price = harvesterSO.price;
-            stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
-            stuffs[id].killGain = harvesterSO.killGain;
-            stuffs[id].canADS = false;
-            stuffs[id].ADSFOV = 0;
-
-            stuffs[id].dataID = 0;
-
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<RangedWeaponCommonData> rangedWeapons = builder.Allocate(ref stuffCollection.RangedWeaponsCommonData, authoring.rangedWeaponList.Count);
@@ -175,10 +181,12 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
             AddComponentObject(entity, new GameResourcesViewPrefabs { List = viewPrefabs });
-
-            AddBuffer<GameResourcesInstantiateStuffQueue>(entity);
+            
+            AddComponentObject(entity, SoundUtils.SetGroupRegister(soundGroupMapping));
+            AddBuffer<InstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);
             AddBuffer<UnequipStuffQueue>(entity);
+            AddBuffer<SoundQueue>(entity);
         }
     }
 }
