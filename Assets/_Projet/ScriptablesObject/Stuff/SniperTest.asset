@@ -25,19 +25,19 @@ MonoBehaviour:
   killGain: 300
   _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
   recoil: {x: 0, y: 0}
-  damage: 100
+  damage: 120
   range: 1000
-  firerate: 1
+  firerate: 60
   isAutomatic: 0
   roundsPerShot: 1
-  spread: 10
+  spread: 0.5
   spreadAiming: 0
-  coefSpray: 10
-  coefSprayAiming: 0
+  coefSpray: 1
+  coefSprayAiming: 1
   ergonomics: 0
   dmgFallOff: 0
-  coefModifMoveSpeed: 0.9
-  coefModifMoveSpeedAiming: 0.85
+  coefModifMoveSpeed: 0.71
+  coefModifMoveSpeedAiming: 0.5
   reloadSpeed: 3
   fastReloadSpeed: 2
   knockbackForceOnKill: 0
@@ -45,14 +45,15 @@ MonoBehaviour:
   ADSFOV: 60
   lastFireTimeMax: 0
   nbMagazine: 3
-  magazineCapacity: 5
+  magazineCapacity: 6
   scope: {fileID: 11400000, guid: ac57a884721ed974397b7c8a693cc1de, type: 2}
   handle: {fileID: 0}
   cross: {fileID: 0}
   silencer: {fileID: 0}
   magazine: {fileID: 0}
-  thorax: 100
-  stomach: 90
-  legs_Arms: 80
-  head: 400
+  thorax: 121
+  stomach: 94
+  legs_Arms: 56
+  head: 484
   ammoType: {fileID: 0}
+  soundList: []
