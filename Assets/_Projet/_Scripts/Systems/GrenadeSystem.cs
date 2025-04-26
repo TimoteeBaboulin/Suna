@@ -6,7 +6,7 @@ using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
 
-//[BurstCompile]
+[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class GrenadeSystem : SystemBase
 {
@@ -15,6 +15,7 @@ public partial class GrenadeSystem : SystemBase
         RequireForUpdate<ReleasedGrenade>();
     }
 
+    [BurstCompile]
     protected override void OnUpdate()
     {
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
@@ -105,6 +106,23 @@ public partial class GrenadeSystem : SystemBase
                             {
                                 var entity = hit.Entity;
                                 if (!SystemAPI.HasComponent<Damageable>(entity) || !SystemAPI.IsComponentEnabled<Damageable>(entity)) continue;
+
+                                var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
+
+                                RaycastInput input = new RaycastInput()
+                                {
+                                    Start = grenadePos,
+                                    End = hit.Position + math.up(),
+                                    Filter = new CollisionFilter()
+                                    {
+                                        BelongsTo = ~0u,
+                                        CollidesWith = 1u << 12, // Only Collide with grenade and shoot colliders
+                                    }
+                                };
+
+                                bool didHit = collisionWorld.CastRay(input, out var directHit);
+
+                                if (didHit) continue; //There's no direct line of sight with the player, so we keep going without applying effect
                                     
                                 float currentEffect = SystemAPI.GetComponent<FlashGrenadeEffect>(entity).intensity;
 

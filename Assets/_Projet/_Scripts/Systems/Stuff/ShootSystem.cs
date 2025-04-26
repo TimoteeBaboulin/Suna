@@ -275,7 +275,7 @@ public partial struct ShootSystem : ISystem
                         ecb.SetComponent(thrownGrenade, new PhysicsVelocity
                         {
                             Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
-                            Angular = math.mul(shootRotation, new float3(0f, 0f, 0f))
+                            Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
                         });
 
                         dynamicData.isCooking = false;
@@ -380,7 +380,7 @@ public partial struct ShootSystem : ISystem
         CollisionFilter filter = new CollisionFilter
         {
             BelongsTo = ~0u,
-            CollidesWith = ~(1u << 6)
+            CollidesWith = (1u << 12), // Collides only with layer 12 (Shoot and Grenade Collider)
         };
 
         float3 forward = math.mul(shootRotation, math.forward());
