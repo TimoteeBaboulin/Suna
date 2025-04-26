@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584560028887960693
+    m_lastTime: -8584559986106373502
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -94,7 +94,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584560028888090732
+    m_lastTime: -8584559986106493523
     List:
     - name: Character
       guid: b02d4c429ef96448b30705fc5351842d
@@ -131,8 +131,8 @@ MonoBehaviour:
         guid: 9b328937a796d24fb9542e5b638b2771
       Path: Events\Default Work Unit\Character\Footstep
       maxAttenuation: 0
-      maxDuration: 0.5611338
-      minDuration: 0.5611338
+      maxDuration: -1
+      minDuration: -1
     - name: LP17
       guid: 79cba981a1aa2948a0cd724ec0459f51
       id: 1599998537
@@ -174,8 +174,8 @@ MonoBehaviour:
         guid: 7c31bd991b042f4f9d594c0543e9f945
       Path: Events\Default Work Unit\Stuff\LP17\Pistol_Reload
       maxAttenuation: 0
-      maxDuration: 0.69659865
-      minDuration: 0.69659865
+      maxDuration: -1
+      minDuration: -1
     - name: Pistol_Shoot
       guid: cf6965ca56287c4f9e9f530727951166
       id: 2124970216
@@ -197,8 +197,8 @@ MonoBehaviour:
         guid: cf6965ca56287c4f9e9f530727951166
       Path: Events\Default Work Unit\Stuff\LP17\Pistol_Shoot
       maxAttenuation: 0
-      maxDuration: 2.0273924
-      minDuration: 2.0273924
+      maxDuration: -1
+      minDuration: -1
     - name: SMG
       guid: 038061cdfe726940a83fd5a5174d61cd
       id: 510683180
@@ -240,8 +240,8 @@ MonoBehaviour:
         guid: 4c505f4ba9ab8148903749464fff5b5f
       Path: Events\Default Work Unit\Stuff\SMG\SMG_Reload
       maxAttenuation: 0
-      maxDuration: 0.23832199
-      minDuration: 0.23832199
+      maxDuration: -1
+      minDuration: -1
     - name: SMG_Shoot
       guid: 9a27464da56fff45bee18aa41bdabb7c
       id: 1025907732
@@ -263,8 +263,8 @@ MonoBehaviour:
         guid: 9a27464da56fff45bee18aa41bdabb7c
       Path: Events\Default Work Unit\Stuff\SMG\SMG_Shoot
       maxAttenuation: 0
-      maxDuration: 2.970771
-      minDuration: 2.970771
+      maxDuration: -1
+      minDuration: -1
     - name: Stuff
       guid: 92a464832e1fee42bc8a9fc8ed7aa103
       id: 1883833725
