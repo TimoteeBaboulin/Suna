@@ -267,7 +267,7 @@ public partial struct ShootSystem : ISystem
 
     RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
     {
-        const int additionalRenderDelay = 1;
+        const int additionalRenderDelay = 2;
 
         CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
         uint delay = interpolationDelay.Delay + additionalRenderDelay;

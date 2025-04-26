@@ -12,17 +12,29 @@ public class NetcodePrefabsConverter : MonoBehaviour
     [Header("Character Prefabs")]
     public GameObject Character = null;
 
-    [Header("Character Collider Prefabs")]
-    public GameObject CharacterHeadCollider = null;
-    public GameObject CharacterArmCollider0 = null;
-    public GameObject CharacterArmCollider1 = null;
-    public GameObject CharacterArmCollider2 = null;
-    public GameObject CharacterThoraxCollider = null;
-    public GameObject CharacterStomachCollider0 = null;
-    public GameObject CharacterStomachCollider1 = null;
-    public GameObject CharacterLegCollider0 = null;
-    public GameObject CharacterLegCollider1 = null;
-    public GameObject CharacterLegCollider2 = null;
+    [Header("Corpo Collider Prefabs")]
+    public GameObject CorpoHeadCollider = null;
+    public GameObject CorpoArmCollider0 = null;
+    public GameObject CorpoArmCollider1 = null;
+    public GameObject CorpoArmCollider2 = null;
+    public GameObject CorpoThoraxCollider = null;
+    public GameObject CorpoStomachCollider0 = null;
+    public GameObject CorpoStomachCollider1 = null;
+    public GameObject CorpoLegCollider0 = null;
+    public GameObject CorpoLegCollider1 = null;
+    public GameObject CorpoLegCollider2 = null;
+
+    [Header("Natif Collider Prefabs")]
+    public GameObject NatifHeadCollider = null;
+    public GameObject NatifArmCollider0 = null;
+    public GameObject NatifArmCollider1 = null;
+    public GameObject NatifArmCollider2 = null;
+    public GameObject NatifThoraxCollider = null;
+    public GameObject NatifStomachCollider0 = null;
+    public GameObject NatifStomachCollider1 = null;
+    public GameObject NatifLegCollider0 = null;
+    public GameObject NatifLegCollider1 = null;
+    public GameObject NatifLegCollider2 = null;
 
     [Header("Visual Elements Prefabs")]
     public GameObject hitPrefab = null;
@@ -36,16 +48,27 @@ public struct ClientPrefabData : IComponentData
 
     public Entity Character;
 
-    public Entity CharacterHeadCollider;
-    public Entity CharacterArmCollider0;
-    public Entity CharacterArmCollider1;
-    public Entity CharacterArmCollider2;
-    public Entity CharacterThoraxCollider;
-    public Entity CharacterStomachCollider0;
-    public Entity CharacterStomachCollider1;
-    public Entity CharacterLegCollider0;
-    public Entity CharacterLegCollider1;
-    public Entity CharacterLegCollider2;
+    public Entity CorpoHeadCollider;
+    public Entity CorpoArmCollider0;
+    public Entity CorpoArmCollider1;
+    public Entity CorpoArmCollider2;
+    public Entity CorpoThoraxCollider;
+    public Entity CorpoStomachCollider0;
+    public Entity CorpoStomachCollider1;
+    public Entity CorpoLegCollider0;
+    public Entity CorpoLegCollider1;
+    public Entity CorpoLegCollider2;
+
+    public Entity NatifHeadCollider;
+    public Entity NatifArmCollider0;
+    public Entity NatifArmCollider1;
+    public Entity NatifArmCollider2;
+    public Entity NatifThoraxCollider;
+    public Entity NatifStomachCollider0;
+    public Entity NatifStomachCollider1;
+    public Entity NatifLegCollider0;
+    public Entity NatifLegCollider1;
+    public Entity NatifLegCollider2;
 
     public LocalTransform TransformCompData;
 }
@@ -71,16 +94,27 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 
         Entity characterPrefab = default;
 
-        Entity characterHeadCollider = default;
-        Entity characterArmCollider0 = default;
-        Entity characterArmCollider1 = default;
-        Entity characterArmCollider2 = default;
-        Entity characterThoraxCollider = default;
-        Entity characterStomachCollider0 = default;
-        Entity characterStomachCollider1 = default;
-        Entity characterLegCollider0 = default;
-        Entity characterLegCollider1 = default;
-        Entity characterLegCollider2 = default;
+        Entity corpoHeadCollider = default;
+        Entity corpoArmCollider0 = default;
+        Entity corpoArmCollider1 = default;
+        Entity corpoArmCollider2 = default;
+        Entity corpoThoraxCollider = default;
+        Entity corpoStomachCollider0 = default;
+        Entity corpoStomachCollider1 = default;
+        Entity corpoLegCollider0 = default;
+        Entity corpoLegCollider1 = default;
+        Entity corpoLegCollider2 = default;
+
+        Entity natifHeadCollider = default;
+        Entity natifArmCollider0 = default;
+        Entity natifArmCollider1 = default;
+        Entity natifArmCollider2 = default;
+        Entity natifThoraxCollider = default;
+        Entity natifStomachCollider0 = default;
+        Entity natifStomachCollider1 = default;
+        Entity natifLegCollider0 = default;
+        Entity natifLegCollider1 = default;
+        Entity natifLegCollider2 = default;
 
         LocalTransform transformPrefab = default;
 
@@ -116,45 +150,86 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             transformPrefab.Rotation = authoring.Character.transform.rotation;
         }
 
-        if (authoring.CharacterHeadCollider != null)
+        if (authoring.CorpoHeadCollider != null)
         {
-            characterHeadCollider = GetEntity(authoring.CharacterHeadCollider, TransformUsageFlags.Dynamic);
+            corpoHeadCollider = GetEntity(authoring.CorpoHeadCollider, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterArmCollider0 != null)
+        if (authoring.CorpoArmCollider0 != null)
         {
-            characterArmCollider0 = GetEntity(authoring.CharacterArmCollider0, TransformUsageFlags.Dynamic);
+            corpoArmCollider0 = GetEntity(authoring.CorpoArmCollider0, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterArmCollider1 != null)
+        if (authoring.CorpoArmCollider1 != null)
         {
-            characterArmCollider1 = GetEntity(authoring.CharacterArmCollider1, TransformUsageFlags.Dynamic);
+            corpoArmCollider1 = GetEntity(authoring.CorpoArmCollider1, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterArmCollider2 != null)
+        if (authoring.CorpoArmCollider2 != null)
         {
-            characterArmCollider2 = GetEntity(authoring.CharacterArmCollider2, TransformUsageFlags.Dynamic);
+            corpoArmCollider2 = GetEntity(authoring.CorpoArmCollider2, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterThoraxCollider != null)
+        if (authoring.CorpoThoraxCollider != null)
         {
-            characterThoraxCollider = GetEntity(authoring.CharacterThoraxCollider, TransformUsageFlags.Dynamic);
+            corpoThoraxCollider = GetEntity(authoring.CorpoThoraxCollider, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterStomachCollider0 != null)
+        if (authoring.CorpoStomachCollider0 != null)
         {
-            characterStomachCollider0 = GetEntity(authoring.CharacterStomachCollider0, TransformUsageFlags.Dynamic);
+            corpoStomachCollider0 = GetEntity(authoring.CorpoStomachCollider0, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterStomachCollider1 != null)
+        if (authoring.CorpoStomachCollider1 != null)
         {
-            characterStomachCollider1 = GetEntity(authoring.CharacterStomachCollider1, TransformUsageFlags.Dynamic);
+            corpoStomachCollider1 = GetEntity(authoring.CorpoStomachCollider1, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterLegCollider0 != null)
+        if (authoring.CorpoLegCollider0 != null)
         {
-            characterLegCollider0 = GetEntity(authoring.CharacterLegCollider0, TransformUsageFlags.Dynamic);
+            corpoLegCollider0 = GetEntity(authoring.CorpoLegCollider0, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterLegCollider1 != null)
+        if (authoring.CorpoLegCollider1 != null)
         {
-            characterLegCollider1 = GetEntity(authoring.CharacterLegCollider1, TransformUsageFlags.Dynamic);
+            corpoLegCollider1 = GetEntity(authoring.CorpoLegCollider1, TransformUsageFlags.Dynamic);
         }
-        if (authoring.CharacterLegCollider2 != null)
+        if (authoring.CorpoLegCollider2 != null)
         {
-            characterLegCollider2 = GetEntity(authoring.CharacterLegCollider2, TransformUsageFlags.Dynamic);
+            corpoLegCollider2 = GetEntity(authoring.CorpoLegCollider2, TransformUsageFlags.Dynamic);
+        }
+
+        if (authoring.NatifHeadCollider != null)
+        {
+            natifHeadCollider = GetEntity(authoring.NatifHeadCollider, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifArmCollider0 != null)
+        {
+            natifArmCollider0 = GetEntity(authoring.NatifArmCollider0, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifArmCollider1 != null)
+        {
+            natifArmCollider1 = GetEntity(authoring.NatifArmCollider1, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifArmCollider2 != null)
+        {
+            natifArmCollider2 = GetEntity(authoring.NatifArmCollider2, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifThoraxCollider != null)
+        {
+            natifThoraxCollider = GetEntity(authoring.NatifThoraxCollider, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifStomachCollider0 != null)
+        {
+            natifStomachCollider0 = GetEntity(authoring.NatifStomachCollider0, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifStomachCollider1 != null)
+        {
+            natifStomachCollider1 = GetEntity(authoring.NatifStomachCollider1, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifLegCollider0 != null)
+        {
+            natifLegCollider0 = GetEntity(authoring.NatifLegCollider0, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifLegCollider1 != null)
+        {
+            natifLegCollider1 = GetEntity(authoring.NatifLegCollider1, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.NatifLegCollider2 != null)
+        {
+            natifLegCollider2 = GetEntity(authoring.NatifLegCollider2, TransformUsageFlags.Dynamic);
         }
 
         Entity entity = GetEntity(TransformUsageFlags.Dynamic);
@@ -165,16 +240,27 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 
             Character = characterPrefab,
             
-            CharacterHeadCollider = characterHeadCollider,
-            CharacterArmCollider0 = characterArmCollider0,
-            CharacterArmCollider1 = characterArmCollider1,
-            CharacterArmCollider2 = characterArmCollider2,
-            CharacterThoraxCollider = characterThoraxCollider,
-            CharacterStomachCollider0 = characterStomachCollider0,
-            CharacterStomachCollider1 = characterStomachCollider1,
-            CharacterLegCollider0 = characterLegCollider0,
-            CharacterLegCollider1 = characterLegCollider1,
-            CharacterLegCollider2 = characterLegCollider2,
+            CorpoHeadCollider = corpoHeadCollider,
+            CorpoArmCollider0 = corpoArmCollider0,
+            CorpoArmCollider1 = corpoArmCollider1,
+            CorpoArmCollider2 = corpoArmCollider2,
+            CorpoThoraxCollider = corpoThoraxCollider,
+            CorpoStomachCollider0 = corpoStomachCollider0,
+            CorpoStomachCollider1 = corpoStomachCollider1,
+            CorpoLegCollider0 = corpoLegCollider0,
+            CorpoLegCollider1 = corpoLegCollider1,
+            CorpoLegCollider2 = corpoLegCollider2,
+
+            NatifHeadCollider = natifHeadCollider,
+            NatifArmCollider0 = natifArmCollider0,
+            NatifArmCollider1 = natifArmCollider1,
+            NatifArmCollider2 = natifArmCollider2,
+            NatifThoraxCollider = natifThoraxCollider,
+            NatifStomachCollider0 = natifStomachCollider0,
+            NatifStomachCollider1 = natifStomachCollider1,
+            NatifLegCollider0 = natifLegCollider0,
+            NatifLegCollider1 = natifLegCollider1,
+            NatifLegCollider2 = natifLegCollider2,
 
             TransformCompData = transformPrefab,
         });

@@ -6,6 +6,7 @@ using Unity.Transforms;
 using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct ServerThirdPersonCharacterModelSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
@@ -57,6 +58,7 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial struct ClientThirdPersonCharacterModelSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
