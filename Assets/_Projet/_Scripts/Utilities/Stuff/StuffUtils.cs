@@ -109,7 +109,7 @@ public static class StuffUtils
         stuffGhostOwnerRef.NetworkId = ownerGhostOwner.NetworkId;
         linkedEntityGroup.Add(new LinkedEntityGroup { Value = stuff });
 
-        if (autoSwitchOn)
+        if (autoSwitchOn && stuffDataRef.type != StuffType.Grenade)
             SwitchTo(ref state, ref ownerStuffListRef, stuffDataRef.slot);
     }
 

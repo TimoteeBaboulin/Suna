@@ -108,9 +108,16 @@ public partial class GrenadeSystem : SystemBase
                                     
                                 float currentEffect = SystemAPI.GetComponent<FlashGrenadeEffect>(entity).intensity;
 
+                                if(!CharacterViewUtils.TryGetForward(entity, EntityManager, out float3 forward))
+                                {
+                                    Debug.LogError($"Unable to get forward for {entity}");
+                                }
+
+                                float dot = math.dot(math.normalize(grenadePos - hit.Position), math.normalize(forward));
+
                                 commandBuffer.AddComponent(entity, new FlashGrenadeEffect
                                 {
-                                    intensity = math.max(currentEffect, (grenadeCommonData.impactRadius - hit.Distance) / grenadeCommonData.impactRadius) //Result between 0 and 1 0 = no effect, 1 = full effect
+                                    intensity = math.max(currentEffect, math.saturate(((grenadeCommonData.impactRadius - hit.Distance) / grenadeCommonData.impactRadius) * dot)) //Result between 0 and 1 0 = no effect, 1 = full effect
                                     // The use of max makes so that effects are not stacked or reset
                                 });
                             }

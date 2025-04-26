@@ -12,11 +12,8 @@ public enum StuffSlot
     SecondaryWeapon,
     Melee,
     Harvester,
-    Grenade,
-    SpecialStuff1,
-    SpecialStuff2,
-    SpecialStuff3,
-    SpecialStuff4,
+    HEGrenade,
+    Flashbang,
 
     nbLocation
 }

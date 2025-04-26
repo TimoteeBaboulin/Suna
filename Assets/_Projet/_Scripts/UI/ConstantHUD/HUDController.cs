@@ -214,9 +214,9 @@ public class HUDController : MonoBehaviour
 
     private float FlashIntensity(float x)
     {
-        if (x > 0.8f) return 1f;
+        if (x > 0.68f) return 1f;
 
-        x /= 0.8f; // Normalize to [0, 1] range
+        x /= 0.68f; // Normalize to [0, 1] range
 
         return x == 0 ? 0 : x == 1 ? 1
               : x < 0.5 ? math.pow(2, 20 * x - 10) / 2

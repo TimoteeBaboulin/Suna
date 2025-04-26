@@ -78,6 +78,11 @@ public struct CharacterStuffList : IComponentData
 
     public void SetStuffInSlot(StuffSlot slot, Entity stuff)
     {
+        //if (slot == StuffSlot.Flashbang1 && List[(int)StuffSlot.Flashbang1] != Entity.Null)
+        //{
+        //    slot = StuffSlot.Flashbang2;
+        //}
+
         List[(int)slot] = stuff;
     }
 }
