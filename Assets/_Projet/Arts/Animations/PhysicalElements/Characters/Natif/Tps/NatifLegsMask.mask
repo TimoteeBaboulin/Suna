@@ -1,0 +1,131 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!319 &31900000
+AvatarMask:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: NatifLegsMask
+  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Elements:
+  - m_Path: 
+    m_Weight: 1
+  - m_Path: GEO_Corpo
+    m_Weight: 0
+  - m_Path: GEO_Corpo/SKIN_Corpo
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo
+    m_Weight: 0
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo
+    m_Weight: 0
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS
+    m_Weight: 0
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_BACK_BIG_WIRE01
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_BACK_SMALL_WIRE01
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SHOULDER_WIRE01
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_INDEX01_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_INDEX01_L/J_SK_INDEX02_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_INDEX01_L/J_SK_INDEX02_L/J_SK_INDEX03_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_MIDDLE01_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_MIDDLE01_L/J_SK_MIDDLE02_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_MIDDLE01_L/J_SK_MIDDLE02_L/J_SK_MIDDLE03_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_PINKY01_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_PINKY01_L/J_SK_PINKY02_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_PINKY01_L/J_SK_PINKY02_L/J_SK_PINKY03_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_RING01_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_RING01_L/J_SK_RING02_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_RING01_L/J_SK_RING02_L/J_SK_RING03_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_THUMB01_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_L/J_SK_SHOULDER_L/J_SK_ELBOW_L/J_SK_WRIST01_L/J_WRIST02_L/J_SK_THUMB01_L/J_SK_THUMB02_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_INDEX01_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_INDEX01_R/J_SK_INDEX02_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_INDEX01_R/J_SK_INDEX02_R/J_SK_INDEX03_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_MIDDLE01_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_MIDDLE01_R/J_SK_MIDDLE02_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_MIDDLE01_R/J_SK_MIDDLE02_R/J_SK_MIDDLE03_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_PINKY01_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_PINKY01_R/J_SK_PINKY02_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_PINKY01_R/J_SK_PINKY02_R/J_SK_PINKY03_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_RING01_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_RING01_R/J_SK_RING02_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_RING01_R/J_SK_RING02_R/J_SK_RING03_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_THUMB01_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_CLAV_R/J_SK_SHOULDER_R/J_SK_ELBOW_R/J_SK_WRIST01_R/J_WRIST02_R/J_SK_THUMB01_R/J_SK_THUMB02_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_NECK
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_NECK/J_HEAD
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_ABS/J_CHEST/J_POUCH
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_L/J_LEG_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_L/J_LEG_L/J_KNEE_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_L/J_LEG_L/J_KNEE_L/J_ANKLE_L
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_R/J_LEG_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_R/J_LEG_R/J_KNEE_R
+    m_Weight: 1
+  - m_Path: GRP_RIG_Corpo/GRP_orientOffset_Corpo/J_PELVIS/J_GROIN_R/J_LEG_R/J_KNEE_R/J_ANKLE_R
+    m_Weight: 1
