@@ -56,3 +56,14 @@ MonoBehaviour:
   legs_Arms: 21
   head: 91
   ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 0d92adc9eae63eb4aa2b95167f95df37, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a0cab74b4a043fc429d7e3f82f042db4, type: 2}

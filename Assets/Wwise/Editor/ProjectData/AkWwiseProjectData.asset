@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584560432164609947
+    m_lastTime: -8584559523826502644
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -94,8 +94,68 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584560432165323052
+    m_lastTime: -8584559524115263864
     List:
+    - name: Button_Clic
+      guid: 68fd3d2ea644dc4898707a9573ba6c84
+      id: 2494499361
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      - ElementName: Button_Clic
+        ObjectType: 3
+        guid: 68fd3d2ea644dc4898707a9573ba6c84
+      Path: Events\Default Work Unit\UI\Button_Clic
+      maxAttenuation: 0
+      maxDuration: 0.5679592
+      minDuration: 0.5679592
+    - name: Button_Release
+      guid: a4c6365210e4794b9268829aad4a5d1b
+      id: 3732113631
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      - ElementName: Button_Release
+        ObjectType: 3
+        guid: a4c6365210e4794b9268829aad4a5d1b
+      Path: Events\Default Work Unit\UI\Button_Release
+      maxAttenuation: 0
+      maxDuration: 1.9878231
+      minDuration: 1.9878231
+    - name: Button_Rollover
+      guid: e8846a73b087254fbe7820925ee13382
+      id: 3644104355
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      - ElementName: Button_Rollover
+        ObjectType: 3
+        guid: e8846a73b087254fbe7820925ee13382
+      Path: Events\Default Work Unit\UI\Button_Rollover
+      maxAttenuation: 0
+      maxDuration: 2.6647391
+      minDuration: 2.6647391
     - name: Character
       guid: b02d4c429ef96448b30705fc5351842d
       id: 436743010
@@ -133,6 +193,97 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0.5611338
       minDuration: 0.5611338
+    - name: Harvester
+      guid: 43bd2cac8307634a8c27c76dd9b0c67a
+      id: 1433122617
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Harvester
+        ObjectType: 4
+        guid: 43bd2cac8307634a8c27c76dd9b0c67a
+      Path: Events\Default Work Unit\Harvester
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Harvester_Music_End
+      guid: 05f0db9e19cba6449a37dc6caf68a0d2
+      id: 2788436815
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Harvester
+        ObjectType: 4
+        guid: 43bd2cac8307634a8c27c76dd9b0c67a
+      - ElementName: Harvester_Music_End
+        ObjectType: 3
+        guid: 05f0db9e19cba6449a37dc6caf68a0d2
+      Path: Events\Default Work Unit\Harvester\Harvester_Music_End
+      maxAttenuation: 0
+      maxDuration: 20
+      minDuration: 20
+    - name: Hit
+      guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      id: 1116398592
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      Path: Events\Default Work Unit\Hit
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Kill
+      guid: 9e98fa6538e3dc4a8971344c56e1d173
+      id: 2030840469
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Kill
+        ObjectType: 4
+        guid: fa68bd054ce809469dee31f8694942cb
+      - ElementName: Kill
+        ObjectType: 3
+        guid: 9e98fa6538e3dc4a8971344c56e1d173
+      Path: Events\Default Work Unit\Kill\Kill
+      maxAttenuation: 0
+      maxDuration: 2.2553968
+      minDuration: 2.2553968
+    - name: Kill
+      guid: fa68bd054ce809469dee31f8694942cb
+      id: 2030840469
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Kill
+        ObjectType: 4
+        guid: fa68bd054ce809469dee31f8694942cb
+      Path: Events\Default Work Unit\Kill
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: LP17
       guid: 79cba981a1aa2948a0cd724ec0459f51
       id: 1599998537
@@ -150,6 +301,49 @@ MonoBehaviour:
         ObjectType: 4
         guid: 79cba981a1aa2948a0cd724ec0459f51
       Path: Events\Default Work Unit\Stuff\LP17
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Miss
+      guid: b6a11cb79fc954428527a1aeaa5a936c
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      - ElementName: Miss
+        ObjectType: 3
+        guid: b6a11cb79fc954428527a1aeaa5a936c
+      Path: Events\Default Work Unit\Hit\Miss\Miss
+      maxAttenuation: 0
+      maxDuration: 1.6925397
+      minDuration: 1.6925397
+    - name: Miss
+      guid: 67f25658d5142147ae79e516e88ffa3f
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      Path: Events\Default Work Unit\Hit\Miss
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -199,6 +393,155 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 2.0273924
       minDuration: 2.0273924
+    - name: Round
+      guid: 66d9b4340671db47a5a6ffb97b5dcb0f
+      id: 1413238543
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Round
+        ObjectType: 4
+        guid: 66d9b4340671db47a5a6ffb97b5dcb0f
+      Path: Events\Default Work Unit\Round
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Round_Start
+      guid: 8900641a62551441a12500eaab190393
+      id: 280570306
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Round
+        ObjectType: 4
+        guid: 66d9b4340671db47a5a6ffb97b5dcb0f
+      - ElementName: Round_Start
+        ObjectType: 3
+        guid: 8900641a62551441a12500eaab190393
+      Path: Events\Default Work Unit\Round\Round_Start
+      maxAttenuation: 0
+      maxDuration: 15.021859
+      minDuration: 15.021859
+    - name: Shotgun
+      guid: adc23f9512001740a16ce9d80d58f5a8
+      id: 51683977
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      Path: Events\Default Work Unit\Stuff\Shotgun
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Shotgun_Cock_Back
+      guid: e4a9e0061903f942b42de6bd6ffc81be
+      id: 3750486034
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Cock_Back
+        ObjectType: 3
+        guid: e4a9e0061903f942b42de6bd6ffc81be
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Back
+      maxAttenuation: 0
+      maxDuration: 0.218322
+      minDuration: 0.218322
+    - name: Shotgun_Cock_Forward
+      guid: ed45917fde0c684c8ef01a0dc1e2628e
+      id: 3003651970
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Cock_Forward
+        ObjectType: 3
+        guid: ed45917fde0c684c8ef01a0dc1e2628e
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Forward
+      maxAttenuation: 0
+      maxDuration: 0.23437642
+      minDuration: 0.23437642
+    - name: Shotgun_Shoot
+      guid: 97190818ce08ce4d843f3041b0b11a51
+      id: 2040071657
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Shoot
+        ObjectType: 3
+        guid: 97190818ce08ce4d843f3041b0b11a51
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot
+      maxAttenuation: 0
+      maxDuration: 1.1954195
+      minDuration: 1.1954195
+    - name: Shotgun_Shoot_Test
+      guid: dd3eeb47c4b42941b222c21aad323884
+      id: 3542188584
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Shoot_Test
+        ObjectType: 3
+        guid: dd3eeb47c4b42941b222c21aad323884
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot_Test
+      maxAttenuation: 0
+      maxDuration: 1.1954195
+      minDuration: 1.1954195
     - name: SMG
       guid: 038061cdfe726940a83fd5a5174d61cd
       id: 510683180
@@ -282,6 +625,23 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: UI
+      guid: 6760bcf681159f4d9d7d162d41a0c076
+      id: 1551306167
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      Path: Events\Default Work Unit\UI
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:
@@ -339,7 +699,7 @@ MonoBehaviour:
     m_lastTime: -8584560549817907744
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 0500000006000000080000000b0000000c00000018000000
+  ExpandedWaapiItemIds: 05000000060000000c00000025000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

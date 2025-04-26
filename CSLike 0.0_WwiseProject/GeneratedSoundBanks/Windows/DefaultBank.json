@@ -10,11 +10,43 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{D7A77AB8-1D2E-199A-C21C-332B93D7CFFA}",
+    "Hash": "{286F6236-6F05-98BC-CCDC-849ED07CF00A}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
     "Media": [
+     {
+      "Id": "184886433",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "shotgun_shoot.wav",
+      "CachePath": "91/{918542E8-F8DB-79A5-5E1F-5DC9EAF09CEE}.wem"
+     },
+     {
+      "Id": "258878171",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "intro01.wav",
+      "CachePath": "43/{43FD0653-5DAF-1C77-89C7-08784F3C029E}.wem"
+     },
+     {
+      "Id": "338526762",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "shotgun_cock_forward.wav",
+      "CachePath": "98/{98F5EBE2-3340-60E9-D1E3-E98AB5A8F4D5}.wem"
+     },
+     {
+      "Id": "355909340",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "roundend02.wav",
+      "CachePath": "F7/{F7A174DE-9720-DD92-89EA-B741293DD7F5}.wem"
+     },
      {
       "Id": "521724105",
       "Language": "SFX",
@@ -22,6 +54,14 @@
       "Location": "Memory",
       "ShortName": "SFX\\pistol_shoot.wav",
       "CachePath": "7B/{7B106A5E-73D1-0E6B-B22E-61158445DCF0}.wem"
+     },
+     {
+      "Id": "685160244",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete\\concrete_impact_bullet1.wav",
+      "CachePath": "FA/{FA6C13EB-AC80-5F52-7E6E-2785D5A25597}.wem"
      },
      {
       "Id": "698735216",
@@ -40,12 +80,52 @@
       "CachePath": "61/{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem"
      },
      {
+      "Id": "732396723",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ui\\buttonclickrelease.wav",
+      "CachePath": "8C/{8C65BC10-64A8-7225-B9E3-EE78D9484D89}.wem"
+     },
+     {
+      "Id": "738294315",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ui\\buttonrollover.wav",
+      "CachePath": "A3/{A3B6DEA8-A011-8489-3DD7-26BCA584481A}.wem"
+     },
+     {
       "Id": "905442807",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
       "ShortName": "SFX\\pistol_worldreload.wav",
       "CachePath": "99/{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem"
+     },
+     {
+      "Id": "936370133",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "killsound.wav",
+      "CachePath": "01/{018994C1-ADCD-B823-D814-1E74BBD85B1F}.wem"
+     },
+     {
+      "Id": "960254442",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ui\\buttonclick.wav",
+      "CachePath": "5E/{5E8E9EC9-E7E9-07C1-4138-F1206D48DC5D}.wem"
+     },
+     {
+      "Id": "1005689479",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "shotgun_cock_back.wav",
+      "CachePath": "67/{6744BC0C-B73A-2740-F014-4D4936BEB7D0}.wem"
      },
      {
       "Id": "1044764746",
@@ -58,6 +138,48 @@
     ],
     "Events": [
      {
+      "Id": "2494499361",
+      "Name": "Button_Clic",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Clic",
+      "GUID": "{2E3DFD68-44A6-48DC-9870-7A9573BA6C84}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.5679592",
+      "DurationMax": "0.5679592",
+      "MediaRefs": [
+       {
+        "Id": "960254442"
+       }
+      ]
+     },
+     {
+      "Id": "3732113631",
+      "Name": "Button_Release",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Release",
+      "GUID": "{5236C6A4-E410-4B79-9268-829AAD4A5D1B}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.9878231",
+      "DurationMax": "1.9878231",
+      "MediaRefs": [
+       {
+        "Id": "732396723"
+       }
+      ]
+     },
+     {
+      "Id": "3644104355",
+      "Name": "Button_Rollover",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Rollover",
+      "GUID": "{736A84E8-87B0-4F25-BE78-20925EE13382}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.6647391",
+      "DurationMax": "2.6647391",
+      "MediaRefs": [
+       {
+        "Id": "738294315"
+       }
+      ]
+     },
+     {
       "Id": "1866025847",
       "Name": "Footstep",
       "ObjectPath": "\\Events\\Default Work Unit\\Character\\Footstep",
@@ -68,6 +190,48 @@
       "MediaRefs": [
        {
         "Id": "698735216"
+       }
+      ]
+     },
+     {
+      "Id": "2788436815",
+      "Name": "Harvester_Music_End",
+      "ObjectPath": "\\Events\\Default Work Unit\\Harvester\\Harvester_Music_End",
+      "GUID": "{9EDBF005-CB19-44A6-9A37-DC6CAF68A0D2}",
+      "DurationType": "OneShot",
+      "DurationMin": "20",
+      "DurationMax": "20",
+      "MediaRefs": [
+       {
+        "Id": "355909340"
+       }
+      ]
+     },
+     {
+      "Id": "2030840469",
+      "Name": "Kill",
+      "ObjectPath": "\\Events\\Default Work Unit\\Kill\\Kill",
+      "GUID": "{65FA989E-E338-4ADC-8971-344C56E1D173}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.2553968",
+      "DurationMax": "2.2553968",
+      "MediaRefs": [
+       {
+        "Id": "936370133"
+       }
+      ]
+     },
+     {
+      "Id": "3062523241",
+      "Name": "Miss",
+      "ObjectPath": "\\Events\\Default Work Unit\\Hit\\Miss\\Miss",
+      "GUID": "{B71CA1B6-C99F-4254-8527-A1AEAA5A936C}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.6925397",
+      "DurationMax": "1.6925397",
+      "MediaRefs": [
+       {
+        "Id": "685160244"
        }
       ]
      },
@@ -96,6 +260,82 @@
       "MediaRefs": [
        {
         "Id": "521724105"
+       }
+      ]
+     },
+     {
+      "Id": "280570306",
+      "Name": "Round_Start",
+      "ObjectPath": "\\Events\\Default Work Unit\\Round\\Round_Start",
+      "GUID": "{1A640089-5562-4114-A125-00EAAB190393}",
+      "DurationType": "OneShot",
+      "DurationMin": "15.021859",
+      "DurationMax": "15.021859",
+      "MediaRefs": [
+       {
+        "Id": "258878171"
+       }
+      ]
+     },
+     {
+      "Id": "3750486034",
+      "Name": "Shotgun_Cock_Back",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Cock_Back",
+      "GUID": "{06E0A9E4-0319-42F9-B42D-E6BD6FFC81BE}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.218322",
+      "DurationMax": "0.218322",
+      "MediaRefs": [
+       {
+        "Id": "1005689479"
+       }
+      ]
+     },
+     {
+      "Id": "3003651970",
+      "Name": "Shotgun_Cock_Forward",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Cock_Forward",
+      "GUID": "{7F9145ED-0CDE-4C68-8EF0-1A0DC1E2628E}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.23437642",
+      "DurationMax": "0.23437642",
+      "MediaRefs": [
+       {
+        "Id": "338526762"
+       }
+      ]
+     },
+     {
+      "Id": "2040071657",
+      "Name": "Shotgun_Shoot",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Shoot",
+      "GUID": "{18081997-08CE-4DCE-843F-3041B0B11A51}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1954195",
+      "DurationMax": "1.1954195",
+      "MediaRefs": [
+       {
+        "Id": "184886433"
+       }
+      ]
+     },
+     {
+      "Id": "3542188584",
+      "Name": "Shotgun_Shoot_Test",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Shoot_Test",
+      "GUID": "{47EB3EDD-B4C4-4129-B222-C21AAD323884}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1954195",
+      "DurationMax": "1.1954195",
+      "MediaRefs": [
+       {
+        "Id": "184886433"
+       },
+       {
+        "Id": "338526762"
+       },
+       {
+        "Id": "1005689479"
        }
       ]
      },
@@ -130,6 +370,6 @@
     ]
    }
   ],
-  "FileHash": "{363B3E1D-AE95-A8FA-143B-E85AE456B14F}"
+  "FileHash": "{344FAA3C-33F2-EF6C-42B4-8FAA751C856B}"
  }
 }

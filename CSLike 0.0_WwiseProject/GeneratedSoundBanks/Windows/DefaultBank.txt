@@ -1,14 +1,35 @@
 Event	ID	Name			Wwise Object Path	Notes
+	280570306	Round_Start			\Default Work Unit\Round\Round_Start	
 	1025907732	SMG_Shoot			\Default Work Unit\Stuff\SMG\SMG_Shoot	
 	1068215004	Pistol_Reload			\Default Work Unit\Stuff\LP17\Pistol_Reload	
 	1866025847	Footstep			\Default Work Unit\Character\Footstep	
+	2030840469	Kill			\Default Work Unit\Kill\Kill	
+	2040071657	Shotgun_Shoot			\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot	
 	2124970216	Pistol_Shoot			\Default Work Unit\Stuff\LP17\Pistol_Shoot	
+	2494499361	Button_Clic			\Default Work Unit\UI\Button_Clic	
 	2642532248	SMG_Reload			\Default Work Unit\Stuff\SMG\SMG_Reload	
+	2788436815	Harvester_Music_End			\Default Work Unit\Harvester\Harvester_Music_End	
+	3003651970	Shotgun_Cock_Forward			\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Forward	
+	3062523241	Miss			\Default Work Unit\Hit\Miss\Miss	
+	3542188584	Shotgun_Shoot_Test			\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot_Test	
+	3644104355	Button_Rollover			\Default Work Unit\UI\Button_Rollover	
+	3732113631	Button_Release			\Default Work Unit\UI\Button_Release	
+	3750486034	Shotgun_Cock_Back			\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Back	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	184886433	shotgun_shoot	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\91\{918542E8-F8DB-79A5-5E1F-5DC9EAF09CEE}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_shoot		210968
+	258878171	intro01	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\43\{43FD0653-5DAF-1C77-89C7-08784F3C029E}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Round\intro01		2649952
+	338526762	shotgun_cock_forward	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\98\{98F5EBE2-3340-60E9-D1E3-E98AB5A8F4D5}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_cock_forward		41440
+	355909340	harvester_music_end	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F7\{F7A174DE-9720-DD92-89EA-B741293DD7F5}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Harvester\harvester_music_end		3528096
 	521724105	pistol_shoot	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\7B\{7B106A5E-73D1-0E6B-B22E-61158445DCF0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\LP17\pistol_shoot		357728
+	685160244	concrete_impact_bullet1	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\FA\{FA6C13EB-AC80-5F52-7E6E-2785D5A25597}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\concrete_impact_bullet1		298660
 	698735216	concrete1	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\6E\{6E8F3959-3D3B-C650-4912-7AF0B7B1C5B5}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\concrete1		49588
 	700034105	smg_shoot	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\61\{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\SMG\smg_shoot		524140
+	732396723	buttonclickrelease	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\8C\{8C65BC10-64A8-7225-B9E3-EE78D9484D89}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonclickrelease		350748
+	738294315	buttonrollover	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\A3\{A3B6DEA8-A011-8489-3DD7-26BCA584481A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonrollover		470156
 	905442807	pistol_worldreload	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\99\{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\LP17\pistol_worldreload		122976
+	936370133	kill	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\01\{018994C1-ADCD-B823-D814-1E74BBD85B1F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Kill\kill		397948
+	960254442	buttonclick	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\5E\{5E8E9EC9-E7E9-07C1-4138-F1206D48DC5D}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonclick		100284
+	1005689479	shotgun_cock_back	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\67\{6744BC0C-B73A-2740-F014-4D4936BEB7D0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_cock_back		38608
 	1044764746	smg_clip_in	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\D7\{D7BD706A-BAC0-E190-6F84-13E4ADDCDD11}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\SMG\smg_clip_in		42136
 
