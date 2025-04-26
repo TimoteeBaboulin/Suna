@@ -53,6 +53,7 @@ GameObject:
   - component: {fileID: -7034213979156375631}
   - component: {fileID: -1226755385133520682}
   - component: {fileID: 2657201299575732514}
+  - component: {fileID: -2376152367732838972}
   - component: {fileID: 4763154914594263826}
   - component: {fileID: 5081496929180248068}
   m_Layer: 6
@@ -300,6 +301,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-2376152367732838972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2584918407947073280}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae05f61d27cb7a46b9a01b8376485e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundMaping:
+    keyGroup: Character
+    maping:
+    - keyAction: Footsteps
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: adcd203d0c3128f489c15c45414fc2fc, type: 2}
 --- !u!114 &4763154914594263826
 MonoBehaviour:
   m_ObjectHideFlags: 0

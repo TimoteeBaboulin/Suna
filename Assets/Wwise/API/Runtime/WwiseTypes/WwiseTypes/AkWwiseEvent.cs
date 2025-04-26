@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 
 #if !(UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
@@ -217,6 +217,11 @@ namespace AK.Wwise
 			{
 
 #if AK_WWISE_ADDRESSABLES && UNITY_ADDRESSABLES
+				if (!gameObject)
+				{
+					UnityEngine.Debug.LogWarning($"Execute action is called on null gameobject. Returning");
+					return;
+				}
 				var args = new object[] { gameObject, actionOnEventType, transitionDuration, curveInterpolation };
 				var argTypes = new System.Type[] { gameObject.GetType(), actionOnEventType.GetType(), transitionDuration.GetType(), curveInterpolation.GetType() };
 				if (!AkAddressableBankManager.Instance.LoadedBankContainsEvent(Name, Id, this, "ExecuteAction", argTypes, args))

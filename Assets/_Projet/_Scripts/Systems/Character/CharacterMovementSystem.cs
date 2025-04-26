@@ -1,3 +1,4 @@
+
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -5,7 +6,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine.InputSystem.XR;
 
 [BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
@@ -29,7 +29,7 @@ public partial struct CharacterMovementSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
-		
+
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         NativeHashMap<Entity, RangedWeaponCommonData> weaponData = new(10, Allocator.TempJob); //Do I need more than 10 ? Since there's 10 players playing top
 
@@ -42,6 +42,26 @@ public partial struct CharacterMovementSystem : ISystem
             ref readonly Entity owner = ref ownerRef.ValueRO.owner;
 
             weaponData[owner] = commonData;
+        }
+
+        if (state.World.IsServer())
+        {
+            foreach (var (inputRO, transformRO, emitterRW, dataRO, chara) in SystemAPI
+            .Query<RefRO<CharacterInput>, RefRO<LocalTransform>, RefRW<SoundEmitter>, RefRO<CharacterComponent>>()
+            .WithEntityAccess())
+            {
+                const float cooldown = 0.7f;
+                if (dataRO.ValueRO.isGrounded && !dataRO.ValueRO.isWalking)
+                {
+                    float3 moveDir = math.normalize(math.rotate(transformRO.ValueRO.Rotation, new float3(inputRO.ValueRO.move.x, 0, inputRO.ValueRO.move.y)));
+                    bool isMoving = math.lengthsq(moveDir) > 0;
+
+                    if (isMoving)
+                    {
+                        SoundUtils.PlayWithRPC(ref emitterRW.ValueRW, "Footsteps", transformRO.ValueRO.Position, cooldown, SystemAPI.Time.DeltaTime);
+                    }
+                }
+            }
         }
 
         CharacterMovementJob job = new CharacterMovementJob
@@ -191,7 +211,7 @@ public partial struct CharacterMovementJob : IJobEntity
         if (isMoving && Angle(math.up(), groundNormal) < controller.maxSlopeAngle)
         {
             controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
-            
+
         }
         else
         {
@@ -267,7 +287,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         vel.Linear += (controller.isJumping ? 1 : (onSlope ? 10 : 1)) * gravityVector * controller.gravityScale * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
-        if(controller.isGrounded)
+        if (controller.isGrounded)
             vel.Linear -= (onSlope ? 10 : 1) * gravityVector * controller.gravityScale * dt; //Removing gravity when grounded
 
         //if(onSlope && !forwardHit)

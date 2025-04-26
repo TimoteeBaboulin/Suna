@@ -1,7 +1,11 @@
+using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
+using UnityEngine;
 
 public struct MaxHealthComponent : IComponentData
 {
@@ -126,6 +130,24 @@ public partial struct ApplyDamageSystem : ISystem
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
         NativeHashMap<Entity, StuffCommonData> commonDataMap = new NativeHashMap<Entity, StuffCommonData>(entities.Length, Allocator.TempJob);
 
+        if (state.World.IsServer())
+        {
+            foreach (var (healtRO, chara) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>>()
+            .WithEntityAccess())
+            {
+                if (healtRO.ValueRO.Value <= 0)
+                {
+                    if (healtRO.ValueRO.lastDamager != Entity.Null)
+                    {
+                        Entity killer = healtRO.ValueRO.lastDamager;
+                        float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
+                        SoundUtils.PlayWithRPC("Hit", "Kill", pos);
+                    }
+                }
+            }
+        }
+
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         foreach (var entity in entities)
         {
@@ -196,9 +218,9 @@ public partial struct ApplyDamageJob : IJobEntity
 
                 if (MoneyLookup.TryGetComponent(client, out var cm) && ClientAttachedComponents.TryGetComponent(client, out var chara))
                 {
-                    if(StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
+                    if (StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
                     {
-                        foreach(var element in stuffList.List)
+                        foreach (var element in stuffList.List)
                         {
                             if (element == Entity.Null) continue;
 

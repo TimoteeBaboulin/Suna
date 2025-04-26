@@ -150,7 +150,7 @@ public partial class SessionStatusSystem : SystemBase
         {
             timer = 0f;
 
-        
+
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {ClientTransportHelper.instance.Session.Id}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ClientTransportHelper.instance.Session.Name}");
 
