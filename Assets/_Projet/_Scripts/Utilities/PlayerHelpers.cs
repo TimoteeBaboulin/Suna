@@ -135,7 +135,7 @@ public static class PlayerHelpers
             Debug.Log($"Player removed from CORPO ID {playerId} ");
             _teams.corpoPlayers.Remove(corpo);
             var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
+            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeamOnServer(TeamSideType.Corpo).Count.ToString()));
             session.SavePropertiesAsync();
             return;
         }
@@ -146,7 +146,7 @@ public static class PlayerHelpers
             Debug.Log($"Player removed from NATIF ID {playerId} ");
             _teams.natifPlayers.Remove(natif);
             var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
+            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeamOnServer(TeamSideType.Natif).Count.ToString()));
             session.SavePropertiesAsync();
             return;
         }
@@ -235,7 +235,7 @@ public static class PlayerHelpers
 
 
 
-    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeam(TeamSideType teamSide)
+    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeamOnServer(TeamSideType teamSide)
     {
         switch (teamSide)
         {
@@ -248,7 +248,7 @@ public static class PlayerHelpers
         }
     }
 
-    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeamOnServer(string teamName)
     {
         TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
         switch (teamSide)
@@ -262,7 +262,7 @@ public static class PlayerHelpers
         }
     }
 
-    public static void ClearTeam(string teamName)
+    public static void ClearTeamOnServer(string teamName)
     {
         TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
         switch (teamSide)
@@ -279,7 +279,7 @@ public static class PlayerHelpers
         }
     }
 
-    public static void ClearTeam(TeamSideType teamSide)
+    public static void ClearTeamOnServer(TeamSideType teamSide)
     {
         switch (teamSide)
         {

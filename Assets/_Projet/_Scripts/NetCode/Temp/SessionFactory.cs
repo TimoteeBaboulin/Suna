@@ -78,9 +78,9 @@ public class ServerSessionFactory
     private static void OnPlayerJoined(string playerId)
     {
         Debug.Log($"[OnPlayerJoined] Player with id {playerId} is joined the session.");
-        var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
+        var listCorpo = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
-        var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
+        var listNatif = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Natif);
         Debug.Log($"[SessionStatusSystem] → CountTeamNatif roster size: {listNatif.Count}");
         
         Debug.Log($"session.Players.Count {session.Players.Count}");
@@ -117,9 +117,9 @@ public class ServerSessionFactory
         await session.RemovePlayerAsync(playerId);
         await session.RefreshAsync();
 
-        var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
+        var listCorpo = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamCorpo roster size: {listCorpo.Count}");
-        var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
+        var listNatif = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Natif);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamNatif roster size: {listNatif.Count}");
 
         if (listCorpo.Count > 0)
