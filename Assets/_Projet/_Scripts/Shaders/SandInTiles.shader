@@ -48,7 +48,9 @@ Shader "Custom/SandInTiles"
             #pragma fragment SurfaceFragment
             #pragma multi_compile_fog
             #pragma shader_feature _ _FORWARD_PLUS
+            #pragma shader_feature _ LIGHTMAP_ON
             #pragma shader_feature_fragment _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma shader_feature_fragment _ _ADDITIONAL_LIGHTS
             #pragma shader_feature_fragment _ADDITIONAL_LIGHT_SHADOWS
             #pragma shader_feature_fragment _ _SHADOWS_SOFT
             #pragma target 3.0
@@ -86,15 +88,15 @@ Shader "Custom/SandInTiles"
                 float4 vertex : POSITION; 
 	            float4 tangent : TANGENT;
 	            float3 normal : NORMAL;
-	            float4 textureUV : TEXCOORD0;  
-	            float4 lightmapUV : TEXCOORD1; 
+	            float2 textureUV : TEXCOORD0;  
+	            float2 lightmapUV : TEXCOORD1; 
 	            float4 color : COLOR;
             };
 
             struct VertexOutput
             {
                 float4 pos : SV_POSITION;
-           	    float4 uv : TEXCOORD0;
+           	    float2 uv : TEXCOORD0;
 
                 DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 1);
 
@@ -230,6 +232,13 @@ Shader "Custom/SandInTiles"
                 lighting.fogCoord = input.fogFactorAndVertexLight.x;
                 lighting.vertexLighting = input.fogFactorAndVertexLight.yzw;
                 lighting.bakedGI = SAMPLE_GI(input.lightmapUV, input.vertexSH, lighting.normalWS);
+                // lighting.bakedGI = SampleSH(lighting.normalWS);
+                
+                // #if defined(LIGHTMAP_ON)
+                //     lighting.bakedGI += SampleLightmap(input.lightmapUV, lighting.normalWS);
+                // #endif
+
+                //SAMPLE_GI(input.lightmapUV, input.vertexSH, lighting.normalWS);
                 
                  #if defined(REQUIRES_VERTEX_SHADOW_COORD_INTERPOLATOR)
                      lighting.shadowCoord = input.shadowCoord;
@@ -257,8 +266,16 @@ Shader "Custom/SandInTiles"
                 surface.occlusion = 1;
                 surface.smoothness = lerp(sandRoughness, groundRoughness, lerpFactor);
 
-                // return float4(surface.normalTS, 1);
-                return UniversalFragmentPBR(lighting, surface);
+                if(dot(input.worldNormal, float3(0, 1, 0)) < 0.1)
+                {
+                    surface.albedo = groundColor;
+                    surface.normalTS = groundNormal;
+                    surface.smoothness = groundRoughness;
+                }
+
+                float4 PBR = UniversalFragmentPBR(lighting, surface);
+                float4 finalColor = float4(MixFog(PBR.rgb, lighting.fogCoord), 1);
+                return finalColor;
             }
 
             ENDHLSL
