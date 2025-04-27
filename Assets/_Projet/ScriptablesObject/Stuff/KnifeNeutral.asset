@@ -22,7 +22,7 @@ MonoBehaviour:
   deploymentSpeed: 1
   storageSpeed: 1
   price: 0
-  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
+  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
   killGain: 0
   damage: 5
   strongBlowDmg: 10
@@ -30,3 +30,4 @@ MonoBehaviour:
   range: 1
   strikeRate: 0.5
   strongStrikeRate: 1
+  soundList: []
