@@ -11,10 +11,15 @@ public struct ServerMessageRpcCommand : IRpcCommand
 {
     public FixedString64Bytes message;
 }
+
+[GhostComponent]
 public struct ClientComponent : IComponentData
 {
+    [GhostField]
     public int networkID;
+    [GhostField]
     public FixedString64Bytes playerID;
+    [GhostField]
     public TeamSideType team;
 }
 
@@ -75,31 +80,15 @@ public partial class ServerSystem : SystemBase
                 NetworkId = networkId.Value
             });
             ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() { Value = client });
-            var hostSession = ClientTransportHelper.instance.Session.AsHost();
+            var hostSession = ClientTransportHelper.instance.Session as IServerSession;
 
             IPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
-            string teamString = AssignTeamToPlayer(currentPlayer);
+            if (currentPlayer == null)
+                return;
+
+            TeamSideType assignedTeam = AssignTeamToPlayer(currentPlayer);
             Debug.Log($"[OnPlayerJoined] Player with id {currentPlayer.Id} created.");
-            if (currentPlayer != null)
-            {
-                currentPlayer.SetProperty("team", new PlayerProperty(teamString, VisibilityPropertyOptions.Public));
-                hostSession.SavePlayerDataAsync(currentPlayer.Id);
-            }
-
-            TeamSideType assignedTeam = TeamSideType.Neutre;
-            switch (teamString)
-            {
-                case "Corpo":
-                    assignedTeam = TeamSideType.Corpo;
-                    break;
-                case "Natif":
-                    assignedTeam = TeamSideType.Natif;
-                    break;
-                default:
-                    assignedTeam = TeamSideType.Neutre;
-                    break;
-            }
-
+            hostSession.SavePlayerDataAsync(currentPlayer.Id);
 
             //Do not remove this code, it's not nice, not ugly but it's fucks hard and if you remove it, it will fuck you
             ecb.AddComponent(ownerEntity, new ClientComponent
@@ -119,12 +108,13 @@ public partial class ServerSystem : SystemBase
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
                 $"NetworkId {networkId.Value} " +
                 $"currentPlayerID {currentPlayer.Id} " +
-                $"team {assignedTeam} " +
+                $"team {GetPlayerInTeam(networkId.Value)} " +
                 $"world {worldName}");
         }
     }
     #endregion
 }
+
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateAfter(typeof(CountPlayersSystemServer))]
@@ -151,6 +141,7 @@ public partial class SessionStatusSystem : SystemBase
         if (timer >= logInterval)
         {
             timer = 0f;
+
 
 #if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {ClientTransportHelper.instance.Session.Id}");
@@ -180,9 +171,7 @@ public partial class SessionStatusSystem : SystemBase
 #if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
-#endif
 
-#if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts in Session property: " +
                 $"{ClientTransportHelper.instance.Session.AsHost().Properties["CountTeamNatif"].Value}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts in Session property: " +
@@ -192,6 +181,7 @@ public partial class SessionStatusSystem : SystemBase
             //PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");
+
         }
     }
 }

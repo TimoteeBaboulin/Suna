@@ -1,8 +1,10 @@
+using GameNetwork.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
@@ -73,7 +75,6 @@ public class HUDController : MonoBehaviour
     readonly float _roundPhaseTimer = 4f;
     float _roundPhaseTime = 0f;
     RoundPhase _lastPhase = RoundPhase.PostRoundPhase;
-
 
     private void Awake()
     {
@@ -203,6 +204,12 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
+
+        if (world.Name == "ClientWorld")
+        {
+            PlayerIconsUpdate(TeamSideType.Corpo);
+            PlayerIconsUpdate(TeamSideType.Natif);
+        }
     }
 
     private void RoundPhaseUpdate(RoundComponent roundComponent)
@@ -540,6 +547,34 @@ public class HUDController : MonoBehaviour
         ResetPlant();
     }
     //----------End of Defuse and Plant Elements System
+
+    private void PlayerIconsUpdate(TeamSideType teamSide)
+    {
+        var teamList = PlayerHelpers.GetClientPlayersByTeam(teamSide);
+        Debug.Log($"teamside {teamSide} teamlistCOunt {teamList.Count}");
+
+        //for (int i = 0; i < teamIcons.Children().Count(); i++)
+        //{
+        //    VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
+        //    if (i < teamList.Count)
+        //    {
+        //        if (teamList[i].playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+        //        {
+        //            UI.SetBorderColor(ref icon, Color.green);
+        //        }
+        //        else
+        //        {
+        //            UI.SetBorderColor(ref icon, Color.gray);
+        //        }
+        //        //UI.SetImageTintColor(ref icon, Color.white);
+        //    }
+        //    else
+        //    {
+        //        UI.SetBorderColor(ref icon, Color.clear);
+        //       // UI.SetImageTintColor(ref icon, Color.clear);
+        //    }
+        //}
+    }
 }
 
 [Serializable]
