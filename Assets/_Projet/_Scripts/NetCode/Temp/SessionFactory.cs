@@ -30,15 +30,13 @@ public class ServerSessionFactory
             ClientTransportHelper serverSession = await transportHelper.CreateServerSessionAsync(options);
 
             session = serverSession.Session.AsHost();
-            session.SetProperty("CountTeamNatif", new SessionProperty(PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
-            session.SetProperty("CountTeamCorpo", new SessionProperty(PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
-            await session.SavePropertiesAsync();
 
             session.PlayerJoined += OnPlayerJoined;
             session.PlayerLeaving += OnPlayerLeaving;
             session.PlayerHasLeft += OnPlayerHasLeft;
             session.RemovedFromSession += OnRemovedFromSession;
             session.SessionPropertiesChanged += OnSessionPropertiesChanged;
+            session.PlayerPropertiesChanged += OnPlayerPropertiesChanged;
             session.StateChanged += OnStateChanged;
             session.Deleted += OnSessionDeleted;
 
@@ -66,6 +64,11 @@ public class ServerSessionFactory
         }
     }
 
+    private static void OnPlayerPropertiesChanged()
+    {
+        session.RefreshAsync();
+    }
+
     private static void OnSessionDeleted()
     {
         Debug.Log($"[OnSessionDeleted] session deleted.");
@@ -75,11 +78,11 @@ public class ServerSessionFactory
     private static void OnPlayerJoined(string playerId)
     {
         Debug.Log($"[OnPlayerJoined] Player with id {playerId} is joined the session.");
-        var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
+        var listCorpo = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
-        var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
+        var listNatif = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Natif);
         Debug.Log($"[SessionStatusSystem] → CountTeamNatif roster size: {listNatif.Count}");
-
+        
         Debug.Log($"session.Players.Count {session.Players.Count}");
 
         for (int i = 0; i < session.Players.Count; i++)
@@ -106,6 +109,7 @@ public class ServerSessionFactory
     static private void OnPlayerLeaving(string playerId)
     {
         Debug.Log($"[OnPlayerLeaving] Player with NetworkId {playerId} is leaving the session.");
+        session.RefreshAsync();
     }
 
     static private async void OnPlayerHasLeft(string playerId)
@@ -114,9 +118,9 @@ public class ServerSessionFactory
         await session.RemovePlayerAsync(playerId);
         await session.RefreshAsync();
 
-        var listCorpo = PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo);
+        var listCorpo = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamCorpo roster size: {listCorpo.Count}");
-        var listNatif = PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif);
+        var listNatif = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Natif);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamNatif roster size: {listNatif.Count}");
 
         if (listCorpo.Count > 0)
@@ -161,6 +165,7 @@ public class ServerSessionFactory
     static private void OnRemovedFromSession()
     {
         Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
+        session.RefreshAsync();
     }
 
     static private void OnSessionPropertiesChanged()

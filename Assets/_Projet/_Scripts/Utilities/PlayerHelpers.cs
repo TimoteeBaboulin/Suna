@@ -101,35 +101,45 @@ public static class PlayerHelpers
         return (IPlayer)sessionPlayers[index];
     }
 
-    static public string AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer)
+
+    static public TeamSideType AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer)
     {
         GlobalTeamCount teamCounts = GetCurrentTeamCounts();
 
-        string assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
-            ? (UnityEngine.Random.value < 0.5f ? "Corpo" : "Natif")
-            : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? "Corpo" : "Natif");
+        //TeamSideType assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
+        //    ? (UnityEngine.Random.value < 0.5f ? TeamSideType.Corpo : TeamSideType.Natif)
+        //    : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? TeamSideType.Corpo : TeamSideType.Natif);
 
-        if (readOnlyPlayer is IPlayer player)
-        {
-            player.SetProperty("team", new PlayerProperty(assignedTeam, VisibilityPropertyOptions.Public));
-        }
+        int maxPlayers = ClientTransportHelper.MaxNbOfPlayers - 1;
+        int halfPoint = maxPlayers / 2;    
 
-        if (assignedTeam == "Corpo")
+        int totalConnected = teamCounts.corpoPlayersCount + teamCounts.natifPlayersCount;
+        TeamSideType assignedTeam;
+        if (totalConnected < halfPoint)
         {
-            _teams.corpoPlayers.Add(readOnlyPlayer);
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
-            session.SavePropertiesAsync();
+            assignedTeam = TeamSideType.Corpo;
         }
         else
         {
-            _teams.natifPlayers.Add(readOnlyPlayer);
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
-            session.SavePropertiesAsync();
+            assignedTeam = TeamSideType.Natif;
         }
 
-        return assignedTeam;
+        if (readOnlyPlayer is IPlayer player)
+        {
+            player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
+        }
+
+        switch (assignedTeam)
+        {
+            case TeamSideType.Corpo:
+                _teams.corpoPlayers.Add(readOnlyPlayer);
+                return TeamSideType.Corpo;
+            case TeamSideType.Natif:
+                _teams.natifPlayers.Add(readOnlyPlayer);
+                return TeamSideType.Natif;
+            default:
+                return TeamSideType.Neutre;
+        }
     }
     public static void RemovePlayer(string playerId)
     {
@@ -138,9 +148,6 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from CORPO ID {playerId} ");
             _teams.corpoPlayers.Remove(corpo);
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeam(TeamSideType.Corpo).Count.ToString()));
-            session.SavePropertiesAsync();
             return;
         }
 
@@ -149,9 +156,6 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from NATIF ID {playerId} ");
             _teams.natifPlayers.Remove(natif);
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeam(TeamSideType.Natif).Count.ToString()));
-            session.SavePropertiesAsync();
             return;
         }
 
@@ -187,7 +191,59 @@ public static class PlayerHelpers
         return _teams;
     }
 
-    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeam(TeamSideType teamSide)
+    public static List<int> GetClientPlayerIdsByTeam(TeamSideType teamSide)
+    {
+        var world = ClientWorld;
+        if (world == null || !world.IsCreated)
+            return new List<int>();
+
+        var em = world.EntityManager;
+
+        var query = em.CreateEntityQuery(
+            ComponentType.ReadOnly<GhostOwner>(),
+            ComponentType.ReadOnly<ClientComponent>()
+        );
+
+        using (var owners = query.ToComponentDataArray<GhostOwner>(Allocator.TempJob))
+        using (var clients = query.ToComponentDataArray<ClientComponent>(Allocator.TempJob))
+        {
+            var result = new List<int>(owners.Length);
+            for (int i = 0; i < owners.Length; i++)
+            {
+                if (clients[i].team == teamSide)
+                    result.Add(owners[i].NetworkId);
+            }
+            return result;
+        }
+    }
+
+    public static List<ClientComponent> GetClientPlayersByTeam(TeamSideType teamSide)
+    {
+        var world = ClientWorld;
+        if (world == null || !world.IsCreated)
+            return new List<ClientComponent>();
+
+        var em = world.EntityManager;
+        var query = em.CreateEntityQuery(
+            ComponentType.ReadOnly<GhostOwner>(),
+            ComponentType.ReadOnly<ClientComponent>()
+        );
+
+        using (var clients = query.ToComponentDataArray<ClientComponent>(Allocator.TempJob))
+        {
+            var result = new List<ClientComponent>(clients.Length);
+            for (int i = 0; i < clients.Length; i++)
+            {
+                if (clients[i].team == teamSide)
+                    result.Add(clients[i]);
+            }
+            return result;
+        }
+    }
+
+
+
+    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeamOnServer(TeamSideType teamSide)
     {
         switch (teamSide)
         {
@@ -200,7 +256,7 @@ public static class PlayerHelpers
         }
     }
 
-    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeam(string teamName)
+    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeamOnServer(string teamName)
     {
         TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
         switch (teamSide)
@@ -214,34 +270,7 @@ public static class PlayerHelpers
         }
     }
 
-    public static int GetPlayersCountByTeamOnClient(string teamName)
-    {
-        TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
-        switch (teamSide)
-        {
-            case TeamSideType.Corpo:
-                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamCorpo"].Value);
-            case TeamSideType.Natif:
-                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamNatif"].Value);
-            default:
-                return 0;
-        }
-    }
-
-    public static int GetPlayersCountByTeamOnClient(TeamSideType teamSide)
-    {
-        switch (teamSide)
-        {
-            case TeamSideType.Corpo:
-                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamCorpo"].Value);
-            case TeamSideType.Natif:
-                return int.Parse(ClientTransportHelper.instance.Session.Properties["CountTeamNatif"].Value);
-            default:
-                return 0;
-        }
-    }
-
-    public static void ClearTeam(string teamName)
+    public static void ClearTeamOnServer(string teamName)
     {
         TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
         switch (teamSide)
@@ -258,7 +287,7 @@ public static class PlayerHelpers
         }
     }
 
-    public static void ClearTeam(TeamSideType teamSide)
+    public static void ClearTeamOnServer(TeamSideType teamSide)
     {
         switch (teamSide)
         {
@@ -280,15 +309,13 @@ public static class PlayerHelpers
         _teams.natifPlayers.Clear();
     }
 
-    static public TeamSideType GetPlayerInTeam(int networkId)
+    static public TeamSideType GetPlayerInTeamOnServer(int networkId)
     {
         var player = FindCurrentPlayerForNetworkId(networkId);
 
         if (player.Properties.Count > 0)
         {
-            Debug.Log($"Player propeties count {player.Properties.Count}");
             string team = player.Properties["team"].Value;
-
             if (team == "Corpo")
             {
                 return TeamSideType.Corpo;
@@ -298,6 +325,32 @@ public static class PlayerHelpers
                 return TeamSideType.Natif;
             }
         }
+        return TeamSideType.Neutre;
+    }
+
+    public static TeamSideType GetPlayerInTeam(int networkId)
+    {
+        var world = ClientWorld;
+        if (world == null || !world.IsCreated)
+            return TeamSideType.Neutre;
+
+        var em = world.EntityManager;
+
+        var query = em.CreateEntityQuery(
+            ComponentType.ReadOnly<GhostOwner>(),
+            ComponentType.ReadOnly<ClientComponent>()
+        );
+
+        using (var owners = query.ToComponentDataArray<GhostOwner>(Allocator.TempJob))
+        using (var clients = query.ToComponentDataArray<ClientComponent>(Allocator.TempJob))
+        {
+            for (int i = 0; i < owners.Length; i++)
+            {
+                if (owners[i].NetworkId == networkId)
+                    return clients[i].team;
+            }
+        }
+
         return TeamSideType.Neutre;
     }
 }
