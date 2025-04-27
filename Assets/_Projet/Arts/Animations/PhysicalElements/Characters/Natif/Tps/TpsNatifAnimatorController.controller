@@ -109,6 +109,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &-8067022766013395115
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Native_Reload_Shotgun_Anim
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: -4087019800966029411, guid: 3581022fa0b68d7489278f3243217952, type: 3}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1101 &-7738882762311272807
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -355,6 +381,9 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 840097719821439993}
     m_Position: {x: 1300, y: -200, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -8067022766013395115}
+    m_Position: {x: 0, y: 200, z: 0}
   m_ChildStateMachines: []
   m_AnyStateTransitions: []
   m_EntryTransitions: []
@@ -364,7 +393,7 @@ AnimatorStateMachine:
   m_EntryPosition: {x: 0, y: 100, z: 0}
   m_ExitPosition: {x: 2280, y: 130, z: 0}
   m_ParentStateMachinePosition: {x: 800, y: 20, z: 0}
-  m_DefaultState: {fileID: -274682104460773998}
+  m_DefaultState: {fileID: -8067022766013395115}
 --- !u!1102 &-1537434904480823301
 AnimatorState:
   serializedVersion: 6
@@ -683,7 +712,7 @@ AnimatorController:
   - serializedVersion: 5
     m_Name: Body
     m_StateMachine: {fileID: -2887217443643196478}
-    m_Mask: {fileID: 31900000, guid: b3af7b459d054fb46b3c165133f0fc1b, type: 2}
+    m_Mask: {fileID: 0}
     m_Motions: []
     m_Behaviours: []
     m_BlendingMode: 0
