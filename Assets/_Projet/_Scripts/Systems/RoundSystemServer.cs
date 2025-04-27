@@ -311,6 +311,18 @@ public partial struct RoundSystemServer : ISystem
         {
             physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
         }
+
+        //FIX (Aurelien) : Destroy all dropped weapons and equipment on the ground
+
+        foreach (var (stuffOwner, stuffEntity) in SystemAPI
+            .Query<RefRO<StuffDynamicData>>()
+            .WithEntityAccess())
+        {
+            if(stuffOwner.ValueRO.owner == Entity.Null)
+            {
+                ecb.DestroyEntity(stuffEntity);
+            }
+        }
     }
 
     private void HarvesterDefused(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)

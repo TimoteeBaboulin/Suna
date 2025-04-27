@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
-
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class WeaponListLinkSystem : SystemBase
 {
     public class StuffListChangeEventArgs : EventArgs
@@ -36,6 +37,8 @@ partial class WeaponListLinkSystem : SystemBase
                 {
                     if (stuffEntity != Entity.Null)
                     {
+                        bool isValid = SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity);
+                        if (!isValid) continue;
                         StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
                         names.Add(dbAccess.GetData(ref database).Name.ToString());
                         ids.Add((int)dbAccess.GetData(ref database).slot);
