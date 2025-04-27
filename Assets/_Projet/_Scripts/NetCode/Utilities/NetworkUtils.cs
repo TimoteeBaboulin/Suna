@@ -65,46 +65,65 @@ namespace GameNetwork.Utils
             try
             {
                 //await StartServicesAsync();
+#if UNITY_SERVER
 
                 Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {CurrentIP}, Port: {CurrentPort}");
+#endif
 
                 instance = new ClientTransportHelper();
 
                 var options = instance.CreateSessionOptions();
+#if UNITY_SERVER
+
                 Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
+#endif
 
                 options.MaxPlayers = sessionOptions.MaxPlayers;
                 options.Name = sessionOptions.Name;
 
                 var networkHandler = new NetworkHandler();
                 options.WithNetworkHandler(networkHandler);
+#if UNITY_SERVER
+
                 Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
+#endif
 
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
                 //IServerSession hostSession = await MultiplayerServerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
+#if UNITY_SERVER
+
                     Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
+#endif
+
                     return instance;
                 }
 
                 instance.Session = hostSession;
+#if UNITY_SERVER
+
                 Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
                 Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
+#endif
 
                 instance.ConnectEndpoint = await networkHandler.ConnectEndpoint;
                 instance.ListenEndpoint = await networkHandler.ListenEndpoint;
                 instance.SessionConnectionType = await networkHandler.SessionConnectionType;
+#if UNITY_SERVER
+
                 Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
                     $"ConnectEndpoint={instance.ConnectEndpoint}, " +
                     $"ListenEndpoint={instance.ListenEndpoint}, " +
                     $"SessionConnectionType={instance.SessionConnectionType}");
+#endif
 
                 return instance;
             }
             catch (Exception ex)
             {
                 UnityEngine.Debug.LogError($"[SessionTransportHelper] Error in CreateServerSessionAsync: {ex}");
+
                 throw;
             }
         }

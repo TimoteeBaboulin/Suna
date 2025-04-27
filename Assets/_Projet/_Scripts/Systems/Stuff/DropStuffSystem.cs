@@ -1,3 +1,4 @@
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -59,6 +60,26 @@ public partial struct DropStuffSystem : ISystem
                     Linear = forward * 5f,
                     Angular = float3.zero
                 });
+            }
+        }
+    }
+}
+
+[BurstCompile]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct StuffDropedCleanup : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+        // Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+        foreach (var (stuffInHandRef, dropedStuff) in SystemAPI.Query<RefRO<StuffEntityInHandRef>>().WithEntityAccess())
+        {
+            if (stuffInHandRef.ValueRO.Value == Entity.Null)
+            {
+                ecb.DestroyEntity(dropedStuff);
             }
         }
     }

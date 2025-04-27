@@ -138,7 +138,9 @@ public partial class SessionStatusSystem : SystemBase
         var clients = GetComponentLookup<NetworkId>(true);
 
         RequireForUpdate<NetworkId>();
+#if UNITY_SERVER
         Debug.Log("[SessionStatusSystem] Waiting for session to be created...");
+#endif
     }
 
     protected override void OnUpdate()
@@ -150,33 +152,43 @@ public partial class SessionStatusSystem : SystemBase
         {
             timer = 0f;
 
-
+#if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {ClientTransportHelper.instance.Session.Id}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ClientTransportHelper.instance.Session.Name}");
-
+#endif
             if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
             {
+#if UNITY_SERVER
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ClientTransportHelper.instance.Session.PlayerCount - 1}");//Minus the server, as it counts as player
+#endif
             }
             else
             {
+#if UNITY_SERVER
                 Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ClientTransportHelper.instance.Session.PlayerCount}");
+#endif
             }
+#if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ClientTransportHelper.instance.Session.State} "); ;
-
+#endif
             PlayerHelpers.AliveCounts currentCounts = PlayerHelpers.GetCurrentAliveCounts(World);
+#if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native players alive: {currentCounts.natifPlayersAlive}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo players alive: {currentCounts.corpoPlayersAlive}");
-
+#endif
             PlayerHelpers.GlobalTeamCount teamCounts = PlayerHelpers.GetCurrentTeamCounts();
+#if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
+#endif
 
-
+#if UNITY_SERVER
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts in Session property: " +
                 $"{ClientTransportHelper.instance.Session.AsHost().Properties["CountTeamNatif"].Value}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts in Session property: " +
                 $"{ClientTransportHelper.instance.Session.AsHost().Properties["CountTeamCorpo"].Value}");
+#endif
+
             //PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");

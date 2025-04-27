@@ -41,7 +41,7 @@ public partial struct SwitchStuffSystem : ISystem
                     if (StuffUtils.GetStuffInSlot(stuffList, nextStuffSlot) != Entity.Null) break;
                 }
 
-                StuffUtils.SwitchTo(stuffList, ref stuffInfos, nextStuffSlot);
+                StuffUtils.SwitchTo(stuffList, stuffInfosRW, nextStuffSlot);
             }
         }
 
@@ -59,7 +59,7 @@ public partial struct SwitchStuffSystem : ISystem
             {
                 if ((int)stuffInfos.StuffInHandSlot == input.stuffLocation - 1) continue;
 
-                StuffUtils.SwitchTo(stuffList, ref stuffInfos, (StuffSlot)(input.stuffLocation - 1));
+                StuffUtils.SwitchTo(stuffList, stuffInfosRW, (StuffSlot)(input.stuffLocation - 1));
             }
         }
 
@@ -74,7 +74,7 @@ public partial struct SwitchStuffSystem : ISystem
                 {
                     if (StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i) == Entity.Null) continue;
 
-                    StuffUtils.SwitchTo(stuffList, ref stuffInfosRW.ValueRW,(StuffSlot)i);
+                    StuffUtils.SwitchTo(stuffList, stuffInfosRW, (StuffSlot)i);
                     break;
                 }
             }

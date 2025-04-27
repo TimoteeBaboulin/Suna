@@ -69,8 +69,6 @@ public struct StuffProcessPending : IComponentData, IEnableableComponent
 public struct StuffCommonData
 {
     public BlobString Name;
-    //public UnityObjectRef<GameObject> viewPrefab;
-    //public UnityObjectRef<GameObject> UIPrefab;
     public StuffSlot slot;
     public StuffType type;
     public TeamSideType side;
@@ -86,27 +84,9 @@ public struct StuffCommonData
     public int dataID;
 }
 
-//public class StuffGameObjectViewPrefab : IComponentData
-//{
-//    public GameObject Value;
-//}
-
 public class StuffGameObjectRef : ICleanupComponentData
 {
     public GameObject Value;
 }
-
-//public class StuffUiImage : ICleanupComponentData
-//{
-//    public Image Value;
-//}
-
-//[GhostComponent(PrefabType = GhostPrefabType.AllPredicted, OwnerSendType = SendToOwnerType.SendToNonOwner)]
-
-//public struct Command : ICommandData
-//{
-//    public float3 position;
-//    public float3 normal;
-//}
 
 

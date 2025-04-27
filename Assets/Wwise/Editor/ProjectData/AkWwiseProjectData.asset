@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584559523826502644
+    m_lastTime: -8584558364947689838
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -82,6 +82,20 @@ MonoBehaviour:
         ObjectType: 7
         guid: bc866bf90dfff1479f016a5a99d55c1e
       Path: SoundBanks\Default Work Unit\DefaultBank
+    - name: MainMenu
+      guid: 5e203f377d20ef45a994fd3faf1cae9e
+      id: 3604647259
+      PathAndIcons:
+      - ElementName: SoundBanks
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: ba60688da2d0e14e9c2083f407a04640
+      - ElementName: MainMenu
+        ObjectType: 7
+        guid: 5e203f377d20ef45a994fd3faf1cae9e
+      Path: SoundBanks\Default Work Unit\MainMenu
   EventWwu:
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
@@ -94,7 +108,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584559060048062693
+    m_lastTime: -8584558364947252511
     List:
     - name: Bullet
       guid: f31ddc298c55be49ad82765d29c29e87
@@ -227,126 +241,6 @@ MonoBehaviour:
         ObjectType: 3
         guid: 6a1ae4e4c162de4eade1e8f2c0039726
       Path: Events\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise_STOP
-      maxAttenuation: 0
-      maxDuration: 0
-      minDuration: 0
-    - name: CS_Like_Main_Title_Loop
-      guid: f5a8660a87212443a57b5fb3c3f3d40c
-      id: 2735489995
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_Main_Title_Loop
-        ObjectType: 3
-        guid: f5a8660a87212443a57b5fb3c3f3d40c
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Main_Title_Loop
-      maxAttenuation: 0
-      maxDuration: 28.235306
-      minDuration: 28.235306
-    - name: CS_Like_Main_Title_Loop_STOP
-      guid: 84c31f8e0876374592fe4d5b3cc809c4
-      id: 251419718
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_Main_Title_Loop_STOP
-        ObjectType: 3
-        guid: 84c31f8e0876374592fe4d5b3cc809c4
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Main_Title_Loop_STOP
-      maxAttenuation: 0
-      maxDuration: 0
-      minDuration: 0
-    - name: CS_Like_Menus_Launcher
-      guid: 54f545ddf8d0394bbfd0a819bbc1e4c2
-      id: 1901903297
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_Menus_Launcher
-        ObjectType: 3
-        guid: 54f545ddf8d0394bbfd0a819bbc1e4c2
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Menus_Launcher
-      maxAttenuation: 0
-      maxDuration: 146.4706
-      minDuration: 146.4706
-    - name: CS_Like_Menus_Launcher_STOP
-      guid: 7e74ea60085758499d9a6dbeb0b645a0
-      id: 715144708
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_Menus_Launcher_STOP
-        ObjectType: 3
-        guid: 7e74ea60085758499d9a6dbeb0b645a0
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Menus_Launcher_STOP
-      maxAttenuation: 0
-      maxDuration: 0
-      minDuration: 0
-    - name: CS_Like_Menus_Main_Loop
-      guid: 995bc6b4c8f9634d914c34c343bf248c
-      id: 947053159
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_Menus_Main_Loop
-        ObjectType: 3
-        guid: 995bc6b4c8f9634d914c34c343bf248c
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Menus_Main_Loop
-      maxAttenuation: 0
-      maxDuration: 121.76472
-      minDuration: 121.76472
-    - name: CS_Like_Menus_Main_Loop_STOP
-      guid: 068d2b6962dab64892f5a452f743b162
-      id: 2164583458
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_Menus_Main_Loop_STOP
-        ObjectType: 3
-        guid: 068d2b6962dab64892f5a452f743b162
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Menus_Main_Loop_STOP
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
@@ -488,23 +382,6 @@ MonoBehaviour:
       maxDuration: -1
       minDuration: -1
     - name: Kill
-      guid: fa68bd054ce809469dee31f8694942cb
-      id: 2030840469
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Kill
-        ObjectType: 4
-        guid: fa68bd054ce809469dee31f8694942cb
-      Path: Events\Default Work Unit\Kill
-      maxAttenuation: 0
-      maxDuration: 2.2553968
-      minDuration: 2.2553968
-    - name: Kill
       guid: 9e98fa6538e3dc4a8971344c56e1d173
       id: 2030840469
       PathAndIcons:
@@ -521,6 +398,23 @@ MonoBehaviour:
         ObjectType: 3
         guid: 9e98fa6538e3dc4a8971344c56e1d173
       Path: Events\Default Work Unit\Kill\Kill
+      maxAttenuation: 0
+      maxDuration: 2.2553968
+      minDuration: 2.2553968
+    - name: Kill
+      guid: fa68bd054ce809469dee31f8694942cb
+      id: 2030840469
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Kill
+        ObjectType: 4
+        guid: fa68bd054ce809469dee31f8694942cb
+      Path: Events\Default Work Unit\Kill
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -562,6 +456,26 @@ MonoBehaviour:
       maxDuration: -1
       minDuration: -1
     - name: Miss
+      guid: 67f25658d5142147ae79e516e88ffa3f
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      Path: Events\Default Work Unit\Hit\Miss
+      maxAttenuation: 0
+      maxDuration: 1.6925397
+      minDuration: 1.6925397
+    - name: Miss
       guid: b6a11cb79fc954428527a1aeaa5a936c
       id: 3062523241
       PathAndIcons:
@@ -581,26 +495,6 @@ MonoBehaviour:
         ObjectType: 3
         guid: b6a11cb79fc954428527a1aeaa5a936c
       Path: Events\Default Work Unit\Hit\Miss\Miss
-      maxAttenuation: 0
-      maxDuration: 1.6925397
-      minDuration: 1.6925397
-    - name: Miss
-      guid: 67f25658d5142147ae79e516e88ffa3f
-      id: 3062523241
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Hit
-        ObjectType: 4
-        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
-      - ElementName: Miss
-        ObjectType: 4
-        guid: 67f25658d5142147ae79e516e88ffa3f
-      Path: Events\Default Work Unit\Hit\Miss
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -1091,6 +985,138 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+  - PhysicalPath: Events\MainMenu.wwu
+    PathAndIcons:
+    - ElementName: Events
+      ObjectType: 5
+      guid: 00000000000000000000000000000000
+    - ElementName: MainMenu
+      ObjectType: 12
+      guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+    ParentPath: Events\MainMenu
+    guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+    GuidInternal: 
+    m_lastTime: -8584558364020681719
+    List:
+    - name: CS_Like_Main_Title_Loop
+      guid: f5a8660a87212443a57b5fb3c3f3d40c
+      id: 2735489995
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Main_Title_Loop
+        ObjectType: 3
+        guid: f5a8660a87212443a57b5fb3c3f3d40c
+      Path: Events\MainMenu\CS_Like_Main_Title_Loop
+      maxAttenuation: 0
+      maxDuration: 28.235306
+      minDuration: 28.235306
+    - name: CS_Like_Main_Title_Loop_STOP
+      guid: 84c31f8e0876374592fe4d5b3cc809c4
+      id: 251419718
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Main_Title_Loop_STOP
+        ObjectType: 3
+        guid: 84c31f8e0876374592fe4d5b3cc809c4
+      Path: Events\MainMenu\CS_Like_Main_Title_Loop_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: CS_Like_Menus_Launcher
+      guid: 54f545ddf8d0394bbfd0a819bbc1e4c2
+      id: 1901903297
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Launcher
+        ObjectType: 3
+        guid: 54f545ddf8d0394bbfd0a819bbc1e4c2
+      Path: Events\MainMenu\CS_Like_Menus_Launcher
+      maxAttenuation: 0
+      maxDuration: 146.4706
+      minDuration: 146.4706
+    - name: CS_Like_Menus_Launcher_STOP
+      guid: 7e74ea60085758499d9a6dbeb0b645a0
+      id: 715144708
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Launcher_STOP
+        ObjectType: 3
+        guid: 7e74ea60085758499d9a6dbeb0b645a0
+      Path: Events\MainMenu\CS_Like_Menus_Launcher_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: CS_Like_Menus_Main_Loop
+      guid: 995bc6b4c8f9634d914c34c343bf248c
+      id: 947053159
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Main_Loop
+        ObjectType: 3
+        guid: 995bc6b4c8f9634d914c34c343bf248c
+      Path: Events\MainMenu\CS_Like_Menus_Main_Loop
+      maxAttenuation: 0
+      maxDuration: 121.76472
+      minDuration: 121.76472
+    - name: CS_Like_Menus_Main_Loop_STOP
+      guid: 068d2b6962dab64892f5a452f743b162
+      id: 2164583458
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Main_Loop_STOP
+        ObjectType: 3
+        guid: 068d2b6962dab64892f5a452f743b162
+      Path: Events\MainMenu\CS_Like_Menus_Main_Loop_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: StopAll_01
+      guid: d7d21ec239b7e644a0990d0a2da6222c
+      id: 4256069028
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: StopAll_01
+        ObjectType: 3
+        guid: d7d21ec239b7e644a0990d0a2da6222c
+      Path: Events\MainMenu\StopAll_01
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:
@@ -1148,7 +1174,7 @@ MonoBehaviour:
     m_lastTime: -8584560549817907744
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 01000000050000000600000007000000090000000b0000000c0000000d00000010000000110000001f00000027000000
+  ExpandedWaapiItemIds: 010000000500000007000000090000000b0000000c0000000d0000001000000011000000120000001f000000270000004b000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

@@ -48,12 +48,14 @@ namespace AK
         static const AkUniqueID SNIPER_RELOAD = 2515054376U;
         static const AkUniqueID SNIPER_SHOOT = 2801873252U;
         static const AkUniqueID STOPALL = 3086540886U;
+        static const AkUniqueID STOPALL_01 = 4256069028U;
     } // namespace EVENTS
 
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;
         static const AkUniqueID DEFAULTBANK = 187290962U;
+        static const AkUniqueID MAINMENU = 3604647259U;
     } // namespace BANKS
 
     namespace BUSSES
