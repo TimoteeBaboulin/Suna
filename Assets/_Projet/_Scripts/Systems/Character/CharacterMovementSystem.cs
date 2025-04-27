@@ -7,12 +7,12 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 
-[BurstCompile]
+//[BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
 public partial struct CharacterMovementSystem : ISystem
 {
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
@@ -25,7 +25,7 @@ public partial struct CharacterMovementSystem : ISystem
         state.RequireForUpdate<GameResourcesDatabase>();
     }
 
-    [BurstCompile]
+    //[BurstCompile] Pas avec state.World :(
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);

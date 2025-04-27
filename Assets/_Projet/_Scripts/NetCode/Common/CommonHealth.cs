@@ -100,7 +100,7 @@ public partial struct CalculateFrameDamageJob : IJobEntity
     }
 }
 
-[BurstCompile]
+//[BurstCompile] Pas avec les RPC des sons :(
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [UpdateAfter(typeof(CalculateFrameDamageSystem))]
 //[WithAll(typeof(Simulate))]

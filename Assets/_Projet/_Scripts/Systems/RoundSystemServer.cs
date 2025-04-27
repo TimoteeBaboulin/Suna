@@ -37,7 +37,7 @@ public partial struct RoundSystemServer : ISystem
     //private EntityQuery _query;
     private bool _firstFrame;
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -61,7 +61,7 @@ public partial struct RoundSystemServer : ISystem
         }
     }
 
-    [BurstCompile]
+    //[BurstCompile]Pas avec les RPC des sons :(
     public void OnUpdate(ref SystemState state)
     {
         //Check if the singleton exists to avoid crashes

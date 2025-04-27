@@ -1,5 +1,4 @@
 using Unity.Entities;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public sealed class CharacterAuthoring : MonoBehaviour
