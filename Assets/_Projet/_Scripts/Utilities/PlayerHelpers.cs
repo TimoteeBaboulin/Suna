@@ -106,9 +106,23 @@ public static class PlayerHelpers
     {
         GlobalTeamCount teamCounts = GetCurrentTeamCounts();
 
-        TeamSideType assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
-            ? (UnityEngine.Random.value < 0.5f ? TeamSideType.Corpo : TeamSideType.Natif)
-            : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? TeamSideType.Corpo : TeamSideType.Natif);
+        //TeamSideType assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
+        //    ? (UnityEngine.Random.value < 0.5f ? TeamSideType.Corpo : TeamSideType.Natif)
+        //    : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? TeamSideType.Corpo : TeamSideType.Natif);
+
+        int maxPlayers = ClientTransportHelper.MaxNbOfPlayers - 1;
+        int halfPoint = maxPlayers / 2;    
+
+        int totalConnected = teamCounts.corpoPlayersCount + teamCounts.natifPlayersCount;
+        TeamSideType assignedTeam;
+        if (totalConnected < halfPoint)
+        {
+            assignedTeam = TeamSideType.Corpo;
+        }
+        else
+        {
+            assignedTeam = TeamSideType.Natif;
+        }
 
         if (readOnlyPlayer is IPlayer player)
         {
@@ -134,9 +148,6 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from CORPO ID {playerId} ");
             _teams.corpoPlayers.Remove(corpo);
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamCorpo", new SessionProperty(GetPlayersByTeamOnServer(TeamSideType.Corpo).Count.ToString()));
-            session.SavePropertiesAsync();
             return;
         }
 
@@ -145,9 +156,6 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from NATIF ID {playerId} ");
             _teams.natifPlayers.Remove(natif);
-            var session = ClientTransportHelper.instance.Session.AsHost();
-            session.SetProperty("CountTeamNatif", new SessionProperty(GetPlayersByTeamOnServer(TeamSideType.Natif).Count.ToString()));
-            session.SavePropertiesAsync();
             return;
         }
 

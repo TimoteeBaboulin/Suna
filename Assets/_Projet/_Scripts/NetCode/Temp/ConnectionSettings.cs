@@ -35,6 +35,7 @@ public class ConnectionSettings : MonoBehaviour
 
     [Header("Connection Settings")]
     public bool isClientLocal = false;
+    public bool isRelease = false;
     [Tooltip("IP to reach/to connect on")]
     public string IP = "51.210.222.138"; 
     public PortToUse Port = PortToUse.Production;

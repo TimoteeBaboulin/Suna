@@ -109,6 +109,7 @@ public class ServerSessionFactory
     static private void OnPlayerLeaving(string playerId)
     {
         Debug.Log($"[OnPlayerLeaving] Player with NetworkId {playerId} is leaving the session.");
+        session.RefreshAsync();
     }
 
     static private async void OnPlayerHasLeft(string playerId)
@@ -164,6 +165,7 @@ public class ServerSessionFactory
     static private void OnRemovedFromSession()
     {
         Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
+        session.RefreshAsync();
     }
 
     static private void OnSessionPropertiesChanged()

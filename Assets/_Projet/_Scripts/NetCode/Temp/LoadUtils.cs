@@ -252,7 +252,7 @@ namespace GameNetwork.Utils
                 foreach (var w in nets)
                     w.EntityManager.CompleteAllTrackedJobs();
 
-                ResetAllCharacterComponents();
+               // ResetAllCharacterComponents();
                 foreach (var w in nets)
                     w.Dispose();
             }
