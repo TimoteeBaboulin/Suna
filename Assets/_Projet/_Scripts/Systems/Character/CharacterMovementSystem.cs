@@ -71,7 +71,7 @@ public partial struct CharacterMovementSystem : ISystem
             ecb = ecb.AsParallelWriter(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
             ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
-            StuffListLookup = state.GetComponentLookup<CharacterStuffList>(),
+            StuffListLookup = state.GetBufferLookup<CharacterStuffList>(),
             InHandLookup = state.GetComponentLookup<IsStuffInHand>(),
             CommonDataMap = weaponData,
         };
@@ -94,7 +94,7 @@ public partial struct CharacterMovementJob : IJobEntity
     public EntityCommandBuffer.ParallelWriter ecb;
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
-    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public BufferLookup<CharacterStuffList> StuffListLookup;
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
     [ReadOnly] public NativeHashMap<Entity, RangedWeaponCommonData> CommonDataMap;
 

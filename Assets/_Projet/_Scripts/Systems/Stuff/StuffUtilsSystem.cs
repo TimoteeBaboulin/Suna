@@ -84,51 +84,51 @@ public partial struct StuffOwnershipSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         //Fixes the stuff owner if it doesn't match the player who actually owns it
-        foreach (var (charaStuffList, chara) in SystemAPI.Query<CharacterStuffList>().WithEntityAccess())
+        foreach (var (charaStuffList, chara) in SystemAPI.Query<DynamicBuffer<CharacterStuffList>>().WithEntityAccess())
         {
-            foreach (var stuff in charaStuffList.List)
+            foreach (var stuff in charaStuffList)
             {
-                if (SystemAPI.Exists(stuff) && SystemAPI.HasComponent<StuffDynamicData>(stuff))
+                if (SystemAPI.Exists(stuff.entity) && SystemAPI.HasComponent<StuffDynamicData>(stuff.entity))
                 {
-                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff).owner;
+                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity).owner;
 
                     if (owner != chara)
                     {
-                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
+                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity);
                         dynData.owner = chara;
-                        ecb.SetComponent(stuff, dynData);
+                        ecb.SetComponent(stuff.entity, dynData);
                     }
                 }
             }
         }
 
-        //Check if a stuff no longer has a player and set its owner to null
-        foreach (var (owner, stuff) in SystemAPI.Query<StuffDynamicData>().WithEntityAccess())
-        {
-            bool hasOwner = false;
+        //    //Check if a stuff no longer has a player and set its owner to null
+        //    foreach (var (owner, stuff) in SystemAPI.Query<StuffDynamicData>().WithEntityAccess())
+        //    {
+        //        bool hasOwner = false;
 
-            foreach (var CharacterStuffList in SystemAPI.Query<CharacterStuffList>())
-            {
-                foreach (var charaStuff in CharacterStuffList.List)
-                {
-                    if (charaStuff == stuff)
-                    {
-                        hasOwner = true;
-                        break;
-                    }
-                }
-            }
+        //        foreach (var CharacterStuffList in SystemAPI.Query<CharacterStuffList>())
+        //        {
+        //            foreach (var charaStuff in CharacterStuffList.List)
+        //            {
+        //                if (charaStuff == stuff)
+        //                {
+        //                    hasOwner = true;
+        //                    break;
+        //                }
+        //            }
+        //        }
 
-            if (!hasOwner)
-            {
-                var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
-                dynData.owner = Entity.Null;
-                ecb.SetComponent(stuff, dynData);
-            }
-        }
+        //        if (!hasOwner)
+        //        {
+        //            var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
+        //            dynData.owner = Entity.Null;
+        //            ecb.SetComponent(stuff, dynData);
+        //        }
+        //    }
 
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
+        //    ecb.Playback(state.EntityManager);
+        //    ecb.Dispose();
     }
 }
 

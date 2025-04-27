@@ -17,7 +17,7 @@ public enum StuffSlot
     SpecialStuff3,
     SpecialStuff4,
 
-    nbLocation
+    nbSlots
 }
 
 public enum StuffType

@@ -123,7 +123,7 @@ public partial struct ApplyDamageSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
         ComponentLookup<CharacterMoney> moneyLookup = state.GetComponentLookup<CharacterMoney>();
         ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
-        ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
+        BufferLookup<CharacterStuffList> stuffListLookup = state.GetBufferLookup<CharacterStuffList>();
         ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
 
         EntityQuery query = state.GetEntityQuery(typeof(StuffDatabaseAccess));
@@ -184,7 +184,7 @@ public partial struct ApplyDamageJob : IJobEntity
     [ReadOnly] public NetworkTick CurrentTick;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<ClientCharacterAttached> ClientAttachedComponents;
-    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public BufferLookup<CharacterStuffList> StuffListLookup;
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
     [ReadOnly] public NativeHashMap<Entity, StuffCommonData> CommonDataMap;
     public EntityCommandBuffer.ParallelWriter ECB;
@@ -218,15 +218,15 @@ public partial struct ApplyDamageJob : IJobEntity
 
                 if (MoneyLookup.TryGetComponent(client, out var cm) && ClientAttachedComponents.TryGetComponent(client, out var chara))
                 {
-                    if (StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
+                    if (StuffListLookup.TryGetBuffer(chara.Value, out var stuffList))
                     {
-                        foreach (var element in stuffList.List)
+                        foreach (var element in stuffList)
                         {
-                            if (element == Entity.Null) continue;
+                            if (element.entity == Entity.Null) continue;
 
-                            if (InHandLookup.TryGetComponent(element, out var inHand) && InHandLookup.IsComponentEnabled(element))
+                            if (InHandLookup.TryGetComponent(element.entity, out var inHand) && InHandLookup.IsComponentEnabled(element.entity))
                             {
-                                cm.money += CommonDataMap[element].killGain;
+                                cm.money += CommonDataMap[element.entity].killGain;
                                 ECB.SetComponent(sortKey, client, cm);
                                 break;
                             }

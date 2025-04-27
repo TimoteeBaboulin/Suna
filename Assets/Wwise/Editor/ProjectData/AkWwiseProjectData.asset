@@ -94,7 +94,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584559075002721409
+    m_lastTime: -8584559060048062693
     List:
     - name: Bullet
       guid: f31ddc298c55be49ad82765d29c29e87
@@ -227,46 +227,6 @@ MonoBehaviour:
         ObjectType: 3
         guid: 6a1ae4e4c162de4eade1e8f2c0039726
       Path: Events\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise_STOP
-      maxAttenuation: 0
-      maxDuration: 0
-      minDuration: 0
-    - name: CS_Like_FULL_V1
-      guid: 310f3780b72bc14e91c5b95c1f59c32f
-      id: 2941500059
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_FULL_V1
-        ObjectType: 3
-        guid: 310f3780b72bc14e91c5b95c1f59c32f
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_FULL_V1
-      maxAttenuation: 0
-      maxDuration: 350.84033
-      minDuration: 350.84033
-    - name: CS_Like_FULL_V1_STOP
-      guid: 2a9f85d5b8b48d438b0006c122262642
-      id: 1281640758
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      - ElementName: CS_Like_FULL_V1_STOP
-        ObjectType: 3
-        guid: 2a9f85d5b8b48d438b0006c122262642
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_FULL_V1_STOP
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0

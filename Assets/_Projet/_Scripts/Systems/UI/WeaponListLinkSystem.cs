@@ -26,17 +26,17 @@ partial class WeaponListLinkSystem : SystemBase
     {
         if (SystemAPI.TryGetSingleton(out GameResourcesDatabase database))
         {
-            foreach (var stuffList in SystemAPI
-            .Query<RefRO<CharacterStuffList>>()
+            foreach (var (stuffList, stuffInfosRO) in SystemAPI
+            .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>>()
             .WithAll<GhostOwnerIsLocal>())
             {
                 List<string> names = new();
                 List<int> ids = new();
-                foreach (var stuffEntity in stuffList.ValueRO.List)
+                foreach (var stuff in stuffList)
                 {
-                    if (stuffEntity != Entity.Null)
+                    if (stuff.entity != Entity.Null)
                     {
-                        StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+                        StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuff.entity);
                         names.Add(dbAccess.GetData(ref database).Name.ToString());
                         ids.Add((int)dbAccess.GetData(ref database).slot);
                     }
@@ -50,7 +50,7 @@ partial class WeaponListLinkSystem : SystemBase
                     });
                 }
 
-                stuffInHandIndex = (int)stuffList.ValueRO.StuffInHandSlot;
+                stuffInHandIndex = (int)stuffInfosRO.ValueRO.StuffInHandSlot;
                 OnStuffIdChange?.Invoke(this, new StuffIdEventArgs()
                 {
                     StuffId = stuffInHandIndex
