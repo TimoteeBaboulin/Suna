@@ -25,7 +25,6 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
             if (!state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffList.ValueRO.StuffInHand)) continue;
 
             FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffList.ValueRO.StuffInHand).NameInDatabase;
-            UnityEngine.Debug.LogError(stuffName);
 
             if (stuffName == "KnifeNeutral")
             {
