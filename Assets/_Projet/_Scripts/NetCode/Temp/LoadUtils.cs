@@ -159,6 +159,26 @@ namespace GameNetwork.Utils
             await DisconnectAndUnloadWorlds();
         }
 
+        public static void ResetAllCharacterComponents()
+        {
+            foreach (var world in World.All)
+            {
+                var em = world.EntityManager;
+                if (!world.IsCreated)
+                    continue;
+
+                using var query = em.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>());
+                var entities = query.ToEntityArray(Allocator.Temp);
+                foreach (var e in entities)
+                {
+                    // Option A: completely remove the component so it'll get defaulted
+                    em.RemoveComponent<CharacterComponent>(e);
+                    em.RemoveChunkComponent<ClientComponent>(e);
+                }
+                entities.Dispose();
+            }
+        }
+
         private static async Task LeaveSessionAsync()
         {
             if (ClientTransportHelper.instance.Session != null)
@@ -233,6 +253,7 @@ namespace GameNetwork.Utils
                 foreach (var w in nets)
                     w.EntityManager.CompleteAllTrackedJobs();
 
+                ResetAllCharacterComponents();
                 foreach (var w in nets)
                     w.Dispose();
             }
