@@ -35,6 +35,7 @@ partial struct StuffSystemClient : ISystem
             var viewPrefabs = state.EntityManager.GetComponentObject<GameResourcesViewPrefabs>(singletonEntity);
 
             goRef.Value = Object.Instantiate(viewPrefabs.List[stuffDataRef.ValueRO.ID]);
+            goRef.Value.name = viewPrefabs.List[stuffDataRef.ValueRO.ID].name;
             ecb.AddComponent(stuff, goRef);
         }
 
@@ -59,6 +60,13 @@ partial struct StuffSystemClient : ISystem
                         stuffTransform.rotation = viewTransform.rotation;
                         stuffTransform.SetParent(viewTransform);
                         stuffTransform.localPosition = stuffData._stuffLocalOffsetView;
+
+                        Animator animator = viewTransform.GetComponentInParent<Animator>();
+
+                        if (animator != null)
+                        {
+                            animator.Rebind();
+                        }
                     }
                 }
             }
@@ -102,6 +110,13 @@ partial struct StuffSystemClient : ISystem
                     if (goRef.Value.transform.parent != viewTransform)
                     {
                         goRef.Value.transform.SetParent(viewTransform, false);
+
+                        Animator animator = viewTransform.GetComponentInParent<Animator>();
+
+                        if (animator != null)
+                        {
+                            animator.Rebind();
+                        }
                     }
                 }
             }
