@@ -171,7 +171,6 @@ namespace GameNetwork.Utils
                 var entities = query.ToEntityArray(Allocator.Temp);
                 foreach (var e in entities)
                 {
-                    // Option A: completely remove the component so it'll get defaulted
                     em.RemoveComponent<CharacterComponent>(e);
                     em.RemoveChunkComponent<ClientComponent>(e);
                 }
