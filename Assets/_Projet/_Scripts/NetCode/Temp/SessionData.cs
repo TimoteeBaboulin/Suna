@@ -6,6 +6,7 @@ using Unity.Properties;
 using System.Runtime.CompilerServices;
 using Unity.Services.Multiplayer;
 using static System.Collections.Specialized.BitVector32;
+using GameNetwork.Utils;
 
 namespace GameNetwork
 {
@@ -16,6 +17,7 @@ namespace GameNetwork
             StartLoading,
             InitializeConnection,
             LookingForMatch,
+            WaitingForPlayers,
             CreateWorld,
             WaitingConnection,
             LoadGameScene,
@@ -52,8 +54,9 @@ namespace GameNetwork
 
         static readonly Dictionary<LoadingSteps, LoadingStepHelper> k_LoadingSteps = new()
         {
-            { LoadingSteps.StartLoading , new LoadingStepHelper("Loading game...", 0f, 0f) },
+            { LoadingSteps.StartLoading , new LoadingStepHelper("WaitingForPlayers...", 0f, 0f) },
             { LoadingSteps.InitializeConnection , new LoadingStepHelper("Initializing connection...", 0.1f, 0.1f) },
+            { LoadingSteps.WaitingForPlayers , new LoadingStepHelper("Looking for other players...", 0.11f, 0.11f) },
             { LoadingSteps.LookingForMatch , new LoadingStepHelper("Looking for a match session...", 0.12f, 0.12f) },
             { LoadingSteps.CreateWorld , new LoadingStepHelper("Creating entity worlds...", 0.15f, 0.15f) },
             { LoadingSteps.WaitingConnection , new LoadingStepHelper("Waiting for Client connection...", 0.2f, 0.2f) },
@@ -64,7 +67,6 @@ namespace GameNetwork
             { LoadingSteps.WorldReplication , new LoadingStepHelper("Replicating world...", 0.8f, 0.9f) },
             { LoadingSteps.WaitingOnPlayer , new LoadingStepHelper("Waiting for Player spawn...", 0.9f, 0.9f) },
             { LoadingSteps.LoadingDone , new LoadingStepHelper("Starting gameplay...", 1f, 1f) },
-
             { LoadingSteps.UnloadingGame , new LoadingStepHelper("Leaving gameplay...", 0f, 0f) },
             { LoadingSteps.DisconnectingClient , new LoadingStepHelper("Disconnecting Client...", 0.1f, 0.1f) },
             { LoadingSteps.UnloadingWorld , new LoadingStepHelper("Disposing entity worlds...", 0.1f, 0.2f) },

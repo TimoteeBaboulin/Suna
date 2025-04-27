@@ -83,33 +83,33 @@ public partial class ServerSystem : SystemBase
             var hostSession = ClientTransportHelper.instance.Session as IServerSession;
 
             IPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
-            if (currentPlayer != null)
+            if (currentPlayer == null)
+                return;
+
+            TeamSideType assignedTeam = AssignTeamToPlayer(currentPlayer);
+            Debug.Log($"[OnPlayerJoined] Player with id {currentPlayer.Id} created.");
+            hostSession.SavePlayerDataAsync(currentPlayer.Id);
+
+            //Do not remove this code, it's not nice, not ugly but it's fucks hard and if you remove it, it will fuck you
+            ecb.AddComponent(ownerEntity, new ClientComponent
             {
-                TeamSideType assignedTeam = AssignTeamToPlayer(currentPlayer);
-                Debug.Log($"[OnPlayerJoined] Player with id {currentPlayer.Id} created.");
-                hostSession.SavePlayerDataAsync(currentPlayer.Id);
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id,
+                team = assignedTeam
+            });
 
-                //Do not remove this code, it's not nice, not ugly but it's fucks hard and if you remove it, it will fuck you
-                ecb.AddComponent(ownerEntity, new ClientComponent
-                {
-                    networkID = networkId.Value,
-                    playerID = currentPlayer.Id,
-                    team = assignedTeam
-                });
+            ecb.SetComponent(client, new ClientComponent
+            {
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id,
+                team = assignedTeam
+            });
 
-                ecb.SetComponent(client, new ClientComponent
-                {
-                    networkID = networkId.Value,
-                    playerID = currentPlayer.Id,
-                    team = assignedTeam
-                });
-
-                ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
-                    $"NetworkId {networkId.Value} " +
-                    $"currentPlayerID {currentPlayer.Id} " +
-                    $"team {GetPlayerInTeam(networkId.Value)} " +
-                    $"world {worldName}");
-            }
+            ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
+                $"NetworkId {networkId.Value} " +
+                $"currentPlayerID {currentPlayer.Id} " +
+                $"team {GetPlayerInTeam(networkId.Value)} " +
+                $"world {worldName}");
         }
     }
     #endregion
