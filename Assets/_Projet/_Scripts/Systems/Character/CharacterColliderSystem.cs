@@ -2,6 +2,7 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
@@ -25,18 +26,18 @@ partial struct CommonCharacterColliderSystem : ISystem
             if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
 
             TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
-
+            Debug.Log($"[CommonCharacterColliderSystem]TeamSide {teamSide}");
             switch (teamSide)
             {
                 case TeamSideType.Corpo:
                     CharacterColliderUtils.InstantiateCorpoCollider(characterCollider, entity, prefabsData, ecb, state.EntityManager);
+                    ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
                     break;
                 case TeamSideType.Natif:
                     CharacterColliderUtils.InstantiateNatifCollider(characterCollider, entity, prefabsData, ecb, state.EntityManager);
+                    ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
                     break;
             }
-
-            ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
         }
 
         foreach (var (characterCollider, modelBones) in SystemAPI

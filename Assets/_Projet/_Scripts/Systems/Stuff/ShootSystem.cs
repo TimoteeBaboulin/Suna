@@ -160,33 +160,32 @@ public partial struct ShootSystem : ISystem
 
                                         ecb.SetComponent(owner, new HasHitComponent { Value = true });
                                     }
-
-                                    // === VISUEL ===
-                                    HitCommand hc = new HitCommand()
-                                    {
-                                        position = hit.Position,
-                                        normal = hit.SurfaceNormal,
-                                        origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
-                                    };
-
-                                    if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                          // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
-                                    {
-                                        RpcUtils.SendServerToClientRpc(ref hc);
-                                    }
-
-                                    // === FIN VISUEL ===
-
-                                    // === SON ===
-                                    if (i == 0)
-                                    {
-                                        SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                                        SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
-                                    }
-
-                                    // === FIN SON ===
-
                                 }
+
+                                // === VISUEL ===
+                                HitCommand hc = new HitCommand()
+                                {
+                                    position = hit.Position,
+                                    normal = hit.SurfaceNormal,
+                                    origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                                };
+
+                                if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                        // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                                {
+                                    RpcUtils.SendServerToClientRpc(ref hc);
+                                }
+
+                                // === FIN VISUEL ===
+
+                                // === SON ===
+                                if (i == 0)
+                                {
+                                    SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                                    SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                                }
+
+                                // === FIN SON ===
                             }
 
                             dynamicData.timeSinceLastFire = 0f;
