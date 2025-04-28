@@ -49,6 +49,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rangedWeaponEntityPrefab: {fileID: 3839436275311606518, guid: d9961665fe6bca943b80581dafa8bc5b, type: 3}
   meleeWeaponEntityPrefab: {fileID: 7445839901049856988, guid: bc7527bf731f9554caa610efbb875a6f, type: 3}
+  grenadesEntityPrefab: {fileID: 1637427585106062149, guid: a5e53c827e652ef478c37c905310ef48, type: 3}
   harvesterEntityPrefab: {fileID: 521297520866367205, guid: ac913237f98d66d4db5638adf2bba45a, type: 3}
   rangedWeaponList:
   - {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
@@ -56,8 +57,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cc4ae2171c21bf044ad36dabf8fab7e1, type: 2}
   - {fileID: 11400000, guid: 2f60df847c329d44ca926804f7680de2, type: 2}
   - {fileID: 11400000, guid: 1dc1bc2c1a8340f4ba6cdd6f31c5bb09, type: 2}
+  - {fileID: 11400000, guid: f2477d3aa9ae6134a8c99d791df8ccb1, type: 2}
+  - {fileID: 11400000, guid: c5169048c8241b14e985c1031fca08c3, type: 2}
   meleeWeaponList:
   - {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
+  grenadesList:
+  - {fileID: 11400000, guid: f397e26a4a1ccfe4aa4a10e733ccdbb9, type: 2}
+  - {fileID: 11400000, guid: c487fcea494c59f43a42fa0aa543a444, type: 2}
   harvester: {fileID: 11400000, guid: 8641a930c8507084caa6fd98c321c55d, type: 2}
 --- !u!114 &-7839248459545790564
 MonoBehaviour:

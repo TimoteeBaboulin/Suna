@@ -25,17 +25,17 @@ MonoBehaviour:
   killGain: 800
   _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
   recoil: {x: 0, y: 0}
-  damage: 101
+  damage: 16
   range: 250
   firerate: 60
   isAutomatic: 0
   roundsPerShot: 10
-  spread: 0
-  spreadAiming: 10
-  coefSpray: 10
+  spread: 20
+  spreadAiming: 20
+  coefSpray: 1
   coefSprayAiming: 1
   ergonomics: 0
-  dmgFallOff: 0
+  dmgFallOff: 0.05
   coefModifMoveSpeed: 0.82
   coefModifMoveSpeedAiming: 0.6
   reloadSpeed: 1.5
@@ -51,8 +51,19 @@ MonoBehaviour:
   cross: {fileID: 0}
   silencer: {fileID: 0}
   magazine: {fileID: 0}
-  thorax: 101
-  stomach: 50
-  legs_Arms: 20
-  head: 310
+  thorax: 16
+  stomach: 9
+  legs_Arms: 5
+  head: 50
   ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 7f9debbd5ad8ce44baa40a5ac99c4986, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 70aad2d4579c0264088e799075a9203b, type: 2}

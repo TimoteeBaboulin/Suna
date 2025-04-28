@@ -62,7 +62,7 @@ public partial struct RangedWeaponReloadSystem : ISystem
                     Debug.Log("Reload Start !");
 #endif
 
-                    SoundUtils.PlayAtEmitter(ref state, soundQueue, weapon, "Reload");
+                    SoundUtils.PlayAtEmitterWithSoundQueue(ref state, soundQueue, weapon, "Reload");
 
                 }
             }

@@ -159,6 +159,25 @@ namespace GameNetwork.Utils
             await DisconnectAndUnloadWorlds();
         }
 
+        public static void ResetAllCharacterComponents()
+        {
+            foreach (var world in World.All)
+            {
+                var em = world.EntityManager;
+                if (!world.IsCreated)
+                    continue;
+
+                using var query = em.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>());
+                var entities = query.ToEntityArray(Allocator.Temp);
+                foreach (var e in entities)
+                {
+                    em.RemoveComponent<CharacterComponent>(e);
+                    em.RemoveChunkComponent<ClientComponent>(e);
+                }
+                entities.Dispose();
+            }
+        }
+
         private static async Task LeaveSessionAsync()
         {
             if (ClientTransportHelper.instance.Session != null)
@@ -189,7 +208,7 @@ namespace GameNetwork.Utils
         {
             ClientTransportHelper.State = ClientConnectionState.NotConnected;
 
-            bool requestedDisconnect = false;
+            //bool requestedDisconnect = false;
             foreach (var world in World.All)
             {
                 if (world.IsClient())
@@ -197,14 +216,14 @@ namespace GameNetwork.Utils
                     using var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
                     if (query.TryGetSingletonEntity<NetworkId>(out var networkId))
                     {
-                        requestedDisconnect = true;
+                        //requestedDisconnect = true;
                         world.EntityManager.AddComponentData(networkId, new NetworkStreamRequestDisconnect());
                     }
                 }
             }
 
-            if (requestedDisconnect)
-                await Awaitable.NextFrameAsync();
+            //if (requestedDisconnect)
+            //    await Awaitable.NextFrameAsync();
 
             await LeaveSessionAsync();
             await DestroyGameSessionWorlds();
@@ -233,6 +252,7 @@ namespace GameNetwork.Utils
                 foreach (var w in nets)
                     w.EntityManager.CompleteAllTrackedJobs();
 
+               // ResetAllCharacterComponents();
                 foreach (var w in nets)
                     w.Dispose();
             }

@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: Nelara
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 7068153267853143302, guid: 9642f47db853010469daf0a2a90b0646, type: 3}
+  viewPrefab: {fileID: 7068153267853143302, guid: d2ef8e43e061d584ebd3b59f623ce9b7, type: 3}
+  UIImage: {fileID: 2800000, guid: ea18ecaefaa4ae948a60eb1e4c1a6f49, type: 3}
+  location: 0
+  type: 0
+  side: 2
+  entityName: Nelara
+  deploymentSpeed: 0
+  storageSpeed: 0
+  price: 1600
+  killGain: 400
+  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
+  recoil: {x: 2, y: 3}
+  damage: 16
+  range: 220
+  firerate: 600
+  isAutomatic: 1
+  roundsPerShot: 1
+  spread: 5
+  spreadAiming: 4.5
+  coefSpray: 3
+  coefSprayAiming: 2.8
+  ergonomics: 0
+  dmgFallOff: 0.02
+  coefModifMoveSpeed: 0.92
+  coefModifMoveSpeedAiming: 0.78
+  reloadSpeed: 1.5
+  fastReloadSpeed: 1
+  knockbackForceOnKill: 0
+  canADS: 1
+  ADSFOV: 50
+  lastFireTimeMax: 0.4
+  nbMagazine: 5
+  magazineCapacity: 35
+  scope: {fileID: 0}
+  handle: {fileID: 0}
+  cross: {fileID: 0}
+  silencer: {fileID: 0}
+  magazine: {fileID: 0}
+  thorax: 16
+  stomach: 11
+  legs_Arms: 8
+  head: 49
+  ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 0d92adc9eae63eb4aa2b95167f95df37, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a0cab74b4a043fc429d7e3f82f042db4, type: 2}

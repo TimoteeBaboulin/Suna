@@ -10,11 +10,83 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{D7A77AB8-1D2E-199A-C21C-332B93D7CFFA}",
+    "Hash": "{B6E6FF12-6734-4491-4073-DEAF52734D6D}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
     "Media": [
+     {
+      "Id": "22246498",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Robots_Loop.wav",
+      "CachePath": "FA/{FA7FB36C-625B-518A-547C-A4AF969CD40F}.wem"
+     },
+     {
+      "Id": "65711448",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "M16A4-MagSlideOutFoley.wav",
+      "CachePath": "F7/{F793E463-FB79-1503-1FCF-6C1E514F6E57}.wem"
+     },
+     {
+      "Id": "91124830",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "M16A4-Fire.wav",
+      "CachePath": "D9/{D99F125F-8E7D-C699-C34D-E4FE6FCFC770}.wem"
+     },
+     {
+      "Id": "184886433",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "shotgun_shoot.wav",
+      "CachePath": "91/{918542E8-F8DB-79A5-5E1F-5DC9EAF09CEE}.wem"
+     },
+     {
+      "Id": "194609693",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "sniper_railgun_single_01.wav",
+      "CachePath": "55/{55BE0A38-1B1C-6F39-6A26-28D615B97BCB}.wem"
+     },
+     {
+      "Id": "222756833",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "sniper_railgun_world_reload.wav",
+      "CachePath": "1A/{1A941AD3-7AD0-1A9D-454D-7755338B1B81}.wem"
+     },
+     {
+      "Id": "338526762",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "shotgun_cock_forward.wav",
+      "CachePath": "98/{98F5EBE2-3340-60E9-D1E3-E98AB5A8F4D5}.wem"
+     },
+     {
+      "Id": "364483740",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Counter_Clockwise.wav",
+      "CachePath": "F8/{F8539627-C8F8-5F09-9587-99F2FFE3B6A1}.wem"
+     },
+     {
+      "Id": "415998049",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "headshot2.wav",
+      "CachePath": "71/{71E3E407-ECD7-2EBA-42A2-7C354C39C346}.wem"
+     },
      {
       "Id": "521724105",
       "Language": "SFX",
@@ -22,6 +94,22 @@
       "Location": "Memory",
       "ShortName": "SFX\\pistol_shoot.wav",
       "CachePath": "7B/{7B106A5E-73D1-0E6B-B22E-61158445DCF0}.wem"
+     },
+     {
+      "Id": "561448277",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "sniper_bolt_forward.wav",
+      "CachePath": "78/{78BEE144-50EB-9509-2777-BD1D51C54F7F}.wem"
+     },
+     {
+      "Id": "685160244",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "concrete\\concrete_impact_bullet1.wav",
+      "CachePath": "FA/{FA6C13EB-AC80-5F52-7E6E-2785D5A25597}.wem"
      },
      {
       "Id": "698735216",
@@ -40,6 +128,30 @@
       "CachePath": "61/{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem"
      },
      {
+      "Id": "732396723",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ui\\buttonclickrelease.wav",
+      "CachePath": "8C/{8C65BC10-64A8-7225-B9E3-EE78D9484D89}.wem"
+     },
+     {
+      "Id": "738294315",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ui\\buttonrollover.wav",
+      "CachePath": "A3/{A3B6DEA8-A011-8489-3DD7-26BCA584481A}.wem"
+     },
+     {
+      "Id": "826361697",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "body_medium_impact_hard13.wav",
+      "CachePath": "DE/{DEC4000A-38BC-6C42-F11A-9DB6D49B8F33}.wem"
+     },
+     {
       "Id": "905442807",
       "Language": "SFX",
       "Streaming": "false",
@@ -48,15 +160,169 @@
       "CachePath": "99/{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem"
      },
      {
+      "Id": "936370133",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "killsound.wav",
+      "CachePath": "01/{018994C1-ADCD-B823-D814-1E74BBD85B1F}.wem"
+     },
+     {
+      "Id": "960254442",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "ui\\buttonclick.wav",
+      "CachePath": "5E/{5E8E9EC9-E7E9-07C1-4138-F1206D48DC5D}.wem"
+     },
+     {
+      "Id": "983858205",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Natives_Loop.wav",
+      "CachePath": "DF/{DFE8C3A5-6700-5F9B-8867-49732965FD47}.wem"
+     },
+     {
+      "Id": "1005689479",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "shotgun_cock_back.wav",
+      "CachePath": "67/{6744BC0C-B73A-2740-F014-4D4936BEB7D0}.wem"
+     },
+     {
       "Id": "1044764746",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
       "ShortName": "SFX\\smg_clip_in.wav",
       "CachePath": "D7/{D7BD706A-BAC0-E190-6F84-13E4ADDCDD11}.wem"
+     },
+     {
+      "Id": "1057270696",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "bulletCartboard-6.WAV",
+      "CachePath": "51/{513B484A-9363-5B78-148B-3A6F6C6BC205}.wem"
      }
     ],
     "Events": [
+     {
+      "Id": "2494499361",
+      "Name": "Button_Clic",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Clic",
+      "GUID": "{2E3DFD68-44A6-48DC-9870-7A9573BA6C84}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.5679592",
+      "DurationMax": "0.5679592",
+      "MediaRefs": [
+       {
+        "Id": "960254442"
+       }
+      ]
+     },
+     {
+      "Id": "3732113631",
+      "Name": "Button_Release",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Release",
+      "GUID": "{5236C6A4-E410-4B79-9268-829AAD4A5D1B}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.9878231",
+      "DurationMax": "1.9878231",
+      "MediaRefs": [
+       {
+        "Id": "732396723"
+       }
+      ]
+     },
+     {
+      "Id": "3644104355",
+      "Name": "Button_Rollover",
+      "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Rollover",
+      "GUID": "{736A84E8-87B0-4F25-BE78-20925EE13382}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.6647391",
+      "DurationMax": "2.6647391",
+      "MediaRefs": [
+       {
+        "Id": "738294315"
+       }
+      ]
+     },
+     {
+      "Id": "4036144589",
+      "Name": "CS_Like_Counter_Clockwise",
+      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Counter_Clockwise",
+      "GUID": "{C5FD91AC-A4D9-4C5D-A086-B29C57D6FEC3}",
+      "DurationType": "OneShot",
+      "DurationMin": "12.857165",
+      "DurationMax": "12.857165",
+      "MediaRefs": [
+       {
+        "Id": "364483740"
+       }
+      ]
+     },
+     {
+      "Id": "1779440320",
+      "Name": "CS_Like_Counter_Clockwise_STOP",
+      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Counter_Clockwise_STOP",
+      "GUID": "{E4E41A6A-62C1-4EDE-ADE1-E8F2C0039726}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "1531110987",
+      "Name": "CS_Like_Natives_Loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Natives_Loop",
+      "GUID": "{2F7743A4-005E-4760-8F9A-A11F1CA04D94}",
+      "DurationType": "OneShot",
+      "DurationMin": "56.47059",
+      "DurationMax": "56.47059",
+      "MediaRefs": [
+       {
+        "Id": "983858205"
+       }
+      ]
+     },
+     {
+      "Id": "2301338566",
+      "Name": "CS_Like_Natives_Loop_STOP",
+      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Natives_Loop_STOP",
+      "GUID": "{0B6710B3-206F-473D-ACB1-341A9042126A}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "2598419022",
+      "Name": "CS_Like_Robots_Loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Robots_Loop",
+      "GUID": "{5E0C9C6B-187A-487B-A3CC-DF6DD7D25436}",
+      "DurationType": "OneShot",
+      "DurationMin": "56.47059",
+      "DurationMax": "56.47059",
+      "MediaRefs": [
+       {
+        "Id": "22246498"
+       }
+      ]
+     },
+     {
+      "Id": "267023757",
+      "Name": "CS_Like_Robots_Loop_STOP",
+      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Robots_Loop_STOP",
+      "GUID": "{75FA373C-A316-4AF7-A9BC-5AEE6B74524B}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
      {
       "Id": "1866025847",
       "Name": "Footstep",
@@ -68,6 +334,76 @@
       "MediaRefs": [
        {
         "Id": "698735216"
+       }
+      ]
+     },
+     {
+      "Id": "2632074263",
+      "Name": "Headshot",
+      "ObjectPath": "\\Events\\Default Work Unit\\Hit\\Headshot",
+      "GUID": "{9A1A762A-F780-4921-A25A-E5EB8CF78AC4}",
+      "DurationType": "OneShot",
+      "DurationMin": "3.9009523",
+      "DurationMax": "3.9009523",
+      "MediaRefs": [
+       {
+        "Id": "415998049"
+       }
+      ]
+     },
+     {
+      "Id": "2030840469",
+      "Name": "Kill",
+      "ObjectPath": "\\Events\\Default Work Unit\\Kill\\Kill",
+      "GUID": "{65FA989E-E338-4ADC-8971-344C56E1D173}",
+      "DurationType": "OneShot",
+      "DurationMin": "2.2553968",
+      "DurationMax": "2.2553968",
+      "MediaRefs": [
+       {
+        "Id": "936370133"
+       }
+      ]
+     },
+     {
+      "Id": "3062523241",
+      "Name": "Miss",
+      "ObjectPath": "\\Events\\Default Work Unit\\Hit\\Miss\\Miss",
+      "GUID": "{B71CA1B6-C99F-4254-8527-A1AEAA5A936C}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.6925397",
+      "DurationMax": "1.6925397",
+      "MediaRefs": [
+       {
+        "Id": "685160244"
+       }
+      ]
+     },
+     {
+      "Id": "2962560402",
+      "Name": "Near_Bullet",
+      "ObjectPath": "\\Events\\Default Work Unit\\Bullet\\Near_Bullet",
+      "GUID": "{34A0AFB2-C62D-4180-8EF8-C51A15C84493}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.86489797",
+      "DurationMax": "0.86489797",
+      "MediaRefs": [
+       {
+        "Id": "1057270696"
+       }
+      ]
+     },
+     {
+      "Id": "3728918479",
+      "Name": "No_Bullet",
+      "ObjectPath": "\\Events\\Default Work Unit\\Bullet\\No_Bullet",
+      "GUID": "{09E47046-C0B9-44A2-914D-C4B3324EDF42}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.37188208",
+      "DurationMax": "0.37188208",
+      "MediaRefs": [
+       {
+        "Id": "561448277"
        }
       ]
      },
@@ -100,6 +436,110 @@
       ]
      },
      {
+      "Id": "4135087902",
+      "Name": "Ragdoll",
+      "ObjectPath": "\\Events\\Default Work Unit\\Character\\Ragdoll",
+      "GUID": "{27E5068D-E4D1-41C6-824E-90AF8992AB44}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.34",
+      "DurationMax": "0.34",
+      "MediaRefs": [
+       {
+        "Id": "826361697"
+       }
+      ]
+     },
+     {
+      "Id": "3214964847",
+      "Name": "Rifle_Reload",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Rifle\\Rifle_Reload",
+      "GUID": "{3C9A30E9-414C-4602-A83D-C61624164224}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.2909751",
+      "DurationMax": "1.2909751",
+      "MediaRefs": [
+       {
+        "Id": "65711448"
+       }
+      ]
+     },
+     {
+      "Id": "1117295805",
+      "Name": "Rifle_Shoot",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Rifle\\Rifle_Shoot",
+      "GUID": "{08E0164F-301A-4DE7-8733-0D3AC9078238}",
+      "DurationType": "OneShot",
+      "DurationMin": "5.1215644",
+      "DurationMax": "5.1215644",
+      "MediaRefs": [
+       {
+        "Id": "91124830"
+       }
+      ]
+     },
+     {
+      "Id": "3750486034",
+      "Name": "Shotgun_Cock_Back",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Cock_Back",
+      "GUID": "{06E0A9E4-0319-42F9-B42D-E6BD6FFC81BE}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.218322",
+      "DurationMax": "0.218322",
+      "MediaRefs": [
+       {
+        "Id": "1005689479"
+       }
+      ]
+     },
+     {
+      "Id": "3003651970",
+      "Name": "Shotgun_Cock_Forward",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Cock_Forward",
+      "GUID": "{7F9145ED-0CDE-4C68-8EF0-1A0DC1E2628E}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.23437642",
+      "DurationMax": "0.23437642",
+      "MediaRefs": [
+       {
+        "Id": "338526762"
+       }
+      ]
+     },
+     {
+      "Id": "2040071657",
+      "Name": "Shotgun_Shoot",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Shoot",
+      "GUID": "{18081997-08CE-4DCE-843F-3041B0B11A51}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1954195",
+      "DurationMax": "1.1954195",
+      "MediaRefs": [
+       {
+        "Id": "184886433"
+       }
+      ]
+     },
+     {
+      "Id": "3542188584",
+      "Name": "Shotgun_Shoot_Test",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Shotgun\\Shotgun_Shoot_Test",
+      "GUID": "{47EB3EDD-B4C4-4129-B222-C21AAD323884}",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1954195",
+      "DurationMax": "1.1954195",
+      "MediaRefs": [
+       {
+        "Id": "184886433"
+       },
+       {
+        "Id": "338526762"
+       },
+       {
+        "Id": "1005689479"
+       }
+      ]
+     },
+     {
       "Id": "2642532248",
       "Name": "SMG_Reload",
       "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\SMG\\SMG_Reload",
@@ -126,10 +566,48 @@
         "Id": "700034105"
        }
       ]
+     },
+     {
+      "Id": "2515054376",
+      "Name": "Sniper_Reload",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Sniper\\Sniper_Reload",
+      "GUID": "{B7A1916B-F931-4D1F-9F61-B6D97F0B60DA}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.92764175",
+      "DurationMax": "0.92764175",
+      "MediaRefs": [
+       {
+        "Id": "222756833"
+       }
+      ]
+     },
+     {
+      "Id": "2801873252",
+      "Name": "Sniper_Shoot",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Sniper\\Sniper_Shoot",
+      "GUID": "{42D24FF1-E098-4381-930B-352F46F1634C}",
+      "DurationType": "OneShot",
+      "DurationMin": "3.6140363",
+      "DurationMax": "3.6140363",
+      "MediaRefs": [
+       {
+        "Id": "194609693"
+       }
+      ]
+     },
+     {
+      "Id": "3086540886",
+      "Name": "StopAll",
+      "ObjectPath": "\\Events\\Default Work Unit\\Management\\StopAll",
+      "GUID": "{07EC2BAF-F93A-459D-BD88-575149E4AE05}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
      }
     ]
    }
   ],
-  "FileHash": "{363B3E1D-AE95-A8FA-143B-E85AE456B14F}"
+  "FileHash": "{C65EF19A-B691-6343-7565-706BD0D59FFA}"
  }
 }

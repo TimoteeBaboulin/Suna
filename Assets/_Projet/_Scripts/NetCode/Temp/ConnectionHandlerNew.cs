@@ -17,6 +17,7 @@ using Unity.VisualScripting;
 using Unity_NetCode_Generated_Unity_Transforms;
 using UnityEngine;
 using UnityEngine.Analytics;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using static ConnectionManager;
 using static GameManager;
@@ -69,7 +70,8 @@ public class ConnectionHandlerNew : MonoBehaviour
                 foreach (var joinedSessionID in listOfJoinedSession)
                 {
                     sessionTransport = await new ClientTransportHelper().ReconnectByIdAsync(joinedSessionID, token);
-                    
+                    Debug.Log($"[WaitUntilSessionIsFullAsync] Debug log {sessionTransport.Session.AvailableSlots}");
+                    await WaitUntilSessionIsFullAsync(ClientTransportHelper.instance.Session, token);
                     if (ClientTransportHelper.instance.Session.Id == joinedSessionID)
                     {
                         Debug.Log($"found session already joined{joinedSessionID}");
@@ -81,6 +83,12 @@ public class ConnectionHandlerNew : MonoBehaviour
             {
                 sessionTransport = await new ClientTransportHelper().JoinSessionByIdAsync(sessionID, token);
             }
+        }
+
+        if (connectionSettings.isRelease)
+        {
+            Debug.Log($"[WaitUntilSessionIsFullAsync] Debug log {sessionTransport.Session.AvailableSlots}");
+            await WaitUntilSessionIsFullAsync(sessionTransport.Session, token);
         }
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
@@ -103,7 +111,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         if (ClientTransportHelper.ClientWorld != null)
         {
             using var drvQuery = ClientTransportHelper.ClientWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());
-            
+
             if (drvQuery.TryGetSingletonRW<NetworkStreamDriver>(out var clientDriver))
             {
                 clientDriver.ValueRW.Connect(ClientTransportHelper.ClientWorld.EntityManager, sessionTransport.ConnectEndpoint);
@@ -127,6 +135,19 @@ public class ConnectionHandlerNew : MonoBehaviour
         return sessionTransport;
     }
 
+    private async Task WaitUntilSessionIsFullAsync(ISession session, CancellationToken token)
+    {
+        while (!token.IsCancellationRequested && session.AvailableSlots > 0)
+        {
+            // You might need to re-query the session object here, e.g.
+            // session = await MultiplayerService.Instance.GetSessionByIdAsync(session.Id, token);
+            SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingForPlayers);
+            await Task.Delay(TimeSpan.FromMilliseconds(500), token);
+        }
+
+        if (token.IsCancellationRequested)
+            throw new OperationCanceledException(token);
+    }
 
     private async Task WaitUntilSessionIsFullAsync(CancellationToken token, World clientWorld)
     {
