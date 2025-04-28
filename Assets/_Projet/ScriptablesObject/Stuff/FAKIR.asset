@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FAKIR
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 7705747212656276575, guid: da3d38d203823e34e94567ce6fa91fb9, type: 3}
-  viewPrefab: {fileID: 4880525095371550291, guid: d3b8748680b494b499387758e2fd9163, type: 3}
+  viewPrefab: {fileID: 7705747212656276575, guid: bebd17aa636322f4cb99a690498b2ccd, type: 3}
   UIImage: {fileID: 2800000, guid: 64abbe030a7398540a1716496f28facd, type: 3}
   location: 1
   type: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   storageSpeed: 0
   price: 800
   killGain: 400
-  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
+  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
   recoil: {x: 0, y: 0}
   damage: 50
   range: 250
@@ -56,4 +56,14 @@ MonoBehaviour:
   legs_Arms: 42
   head: 208
   ammoType: {fileID: 0}
-  soundList: []
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: c56b3dd33189b2646ae0b3b53269bd94, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: cb6d391cac24fe24eaae5479f4c62658, type: 2}

@@ -54,7 +54,7 @@ namespace GameNetwork
 
         static readonly Dictionary<LoadingSteps, LoadingStepHelper> k_LoadingSteps = new()
         {
-            { LoadingSteps.StartLoading , new LoadingStepHelper("WaitingForPlayers...", 0f, 0f) },
+            { LoadingSteps.StartLoading , new LoadingStepHelper("InitializeLoading...", 0f, 0f) },
             { LoadingSteps.InitializeConnection , new LoadingStepHelper("Initializing connection...", 0.1f, 0.1f) },
             { LoadingSteps.WaitingForPlayers , new LoadingStepHelper("Looking for other players...", 0.11f, 0.11f) },
             { LoadingSteps.LookingForMatch , new LoadingStepHelper("Looking for a match session...", 0.12f, 0.12f) },

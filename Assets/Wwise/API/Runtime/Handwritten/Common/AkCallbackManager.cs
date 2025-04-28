@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 #if ! (UNITY_DASHBOARD_WIDGET || UNITY_WEBPLAYER || UNITY_WII || UNITY_WIIU || UNITY_NACL || UNITY_FLASH || UNITY_BLACKBERRY) // Disable under unsupported platforms.
 /*******************************************************************************
@@ -15,7 +17,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 
 /// <summary>
@@ -133,6 +135,23 @@ public static class AkCallbackManager
 
 	private static EventCallbackPackage m_LastAddedEventPackage;
 
+	public static void RemoveEventCallback(EventCallbackPackage in_package)
+	{
+		if (in_package != null)
+		{
+			m_mapEventCallbacks.Remove(in_package.GetHashCode());
+			if (in_package.m_playingID != AkUnitySoundEngine.AK_INVALID_PLAYING_ID)
+			{
+				AkUnitySoundEnginePINVOKE.CSharp_CancelEventCallbackCookie((global::System.IntPtr) in_package.GetHashCode());
+			}
+		}
+	}
+
+	public static IEnumerable<EventCallbackPackage> GetEventCallbacks()
+	{
+		return m_mapEventCallbacks.Select(pacakge => pacakge.Value);
+	}
+
 	public static void RemoveEventCallback(uint in_playingID)
 	{
 		var cookiesToRemove = new System.Collections.Generic.List<int>();
@@ -149,7 +168,10 @@ public static class AkCallbackManager
 		for (var ii = 0; ii < Count; ++ii)
 			m_mapEventCallbacks.Remove(cookiesToRemove[ii]);
 
-		AkUnitySoundEnginePINVOKE.CSharp_CancelEventCallback(in_playingID);
+		if (in_playingID != AkUnitySoundEngine.AK_INVALID_PLAYING_ID)
+		{
+			AkUnitySoundEnginePINVOKE.CSharp_CancelEventCallback(in_playingID);
+		}
 	}
 
 	public static void RemoveEventCallbackCookie(object in_cookie)
@@ -168,6 +190,11 @@ public static class AkCallbackManager
 			m_mapEventCallbacks.Remove(toRemove);
 			AkUnitySoundEnginePINVOKE.CSharp_CancelEventCallbackCookie((System.IntPtr) toRemove);
 		}
+	}
+
+	public static IEnumerable<BankCallbackPackage> GetBankCallbacks()
+	{
+		return m_mapBankCallbacks.Select(pacakge => pacakge.Value);
 	}
 
 	public static void RemoveBankCallback(object in_cookie)
@@ -191,7 +218,9 @@ public static class AkCallbackManager
 	public static void SetLastAddedPlayingID(uint in_playingID)
 	{
 		if (m_LastAddedEventPackage != null && m_LastAddedEventPackage.m_playingID == 0)
+		{
 			m_LastAddedEventPackage.m_playingID = in_playingID;
+		}
 	}
 
 	private static MonitoringCallback m_MonitoringCB;

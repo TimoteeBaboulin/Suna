@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SKAR18
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 9077871864667713224, guid: 83eb2e7aabf39dc4b8bebc34d4d053f7, type: 3}
-  viewPrefab: {fileID: 849912591632149733, guid: 482ae3fcd73f36241894bd6ab4aebcf2, type: 3}
+  viewPrefab: {fileID: 9077871864667713224, guid: 8dba0b4f06989b341a56d9b89f32e3ce, type: 3}
   UIImage: {fileID: 2800000, guid: 70f5215ab63fa8d428afb510c2f15c92, type: 3}
   location: 0
   type: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   storageSpeed: 0
   price: 2200
   killGain: 300
-  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
+  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
   recoil: {x: 2, y: 3}
   damage: 30
   range: 250
@@ -32,8 +32,8 @@ MonoBehaviour:
   roundsPerShot: 1
   spread: 1.2
   spreadAiming: 1
-  coefSpray: 10
-  coefSprayAiming: 8
+  coefSpray: 2
+  coefSprayAiming: 1.2
   ergonomics: 10
   dmgFallOff: 0.01
   coefModifMoveSpeed: 0.82
@@ -56,4 +56,14 @@ MonoBehaviour:
   legs_Arms: 21
   head: 91
   ammoType: {fileID: 0}
-  soundList: []
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 2594b6076a768c84a8a95fc3a1ab19de, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a7d3624565523084598f382cf6f6d9ea, type: 2}

@@ -13,7 +13,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 using UnityEngine;
 
@@ -62,7 +62,10 @@ public class AkGameObj : UnityEngine.MonoBehaviour
 			if (value > 0)
 			{
 				scalingFactor = value;
-				AkUnitySoundEngine.SetScalingFactor(gameObject, scalingFactor);
+				if (enabled)
+				{
+					AkUnitySoundEngine.SetScalingFactor(gameObject, scalingFactor);
+				}
 			}
 			else
 			{
@@ -82,6 +85,11 @@ public class AkGameObj : UnityEngine.MonoBehaviour
 	}
 
 	private bool isRegistered = false;
+
+	public bool GameObjIsRegistered()
+	{
+		return isRegistered;
+	}
 
 	internal void AddListener(AkAudioListener listener)
 	{
@@ -199,7 +207,10 @@ public class AkGameObj : UnityEngine.MonoBehaviour
 			//The Listener will win for the scaling factor
 			if (gameObject.GetComponent<AkAudioListener>() == null)
 			{
-				AkUnitySoundEngine.SetScalingFactor(gameObject, ScalingFactor);				
+				if (enabled)
+				{
+					AkUnitySoundEngine.SetScalingFactor(gameObject, ScalingFactor);				
+				}
 			}
 		}
 	}

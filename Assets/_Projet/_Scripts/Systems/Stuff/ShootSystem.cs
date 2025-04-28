@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Networking.Transport;
 using Unity.Physics;
 using Unity.Services.Multiplayer;
 using Unity.Transforms;
@@ -53,6 +54,7 @@ public partial struct ShootSystem : ISystem
         {
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref RangedWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
+            ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(weapon).GetData(ref grd);
             ref readonly Entity owner = ref ownerRef.ValueRO.owner;
 
             if (owner == Entity.Null) continue;
@@ -95,37 +97,37 @@ public partial struct ShootSystem : ISystem
                 if (input.attack.IsSet)
                 {
                     if ((commonData.isAutomatic || (!commonData.isAutomatic && !dynamicData.shotFired))
-                    && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+                    && dynamicData.firerateTimer <= 0)
                     {
-                        dynamicData.shotFired = true;
                         dynamicData.firerateTimer += 1.0f / (commonData.firerate / 60f); //turns RPM into RPS
                         dynamicData.state = RangedWeaponState.Shoot;
-                        dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;
 
-                        float2 directionalMovement = (float2)MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
-                        bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
-
-                        SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
-
-                        for (int i = 0; i < commonData.roundsPerShot; i++)
+                        if (dynamicData.currentAmmo > 0)
                         {
-                            // Apply spread on raycast
-                            float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                            float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
-                            quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
-                            quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
-                            recoilRotation = math.mul(shootRotation, recoilRotation);
+                            dynamicData.currentAmmo--;
 
-                            localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
+                            float2 directionalMovement = (float2)MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
+                            bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
 
-                            dynamicData.patternBulletIndex++;
+                            SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
 
-                            RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
-
-                            // Apply damage to the target player
-                            if (state.World.IsServer())
+                            for (int i = 0; i < commonData.roundsPerShot; i++)
                             {
+                                // Apply spread on raycast
+                                float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                                float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
+                                quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                                quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
+                                recoilRotation = math.mul(shootRotation, recoilRotation);
+
+                                localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
+
+                                dynamicData.patternBulletIndex++;
+
+                                RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
+
+                                // Apply damage to the target player
                                 if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                                 {
                                     RefRO<CharacterColliderDataComponent> CharacterBodyPartData
@@ -138,39 +140,62 @@ public partial struct ShootSystem : ISystem
                                         SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
                                             = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
 
-                                        ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                                        //Head Shot Sound
+                                        if (CharacterBodyPartData.ValueRO.Type == CharacterColliderType.Head && i == 0)
                                         {
-                                            Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
+                                            SoundUtils.PlayWithRPC("Hit", "Headshot", hit.Position);
+                                        }
+
+                                        Entity damageSource = ecb.CreateEntity();
+
+                                        ecb.AddComponent(damageSource, new ApplyDamage
+                                        {
+                                            source = DamageSource.Weapon,
+                                            damage = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier,
+                                            playerSource = owner,
+                                            targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
+                                            killReward = stuffCommonData.killGain,
+                                            weapon = Entity.Null, //TODO : Store the player weapon entity here
                                         });
+
                                         ecb.SetComponent(owner, new HasHitComponent { Value = true });
                                     }
+
+                                    // === VISUEL ===
+                                    HitCommand hc = new HitCommand()
+                                    {
+                                        position = hit.Position,
+                                        normal = hit.SurfaceNormal,
+                                        origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                                    };
+
+                                    if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                          // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                                    {
+                                        RpcUtils.SendServerToClientRpc(ref hc);
+                                    }
+
+                                    // === FIN VISUEL ===
+
+                                    // === SON ===
+                                    if (i == 0)
+                                    {
+                                        SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                                        SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                                    }
+
+                                    // === FIN SON ===
+
                                 }
-
-                                // === VISUEL ===
-                                HitCommand hc = new HitCommand()
-                                {
-                                    position = hit.Position,
-                                    normal = hit.SurfaceNormal,
-                                    origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
-                                };
-
-                                if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                      // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
-                                {
-                                    RpcUtils.SendServerToClientRpc(ref hc);
-                                }
-
-                                // === FIN VISUEL ===
-
-                                // === SON ===
-                                //SoundUtils.PlayAtEntityPosition(ref state, soundQueue, weapon, "Shoot");
-                                SoundUtils.PlayAtEmitter(ref state, "Shoot", weapon);
-                                // === FIN SON ===
-
                             }
-                        }
 
-                        dynamicData.timeSinceLastFire = 0f;
+                            dynamicData.timeSinceLastFire = 0f;
+                        }
+                        //NO AMMO
+                        else
+                        {
+                            SoundUtils.PlayWithRPC("Bullet", "NoBullet", shootStartpos);
+                        }
                     }
                     else
                     {
@@ -185,6 +210,96 @@ public partial struct ShootSystem : ISystem
 
             localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
             SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
+        }
+
+        foreach(var (dynamicDataRW, databaseAccessRO, sddRW, grenade) in SystemAPI
+            .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRW<StuffDynamicData>>()
+            .WithAll<IsStuffInHand, Simulate>()
+            .WithDisabled<ReleasedGrenade>()
+            .WithEntityAccess())
+        {
+            ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
+            ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
+            ref readonly Entity owner = ref sddRW.ValueRO.owner;
+
+            if (owner == Entity.Null) continue;
+
+            RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
+
+            // Retrieve player input
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+            ref CharacterInput input = ref inputRef.ValueRW;
+
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+
+            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
+
+            if (dynamicData.isCooking)
+            {
+                dynamicData.cookingTime += dt;
+            }
+
+            if(input.attack.IsSet)
+            {
+                dynamicData.isCooking = true;
+            }
+            else
+            {
+                if(dynamicData.isCooking)
+                {
+                    if (dynamicData.cookingTime >= commonData.cookingTime)
+                    {
+                        GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+                        DynamicBuffer<LinkedEntityGroup> linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(owner);
+                        DynamicBuffer<CharacterStuffList> characterStuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
+                        RefRW<CharacterStuffInfos> characterStuffInfos = SystemAPI.GetComponentRW<CharacterStuffInfos>(owner);
+                        GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(grenade);
+                        ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
+
+                        //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
+                        StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
+
+                        if(characterStuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
+                        {
+                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.MainWeapon);
+                        }
+                        else
+                        {
+                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.SecondaryWeapon);
+                        }
+
+                        //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
+
+                        Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
+                        ecb.SetName(thrownGrenade, "Thrown Grenade");
+
+                        ecb.AddComponent(thrownGrenade, new StuffEntityInHandRef { Value = grenade });
+
+                        ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
+
+                        ecb.SetComponent(grenade, new ReleasedGrenade { thrower = owner });
+                        ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
+
+                        //sddRW.ValueRW.owner = originalOwner;
+
+                        ecb.SetComponent(thrownGrenade, new LocalTransform
+                        {
+                            Position = shootStartpos,
+                            Rotation = shootRotation,
+                            Scale = 1.0f
+                        });
+
+                        ecb.SetComponent(thrownGrenade, new PhysicsVelocity
+                        {
+                            Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
+                            Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
+                        });
+
+                        dynamicData.isCooking = false;
+                        dynamicData.cookingTime = 0.0f;
+                    }
+                }
+            }
         }
     }
 
@@ -282,7 +397,7 @@ public partial struct ShootSystem : ISystem
         CollisionFilter filter = new CollisionFilter
         {
             BelongsTo = ~0u,
-            CollidesWith = ~(1u << 6)
+            CollidesWith = (1u << 12), // Collides only with 12 (Shoot and Grenade Collider (body parts are using that tag but TODO : find some other way)
         };
 
         float3 forward = math.mul(shootRotation, math.forward());

@@ -143,10 +143,11 @@ public class GameManager : Singleton<GameManager>
     }
 
 
-    private void OnApplicationQuit()
+    private async void OnApplicationQuit()
     {
         // Log that the application is quitting.
         Debug.Log("[OnApplicationQuit] Application is quitting – disconnecting and unloading worlds.");
-        //await DisconnectAndUnloadWorlds();
+        //LoadUtils.ResetAllCharacterComponents();
+        await LoadUtils.QuitAsync();
     }
 }

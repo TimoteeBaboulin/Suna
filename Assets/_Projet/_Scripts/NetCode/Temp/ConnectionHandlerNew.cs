@@ -48,7 +48,7 @@ public class ConnectionHandlerNew : MonoBehaviour
 
     public async Task<ClientTransportHelper> Connect(CancellationToken token)
     {
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingForPlayers);
+        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.StartLoading);
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.InitializeConnection);
 
         LoadUtils.CreateEntityWorlds();

@@ -10,6 +10,7 @@ public struct StuffEntityPrefabsBuffer : IBufferElementData
 {
     [GhostField] public Entity dropedEntityPrefab;
     [GhostField] public Entity inHandEntityPrefab;
+    [GhostField] public Entity thrownGrenadeEntityPrefab; //Only useful for grenades but I didn't have time to refactor this, sorry
 }
 
 public struct GameResourcesDatabase : IComponentData
@@ -21,6 +22,7 @@ public struct StuffDatabase
 {
     public BlobArray<StuffCommonData> StuffCommonData;
     public BlobArray<RangedWeaponCommonData> RangedWeaponsCommonData;
+    public BlobArray<GrenadeCommonData> GrenadesCommonData;
     public BlobArray<MeleeWeaponCommonData> MeleeWeaponsCommonData;
 }
 

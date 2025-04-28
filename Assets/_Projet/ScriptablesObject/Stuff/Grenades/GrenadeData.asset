@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876409719b0ba3e4c8adce711f5101fc, type: 3}
+  m_Name: GrenadeData
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  viewPrefab: {fileID: 6035785811226571987, guid: d4eb1c195f42da04f8e29d746b3254c4, type: 3}
+  UIImage: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
+  location: 4
+  type: 2
+  grenadeType: 0
+  side: 2
+  entityName: HE Grenade
+  price: 300
+  killGain: 300
+  _stuffLocalOffsetView: {x: 0.2, y: -0.18, z: 0.45}
+  cookingTime: 0.5
+  impactRadius: 12
+  damageInflicted: 800
+  triggerType: 0
+  timerTriggerDelay: 2.8
+  maxImpactAngle: 45
+  stillTriggerDelay: 0.8
+  bounceTriggerCount: 3
+  proximityTriggerDistance: 5
