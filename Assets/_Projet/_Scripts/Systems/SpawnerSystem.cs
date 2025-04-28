@@ -44,7 +44,7 @@ public partial struct OnDieSystem : ISystem
             autoRespawnIsEnable = SpawnerUtils.AutoRespawnIsEnable(ref state),
             resetStuffLookup = resetStuffLookupInit,
             HasNoHealthTagLookup = hasNoHealthTagLookup,
-            playerStuff = SystemAPI.GetComponentLookup<CharacterStuffList>(true),
+            playerStuff = SystemAPI.GetBufferLookup<CharacterStuffList>(true),
             linkedEntityGroupLookup = SystemAPI.GetBufferLookup<LinkedEntityGroup>(true),
             ghostOwnerLookup = SystemAPI.GetComponentLookup<GhostOwner>(true),
             stuffDynamicDataLookup = SystemAPI.GetComponentLookup<StuffDynamicData>(true),
@@ -60,14 +60,15 @@ public partial struct OnDieSystem : ISystem
 
         foreach (var (shouldDrop, dynamicData, entity) in SystemAPI.Query<RefRO<ShouldBeDropped>, RefRW<StuffDynamicData>>().WithEntityAccess())
         {
-            StuffUtils.UnequipUnsafe(ref state, ref database, dynamicData.ValueRO.owner, entity);
-            StuffUtils.InstantiateDrop(ref commandBuffer, ref dynamicData.ValueRW, entity, shouldDrop.ValueRO.position, shouldDrop.ValueRO.direction, 3f);
+            //StuffUtils.UnequipUnsafe(ref state, ref database, dynamicData.ValueRO.owner, entity);
+            //StuffUtils.Unequip(ref state, dynamicData.ValueRW.owner, ref database, dynamicData.ValueRO.owner, entity);
+            StuffUtils.InstantiateDrop(ref state, ref commandBuffer, entity, shouldDrop.ValueRO.position, shouldDrop.ValueRO.direction, 3f);
             commandBuffer.RemoveComponent<ShouldBeDropped>(entity);
         }
 
         foreach (var (shouldDelete, dynamicData, entity) in SystemAPI.Query<RefRO<ShouldBeDestroyed>, RefRW<StuffDynamicData>>().WithEntityAccess())
         {
-            StuffUtils.UnequipUnsafe(ref state, ref database, dynamicData.ValueRW.owner, entity);
+            //StuffUtils.UnequipUnsafe(ref state, ref database, dynamicData.ValueRW.owner, entity);
             commandBuffer.RemoveComponent<ShouldBeDestroyed>(entity);
             commandBuffer.DestroyEntity(entity);
         }

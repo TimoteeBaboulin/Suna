@@ -37,7 +37,7 @@ partial class WeaponListLinkSystem : SystemBase
                 {
                     if (stuff.entity != Entity.Null)
                     {
-                        bool isValid = SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity);
+                        bool isValid = SystemAPI.HasComponent<StuffDatabaseAccess>(stuff.entity);
                         if (!isValid) continue;
                         StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuff.entity);
                         names.Add(dbAccess.GetData(ref database).Name.ToString());

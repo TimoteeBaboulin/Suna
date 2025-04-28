@@ -251,20 +251,21 @@ public partial struct ShootSystem : ISystem
                     {
                         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
                         DynamicBuffer<LinkedEntityGroup> linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(owner);
-                        CharacterStuffList characterStuffList = SystemAPI.GetComponent<CharacterStuffList>(owner);
+                        DynamicBuffer<CharacterStuffList> characterStuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
+                        RefRW<CharacterStuffInfos> characterStuffInfos = SystemAPI.GetComponentRW<CharacterStuffInfos>(owner);
                         GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(grenade);
                         ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
 
                         //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
                         StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
 
-                        if(characterStuffList.List[(int)StuffSlot.MainWeapon] != Entity.Null)
+                        if(characterStuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
                         {
-                            StuffUtils.SwitchTo(ref state, ref characterStuffList, StuffSlot.MainWeapon);
+                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.MainWeapon);
                         }
                         else
                         {
-                            StuffUtils.SwitchTo(ref state, ref characterStuffList, StuffSlot.SecondaryWeapon);
+                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.SecondaryWeapon);
                         }
 
                         //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
