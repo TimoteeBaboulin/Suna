@@ -83,11 +83,9 @@ public class HUDController : MonoBehaviour
     // Player Icons
     private VisualElement _corpoIcons;
     private VisualElement _natifIcons;
-    private PlayerIconsLinkSystem _playerIconsLinkSystem;
 
     // KillFeed
     private VisualElement _killFeedContainer;
-
 
     private void Awake()
     {
@@ -217,12 +215,6 @@ public class HUDController : MonoBehaviour
             _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
-
-        //if (_playerIconsLinkSystem == null && world.Name == "ClientWorld")
-        //{
-        //    _playerIconsLinkSystem = world.GetExistingSystemManaged<PlayerIconsLinkSystem>();
-        //    _playerIconsLinkSystem.PlayersInPartyEvent += OnPlayersInPartyEvent; ;
-        //}
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -593,10 +585,6 @@ public class HUDController : MonoBehaviour
     //----------End of Defuse and Plant Elements System
 
     //----------Start of Player Icons Functions
-    //private void OnPlayersInPartyEvent(object sender, PlayerIconsLinkSystem.PlayersInPartyArgs args)
-    //{
-    //    PlayerIconsUpdate(args.PlayersNetworkId, args.PlayersTeam, args.PlayersTeam == TeamSideType.Corpo ? _corpoIcons : _natifIcons);
-    //}
     private void PlayerIconsUpdate(TeamSideType team, VisualElement teamIcons)
     {
         List<ClientComponent> players = PlayerHelpers.GetClientPlayersByTeam(team).OrderBy(x => x.networkID).ToList();
