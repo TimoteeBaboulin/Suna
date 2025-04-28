@@ -66,7 +66,7 @@ public class ServerSessionFactory
 
     private static void OnPlayerPropertiesChanged()
     {
-        session.RefreshAsync();
+        //session.RefreshAsync();
     }
 
     private static void OnSessionDeleted()
@@ -109,14 +109,14 @@ public class ServerSessionFactory
     static private void OnPlayerLeaving(string playerId)
     {
         Debug.Log($"[OnPlayerLeaving] Player with NetworkId {playerId} is leaving the session.");
-        session.RefreshAsync();
+        //session.RefreshAsync();
     }
 
     static private async void OnPlayerHasLeft(string playerId)
     {
         Debug.Log($"[OnPlayerHasLeft] Player with NetworkId {playerId} has left the session.");
         await session.RemovePlayerAsync(playerId);
-        await session.RefreshAsync();
+        //await session.RefreshAsync();
 
         var listCorpo = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamCorpo roster size: {listCorpo.Count}");
@@ -165,7 +165,7 @@ public class ServerSessionFactory
     static private void OnRemovedFromSession()
     {
         Debug.Log("[SessionStatusSystem] Current client has been removed from the session.");
-        session.RefreshAsync();
+        //session.RefreshAsync();
     }
 
     static private void OnSessionPropertiesChanged()

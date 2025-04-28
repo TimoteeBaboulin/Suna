@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 
 public class AkBasePlatformSettings : UnityEngine.ScriptableObject
@@ -73,6 +73,11 @@ public class AkBasePlatformSettings : UnityEngine.ScriptableObject
 	public virtual AkCommunicationSettings AkCommunicationSettings
 	{
 		get { return new AkCommunicationSettings(); }
+	}
+	
+	public virtual bool UseSubFoldersForGeneratedFiles
+	{
+		get { return false; }
 	}
 
 	public virtual uint MemoryDebugLevel
@@ -586,6 +591,9 @@ public class AkCommonAdvancedSettings
 
 	[UnityEngine.Tooltip("Sets the sub-folder underneath UnityEngine.Application.persistentDataPath that will be used as the SoundBank base path. This is useful when the Init.bnk needs to be downloaded. Setting this to an empty string uses the typical SoundBank base path resolution. Setting this to \".\" uses UnityEngine.Application.persistentDataPath.")]
 	public string m_SoundBankPersistentDataPath;
+	
+	[UnityEngine.Tooltip("Configures whether sub-folders are created in output folders. This needs to match the \"Create sub-folders for generated files\" SoundBank setting in Wwise Authoring.")]
+	public bool m_UseSubFoldersForGeneratedFiles;
 
 	[UnityEngine.Tooltip("Initial size of SBA portion of the Primary Memory Arena.")]
 	public uint m_MemoryPrimarySbaInitSize = 2097152;
@@ -683,6 +691,8 @@ public abstract class AkCommonPlatformSettings : AkBasePlatformSettings
 			advancedSettings.CopyTo(settings.deviceSettings);
 			advancedSettings.CopyTo(settings.initSettings);
 			advancedSettings.CopyTo(settings.platformSettings);
+			
+			settings.bUseSubFoldersForGeneratedFiles = advancedSettings.m_UseSubFoldersForGeneratedFiles;
 
 			settings.uMemoryPrimarySbaInitSize   = advancedSettings.m_MemoryPrimarySbaInitSize;
 			settings.uMemoryPrimaryTlsfInitSize  = advancedSettings.m_MemoryPrimaryTlsfInitSize;
@@ -757,6 +767,11 @@ public abstract class AkCommonPlatformSettings : AkBasePlatformSettings
 	public override string SoundbankPath
 	{
 		get { return GetUserSettings().m_BasePath; }
+	}
+	
+	public override bool UseSubFoldersForGeneratedFiles
+	{
+		get { return GetAdvancedSettings().m_UseSubFoldersForGeneratedFiles; }
 	}
 
 	public override uint MemoryDebugLevel

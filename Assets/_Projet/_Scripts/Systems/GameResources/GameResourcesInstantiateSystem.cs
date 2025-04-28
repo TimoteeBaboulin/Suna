@@ -102,8 +102,8 @@ partial struct ProcessPendingStuffSystem : ISystem
         ref var stuffCommonDataArray = ref database.StuffDatabaseRef.Value.StuffCommonData;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (dataAccessRW, dynDataRW, processRO, ghostOwnerRW, stuff) in SystemAPI
-            .Query<RefRW<StuffDatabaseAccess>, RefRW<StuffDynamicData>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
+        foreach (var (dataAccessRW, dynDataRO, processRO, ghostOwnerRW, stuff) in SystemAPI
+            .Query<RefRW<StuffDatabaseAccess>, RefRO<StuffDynamicData>, RefRO<StuffProcessPending>, RefRW<GhostOwner>>()
             .WithAll<StuffProcessPending>()
             .WithEntityAccess())
         {
@@ -135,7 +135,7 @@ partial struct ProcessPendingStuffSystem : ISystem
             }
             else
             {
-                StuffUtils.InstantiateDrop(ref ecb, ref dynDataRW.ValueRW, stuff, processRO.ValueRO.Position, float3.zero, 0f);
+                StuffUtils.InstantiateDrop(ref state, ref ecb, stuff, processRO.ValueRO.Position, float3.zero, 0f);
             }
 
             SpecificLoadSet(ref state, stuff, ref stuffData, ref database.StuffDatabaseRef.Value, ecb);

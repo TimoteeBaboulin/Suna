@@ -1,7 +1,10 @@
+using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 
 public struct MaxHealthComponent : IComponentData
@@ -97,7 +100,7 @@ public partial struct CalculateFrameDamageJob : IJobEntity
     }
 }
 
-[BurstCompile]
+//[BurstCompile] Pas avec les RPC des sons :(
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [UpdateAfter(typeof(CalculateFrameDamageSystem))]
 //[WithAll(typeof(Simulate))]
@@ -118,13 +121,32 @@ public partial struct ApplyDamageSystem : ISystem
     {
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+        //ComponentLookup<CharacterMoney> moneyLookup = state.GetComponentLookup<CharacterMoney>();
         //ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
-        //ComponentLookup<CharacterStuffList> stuffListLookup = state.GetComponentLookup<CharacterStuffList>();
+        //BufferLookup<CharacterStuffList> stuffListLookup = state.GetBufferLookup<CharacterStuffList>();
         //ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
 
         EntityQuery query = state.GetEntityQuery(typeof(StuffDatabaseAccess));
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
         NativeHashMap<Entity, StuffCommonData> commonDataMap = new NativeHashMap<Entity, StuffCommonData>(entities.Length, Allocator.TempJob);
+
+        if (state.World.IsServer())
+        {
+            foreach (var (healtRO, chara) in SystemAPI
+            .Query<RefRO<CurrentHealthComponent>>()
+            .WithEntityAccess())
+            {
+                if (healtRO.ValueRO.Value <= 0)
+                {
+                    if (healtRO.ValueRO.lastDamager != Entity.Null)
+                    {
+                        Entity killer = healtRO.ValueRO.lastDamager;
+                        float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
+                        SoundUtils.PlayWithRPC("Hit", "Kill", pos);
+                    }
+                }
+            }
+        }
 
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         foreach (var entity in entities)
@@ -215,7 +237,7 @@ public partial struct ApplyDamageJob : IJobEntity
     [ReadOnly] public NetworkTick CurrentTick;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<ClientCharacterAttached> ClientAttachedComponents;
-    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public BufferLookup<CharacterStuffList> StuffListLookup;
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
     [ReadOnly] public NativeHashMap<Entity, StuffCommonData> CommonDataMap;
     public EntityCommandBuffer.ParallelWriter ECB;
@@ -249,15 +271,15 @@ public partial struct ApplyDamageJob : IJobEntity
 
                 if (MoneyLookup.TryGetComponent(client, out var cm) && ClientAttachedComponents.TryGetComponent(client, out var chara))
                 {
-                    if(StuffListLookup.TryGetComponent(chara.Value, out var stuffList))
+                    if (StuffListLookup.TryGetBuffer(chara.Value, out var stuffList))
                     {
-                        foreach(var element in stuffList.List)
+                        foreach (var element in stuffList)
                         {
-                            if (element == Entity.Null) continue;
+                            if (element.entity == Entity.Null) continue;
 
-                            if (InHandLookup.TryGetComponent(element, out var inHand) && InHandLookup.IsComponentEnabled(element))
+                            if (InHandLookup.TryGetComponent(element.entity, out var inHand) && InHandLookup.IsComponentEnabled(element.entity))
                             {
-                                cm.money += CommonDataMap[element].killGain;
+                                cm.money += CommonDataMap[element.entity].killGain;
                                 ECB.SetComponent(sortKey, client, cm);
                                 break;
                             }

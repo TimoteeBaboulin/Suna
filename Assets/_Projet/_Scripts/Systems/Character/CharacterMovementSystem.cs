@@ -1,3 +1,4 @@
+
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -5,14 +6,13 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine.InputSystem.XR;
 
-[BurstCompile]
+//[BurstCompile]
 [UpdateInGroup(typeof(PredictedFixedStepSimulationSystemGroup))]
 public partial struct CharacterMovementSystem : ISystem
 {
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
@@ -25,11 +25,11 @@ public partial struct CharacterMovementSystem : ISystem
         state.RequireForUpdate<GameResourcesDatabase>();
     }
 
-    [BurstCompile]
+    //[BurstCompile] Pas avec state.World :(
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
-		
+
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         NativeHashMap<Entity, RangedWeaponCommonData> weaponData = new(10, Allocator.TempJob); //Do I need more than 10 ? Since there's 10 players playing top
 
@@ -44,6 +44,26 @@ public partial struct CharacterMovementSystem : ISystem
             weaponData[owner] = commonData;
         }
 
+        if (state.World.IsServer())
+        {
+            foreach (var (inputRO, transformRO, emitterRW, dataRO, chara) in SystemAPI
+            .Query<RefRO<CharacterInput>, RefRO<LocalTransform>, RefRW<SoundEmitter>, RefRO<CharacterComponent>>()
+            .WithEntityAccess())
+            {
+                const float cooldown = 0.7f;
+                if (dataRO.ValueRO.isGrounded && !dataRO.ValueRO.isWalking)
+                {
+                    float3 moveDir = math.normalize(math.rotate(transformRO.ValueRO.Rotation, new float3(inputRO.ValueRO.move.x, 0, inputRO.ValueRO.move.y)));
+                    bool isMoving = math.lengthsq(moveDir) > 0;
+
+                    if (isMoving)
+                    {
+                        SoundUtils.PlayWithRPC(ref emitterRW.ValueRW, "Footsteps", transformRO.ValueRO.Position, cooldown, SystemAPI.Time.DeltaTime);
+                    }
+                }
+            }
+        }
+
         CharacterMovementJob job = new CharacterMovementJob
         {
             dt = SystemAPI.Time.DeltaTime,
@@ -51,7 +71,7 @@ public partial struct CharacterMovementSystem : ISystem
             ecb = ecb.AsParallelWriter(),
             physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld,
             ccLookup = state.GetComponentLookup<CharacterColliderDataComponent>(),
-            StuffListLookup = state.GetComponentLookup<CharacterStuffList>(),
+            StuffListLookup = state.GetBufferLookup<CharacterStuffList>(),
             InHandLookup = state.GetComponentLookup<IsStuffInHand>(),
             CommonDataMap = weaponData,
         };
@@ -74,7 +94,7 @@ public partial struct CharacterMovementJob : IJobEntity
     public EntityCommandBuffer.ParallelWriter ecb;
     [ReadOnly] public PhysicsWorld physicsWorld;
     [ReadOnly] public ComponentLookup<CharacterColliderDataComponent> ccLookup;
-    [ReadOnly] public ComponentLookup<CharacterStuffList> StuffListLookup;
+    [ReadOnly] public BufferLookup<CharacterStuffList> StuffListLookup;
     [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
     [ReadOnly] public NativeHashMap<Entity, RangedWeaponCommonData> CommonDataMap;
 
@@ -191,7 +211,7 @@ public partial struct CharacterMovementJob : IJobEntity
         if (isMoving && Angle(math.up(), groundNormal) < controller.maxSlopeAngle)
         {
             controller.direction = SlopeMovementDirection(moveDir, forwardHit && onSlope ? math.up() : groundNormal);
-            
+
         }
         else
         {
@@ -267,7 +287,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         vel.Linear += (controller.isJumping ? 1 : (onSlope ? 10 : 1)) * gravityVector * controller.gravityScale * dt; //Applying gravity as force (ms.s^-2 * s = m.s^-1)
 
-        if(controller.isGrounded)
+        if (controller.isGrounded)
             vel.Linear -= (onSlope ? 10 : 1) * gravityVector * controller.gravityScale * dt; //Removing gravity when grounded
 
         //if(onSlope && !forwardHit)

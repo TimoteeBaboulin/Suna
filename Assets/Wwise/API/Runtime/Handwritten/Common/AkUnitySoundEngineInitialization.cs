@@ -12,9 +12,10 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 
+using System;
 using System.Threading.Tasks;
 
 public class AkUnitySoundEngineInitialization
@@ -45,7 +46,26 @@ public class AkUnitySoundEngineInitialization
 	public bool InitializeSoundEngine()
 	{
 		UnityEngine.Debug.LogFormat("WwiseUnity: Wwise(R) SDK Version {0}.", AkUnitySoundEngine.WwiseVersion);
+		
+#if UNITY_ANDROID && ! UNITY_EDITOR
+		//Obtains the Android Java Object "currentActivity" in order to set it for the android io hook initialization
+		try
+		{
+			// Get the current Activity using AndroidJavaClass
+			using (var unityPlayer = new UnityEngine.AndroidJavaClass("com.unity3d.player.UnityPlayer"))
+			{
+				UnityEngine.AndroidJavaObject activity = unityPlayer.GetStatic<UnityEngine.AndroidJavaObject>("currentActivity");
+				IntPtr rawActivityPtr = activity.GetRawObject(); // Get the JNI pointer
 
+				// Pass the raw pointer to the native side
+				AkUnitySoundEngine.SetAndroidActivity(rawActivityPtr);
+			}
+		}
+		catch (Exception ex)
+		{
+			UnityEngine.Debug.LogError($"Failed to pass activity to native code: {ex.Message}");
+		}
+#endif
 		var ActivePlatformSettings = AkWwiseInitializationSettings.ActivePlatformSettings;
 		var initResult = AkUnitySoundEngine.Init(ActivePlatformSettings.AkInitializationSettings);
 		if (initResult != AKRESULT.AK_Success)

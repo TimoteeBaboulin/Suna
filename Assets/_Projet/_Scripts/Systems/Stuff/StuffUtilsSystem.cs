@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using Unity.Transforms;
 
 [GhostComponent]
 public struct EquipStuffQueue : IBufferElementData
@@ -43,8 +44,22 @@ public partial struct EquipStuffSystem : ISystem
 
         foreach (var equipInfos in equipStuffQueue)
         {
-            StuffUtils.EquipUnsafe(ref ecb, ref state, ref database, equipInfos.Owner, equipInfos.Stuff, true);
+            //Owner
+            var linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(equipInfos.Owner);
+            var ownerGhostOwnerRO = SystemAPI.GetComponentRO<GhostOwner>(equipInfos.Owner);
+            var ownerStuffList = SystemAPI.GetBuffer<CharacterStuffList>(equipInfos.Owner);
+            var ownerStuffInfosRW = SystemAPI.GetComponentRW<CharacterStuffInfos>(equipInfos.Owner);
+            var shootStartPosDeltaRO = SystemAPI.GetComponentRO<CharacterShootStartPositionDelta>(equipInfos.Owner);
+            var ownerViewRO = SystemAPI.GetComponentRO<CharacterViewRotation>(equipInfos.Owner);
+            var ownerTransformRO = SystemAPI.GetComponentRO<LocalTransform>(equipInfos.Owner);
 
+            //Stuff
+            ref var stuffData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(equipInfos.Stuff).ValueRO.GetData(ref database);
+            var stuffDynamicDataRW = SystemAPI.GetComponentRW<StuffDynamicData>(equipInfos.Stuff);
+            var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(equipInfos.Stuff);
+
+            StuffUtils.Equip(ref state, ref ecb, equipInfos.Owner, linkedEntityGroup, ownerGhostOwnerRO, ownerStuffList,ownerStuffInfosRW, 
+                shootStartPosDeltaRO, ownerViewRO, ownerTransformRO, equipInfos.Stuff, ref stuffData, stuffDynamicDataRW, stuffGhostOwnerRW, equipInfos.AutoSwitch);
         }
         equipStuffQueue.Clear();
     }
@@ -70,86 +85,50 @@ public partial struct UnequipStuffSystem : ISystem
 
         foreach (var unequipInfos in unequipStuffQueu)
         {
-            StuffUtils.UnequipUnsafe(ref state, ref database, unequipInfos.Owner, unequipInfos.Stuff);
+            //Owner
+            var linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(unequipInfos.Owner);
+            var ownerStuffList = SystemAPI.GetBuffer<CharacterStuffList>(unequipInfos.Owner);
+
+            //Stuff
+            var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(unequipInfos.Stuff);
+            var stuffDynamicDataRW = SystemAPI.GetComponentRW<StuffDynamicData>(unequipInfos.Stuff);
+            ref var stuffData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(unequipInfos.Stuff).ValueRO.GetData(ref database);
+
+            StuffUtils.Unequip(ref state, unequipInfos.Owner, linkedEntityGroup, ownerStuffList, 
+                unequipInfos.Stuff, stuffGhostOwnerRW, ref stuffData);
         }
         unequipStuffQueu.Clear();
     }
 }
 
-[BurstCompile]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-public partial struct StuffOwnershipSystem : ISystem
-{
-    public void OnUpdate(ref SystemState state)
-    {
-        var ecb = new EntityCommandBuffer(Allocator.Temp);
+//[BurstCompile]
+//[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+//public partial struct StuffOwnershipSystem : ISystem
+//{
+//    public void OnUpdate(ref SystemState state)
+//    {
+//        var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        //Fixes the stuff owner if it doesn't match the player who actually owns it
-        foreach (var (charaStuffList, chara) in SystemAPI.Query<CharacterStuffList>().WithEntityAccess())
-        {
-            foreach (var stuff in charaStuffList.List)
-            {
-                if (SystemAPI.Exists(stuff) && SystemAPI.HasComponent<StuffDynamicData>(stuff))
-                {
-                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff).owner;
+//        //Fixes the stuff owner if it doesn't match the player who actually owns it
+//        foreach (var (charaStuffList, chara) in SystemAPI.Query<DynamicBuffer<CharacterStuffList>>().WithEntityAccess())
+//        {
+//            foreach (var stuff in charaStuffList)
+//            {
+//                if (SystemAPI.Exists(stuff.entity) && SystemAPI.HasComponent<StuffDynamicData>(stuff.entity))
+//                {
+//                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity).ownerTest;
 
-                    if (owner != chara)
-                    {
-                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
-                        dynData.owner = chara;
-                        ecb.SetComponent(stuff, dynData);
-                    }
-                }
-            }
-        }
+//                    if (owner != chara)
+//                    {
+//                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity);
+//                        dynData.ownerTest = chara;
+//                        ecb.SetComponent(stuff.entity, dynData);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}
 
-        //Check if a stuff no longer has a player and set its owner to null
-        foreach (var (owner, stuff) in SystemAPI.Query<StuffDynamicData>().WithEntityAccess())
-        {
-            bool hasOwner = false;
 
-            foreach (var CharacterStuffList in SystemAPI.Query<CharacterStuffList>())
-            {
-                foreach (var charaStuff in CharacterStuffList.List)
-                {
-                    if (charaStuff == stuff)
-                    {
-                        hasOwner = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!hasOwner)
-            {
-                var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff);
-                dynData.owner = Entity.Null;
-                ecb.SetComponent(stuff, dynData);
-            }
-        }
-
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
-    }
-}
-
-[BurstCompile]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-public partial struct StuffDropedCleanup : ISystem
-{
-    public void OnUpdate(ref SystemState state)
-    {
-        // Get ECB
-        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
-
-        foreach (var (stuffInHandRef, dropedStuff) in SystemAPI.Query<RefRO<StuffEntityInHandRef>>().WithEntityAccess())
-        {
-            if (stuffInHandRef.ValueRO.Value == Entity.Null)
-            {
-                ecb.DestroyEntity(dropedStuff);
-            }
-        }
-    }
-}
 

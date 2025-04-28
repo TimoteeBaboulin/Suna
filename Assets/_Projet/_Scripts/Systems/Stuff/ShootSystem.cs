@@ -97,89 +97,105 @@ public partial struct ShootSystem : ISystem
                 if (input.attack.IsSet)
                 {
                     if ((commonData.isAutomatic || (!commonData.isAutomatic && !dynamicData.shotFired))
-                    && dynamicData.firerateTimer <= 0 && dynamicData.currentAmmo > 0)
+                    && dynamicData.firerateTimer <= 0)
                     {
-                        dynamicData.shotFired = true;
                         dynamicData.firerateTimer += 1.0f / (commonData.firerate / 60f); //turns RPM into RPS
                         dynamicData.state = RangedWeaponState.Shoot;
-                        dynamicData.currentAmmo--;
                         dynamicData.shotFired = true;
 
-                        float2 directionalMovement = (float2)MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
-                        bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
-
-                        SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
-
-                        for (int i = 0; i < commonData.roundsPerShot; i++)
+                        if (dynamicData.currentAmmo > 0)
                         {
-                            // Apply spread on raycast
-                            float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                            float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
-                            quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
-                            quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
-                            recoilRotation = math.mul(shootRotation, recoilRotation);
+                            dynamicData.currentAmmo--;
 
-                            localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
+                            float2 directionalMovement = (float2)MathUtils.Swizzle("xz", SystemAPI.GetComponent<PhysicsVelocity>(owner).Linear);
+                            bool isShooterMoving = math.lengthsq(directionalMovement) > 0.1 || !SystemAPI.GetComponent<CharacterComponent>(owner).isGrounded;
 
-                            dynamicData.patternBulletIndex++;
+                            SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
 
-                            RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
-
-                            // Apply damage to the target player
-                            if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                            for (int i = 0; i < commonData.roundsPerShot; i++)
                             {
-                                RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                                = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                                // Apply spread on raycast
+                                float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                                float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
+                                quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
+                                quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
+                                recoilRotation = math.mul(shootRotation, recoilRotation);
 
-                                if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                                    && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
-                                    && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                                localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
+
+                                dynamicData.patternBulletIndex++;
+
+                                RaycastHit hit = ClosestRayCast(recoilRotation, shootStartpos, commonData.range, owner, state.EntityManager);
+
+                                // Apply damage to the target player
+                                if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                                 {
-                                    SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
-                                        = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+                                    RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                                    = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                                    //ecb.AppendToBuffer(CharacterBodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
-                                    //{
-                                    //    Value = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier
-                                    //});
-                                    //ecb.SetComponent(owner, new HasHitComponent { Value = true });
-
-                                    Entity damageSource = ecb.CreateEntity();
-                                    ecb.AddComponent(damageSource, new ApplyDamage
+                                    if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                                        && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                                        && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
                                     {
-                                        source = DamageSource.Weapon,
-                                        damage = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier,
-                                        playerSource = owner,
-                                        targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
-                                        killReward = stuffCommonData.killGain,
-                                        weapon = Entity.Null, //TODO : Store the player weapon entity here
-                                    });
+                                        SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                            = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+
+                                        //Head Shot Sound
+                                        if (CharacterBodyPartData.ValueRO.Type == CharacterColliderType.Head && i == 0)
+                                        {
+                                            SoundUtils.PlayWithRPC("Hit", "Headshot", hit.Position);
+                                        }
+
+                                        Entity damageSource = ecb.CreateEntity();
+
+                                        ecb.AddComponent(damageSource, new ApplyDamage
+                                        {
+                                            source = DamageSource.Weapon,
+                                            damage = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier,
+                                            playerSource = owner,
+                                            targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
+                                            killReward = stuffCommonData.killGain,
+                                            weapon = Entity.Null, //TODO : Store the player weapon entity here
+                                        });
+
+                                        ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                                    }
+
+                                    // === VISUEL ===
+                                    HitCommand hc = new HitCommand()
+                                    {
+                                        position = hit.Position,
+                                        normal = hit.SurfaceNormal,
+                                        origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                                    };
+
+                                    if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                          // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                                    {
+                                        RpcUtils.SendServerToClientRpc(ref hc);
+                                    }
+
+                                    // === FIN VISUEL ===
+
+                                    // === SON ===
+                                    if (i == 0)
+                                    {
+                                        SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                                        SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                                    }
+
+                                    // === FIN SON ===
+
                                 }
                             }
 
-                            // === VISUEL ===
-                            HitCommand hc = new HitCommand()
-                            {
-                                position = hit.Position,
-                                normal = hit.SurfaceNormal,
-                                origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
-                            };
-
-                            if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                    // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
-                            {
-                                RpcUtils.SendServerToClientRpc(ref hc);
-                            }
-
-                            // === FIN VISUEL ===
-
-                            // === SON ===
-                            //SoundUtils.PlayAtEntityPosition(ref state, soundQueue, weapon, "Shoot");
-                            SoundUtils.PlayAtEmitter(ref state, "Shoot", weapon);
-                            // === FIN SON ===
+                            dynamicData.timeSinceLastFire = 0f;
                         }
-
-                        dynamicData.timeSinceLastFire = 0f;
+                        //NO AMMO
+                        else
+                        {
+                            SoundUtils.PlayWithRPC("Bullet", "NoBullet", shootStartpos);
+                        }
                     }
                     else
                     {

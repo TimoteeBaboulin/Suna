@@ -148,7 +148,6 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from CORPO ID {playerId} ");
             _teams.corpoPlayers.Remove(corpo);
-            return;
         }
 
         var natif = _teams.natifPlayers.FirstOrDefault(p => p.Id == playerId);
@@ -156,7 +155,6 @@ public static class PlayerHelpers
         {
             Debug.Log($"Player removed from NATIF ID {playerId} ");
             _teams.natifPlayers.Remove(natif);
-            return;
         }
 
         Debug.LogWarning($"[PlayerHelpers] Tried to remove {playerId} but they weren’t in any team list");

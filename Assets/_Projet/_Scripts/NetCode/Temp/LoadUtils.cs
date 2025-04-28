@@ -208,7 +208,7 @@ namespace GameNetwork.Utils
         {
             ClientTransportHelper.State = ClientConnectionState.NotConnected;
 
-            bool requestedDisconnect = false;
+            //bool requestedDisconnect = false;
             foreach (var world in World.All)
             {
                 if (world.IsClient())
@@ -216,14 +216,14 @@ namespace GameNetwork.Utils
                     using var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
                     if (query.TryGetSingletonEntity<NetworkId>(out var networkId))
                     {
-                        requestedDisconnect = true;
+                        //requestedDisconnect = true;
                         world.EntityManager.AddComponentData(networkId, new NetworkStreamRequestDisconnect());
                     }
                 }
             }
 
-            if (requestedDisconnect)
-                await Awaitable.NextFrameAsync();
+            //if (requestedDisconnect)
+            //    await Awaitable.NextFrameAsync();
 
             await LeaveSessionAsync();
             await DestroyGameSessionWorlds();

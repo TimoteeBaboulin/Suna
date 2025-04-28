@@ -16,6 +16,7 @@ class CharacterColliderDataAuthoringBaker : Baker<CharacterColliderDataAuthoring
         AddComponent(entity, new CharacterColliderDataComponent
         {
             CharacterEntity = Entity.Null,
+            Type = authoring.ColliderType,
             DamageMultiplier = authoring.ColliderType switch
             {
                 CharacterColliderType.Head => authoring.ColliderData.HeadMultiplier,
@@ -25,6 +26,7 @@ class CharacterColliderDataAuthoringBaker : Baker<CharacterColliderDataAuthoring
                 CharacterColliderType.Leg => authoring.ColliderData.LegMultiplier,
                 _ => 1f,
             }
+            
         });
     }
 }
