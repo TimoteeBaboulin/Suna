@@ -5,185 +5,251 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+
 using RaycastHit = Unity.Physics.RaycastHit;
 
-namespace MeleeWeapon
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct StrikeSystem : ISystem
 {
-    [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-    [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
-    public partial struct StrikeSystem : ISystem
+    public void OnCreate(ref SystemState state)
     {
-        public void OnCreate(ref SystemState state)
+        state.RequireForUpdate<StuffDynamicData>();
+
+        state.RequireForUpdate<NetworkTime>();
+        state.RequireForUpdate<PhysicsWorldSingleton>();
+        state.RequireForUpdate<PhysicsWorldHistorySingleton>();
+        state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        // Avoid repetition on the server due to the difference in framerate with the client
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
+
+        if (!networkTime.IsFirstTimeFullyPredictingTick) return;
+
+        //Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+        float dt = SystemAPI.Time.DeltaTime;
+
+        var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+        //Query
+        foreach (var (dynamicDataRW, databaseAccessRO, dynData, weapon) in SystemAPI
+        .Query<RefRW<MeleeWeaponDynamicData>, RefRO<MeleeWeaponDatabaseAccess>, RefRW<StuffDynamicData>>()
+        .WithAll<IsStuffInHand, Simulate>()
+        .WithEntityAccess())
         {
-            state.RequireForUpdate<StuffDynamicData>();
+            ref MeleeWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
+            ref MeleeWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
+            ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(weapon).GetData(ref grd);
+            ref readonly Entity owner = ref dynData.ValueRO.owner;
 
-            state.RequireForUpdate<NetworkTime>();
-            state.RequireForUpdate<PhysicsWorldSingleton>();
-            state.RequireForUpdate<PhysicsWorldHistorySingleton>();
-            state.RequireForUpdate<BeginSimulationEntityCommandBufferSystem.Singleton>();
-        }
+            if (owner == Entity.Null) continue;
+            if (stuffCommonData.type != StuffType.MeleeWeapon) continue;
 
-        public void OnUpdate(ref SystemState state)
-        {
-            // Avoid repetition on the server due to the difference in framerate with the client
-            NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-            if (!networkTime.IsFirstTimeFullyPredictingTick) return;
+            RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
-            //Get ECB
-            var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-            EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+            // Retrieve player input
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) continue;
+            ref CharacterInput input = ref inputRef.ValueRW;
 
-            var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) continue;
 
-            //Query
-            foreach (var (dynamicDataRW, databaseAccessRO, ownerRef, weapon) in SystemAPI
-            .Query<RefRW<MeleeWeaponDynamicData>, RefRO<MeleeWeaponDatabaseAccess>, RefRW<StuffDynamicData>>()
-            .WithAll<IsStuffInHand, Simulate>()
-            .WithEntityAccess())
+            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) continue;
+
+            // Calculate fire rate
+            if (dynamicData.strikeTimer > 0)
+                dynamicData.strikeTimer -= dt;
+
+            // If the player shoots, the fire rate is valid, and there are still bullets left
+            if (input.attack.IsSet)
             {
-                ref MeleeWeaponDynamicData dynamicData = ref dynamicDataRW.ValueRW;
-                ref MeleeWeaponCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
-                ref readonly Entity owner = ref ownerRef.ValueRO.owner;
-
-                // Retrieve player input
-                if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
-                ref CharacterInput input = ref inputRef.ValueRW;
-
-                // Retrieve player bones
-                if (!TryGetOwnerBones(owner, ref state, out var modelBonesRef)) return;
-                float3 viewPos = modelBonesRef.WeaponSlotTransform.position;
-
-                if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
-
-                // Calculate strike rate
-                if (dynamicData.strikeTimer > 0)
-                    dynamicData.strikeTimer -= SystemAPI.Time.DeltaTime;
-
-                // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.attack.IsSet && dynamicData.strikeTimer <= 0)
+                if (dynamicData.strikeTimer <= 0)
                 {
-                    dynamicData.strikeTimer += commonData.strikeRate;
+                    dynamicData.strikeTimer += 1.0f / (commonData.strikeRate / 60f); //turns RPM into RPS
 
-                    RaycastHit hit = ClosestRayCast(shootRotation, viewPos, commonData.range, owner);
+                    SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
+
+                    RaycastHit hit = ClosestRayCast(shootRotation, shootStartpos, commonData.range, owner, state.EntityManager);
 
                     // Apply damage to the target player
-                    if (hit.Entity != Entity.Null && state.World.IsServer() && state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        var bodyPartData = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                        RefRO<CharacterColliderDataComponent> CharacterBodyPartData
+                        = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
 
-                        if (bodyPartData.ValueRO.CharacterEntity != owner && state.EntityManager.HasComponent<DamageBufferElement>(bodyPartData.ValueRO.CharacterEntity))
+                        if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
+                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
+                            && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
                         {
-                            ecb.AppendToBuffer(bodyPartData.ValueRO.CharacterEntity, new DamageBufferElement
+                            SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
+                                = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+
+                            Entity damageSource = ecb.CreateEntity();
+
+                            ecb.AddComponent(damageSource, new ApplyDamage
                             {
-                                Value = commonData.damage * bodyPartData.ValueRO.DamageMultiplier
+                                source = DamageSource.Weapon,
+                                damage = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier,
+                                playerSource = owner,
+                                targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
+                                killReward = stuffCommonData.killGain,
+                                weapon = Entity.Null, //TODO : Store the player weapon entity here
                             });
+
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
                         }
                     }
 
+                    // === VISUEL ===
+                    HitCommand hc = new HitCommand()
+                    {
+                        position = hit.Position,
+                        normal = hit.SurfaceNormal,
+                        origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                    };
+
+                    if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                          // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                    {
+                        RpcUtils.SendServerToClientRpc(ref hc);
+                    }
+                    // === FIN VISUEL ===
+
+                    // === SON ===
+                    //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                    //SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                    // === FIN SON ===
+                }
+                else
+                {
+                    ecb.SetComponent(owner, new HasHitComponent { Value = false });
                 }
             }
+
+            SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
+    }
 
-        bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)
+    bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)
+    {
+        if (state.EntityManager.HasComponent<CharacterInput>(owner))
         {
-            if (state.EntityManager.HasComponent<CharacterInput>(owner))
-            {
-                Input = SystemAPI.GetComponentRW<CharacterInput>(owner);
-                return true;
-            }
-            else
-            {
-                //Debug.LogError("CharacterInput not found");
-                Input = default;
-                return false;
-            }
+            Input = SystemAPI.GetComponentRW<CharacterInput>(owner);
+            return true;
         }
-
-        bool TryGetOwnerBones(Entity owner, ref SystemState state, out CommonCharacterModelBonesTransform modelBones)
+        else
         {
-            if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner))
-            {
-                modelBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner);
-                return true;
-            }
-            else
-            {
-                //Debug.LogError("CharacterModelBones not found");
-                modelBones = default;
-                return false;
-            }
+            //Debug.LogError("CharacterInput not found");
+            Input = default;
+            return false;
         }
+    }
 
-        bool TryGetCharacterShootRotation(Entity owner, ref SystemState state, out quaternion shootRotation)
+    bool TryGetCharacterStartShootPos(Entity owner, ref SystemState state, out float3 shootStartpos)
+    {
+        if (state.EntityManager.HasComponent<CharacterShootStartPositionDelta>(owner)
+            && state.EntityManager.HasComponent<LocalTransform>(owner))
         {
-            if (state.EntityManager.HasComponent<LocalTransform>(owner)
-                && state.EntityManager.HasComponent<CharacterViewRotation>(owner))
-            {
-                quaternion characterRotation = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Rotation;
-                quaternion viewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(owner).ValueRO.ViewRotation;
-                shootRotation = math.mul(characterRotation, viewRotation);
-                return true;
-            }
-            else
-            {
-                shootRotation = quaternion.identity;
-                return false;
-            }
+            shootStartpos = SystemAPI.GetComponentRO<CharacterShootStartPositionDelta>(owner).ValueRO.PositionDelta +
+                SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Position;
+            return true;
         }
-
-
-        RaycastHit ClosestRayCast(quaternion shootRotation, float3 viewPos, float range, Entity owner)
+        else
         {
-            LocalTransform startTransform = new LocalTransform
-            {
-                Position = viewPos,
-                Rotation = shootRotation,
-                Scale = 1,
-            };
+            shootStartpos = default;
+            return false;
+        }
+    }
 
-            PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
-            float3 startPosition = startTransform.Position;
-            float3 endPosition = startPosition + new float3(startTransform.Forward() * range);
-            RaycastHit closestHit = default;
+    bool TryGetCharacterShootRotation(Entity owner, ref SystemState state, out quaternion shootRotation)
+    {
+        if (state.EntityManager.HasComponent<LocalTransform>(owner)
+            && state.EntityManager.HasComponent<CharacterViewRotation>(owner))
+        {
+            quaternion characterRotation = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Rotation;
+            quaternion viewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(owner).ValueRO.ViewRotation;
+            shootRotation = math.mul(characterRotation, viewRotation);
+            return true;
+        }
+        else
+        {
+            shootRotation = quaternion.identity;
+            return false;
+        }
+    }
 
-            CollisionFilter filter = new CollisionFilter
-            {
-                BelongsTo = ~0u,
-                CollidesWith = ~(1u << 6)
-            };
+    RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
+    {
+        const int additionalRenderDelay = 2;
 
-            RaycastInput raycastInput = new RaycastInput()
-            {
-                Start = startPosition,
-                End = endPosition,
-                Filter = filter //filtre pour partie du corps
-            };
+        CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
+        uint delay = interpolationDelay.Delay + additionalRenderDelay;
 
-            NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-            if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
+        PhysicsWorldHistorySingleton collisionHistory = SystemAPI.GetSingleton<PhysicsWorldHistorySingleton>();
+        PhysicsWorld physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        NetworkTick tick = networkTime.ServerTick;
+
+        collisionHistory.GetCollisionWorldFromTick(tick, delay, ref physicsWorld, out var collWorld);
+
+        CollisionFilter filter = new CollisionFilter
+        {
+            BelongsTo = ~0u,
+            CollidesWith = (1u << 12), // Collides only with 12 (Shoot and Grenade Collider (body parts are using that tag but TODO : find some other way)
+        };
+
+        float3 forward = math.mul(shootRotation, math.forward());
+        RaycastInput raycastInput = new RaycastInput()
+        {
+            Start = startPos,
+            End = startPos + new float3(forward * range),
+            Filter = filter //filtre pour partie du corps
+        };
+
+        RaycastHit closestHit = default;
+        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+        if (collWorld.CastRay(raycastInput, ref allHits))
+        {
+            // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
+            float closestDist = float.MaxValue;
+            foreach (RaycastHit hit in allHits)
             {
-                // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
-                closestHit = allHits[0];
-                float closestDist = range;
-                foreach (RaycastHit hit in allHits)
+                // If the entity hit is the shooter, skip
+                if (hit.Entity == owner) continue;
+
+                if (entityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                 {
-                    // If the entity hit is the shooter, skip
-                    if (hit.Entity == owner) continue;
-
-                    float currentDist = math.distancesq(raycastInput.Start, hit.Position);
-
-                    if (currentDist < closestDist)
+                    Entity characterHitEntity = entityManager.GetComponentData<CharacterColliderDataComponent>(hit.Entity).CharacterEntity;
+                    if (characterHitEntity == owner)
                     {
-                        closestHit = hit;
-                        closestDist = currentDist;
+                        continue;
+                    }
+
+                    if (entityManager.HasComponent<CharacterIsEnable>(characterHitEntity)
+                        && !entityManager.IsComponentEnabled<CharacterIsEnable>(characterHitEntity))
+                    {
+                        continue;
                     }
                 }
+
+                float currentDist = math.distancesq(raycastInput.Start, hit.Position);
+
+                if (currentDist < closestDist)
+                {
+                    closestHit = hit;
+                    closestDist = currentDist;
+                }
             }
-#if !UNITY_SERVER
-            Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
-#endif
-            return closestHit;
         }
+
+#if !UNITY_SERVER
+        Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
+#endif
+        return closestHit;
     }
 }

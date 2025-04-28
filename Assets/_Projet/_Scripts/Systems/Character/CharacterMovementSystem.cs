@@ -60,6 +60,10 @@ public partial struct CharacterMovementSystem : ISystem
                     {
                         SoundUtils.PlayWithRPC(ref emitterRW.ValueRW, "Footsteps", transformRO.ValueRO.Position, cooldown, SystemAPI.Time.DeltaTime);
                     }
+                    else
+                    {
+                        emitterRW.ValueRW.timer = 0;
+                    }
                 }
             }
         }
