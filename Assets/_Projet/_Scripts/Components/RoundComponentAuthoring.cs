@@ -5,6 +5,8 @@ public class RoundComponentAuthoring : MonoBehaviour
 {
     [SerializeField] private float[] _phaseTimes;
 
+    [SerializeField] private int _maxRounds;
+
     [SerializeField] private int _defaultCredits;
     [SerializeField] private int _victoryCredits;
     [SerializeField] private int _lossCredits;
@@ -23,7 +25,9 @@ public class RoundComponentAuthoring : MonoBehaviour
                 victoryCredits = authoring._victoryCredits,
                 lossCredits = authoring._lossCredits,
                 lossStreakBonus = authoring._lossStreakBonus,
-                maxStreakCount = authoring._maxStreakCount
+                maxStreakCount = authoring._maxStreakCount,
+                maxRounds = authoring._maxRounds,
+                gameWon = false
             });
 
             AddComponent<PlayerAliveCounts>(entity);

@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using System;
 using Unity.Burst;
 using Unity.Collections;
@@ -6,6 +7,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Rendering;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static RoundSystemServer;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -70,6 +72,7 @@ partial struct RoundSystemClient : ISystem
             
         }
 
+        
         _firstFrame = false;
         //Prepare the buffer to use at the end of the update to avoid breaking the reference to the component
 
@@ -107,6 +110,17 @@ partial struct RoundSystemClient : ISystem
         foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ChangePhaseRpcCommand>>().WithEntityAccess())
         {
             ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round, buffer);
+            buffer.DestroyEntity(entity);
+        }
+
+        foreach (var (rpcComponent, gameOverRpc, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<GameOverRpcCommand>>().WithEntityAccess())
+        {
+            round.ValueRW.gameWon = true;
+            round.ValueRW.winners = gameOverRpc.ValueRO.winners;
+
+            //TODO: Don't disconnect instantly, let a win/lose screen appear first
+            LoadUtils.QuitAsync();
+            SceneManager.LoadSceneAsync(0);
             buffer.DestroyEntity(entity);
         }
 

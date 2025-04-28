@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Collections;
@@ -69,6 +70,9 @@ public partial struct RoundSystemServer : ISystem
         {
             return;
         }
+
+        if (roundComponent.ValueRO.gameWon)
+            return;
 
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -298,6 +302,23 @@ public partial struct RoundSystemServer : ISystem
         //Reset the phase and increase the round number
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
         component.ValueRW.currentRound++;
+
+        if (component.ValueRW.currentRound > component.ValueRO.maxRounds)
+        {
+            component.ValueRW.gameWon = true;
+            GameOverRpcCommand command = new GameOverRpcCommand
+            {
+                winners = component.ValueRO.nativeScore > component.ValueRO.corporationScore ? TeamSideType.Natif : TeamSideType.Corpo
+            };
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+            foreach (var client in query.ToEntityArray(Allocator.Temp))
+            {
+                RpcUtils.SendServerToClientRpc(ref command, client);
+            }
+
+            return;
+        }
 
         ecb.AddComponent<NewRoundTag>(entity);
 
