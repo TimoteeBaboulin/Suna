@@ -9,10 +9,10 @@ partial struct PlayerInPartyISystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         // Create Entity with Corpo Players Data in it
-        NativeList<FixedString32Bytes> corpoPlayersNetworkId = new(Allocator.Temp);
-        foreach (IReadOnlyPlayer player in PlayerHelpers.GetPlayersByTeam(TeamSideType.Corpo))
+        NativeList<FixedString64Bytes> corpoPlayersNetworkId = new(Allocator.Temp);
+        foreach (ClientComponent player in PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo))
         {
-            corpoPlayersNetworkId.Add(player.Id);
+            corpoPlayersNetworkId.Add(player.playerID);
         }
         Entity corpoEntity = state.EntityManager.CreateEntity(typeof(PlayersInParty));
         state.EntityManager.AddComponentData<PlayersInParty>(corpoEntity, new()
@@ -22,10 +22,10 @@ partial struct PlayerInPartyISystem : ISystem
         });
 
         // Create Entity with Natif Players Data in it
-        NativeList<FixedString32Bytes> natifPlayersNetworkId = new(Allocator.Temp);
-        foreach (IReadOnlyPlayer player in PlayerHelpers.GetPlayersByTeam(TeamSideType.Natif))
+        NativeList<FixedString64Bytes> natifPlayersNetworkId = new(Allocator.Temp);
+        foreach (ClientComponent player in PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif))
         {
-            natifPlayersNetworkId.Add(player.Id);
+            natifPlayersNetworkId.Add(player.playerID);
         }
         Entity natifEntity = state.EntityManager.CreateEntity(typeof(PlayersInParty));
         state.EntityManager.AddComponentData<PlayersInParty>(natifEntity, new()
@@ -39,5 +39,5 @@ partial struct PlayerInPartyISystem : ISystem
 public struct PlayersInParty : IComponentData
 {
     public int PlayersTeam;
-    public NativeList<FixedString32Bytes> PlayersNetworkId;
+    public NativeList<FixedString64Bytes> PlayersNetworkId;
 }

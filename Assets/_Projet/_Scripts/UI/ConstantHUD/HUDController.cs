@@ -245,12 +245,6 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
-
-        if (world.Name == "ClientWorld")
-        {
-            PlayerIconsUpdate(TeamSideType.Corpo);
-            PlayerIconsUpdate(TeamSideType.Natif);
-        }
     }
 
     private float FlashIntensity(float x)

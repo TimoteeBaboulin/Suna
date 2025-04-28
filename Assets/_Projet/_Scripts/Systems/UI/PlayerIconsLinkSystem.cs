@@ -20,18 +20,18 @@ public partial class PlayerIconsLinkSystem : SystemBase
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(World.Unmanaged);
 
-        foreach (var (playersInParty, entity) in SystemAPI.Query<PlayersInParty>().WithEntityAccess())
+        foreach (var (playersInParty, entity) in SystemAPI.Query<RefRO<PlayersInParty>>().WithEntityAccess())
         {
             List<string> playersNetworkId = new();
-            for (int i = 0; i < playersInParty.PlayersNetworkId.Length; i++)
+            for (int i = 0; i < playersInParty.ValueRO.PlayersNetworkId.Length; i++)
             {
-                playersNetworkId.Add(playersInParty.PlayersNetworkId[i].ToString());
+                playersNetworkId.Add(playersInParty.ValueRO.PlayersNetworkId[i].ToString());
             }
 
             PlayersInPartyEvent?.Invoke(this, new PlayersInPartyArgs
             {
                 PlayersNetworkId = playersNetworkId,
-                PlayersTeam = (TeamSideType)playersInParty.PlayersTeam
+                PlayersTeam = (TeamSideType)playersInParty.ValueRO.PlayersTeam
             });
 
             ecb.DestroyEntity(entity);
