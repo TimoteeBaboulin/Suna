@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -19,7 +20,15 @@ public class ThirdPersonCharacterModelUtils
     {
         CharacterColliderBones bonesName = null;
 
-        TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+        TeamSideType teamSide;
+        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
+        }
+        else
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+        }
 
         switch (teamSide)
         {
