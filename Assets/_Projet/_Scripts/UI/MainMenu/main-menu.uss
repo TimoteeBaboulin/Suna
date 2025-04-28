@@ -1,10 +1,10 @@
 .main-menu-button {
     align-self: flex-start;
-    font-size: 35px;
+    font-size: 45px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
-    width: 465px;
-    height: 69px;
+    width: 581px;
+    height: 86px;
     margin-top: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
@@ -32,20 +32,23 @@
     flex-direction: column;
     -unity-text-align: middle-left;
     background-color: rgba(0, 0, 0, 0);
-    transition-property: left;
-    transition-duration: 0.1s;
+    transition-property: background-color, -unity-background-image-tint-color;
+    transition-duration: 0.15s, 0.15s;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
 .main-menu-button:hover {
-    background-color: rgba(0, 0, 0, 0.13);
-    left: 20px;
-    transition-property: left;
-    transition-duration: 0.1s;
+    background-color: rgba(255, 175, 0, 0.16);
+    left: auto;
+    -unity-background-image-tint-color: rgb(255, 175, 0);
+    transition-property: background-color, -unity-background-image-tint-color;
+    transition-duration: 0.15s, 0.15s;
 }
 
 .main-menu-button:active {
-    background-color: rgba(0, 0, 0, 0.24);
-    left: 20px;
-    transition-property: left;
-    transition-duration: 0.1s;
+    background-color: rgba(131, 199, 246, 0.16);
+    left: auto;
+    transition-property: background-color, -unity-background-image-tint-color;
+    transition-duration: 0.15s, 0.15s;
+    -unity-background-image-tint-color: rgb(131, 199, 246);
 }

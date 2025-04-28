@@ -13,6 +13,12 @@ using static RoundSystemServer;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct RoundSystemClient : ISystem
 {
+    public class TeamWinRoundArgs : EventArgs
+    {
+        public TeamSideType team;
+    }
+    public static event EventHandler<TeamWinRoundArgs> OnTeamWinRound;
+
     private bool _running;
 
     private bool _firstFrame;
@@ -113,10 +119,8 @@ partial struct RoundSystemClient : ISystem
             buffer.DestroyEntity(entity);
         }
 
-        bool gameOver = false;
         foreach (var (rpcComponent, gameOverRpc, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<GameOverRpcCommand>>().WithEntityAccess())
         {
-            gameOver = true;
             round.ValueRW.gameWon = true;
             round.ValueRW.winners = gameOverRpc.ValueRO.winners;
 
@@ -126,16 +130,6 @@ partial struct RoundSystemClient : ISystem
 
         buffer.Playback(state.EntityManager);
         buffer.Dispose();
-        if (gameOver)
-        {
-            HandleGameOverAsync();
-        }
-    }
-
-    private async void HandleGameOverAsync()
-    {
-        await LoadUtils.QuitAsync();
-        await SceneManager.LoadSceneAsync(0);
     }
 
     public void RequestUpdate(ref SystemState state, EntityCommandBuffer ecb)
@@ -150,6 +144,7 @@ partial struct RoundSystemClient : ISystem
     public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
     {
         //Update the score and loss streak of the corresponding teams
+        OnTeamWinRound?.Invoke(this, new TeamWinRoundArgs { team = team });
         switch (team)
         {
             case TeamSideType.Corpo:
