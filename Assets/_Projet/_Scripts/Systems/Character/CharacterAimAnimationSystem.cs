@@ -30,29 +30,68 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
 
             FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
 
-            if (stuffName == "KnifeNeutral")
-            {
-                AnimationUtils.AddBoolCommand("AimKnife", true, characterEntity, ecb);
-
-                AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
-                AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
-            }
-            else if (stuffName == "LP-17"
+            if (stuffName == "KnifeNeutral"
+                || stuffName == "LP-17"
                 || stuffName == "FAKIR")
             {
                 AnimationUtils.AddBoolCommand("AimHandgun", true, characterEntity, ecb);
 
-                AnimationUtils.AddBoolCommand("AimKnife", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
             }
-            else if (stuffName == "Banduka"
-                || stuffName == "Decimator"
+            else if (stuffName == "Decimator"
                 || stuffName == "SKAR-18")
             {
                 AnimationUtils.AddBoolCommand("AimRifle", true, characterEntity, ecb);
 
                 AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
-                AnimationUtils.AddBoolCommand("AimKnife", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+            }
+            else if (stuffName == "Banduka")
+            {
+                AnimationUtils.AddBoolCommand("AimShotgun", true, characterEntity, ecb);
+
+                AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+            }
+            else if (stuffName == "Nelara")
+            {
+                AnimationUtils.AddBoolCommand("AimPM", true, characterEntity, ecb);
+
+                AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+            }
+            else if (stuffName == "Laksya")
+            {
+                AnimationUtils.AddBoolCommand("AimSniper", true, characterEntity, ecb);
+
+                AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+            }
+            else if (stuffName == "Harvester")
+            {
+                AnimationUtils.AddBoolCommand("AimHarvester", true, characterEntity, ecb);
+                
+                AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
             }
         }
 
