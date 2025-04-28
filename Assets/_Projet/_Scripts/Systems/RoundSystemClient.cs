@@ -69,10 +69,10 @@ partial struct RoundSystemClient : ISystem
             {
                 return;
             }
-            
+
         }
 
-        
+
         _firstFrame = false;
         //Prepare the buffer to use at the end of the update to avoid breaking the reference to the component
 
@@ -93,14 +93,14 @@ partial struct RoundSystemClient : ISystem
             }
         }
 
-        foreach(var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
+        foreach (var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
         {
             round.ValueRW = update.ValueRO.roundData;
             buffer.DestroyEntity(entity);
         }
 
         //Read score change RPCs
-        foreach(var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
+        foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<VictoryRpcCommand>>().WithEntityAccess())
         {
             ChangeScore(ref state, newRoundComponent.ValueRO.team, round);
             buffer.DestroyEntity(entity);
@@ -113,31 +113,42 @@ partial struct RoundSystemClient : ISystem
             buffer.DestroyEntity(entity);
         }
 
+        bool gameOver = false;
         foreach (var (rpcComponent, gameOverRpc, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<GameOverRpcCommand>>().WithEntityAccess())
         {
+            gameOver = true;
             round.ValueRW.gameWon = true;
             round.ValueRW.winners = gameOverRpc.ValueRO.winners;
 
             //TODO: Don't disconnect instantly, let a win/lose screen appear first
-            LoadUtils.QuitAsync();
-            SceneManager.LoadSceneAsync(0);
             buffer.DestroyEntity(entity);
         }
 
         buffer.Playback(state.EntityManager);
         buffer.Dispose();
+        if (gameOver)
+        {
+            HandleGameOverAsync();
+        }
+    }
+
+    private async void HandleGameOverAsync()
+    {
+        await LoadUtils.QuitAsync();
+        await SceneManager.LoadSceneAsync(0);
     }
 
     public void RequestUpdate(ref SystemState state, EntityCommandBuffer ecb)
     {
-        RequestRoundDataRpcCommand rpc = new() {};
+        RequestRoundDataRpcCommand rpc = new() { };
 
         Entity newEntity = ecb.CreateEntity();
         ecb.AddComponent(newEntity, rpc);
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
     }
 
-    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component) {
+    public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
+    {
         //Update the score and loss streak of the corresponding teams
         switch (team)
         {
@@ -193,7 +204,7 @@ partial struct RoundSystemClient : ISystem
 
         if (phase != RoundPhase.BuyPhase)
         {
-            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW <SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
                     .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
                     .WithAll<SpawnBarrierComponent>()
                     .WithEntityAccess())
