@@ -9,6 +9,6 @@ public class ThirdPersonCharacterModelBehaviour : MonoBehaviour
 
     private void LateUpdate()
     {
-        _headBoneTransform.rotation = NewHeadRotation;
+        //_headBoneTransform.rotation = NewHeadRotation;
     }
 }

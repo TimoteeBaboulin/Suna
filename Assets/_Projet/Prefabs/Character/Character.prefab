@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 93a589f0832ae994ab2195625b94fb0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WeaponSlotName: J_WeaponSlot
+  WeaponSlotName: WeaponSlot
 --- !u!114 &9007531882848270444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209,7 +209,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CorpoModelPrefab: {fileID: 4708197382353407829, guid: 733a535c8f7627043937d9ad8872029f, type: 3}
-  NatifModelPrefab: {fileID: 3252162169993870504, guid: 85414e6912d089d46a41ab84e5feaa76, type: 3}
+  NatifModelPrefab: {fileID: 6931120874928209355, guid: 93b335ddf5da4854fb4ec306f478b707, type: 3}
   DeltaPosition: {fileID: 612339555079609452}
 --- !u!114 &7747839720245098777
 MonoBehaviour:

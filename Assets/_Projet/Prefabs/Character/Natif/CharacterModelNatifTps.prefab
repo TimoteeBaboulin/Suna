@@ -844,6 +844,37 @@ Transform:
   - {fileID: 3710512031316311363}
   m_Father: {fileID: 3831081266826646974}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &3783078858927559689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1169583211605507508}
+  m_Layer: 0
+  m_Name: WeaponSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1169583211605507508
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3783078858927559689}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7202617401471191503}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3818516166588062729
 GameObject:
   m_ObjectHideFlags: 0
@@ -1451,7 +1482,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4665286517020415116}
-  - {fileID: 6179929202294591225}
   m_Father: {fileID: 3903530624057431730}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7391948042216250796
@@ -1582,6 +1612,7 @@ Transform:
   m_Children:
   - {fileID: 6141616450149188204}
   - {fileID: 561903147999898532}
+  - {fileID: 1169583211605507508}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &3824957450243609525
@@ -1594,7 +1625,7 @@ Animator:
   m_GameObject: {fileID: 7547759132804944757}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: a1f350a02a8dfef4fb51e5056f76394d, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 7dfcf2a2702f85f44954c92f511dec7b, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1842,37 +1873,6 @@ Transform:
   m_Children:
   - {fileID: 4140938524344746708}
   m_Father: {fileID: 5662208241573966469}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &8698664030897079373
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 6179929202294591225}
-  m_Layer: 0
-  m_Name: J_WeaponSlot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &6179929202294591225
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8698664030897079373}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0.000000089406655, y: -0.99884397, z: -0.048070807, w: -0.000000020495696}
-  m_LocalPosition: {x: 0, y: 0.13197167, z: -0.0068365987}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8991916800266387101}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8705491577372972606
 GameObject:

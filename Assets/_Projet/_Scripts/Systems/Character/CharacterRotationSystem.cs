@@ -4,6 +4,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
@@ -20,8 +22,11 @@ public partial struct CommonCharacterRotationSystem : ISystem
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (characterTransform, characterViewRotation, CharacterInput) in SystemAPI
-            .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>>())
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (characterTransform, characterViewRotation, CharacterInput, characterEntity) in SystemAPI
+            .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>>()
+            .WithEntityAccess())
         {
             float mouseX = CharacterInput.ValueRO.look.x * SystemAPI.Time.DeltaTime;
             float mouseY = CharacterInput.ValueRO.look.y * SystemAPI.Time.DeltaTime;
@@ -31,6 +36,13 @@ public partial struct CommonCharacterRotationSystem : ISystem
             characterViewRotation.ValueRW.Pitch += math.degrees(-mouseY);
             characterViewRotation.ValueRW.Pitch = math.clamp(characterViewRotation.ValueRW.Pitch, -89f, 89f);
             characterViewRotation.ValueRW.ViewRotation.value = quaternion.RotateX(math.radians(characterViewRotation.ValueRO.Pitch)).value;
+
+            float RemappedValue = math.clamp((characterViewRotation.ValueRW.Pitch - (-89f)) / (89f - (-89f)), 0f, 1f);
+
+            AnimationUtils.AddFloatCommand("ViewRotation", RemappedValue, characterEntity, ecb);
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

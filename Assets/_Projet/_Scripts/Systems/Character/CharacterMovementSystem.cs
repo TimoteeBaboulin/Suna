@@ -157,6 +157,8 @@ public partial struct CharacterMovementJob : IJobEntity
         if (isMoving)
         {
             AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey);
+            AnimationUtils.AddFloatCommandJob("WalkY", input.move.y, entity, ecb, sortKey);
+            AnimationUtils.AddFloatCommandJob("WalkX", input.move.x, entity, ecb, sortKey);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -305,6 +307,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (input.jump.IsSet && controller.isGrounded)
         {
+            AnimationUtils.AddTriggerCommandJob("Jump", entity, ecb, sortKey);
             vel.Linear.y = characterController.ValueRW.jumpForce;
             controller.isGrounded = false;
             controller.isJumping = true;

@@ -28,6 +28,7 @@ public partial struct RoundSystemServer : ISystem
     public struct ChangePhaseRpcCommand : IRpcCommand
     {
         public RoundPhase phase;
+        public bool nextRound;
     }
 
     public struct UpdateRoundDataRpcCommand : IRpcCommand
@@ -418,7 +419,7 @@ public partial struct RoundSystemServer : ISystem
     private void SendCurrentPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Send a RPC to update the phase of the clients based on the server's
-        ChangePhaseRpcCommand rpc = new() { phase = component.ValueRW.currentPhase };
+        ChangePhaseRpcCommand rpc = new() { phase = component.ValueRW.currentPhase, nextRound = component.ValueRW.currentPhase == RoundPhase.BuyPhase };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
         foreach (var client in query.ToEntityArray(Allocator.Temp))

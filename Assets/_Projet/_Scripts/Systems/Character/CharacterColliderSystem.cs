@@ -24,8 +24,16 @@ partial struct CommonCharacterColliderSystem : ISystem
             .WithEntityAccess())
         {
             if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
 
-            TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
             Debug.Log($"[CommonCharacterColliderSystem]TeamSide {teamSide}");
             switch (teamSide)
             {

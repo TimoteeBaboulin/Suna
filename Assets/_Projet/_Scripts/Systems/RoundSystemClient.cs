@@ -13,6 +13,12 @@ using static RoundSystemServer;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct RoundSystemClient : ISystem
 {
+    public class TeamWinRoundArgs : EventArgs
+    {
+        public TeamSideType team;
+    }
+    public static event EventHandler<TeamWinRoundArgs> OnTeamWinRound;
+
     private bool _running;
 
     private bool _firstFrame;
@@ -109,14 +115,12 @@ partial struct RoundSystemClient : ISystem
         //Read phase change RPCs
         foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ChangePhaseRpcCommand>>().WithEntityAccess())
         {
-            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round, buffer);
+            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round, buffer, newRoundComponent.ValueRO.nextRound);
             buffer.DestroyEntity(entity);
         }
 
-        bool gameOver = false;
         foreach (var (rpcComponent, gameOverRpc, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<GameOverRpcCommand>>().WithEntityAccess())
         {
-            gameOver = true;
             round.ValueRW.gameWon = true;
             round.ValueRW.winners = gameOverRpc.ValueRO.winners;
 
@@ -126,16 +130,6 @@ partial struct RoundSystemClient : ISystem
 
         buffer.Playback(state.EntityManager);
         buffer.Dispose();
-        if (gameOver)
-        {
-            HandleGameOverAsync();
-        }
-    }
-
-    private async void HandleGameOverAsync()
-    {
-        await LoadUtils.QuitAsync();
-        await SceneManager.LoadSceneAsync(0);
     }
 
     public void RequestUpdate(ref SystemState state, EntityCommandBuffer ecb)
@@ -150,6 +144,7 @@ partial struct RoundSystemClient : ISystem
     public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
     {
         //Update the score and loss streak of the corresponding teams
+        OnTeamWinRound?.Invoke(this, new TeamWinRoundArgs { team = team });
         switch (team)
         {
             case TeamSideType.Corpo:
@@ -194,13 +189,15 @@ partial struct RoundSystemClient : ISystem
             SystemAPI.SetComponent(clientEntity, updatedMoneyComponent);
         }
     }
-    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
+    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb, bool nextRound)
     {
         //Update the timer and phases after receiving an update
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         component.ValueRW.currentPhase = phase;
         component.ValueRW.timer = buffer[(int)phase];
+        if (nextRound)
+            component.ValueRW.currentRound++;
 
         if (phase != RoundPhase.BuyPhase)
         {

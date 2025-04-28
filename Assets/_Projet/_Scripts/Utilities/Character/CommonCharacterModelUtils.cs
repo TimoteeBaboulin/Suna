@@ -1,6 +1,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 
 public class CommonCharacterModelUtils
@@ -20,7 +21,15 @@ public class CommonCharacterModelUtils
     {
         GameObject modelGameObject = null;
 
-        TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+        TeamSideType teamSide;
+        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
+        }
+        else
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+        }
 
         switch (teamSide)
         {
