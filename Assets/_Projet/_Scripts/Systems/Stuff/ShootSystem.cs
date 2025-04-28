@@ -380,7 +380,7 @@ public partial struct ShootSystem : ISystem
         CollisionFilter filter = new CollisionFilter
         {
             BelongsTo = ~0u,
-            CollidesWith = (1u << 12), // Collides only with layer 12 (Shoot and Grenade Collider)
+            CollidesWith = (1u << 12), // Collides only with 12 (Shoot and Grenade Collider (body parts are using that tag but TODO : find some other way)
         };
 
         float3 forward = math.mul(shootRotation, math.forward());
