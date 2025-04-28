@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.NetCode;
 
 public struct RoundComponent : IComponentData
 {
@@ -6,6 +7,9 @@ public struct RoundComponent : IComponentData
     public RoundPhase currentPhase;
 
     public int currentRound;
+    public int maxRounds;
+
+    public TeamSideType winners;
 
     public int nativeScore;
     public int corporationScore;
@@ -18,6 +22,8 @@ public struct RoundComponent : IComponentData
     public int lossCredits;
     public int lossStreakBonus;
     public int maxStreakCount;
+
+    public bool gameWon;
 }
 
 public struct PlayerAliveCounts : IComponentData
@@ -29,4 +35,9 @@ public struct PlayerAliveCounts : IComponentData
 public struct RoundCollectorPlantedComponent : IComponentData
 {
 
+}
+
+public struct GameOverRpcCommand : IRpcCommand
+{
+    public TeamSideType winners;
 }
