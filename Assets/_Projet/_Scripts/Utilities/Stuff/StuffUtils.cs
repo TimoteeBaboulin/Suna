@@ -88,7 +88,7 @@ public static class StuffUtils
         stuffGhostOwnerRW.ValueRW.NetworkId = ownerGhostOwnerRO.ValueRO.NetworkId;
         linkedEntityGroup.Add(new LinkedEntityGroup { Value = stuff });
 
-        if (autoSwitchOn && stuffDataRef.type != StuffType.Grenade)
+        if (autoSwitchOn && stuffData.type != StuffType.Grenade)
         {
             SwitchTo(ownerStuffList, ownerStuffInfosRW, stuffData.slot);
         }
@@ -110,14 +110,13 @@ public static class StuffUtils
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
         var linkedEntityGroup = state.EntityManager.GetBuffer<LinkedEntityGroup>(owner);
-        var ownerStuffList = state.EntityManager.GetComponentData<CharacterStuffList>(owner);
+        var ownerStuffList = state.EntityManager.GetBuffer<CharacterStuffList>(owner);
         var stuffGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(stuff);
         var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
         ref var stuffData = ref state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuff).GetData(ref database);
 
         Throw(linkedEntityGroup, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff);
 
-        state.EntityManager.SetComponentData(owner, ownerStuffList);
         state.EntityManager.SetComponentData(stuff, stuffGhostOwner);
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
     }
@@ -155,7 +154,7 @@ public static class StuffUtils
     }
 
     public static void Throw(DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
-        ref CharacterStuffList ownerStuffListRef,
+        ref DynamicBuffer<CharacterStuffList> ownerStuffListRef,
         ref GhostOwner stuffGhostOwnerRef,
         ref StuffDynamicData stuffDynamicDataRef,
         ref StuffCommonData stuffDataRef,
@@ -164,9 +163,9 @@ public static class StuffUtils
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
-        if (ownerStuffListRef.GetStuffInSlot(stuffDataRef.slot) == stuff)
+        if (ownerStuffListRef.ElementAt((int)stuffDataRef.slot).entity == stuff)
         {
-            ownerStuffListRef.SetStuffInSlot(stuffDataRef.slot, Entity.Null);
+            ownerStuffListRef.Insert((int)stuffDataRef.slot, new CharacterStuffList() { entity = Entity.Null });
         }
 
         //Network
