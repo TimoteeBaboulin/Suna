@@ -228,6 +228,33 @@ public partial struct RoundSystemServer : ISystem
             SystemAPI.SetComponent(clientEntity, updatedMoneyComponent);
         }
 
+        foreach ((CharacterMoney moneyComponent, CharacterClientAttachedComponent clientAttached, Entity clientEntity) in
+            SystemAPI.Query<CharacterMoney, CharacterClientAttachedComponent>()
+            .WithEntityAccess())
+        {
+            CharacterMoney updatedMoneyComponent = moneyComponent;
+
+            TeamSideType clientTeam = SystemAPI.GetComponent<ClientComponent>(clientAttached.ClientEntity).team;
+
+            if (clientTeam == team)
+            {
+                updatedMoneyComponent.money += (uint)component.ValueRO.victoryCredits;
+
+                if (updatedMoneyComponent.money > updatedMoneyComponent.maxMoney)
+                    updatedMoneyComponent.money = updatedMoneyComponent.maxMoney;
+            }
+            else
+            {
+                uint lossStreakBonus = (uint)(component.ValueRO.lossStreakBonus * (clientTeam == TeamSideType.Corpo ? component.ValueRO.corporationLossStreak : component.ValueRO.nativeLossStreak));
+                updatedMoneyComponent.money += (uint)component.ValueRO.lossCredits + lossStreakBonus;
+
+                if (updatedMoneyComponent.money > updatedMoneyComponent.maxMoney)
+                    updatedMoneyComponent.money = updatedMoneyComponent.maxMoney;
+            }
+
+            SystemAPI.SetComponent(clientEntity, updatedMoneyComponent);
+        }
+
         //Send a RPC to clients so they get the updated score
         VictoryRpcCommand rpc = new() { team = team };
         EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
