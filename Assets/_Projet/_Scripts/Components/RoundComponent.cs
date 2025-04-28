@@ -26,6 +26,10 @@ public struct RoundComponent : IComponentData
     public bool gameWon;
 }
 
+public struct RoundIsActive : IComponentData, IEnableableComponent{
+    
+}
+
 public struct PlayerAliveCounts : IComponentData
 {
     public int nativePlayersAlive;

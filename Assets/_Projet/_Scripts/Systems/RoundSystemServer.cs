@@ -46,21 +46,12 @@ public partial struct RoundSystemServer : ISystem
         //state.RequireForUpdate<ServerDataComponent>();
 
         //Create the query and store it for future use
-        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent>();
+        EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp).WithAll<RoundComponent, RoundIsActive>();
         EntityQuery query = builder.Build(ref state);
+        
+        _firstFrame = false;
 
-        //Get the necessary references to set up the start of the game
-        if (query.TryGetSingletonEntity<RoundComponent>(out var entity))
-        {
-            RefRW<RoundComponent> component = query.GetSingletonRW<RoundComponent>();
-
-            InitGame(ref state, entity, component, ecb);
-            _firstFrame = true;
-        }
-        else
-        {
-            _firstFrame = false;
-        }
+        state.RequireForUpdate(query);
     }
 
     //[BurstCompile]Pas avec les RPC des sons :(
@@ -321,6 +312,9 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.currentRound = 0;
         component.ValueRW.nativeScore = 0;
         component.ValueRW.corporationScore = 0;
+        
+        ecb.SetComponentEnabled<RoundIsActive>(entity, false);
+        
         InitRound(ref state, entity, component, ecb);
         SendCurrentPhase(ref state, entity, component, ecb);
     }

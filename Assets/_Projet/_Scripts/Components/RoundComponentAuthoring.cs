@@ -30,6 +30,9 @@ public class RoundComponentAuthoring : MonoBehaviour
                 gameWon = false
             });
 
+            AddComponent<RoundIsActive>(entity);
+            SetComponentEnabled<RoundIsActive>(entity, false);
+            
             AddComponent<PlayerAliveCounts>(entity);
             var buffer = AddBuffer<PhaseTimesBuffer>(entity);
             for (int i = 0; i < 4; i++)
