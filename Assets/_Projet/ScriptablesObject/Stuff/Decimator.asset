@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Decimator
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 9077871864667713224, guid: 83eb2e7aabf39dc4b8bebc34d4d053f7, type: 3}
-  viewPrefab: {fileID: 9077871864667713224, guid: 8dba0b4f06989b341a56d9b89f32e3ce, type: 3}
+  viewPrefab: {fileID: 1084224296991401035, guid: b95c04dd279d4ae44b35d4ac65499928, type: 3}
   UIImage: {fileID: 2800000, guid: c11863400add628488bd989c54a3b0a9, type: 3}
   location: 0
   type: 0
@@ -23,7 +23,7 @@ MonoBehaviour:
   storageSpeed: 0
   price: 2700
   killGain: 300
-  _stuffLocalOffsetView: {x: 0.2, y: -0.2, z: 0.4}
+  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
   recoil: {x: 2, y: 3}
   damage: 36
   range: 250

@@ -34,6 +34,8 @@ public partial struct RangedWeaponReloadSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
+        EntityCommandBuffer animationEcb = new EntityCommandBuffer(Allocator.Temp);
+
         var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
         foreach (var (dynamicDataRef, dataAccessRef, ownerRef, weapon) in SystemAPI
@@ -41,7 +43,6 @@ public partial struct RangedWeaponReloadSystem : ISystem
         .WithAll<IsStuffInHand>()
         .WithEntityAccess())
         {
-
             //Simplification des components de l'arme
             ref RangedWeaponDynamicData dynamicData = ref dynamicDataRef.ValueRW;
             ref readonly Entity owner = ref ownerRef.ValueRO.owner;
@@ -61,9 +62,39 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
+                    if (state.EntityManager.HasBuffer<CharacterStuffList>(owner)
+                        && state.EntityManager.HasComponent<CharacterStuffList>(owner))
+                    {
+                        DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
+                        RefRO<CharacterStuffInfos> stuffInfo = SystemAPI.GetComponentRO<CharacterStuffInfos>(owner);
 
-                    SoundUtils.PlayAtEmitterWithSoundQueue(ref state, soundQueue, weapon, "Reload");
+                        Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
+                        if (stuffInHand != Entity.Null)
+                        {
+                            if (state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand))
+                            {
+                                FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
+
+                                if (stuffName == "LP-17"
+                                    || stuffName == "FAKIR")
+                                {
+                                    AnimationUtils.AddTriggerCommand("ReloadHandgun", owner, animationEcb);
+                                }
+                                else if (stuffName == "Decimator"
+                                    || stuffName == "SKAR-18")
+                                {
+                                    AnimationUtils.AddTriggerCommand("ReloadRifle", owner, animationEcb);
+                                }
+                                else if (stuffName == "Banduka")
+                                {
+                                    AnimationUtils.AddTriggerCommand("ReloadShotgun", owner, animationEcb);
+                                }
+                            }
+                        }
+                    }
+
+                    SoundUtils.PlayAtEmitterWithRPC(ref state, "Reload", weapon);
                 }
             }
             else
@@ -88,8 +119,11 @@ public partial struct RangedWeaponReloadSystem : ISystem
                     }
 #endif
                 }
-            }
+            } 
         }
+
+        animationEcb.Playback(state.EntityManager);
+        animationEcb.Dispose();
     }
 
     bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)

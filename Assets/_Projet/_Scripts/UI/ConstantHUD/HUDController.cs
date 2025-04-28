@@ -5,13 +5,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
 
 public class HUDController : MonoBehaviour
 {
+    private UITextureData texData;
+
     // Main Objects
     private UIDocument _HUDDocument;
     private VisualElement _HUD;
@@ -87,6 +92,17 @@ public class HUDController : MonoBehaviour
     // KillFeed
     private VisualElement _killFeedContainer;
 
+    // WinLose
+    private VisualElement _winLoseRoundElement;
+    private VisualElement _winLoseGameElement;
+    private float _winLoseGameTime = 1.5f;
+    private float _winLoseGameTimer = 0f;
+    private float _winLoseEndGameTime = 5f;
+    public bool _winLoseRoundSubscribed = false;
+    public bool _winLoseRoundEngaged = false;
+    public float _winLoseRoundTimer = 0f;
+    public float _winLoseRoundTime = 4f;
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -161,6 +177,19 @@ public class HUDController : MonoBehaviour
 
         // Initialize KillFeed
         _killFeedContainer = _HUD.Q<VisualElement>("KillFeedContainer");
+
+        // WinLose
+        _winLoseRoundElement = _HUD.Q<VisualElement>("WinLoseRound");
+        _winLoseGameElement = _HUD.Q<VisualElement>("WinLoseGame");
+        UI.SetActive(ref _winLoseRoundElement, false);
+        UI.SetActive(ref _winLoseGameElement, false);
+        UI.SetOpacity(ref _winLoseRoundElement, 0f);
+        UI.SetOpacity(ref _winLoseGameElement, 0f);
+    }
+
+    private void Start()
+    {
+        texData = Addressables.LoadAssetAsync<UITextureData>("UITextureData").WaitForCompletion();
     }
 
     private void Update()
@@ -215,6 +244,12 @@ public class HUDController : MonoBehaviour
             _weaponListLinkSystem.OnStuffListChange += OnStuffListChange;
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
+
+        if (!_winLoseRoundSubscribed)
+        {
+            RoundSystemClient.OnTeamWinRound += OnTeamWinRound;
+            _winLoseRoundSubscribed = true;
+        }
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -242,6 +277,59 @@ public class HUDController : MonoBehaviour
         {
             PlayerIconsUpdate(TeamSideType.Corpo, _corpoIcons);
             PlayerIconsUpdate(TeamSideType.Natif, _natifIcons);
+        }
+
+        if (world.Name == "ClientWorld" && _winLoseRoundEngaged)
+        {
+            _winLoseRoundTimer += Time.deltaTime;
+
+            float t = _winLoseRoundTimer / _winLoseRoundTime;
+
+            UI.SetActive(ref _winLoseRoundElement, true);
+            UI.SetOpacity(ref _winLoseRoundElement, 0f);
+
+            if (t < .25f)
+            {
+                UI.SetOpacity(ref _winLoseRoundElement, t * 4f);
+            }
+            else if (t < .75f)
+            {
+                UI.SetOpacity(ref _winLoseRoundElement, 1f);
+            }
+            else if (t < 1f)
+            {
+                UI.SetOpacity(ref _winLoseRoundElement, 4f - t * 4f);
+            }
+            else
+            {
+                UI.SetOpacity(ref _winLoseRoundElement, 0f);
+            }
+
+            if (t == 1f)
+            {
+                UI.SetActive(ref _winLoseRoundElement, false);
+                _winLoseRoundEngaged = false;
+                _winLoseRoundElement.style.backgroundImage = null;
+            }
+        }
+    }
+
+    private void OnTeamWinRound(object sender, RoundSystemClient.TeamWinRoundArgs args)
+    {
+        _winLoseRoundEngaged = true;
+        _winLoseRoundTimer = 0f;
+        ClientComponent currentPlayer = GetCurrentPlayerInfo();
+        if (currentPlayer.networkID == 0)
+        {
+            return;
+        }
+        if (args.team == currentPlayer.team)
+        {
+            _winLoseRoundElement.style.backgroundImage = texData.GetTexture("hud_round_win");
+        }
+        else
+        {
+            _winLoseRoundElement.style.backgroundImage = texData.GetTexture("hud_round_lose");
         }
     }
 
@@ -309,7 +397,68 @@ public class HUDController : MonoBehaviour
                     break;
             }
         }
+
+        if (roundComponent.gameWon)
+        {
+            ClientComponent currentPlayer = GetCurrentPlayerInfo();
+
+            if (currentPlayer.networkID != 0)
+            {
+                _winLoseGameTimer += Time.deltaTime;
+
+                float t = _winLoseGameTimer / _winLoseGameTime;
+                if (t > 1f)
+                {
+                    t = 1f;
+                }
+                UI.SetActive(ref _winLoseGameElement, true);
+                UI.SetOpacity(ref _winLoseGameElement, t);
+
+                if (roundComponent.winners == currentPlayer.team)
+                {
+                    _winLoseGameElement.style.backgroundImage = texData.GetTexture("hud_game_win");
+                }
+                else
+                {
+                    _winLoseGameElement.style.backgroundImage = texData.GetTexture("hud_game_lose");
+                }
+
+                if (_winLoseGameTimer >= _winLoseEndGameTime)
+                {
+                    HandleGameOverAsync();
+                }
+            }
+        }
     }
+
+    public ClientComponent GetCurrentPlayerInfo()
+    {
+        ClientComponent currentPlayer = new();
+        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).Count > 0)
+        {
+            ClientComponent firstCorpoPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).First();
+            if (firstCorpoPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            {
+                currentPlayer = firstCorpoPlayer;
+            }
+        }
+        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).Count > 0)
+        {
+            ClientComponent firstNatifPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).First();
+            if (firstNatifPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            {
+                currentPlayer = firstNatifPlayer;
+            }
+        }
+        return currentPlayer;
+    }
+
+    private async void HandleGameOverAsync()
+    {
+        await LoadUtils.QuitAsync();
+        await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
+    }
+
     private void UpdateForBuyPhase(float t)
     {
         // Animation for Buy Phase
@@ -317,6 +466,7 @@ public class HUDController : MonoBehaviour
         // One half of a second to pop up Round Number and Buy Text
 
         UI.SetActive(ref _roundElement, true);
+        UI.SetActive(ref _roundBuyPhaseText, true);
 
         if (t < .25f)
         {
@@ -412,6 +562,8 @@ public class HUDController : MonoBehaviour
         // Last forth to fade away the visual
 
         UI.SetActive(ref _roundElement, true);
+        UI.SetActive(ref _roundBuyPhaseText, false);
+        UI.SetOpacity(ref _roundBuyPhaseText, 0f);
 
         if (t < .25f)
         {
@@ -594,10 +746,9 @@ public class HUDController : MonoBehaviour
             VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
             if (i < players.Count)
             {
-                
+
                 if (players[i].playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
                 {
-                    Debug.Log($"iconname {icon.name}");
                     UI.SetBorderColor(ref icon, Color.green);
                 }
                 else

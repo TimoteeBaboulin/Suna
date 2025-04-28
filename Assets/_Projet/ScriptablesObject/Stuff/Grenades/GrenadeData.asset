@@ -14,13 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
   grenadeThrownPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
-  viewPrefab: {fileID: 6035785811226571987, guid: d4eb1c195f42da04f8e29d746b3254c4, type: 3}
+  viewPrefab: {fileID: 5726615564570946578, guid: 06237342968c2f444ab9f3762ade994f, type: 3}
   UIImage: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
   location: 4
   type: 2
   grenadeType: 0
   side: 2
-  entityName: HE Grenade
+  entityName: HEGrenade
   price: 300
   killGain: 300
   _stuffLocalOffsetView: {x: 0.2, y: -0.18, z: 0.45}
