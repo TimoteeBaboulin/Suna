@@ -6,7 +6,10 @@ using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
 
-[UpdateAfter(typeof(StuffSystemClient))]
+//[UpdateAfter(typeof(StuffSystemClient))] //Cause des problémes sur le build log car les 2 systemes ne font pas partit du même groupe:
+//Ignoring invalid[Unity.Entities.UpdateAfterAttribute] attribute on HarvesterSystemClient targeting StuffSystemClient.
+//This attribute can only order systems that are members of the same ComponentSystemGroup instance.
+
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class HarvesterSystemClient : SystemBase
 {

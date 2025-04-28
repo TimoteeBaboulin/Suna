@@ -12,7 +12,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 
 public class AkWwiseInitializationSettings : AkCommonPlatformSettings
@@ -327,7 +327,6 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 		else if (m_Instance != this)
 		{
 			UnityEngine.Debug.LogWarning("WwiseUnity: There are multiple AkWwiseInitializationSettings objects instantiated; only one will be used.");
-
 		}
 	}
 
@@ -678,6 +677,7 @@ public class AkWwiseInitializationSettings : AkCommonPlatformSettings
 			base.OnDeactivate();
 			if(Instance.ActiveSettingsHaveChanged)
 			{
+				WwiseProjectDatabase.SetCurrentLanguage(AkWwiseInitializationSettings.ActivePlatformSettings.InitialLanguage);
 				if (AkWwiseEditorSettings.Instance.LoadSoundEngineInEditMode && !AkUnitySoundEngine.IsInitialized())
 				{
 					AkUnitySoundEngineInitialization.Instance.ResetSoundEngine();

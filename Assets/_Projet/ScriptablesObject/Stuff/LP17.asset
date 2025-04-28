@@ -30,12 +30,12 @@ MonoBehaviour:
   firerate: 600
   isAutomatic: 0
   roundsPerShot: 1
-  spread: 0
-  spreadAiming: 0
-  coefSpray: 0
-  coefSprayAiming: 0
+  spread: 3
+  spreadAiming: 2.5
+  coefSpray: 1
+  coefSprayAiming: 1
   ergonomics: 0
-  dmgFallOff: 0
+  dmgFallOff: 0.03
   coefModifMoveSpeed: 0.92
   coefModifMoveSpeedAiming: 0.75
   reloadSpeed: 1
@@ -56,3 +56,14 @@ MonoBehaviour:
   legs_Arms: 12
   head: 80
   ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: c56b3dd33189b2646ae0b3b53269bd94, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: cb6d391cac24fe24eaae5479f4c62658, type: 2}

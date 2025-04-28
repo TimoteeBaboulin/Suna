@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ public class MeleeWeaponData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
-    public Image UIImage;
+    public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
@@ -25,4 +26,7 @@ public class MeleeWeaponData : ScriptableObject
     public float range;
     public float strikeRate;
     public float strongStrikeRate;
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
 }

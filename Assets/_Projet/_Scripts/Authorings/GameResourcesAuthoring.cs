@@ -8,10 +8,12 @@ public class GameResourcesAuthoring : MonoBehaviour
 {
     public GameObject rangedWeaponEntityPrefab;
     public GameObject meleeWeaponEntityPrefab;
+    public GameObject grenadesEntityPrefab;
     public GameObject harvesterEntityPrefab;
 
     public List<RangedWeaponData> rangedWeaponList;
     public List<MeleeWeaponData> meleeWeaponList;
+    public List<GrenadeData> grenadesList;
     public HarvesterData harvester;
 
     public class Baker : Baker<GameResourcesAuthoring>
@@ -28,14 +30,18 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             Entity rangedWeaponEntity = GetEntity(authoring.rangedWeaponEntityPrefab, TransformUsageFlags.Dynamic);
             Entity meleeWeaponEntity = GetEntity(authoring.meleeWeaponEntityPrefab, TransformUsageFlags.Dynamic);
+            Entity grenadeEntity = GetEntity(authoring.grenadesEntityPrefab, TransformUsageFlags.Dynamic);
             Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
             List<GameObject> viewPrefabs = new();
 
+            List<SoundGroupMapping> soundGroupMapping = new();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + 1);
+            BlobBuilderArray<StuffCommonData> stuffs = builder.Allocate(ref stuffCollection.StuffCommonData, authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count + 1);
 
-            for (int i = 0; i < authoring.rangedWeaponList.Count; i++)
+            int i = 0;
+
+            for (; i < authoring.rangedWeaponList.Count; i++)
             {
                 var rangedWeaponSO = authoring.rangedWeaponList[i];
 
@@ -60,10 +66,11 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].canADS = rangedWeaponSO.canADS;
                 stuffs[i].ADSFOV = rangedWeaponSO.ADSFOV;
 
+                SoundUtils.SetMappingList(rangedWeaponSO.entityName, rangedWeaponSO.soundList, soundGroupMapping);
                 stuffs[i].dataID = i;
             }
 
-            for (int i = authoring.rangedWeaponList.Count; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count; i++)
+            for (; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count; i++)
             {
                 var meleeWeaponSO = authoring.meleeWeaponList[i - authoring.rangedWeaponList.Count];
 
@@ -71,8 +78,8 @@ public class GameResourcesAuthoring : MonoBehaviour
 
                 viewPrefabs.Add(meleeWeaponSO.viewPrefab);
 
-                prefabs.Add(new StuffEntityPrefabsBuffer 
-                { 
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
                     dropedEntityPrefab = GetEntity(meleeWeaponSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
                     inHandEntityPrefab = meleeWeaponEntity
                 });
@@ -89,38 +96,67 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].ADSFOV = 0;
 
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count;
+
+                SoundUtils.SetMappingList(meleeWeaponSO.entityName, meleeWeaponSO.soundList, soundGroupMapping);
             }
 
-            int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count;
-            var harvesterSO = authoring.harvester;
+            for(; i < authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count; i++)
+            {
+                var grenadeSO = authoring.grenadesList[i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count];
 
-            builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
+                builder.AllocateString(ref stuffs[i].Name, grenadeSO.entityName);
 
-            viewPrefabs.Add(harvesterSO.viewPrefab);
+                viewPrefabs.Add(grenadeSO.viewPrefab);
 
-            prefabs.Add(new StuffEntityPrefabsBuffer 
-            { 
-                dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
-                inHandEntityPrefab = harvesterEntity
-            });
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(grenadeSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = grenadeEntity,
+                    thrownGrenadeEntityPrefab = GetEntity(grenadeSO.grenadeThrownPrefab, TransformUsageFlags.Dynamic)
+                });
 
-            stuffs[id].slot = harvesterSO.location;
-            stuffs[id].type = harvesterSO.type;
-            stuffs[id].side = harvesterSO.side;
-            stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
-            stuffs[id].storageSpeed = harvesterSO.storageSpeed;
-            stuffs[id].price = harvesterSO.price;
-            stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
-            stuffs[id].killGain = harvesterSO.killGain;
-            stuffs[id].canADS = false;
-            stuffs[id].ADSFOV = 0;
+                stuffs[i].slot = grenadeSO.location;
+                stuffs[i].type = grenadeSO.type;
+                stuffs[i].side = grenadeSO.side;
+                stuffs[i].price = grenadeSO.price;
+                stuffs[i]._stuffLocalOffsetView = grenadeSO._stuffLocalOffsetView;
+                stuffs[i].killGain = grenadeSO.killGain;
+                stuffs[i].dataID = i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count;
+            }
 
-            stuffs[id].dataID = 0;
+            {
+                int id = authoring.rangedWeaponList.Count + authoring.meleeWeaponList.Count + authoring.grenadesList.Count;
+                var harvesterSO = authoring.harvester;
+
+                builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
+
+                viewPrefabs.Add(harvesterSO.viewPrefab);
+
+                prefabs.Add(new StuffEntityPrefabsBuffer
+                {
+                    dropedEntityPrefab = GetEntity(harvesterSO.dropedEntityPrefab, TransformUsageFlags.Dynamic),
+                    inHandEntityPrefab = harvesterEntity
+                });
+
+                stuffs[id].slot = harvesterSO.location;
+                stuffs[id].type = harvesterSO.type;
+                stuffs[id].side = harvesterSO.side;
+                stuffs[id].deploymentSpeed = harvesterSO.deploymentSpeed;
+                stuffs[id].storageSpeed = harvesterSO.storageSpeed;
+                stuffs[id].price = harvesterSO.price;
+                stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
+                stuffs[id].killGain = harvesterSO.killGain;
+                stuffs[id].canADS = false;
+                stuffs[id].ADSFOV = 0;
+
+                SoundUtils.SetMappingList(harvesterSO.entityName, harvesterSO.soundList, soundGroupMapping);
+                stuffs[id].dataID = 0;
+            }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<RangedWeaponCommonData> rangedWeapons = builder.Allocate(ref stuffCollection.RangedWeaponsCommonData, authoring.rangedWeaponList.Count);
-            for (int i = 0; i < authoring.rangedWeaponList.Count; i++)
+            for (i = 0; i < authoring.rangedWeaponList.Count; i++)
             {
                 var rangedWeaponSO = authoring.rangedWeaponList[i];
 
@@ -154,7 +190,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
             BlobBuilderArray<MeleeWeaponCommonData> meleeWeapons = builder.Allocate(ref stuffCollection.MeleeWeaponsCommonData, authoring.meleeWeaponList.Count);
-            for (int i = 0; i < authoring.meleeWeaponList.Count; i++)
+            for (i = 0; i < authoring.meleeWeaponList.Count; i++)
             {
                 var meleeWeaponSO = authoring.meleeWeaponList[i];
 
@@ -167,6 +203,24 @@ public class GameResourcesAuthoring : MonoBehaviour
             }
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            ///
+
+            BlobBuilderArray<GrenadeCommonData> grenades = builder.Allocate(ref stuffCollection.GrenadesCommonData, authoring.grenadesList.Count);
+
+            for (i = 0; i < authoring.grenadesList.Count; i++)
+            {
+                var grenadeSO = authoring.grenadesList[i];
+                grenades[i].grenadeType = grenadeSO.grenadeType;
+                grenades[i].cookingTime = grenadeSO.cookingTime;
+                grenades[i].impactRadius = grenadeSO.impactRadius;
+                grenades[i].inflictedDamage = grenadeSO.damageInflicted;
+                grenades[i].triggerType = grenadeSO.triggerType;
+                grenades[i].timerTriggerDelay = grenadeSO.timerTriggerDelay;
+                grenades[i].maxImpactAngle = grenadeSO.maxImpactAngle;
+                grenades[i].stillTriggerDelay = grenadeSO.stillTriggerDelay;
+                grenades[i].bounceTriggerCount = grenadeSO.bounceTriggerCount;
+                grenades[i].proximityTriggerDistance = grenadeSO.proximityTriggerDistance;
+            }
 
             var blobRef = builder.CreateBlobAssetReference<StuffDatabase>(Allocator.Persistent);
             builder.Dispose();
@@ -175,10 +229,12 @@ public class GameResourcesAuthoring : MonoBehaviour
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
             AddComponentObject(entity, new GameResourcesViewPrefabs { List = viewPrefabs });
-
-            AddBuffer<GameResourcesInstantiateStuffQueue>(entity);
+            
+            AddComponentObject(entity, SoundUtils.SetGroupRegister(soundGroupMapping));
+            AddBuffer<InstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);
             AddBuffer<UnequipStuffQueue>(entity);
+            AddBuffer<SoundQueue>(entity);
         }
     }
 }

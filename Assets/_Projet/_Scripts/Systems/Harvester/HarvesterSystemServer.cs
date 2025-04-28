@@ -36,7 +36,7 @@ partial struct HarvesterSystemServer : ISystem
 
         if (!harvesterIsInstantiated)
         {
-            if (SystemAPI.TryGetSingletonBuffer<GameResourcesInstantiateStuffQueue>(out var queue))
+            if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue))
             {
                 StuffUtils.InstantiateNextFrame(queue, "Harvester", new float3(40f,0f,2f));
 
@@ -176,8 +176,8 @@ partial struct HarvesterSystemServer : ISystem
 
                             float3 harvesterPosition = state.EntityManager.GetComponentData<LocalTransform>(harvesterEntity).Position;
 
-                            foreach ((LocalTransform playerTransform, RefRW<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
-                            in SystemAPI.Query<LocalTransform, RefRW<CharacterStuffList>, CharacterClientAttachedComponent>()
+                            foreach ((LocalTransform playerTransform, DynamicBuffer<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
+                            in SystemAPI.Query<LocalTransform, DynamicBuffer<CharacterStuffList>, CharacterClientAttachedComponent>()
                             .WithAll<CharacterComponent, CorpoTeamTag>()
                             .WithEntityAccess())
                             {
@@ -235,8 +235,8 @@ partial struct HarvesterSystemServer : ISystem
 
                             float3 harvesterPosition = state.EntityManager.GetComponentData<LocalTransform>(harvesterEntity).Position;
 
-                            foreach ((LocalTransform playerTransform, RefRW<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
-                            in SystemAPI.Query<LocalTransform, RefRW<CharacterStuffList>, CharacterClientAttachedComponent>()
+                            foreach ((LocalTransform playerTransform, DynamicBuffer<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
+                            in SystemAPI.Query<LocalTransform, DynamicBuffer<CharacterStuffList>, CharacterClientAttachedComponent>()
                             .WithAll<CharacterComponent, CorpoTeamTag>()
                             .WithEntityAccess())
                             {

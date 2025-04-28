@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ public class HarvesterData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
-    public Image UIImage;
+    public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
     public TeamSideType side;
@@ -21,4 +22,7 @@ public class HarvesterData : ScriptableObject
     [Header("Static Data")]
     public float defuseRange;
     public float pickupDistance;
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
 }

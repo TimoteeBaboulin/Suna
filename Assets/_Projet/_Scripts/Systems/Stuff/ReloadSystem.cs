@@ -25,6 +25,8 @@ public partial struct RangedWeaponReloadSystem : ISystem
     {
         //Eviter répétition sur le serveur du a la différence de framerate avec le client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+        var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
+
         if (!networkTime.IsFirstPredictionTick) return;
 
         float dt = SystemAPI.Time.DeltaTime;
@@ -60,12 +62,8 @@ public partial struct RangedWeaponReloadSystem : ISystem
                     Debug.Log("Reload Start !");
 #endif
 
-                    RangedWeaponSoundRpc soundRpc = new RangedWeaponSoundRpc()
-                    {
-                        soudToPlay = RangedWeaponState.Reload,
-                        source = weapon
-                    };
-                    RpcUtils.SendServerToClientRpc(ref soundRpc);
+                    SoundUtils.PlayAtEmitterWithSoundQueue(ref state, soundQueue, weapon, "Reload");
+
                 }
             }
             else

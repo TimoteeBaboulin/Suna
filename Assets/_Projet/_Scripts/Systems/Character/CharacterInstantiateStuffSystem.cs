@@ -11,15 +11,15 @@ partial struct CharacterInstantiateStuffSystem : ISystem
 
         state.RequireForUpdate(query);
         state.RequireForUpdate<GameResourcesDatabase>();
-        state.RequireForUpdate<GameResourcesInstantiateStuffQueue>();
+        state.RequireForUpdate<InstantiateStuffQueue>();
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        var stuffInstanciateQueus = SystemAPI.GetSingletonBuffer<GameResourcesInstantiateStuffQueue>();
+        var stuffInstanciateQueus = SystemAPI.GetSingletonBuffer<InstantiateStuffQueue>();
 
-        foreach (var (stuffListRef, defaultStuffNames, chara) in SystemAPI
-            .Query<RefRW<CharacterStuffList>, DynamicBuffer<CharacterDefaultStuffName>>()
+        foreach (var (defaultStuffNames, chara) in SystemAPI
+            .Query<DynamicBuffer<CharacterDefaultStuffName>>()
             .WithAll<IsInstanciateDefaultStuff>()
             .WithEntityAccess())
         {

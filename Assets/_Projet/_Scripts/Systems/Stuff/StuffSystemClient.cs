@@ -83,20 +83,28 @@ partial struct StuffSystemClient : ISystem
             {
                 viewTransform.position = entityTransform.Position;
                 viewTransform.rotation = entityTransform.Rotation;
+
+                if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
+                {
+                    if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
+                    {
+                        viewTransform.localScale = Vector3.one * .8f;
+                    }
+                }
             }
         }
 
         //Display stuff
-        foreach (var (goRef, ownerRO, entity) in SystemAPI
+        foreach (var (goRef, dynDataRO, entity) in SystemAPI
         .Query<StuffGameObjectRef, RefRO<StuffDynamicData>>()
         .WithPresent<IsStuffInHand>()
         .WithEntityAccess())
         {
-            if (ownerRO.ValueRO.owner != Entity.Null)
+            if (dynDataRO.ValueRO.owner != Entity.Null)
             {
-                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(ownerRO.ValueRO.owner))
+                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner))
                 {
-                    CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(ownerRO.ValueRO.owner);
+                    CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner);
                     Transform viewTransform = charaBones.WeaponSlotTransform;
 
                     if (goRef.Value.transform.parent != viewTransform)
@@ -106,7 +114,7 @@ partial struct StuffSystemClient : ISystem
                 }
             }
 
-            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || ownerRO.ValueRO.owner == Entity.Null);
+            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || dynDataRO.ValueRO.owner == Entity.Null);
         }
 
         //Clear Stuff GameObject

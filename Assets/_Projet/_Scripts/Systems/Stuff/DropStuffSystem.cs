@@ -1,3 +1,4 @@
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
@@ -12,6 +13,7 @@ public partial struct DropStuffSystem : ISystem
     {
         state.RequireForUpdate<CharacterStuffList>();
         state.RequireForUpdate<CharacterInput>();
+        state.RequireForUpdate<UnequipStuffQueue>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -22,24 +24,25 @@ public partial struct DropStuffSystem : ISystem
 
         var unequipStuffQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
-        foreach (var (stuffListRW, inputRO, transformRO, shootStartPosDeltaRO, viewRO, chara) in SystemAPI
-        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>, RefRO<LocalTransform>, RefRO<CharacterShootStartPositionDelta>, RefRO<CharacterViewRotation>>()
+        foreach (var (stuffList, stuffInfosRO, inputRO, transformRO, shootStartPosDeltaRO, viewRO, chara) in SystemAPI
+        .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>, RefRO<CharacterInput>, RefRO<LocalTransform>, RefRO<CharacterShootStartPositionDelta>, RefRO<CharacterViewRotation>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRO.ValueRO;
-            ref CharacterStuffList stuffList = ref stuffListRW.ValueRW;
-            if (input.drop.IsSet && stuffList.StuffInHandSlot != StuffSlot.Melee)
+            ref readonly CharacterStuffInfos stuffInfos = ref stuffInfosRO.ValueRO;
+            if (input.drop.IsSet && stuffInfos.StuffInHandSlot != StuffSlot.Melee)
             {
+                Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfos);
                 unequipStuffQueue.Add(new UnequipStuffQueue
                 {
-                    Stuff = stuffList.StuffInHand,
+                    Stuff = stuffInHand,
                     Owner = chara,
                 });
 
-                Entity dropedStuffPrefab = SystemAPI.GetComponent<StuffDynamicData>(stuffList.StuffInHand).dropedEntityPrefab;
+                Entity dropedStuffPrefab = SystemAPI.GetComponent<StuffDynamicData>(stuffInHand).dropedEntityPrefab;
                 Entity dropedStuff = ecb.Instantiate(dropedStuffPrefab);
 
-                ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuffList.StuffInHand });
+                ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuffInHand });
 
                 float3 startPosition = shootStartPosDeltaRO.ValueRO.PositionDelta + transformRO.ValueRO.Position;
                 quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
@@ -57,6 +60,26 @@ public partial struct DropStuffSystem : ISystem
                     Linear = forward * 5f,
                     Angular = float3.zero
                 });
+            }
+        }
+    }
+}
+
+[BurstCompile]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct StuffDropedCleanup : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+        // Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+        foreach (var (stuffInHandRef, dropedStuff) in SystemAPI.Query<RefRO<StuffEntityInHandRef>>().WithEntityAccess())
+        {
+            if (stuffInHandRef.ValueRO.Value == Entity.Null)
+            {
+                ecb.DestroyEntity(dropedStuff);
             }
         }
     }
