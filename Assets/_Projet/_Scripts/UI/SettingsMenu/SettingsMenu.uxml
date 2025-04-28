@@ -1,6 +1,6 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/_Projet/_Scripts/UI/MainMenu/main-menu.uss?fileID=7433441132597879392&amp;guid=a94d734d4c6be40489081ba40fa40f7f&amp;type=3#main-menu" />
-    <engine:VisualElement name="Container" style="flex-grow: 0; width: 80%; height: 100%; flex-direction: column; position: relative; background-color: rgba(0, 0, 0, 0.1); align-self: center;">
+    <engine:VisualElement name="Container" style="flex-grow: 0; width: 80%; height: 100%; flex-direction: column; position: relative; background-color: rgba(0, 0, 0, 0.1); align-self: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;);">
         <engine:ScrollView horizontal-scroller-visibility="Hidden" style="flex-grow: 1;">
             <engine:VisualElement name="GameSettings" style="flex-grow: 1; flex-direction: column;">
                 <engine:Label text="Game Settings" name="CategoryTitle" style="top: auto; left: 50px; margin-top: 50px; margin-right: 0; margin-bottom: 50px; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; align-self: flex-start; font-size: 40px; -unity-font-style: bold; color: rgb(255, 255, 255);" />
@@ -20,6 +20,6 @@
                 </engine:VisualElement>
             </engine:VisualElement>
         </engine:ScrollView>
-        <engine:Button text="Save &amp; Close" name="SaveButton" class="main-menu-button" style="align-self: center; height: 50px;" />
+        <engine:Button text="   Save &amp; Close" name="SaveButton" class="main-menu-button" style="align-self: flex-start; height: 50px;" />
     </engine:VisualElement>
 </engine:UXML>

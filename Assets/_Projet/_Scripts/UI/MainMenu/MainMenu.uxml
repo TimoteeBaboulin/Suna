@@ -1,14 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
     <Style src="project://database/Assets/_Projet/_Scripts/UI/MainMenu/main-menu.uss?fileID=7433441132597879392&amp;guid=a94d734d4c6be40489081ba40fa40f7f&amp;type=3#main-menu" />
     <ui:VisualElement name="Background" style="flex-grow: 1; visibility: visible; display: flex; flex-direction: row;">
-        <ui:VisualElement name="MainMenuElements" class="element-background" style="width: 600px; background-color: rgba(77, 77, 77, 0.75);">
-            <ui:VisualElement style="flex-grow: 1; -unity-background-scale-mode: scale-to-fit; background-image: none;" />
-            <ui:Button text="Play" name="PlayButton" class="main-menu-button" />
-            <ui:Button text="Settings" name="SettingsButton" class="main-menu-button" />
-            <ui:Button text="Quit" name="QuitButton" class="main-menu-button" />
+        <ui:VisualElement name="Logo" style="flex-grow: 1; -unity-background-scale-mode: scale-to-fit; background-image: url(&quot;project://database/Assets/_Projet/Arts/HUD_General/MENU/TITRE.png?fileID=2800000&amp;guid=6e575525013205f41b1a234b31c2b132&amp;type=3#TITRE&quot;); width: 927px; height: 234px; position: absolute; top: 100px; left: 100px;" />
+        <ui:VisualElement name="MainMenuElements" class="element-background" style="width: 600px; position: absolute; left: 50px; top: 400px;">
+            <ui:Button text="   Play" name="PlayButton" class="main-menu-button" />
+            <ui:Button text="   Settings" name="SettingsButton" class="main-menu-button" />
+            <ui:Button text="   Quit" name="QuitButton" class="main-menu-button" />
         </ui:VisualElement>
-        <ui:VisualElement name="Container" style="flex-grow: 1;" />
-        <ui:VisualElement name="ConnectionFeedback" style="position: absolute; align-items: center; justify-content: center; align-self: center; align-content: center; left: 50%; right: 50%; width: 400px; height: 100px; translate: -50% 0; background-color: rgba(0, 0, 0, 0.25); -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); font-size: 25px; -unity-font-style: bold; color: rgb(255, 255, 255);">
+        <ui:VisualElement name="Container" style="flex-grow: 1; position: absolute; bottom: 100px; right: 100px; width: 1200px; height: 600px;" />
+        <ui:VisualElement name="ConnectionFeedback" style="position: absolute; align-items: center; justify-content: center; align-content: center; left: 50%; right: 50%; width: 400px; height: 100px; translate: -50% 0; background-color: rgba(0, 0, 0, 0.25); -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); font-size: 25px; -unity-font-style: bold; color: rgb(255, 255, 255); top: auto; bottom: auto; align-self: center;">
             <ui:Label text="Status" style="-unity-text-align: middle-center; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; top: -5px;" />
             <ui:VisualElement name="BackGround" style="height: 30px; width: 90%; background-color: rgba(0, 0, 0, 0.5); top: -5px;">
                 <ui:VisualElement name="Fill" style="width: 0; flex-grow: 1; background-color: rgb(255, 255, 255);" />
