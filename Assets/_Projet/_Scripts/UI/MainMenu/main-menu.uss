@@ -1,10 +1,10 @@
 .main-menu-button {
-    align-self: center;
-    font-size: 30px;
+    align-self: flex-start;
+    font-size: 35px;
     -unity-font-style: bold;
     color: rgb(255, 255, 255);
-    width: 300px;
-    height: 100px;
+    width: 465px;
+    height: 69px;
     margin-top: 20px;
     margin-right: 20px;
     margin-bottom: 20px;
@@ -13,7 +13,6 @@
     padding-right: 0;
     padding-bottom: 0;
     padding-left: 0;
-    background-color: rgba(217, 217, 217, 0.25);
     border-left-color: rgba(0, 0, 0, 0);
     border-right-color: rgba(0, 0, 0, 0);
     border-top-color: rgba(0, 0, 0, 0);
@@ -26,64 +25,27 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     border-bottom-left-radius: 0;
+    background-image: url("project://database/Assets/_Projet/Arts/HUD_General/MENU/Rectangle_.png?fileID=2800000&guid=ea97f3113e881274790aa3d1ea4b5fa1&type=3#Rectangle_");
+    justify-content: center;
+    align-items: flex-start;
+    -unity-font-definition: url("project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&guid=06393c2b6298fae42b401ef0082880d0&type=3#Nasalization Rg");
+    flex-direction: column;
+    -unity-text-align: middle-left;
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: left;
+    transition-duration: 0.1s;
 }
 
 .main-menu-button:hover {
-    align-self: center;
-    font-size: 30px;
-    -unity-font-style: bold;
-    color: rgb(255, 255, 255);
-    width: 300px;
-    height: 100px;
-    margin-top: 20px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-    padding-top: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    background-color: rgba(217, 217, 217, 0.5);
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+    background-color: rgba(0, 0, 0, 0.13);
+    left: 20px;
+    transition-property: left;
+    transition-duration: 0.1s;
 }
 
 .main-menu-button:active {
-    align-self: center;
-    font-size: 30px;
-    -unity-font-style: bold;
-    color: rgb(255, 255, 255);
-    width: 300px;
-    height: 100px;
-    margin-top: 20px;
-    margin-right: 20px;
-    margin-bottom: 20px;
-    margin-left: 20px;
-    padding-top: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    padding-left: 0;
-    background-color: rgba(217, 217, 217, 0.1);
-    border-left-color: rgba(0, 0, 0, 0);
-    border-right-color: rgba(0, 0, 0, 0);
-    border-top-color: rgba(0, 0, 0, 0);
-    border-bottom-color: rgba(0, 0, 0, 0);
-    border-top-width: 0;
-    border-right-width: 0;
-    border-bottom-width: 0;
-    border-left-width: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
+    background-color: rgba(0, 0, 0, 0.24);
+    left: 20px;
+    transition-property: left;
+    transition-duration: 0.1s;
 }
