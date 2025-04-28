@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Harvester Data
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 521297520866367205, guid: 21a1aee4efb05e34cbe2bf62a48904a6, type: 3}
-  viewPrefab: {fileID: 521297520866367205, guid: 129fe5109c530f04093a1df81198ef71, type: 3}
+  viewPrefab: {fileID: 674057506967906837, guid: 2fe0dc5c99cc6e944862d825964d9f57, type: 3}
   UIImage: {fileID: 2800000, guid: 5df4077d4c9959d4891fdd672a71c71c, type: 3}
   location: 3
   type: 3
@@ -23,7 +23,7 @@ MonoBehaviour:
   storageSpeed: 1
   price: 0
   killGain: 0
-  _stuffLocalOffsetView: {x: 0.4, y: -0.35, z: 0.7}
+  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
   defuseRange: 10
   pickupDistance: 5
   soundList: []
