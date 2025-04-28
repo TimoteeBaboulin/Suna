@@ -87,8 +87,8 @@ public class HUDController : MonoBehaviour
 
     // KillFeed
     private VisualElement _killFeedContainer;
-	
-	
+
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -218,11 +218,11 @@ public class HUDController : MonoBehaviour
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
 
-        if (_playerIconsLinkSystem == null && world.Name == "ClientWorld")
-        {
-            _playerIconsLinkSystem = world.GetExistingSystemManaged<PlayerIconsLinkSystem>();
-            _playerIconsLinkSystem.PlayersInPartyEvent += OnPlayersInPartyEvent; ;
-        }
+        //if (_playerIconsLinkSystem == null && world.Name == "ClientWorld")
+        //{
+        //    _playerIconsLinkSystem = world.GetExistingSystemManaged<PlayerIconsLinkSystem>();
+        //    _playerIconsLinkSystem.PlayersInPartyEvent += OnPlayersInPartyEvent; ;
+        //}
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -245,6 +245,12 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
+
+        if (world.Name == "ClientWorld")
+        {
+            PlayerIconsUpdate(TeamSideType.Corpo, _corpoIcons);
+            PlayerIconsUpdate(TeamSideType.Natif, _natifIcons);
+        }
     }
 
     private float FlashIntensity(float x)
@@ -587,20 +593,23 @@ public class HUDController : MonoBehaviour
     //----------End of Defuse and Plant Elements System
 
     //----------Start of Player Icons Functions
-    private void OnPlayersInPartyEvent(object sender, PlayerIconsLinkSystem.PlayersInPartyArgs args)
+    //private void OnPlayersInPartyEvent(object sender, PlayerIconsLinkSystem.PlayersInPartyArgs args)
+    //{
+    //    PlayerIconsUpdate(args.PlayersNetworkId, args.PlayersTeam, args.PlayersTeam == TeamSideType.Corpo ? _corpoIcons : _natifIcons);
+    //}
+    private void PlayerIconsUpdate(TeamSideType team, VisualElement teamIcons)
     {
-        PlayerIconsUpdate(args.PlayersNetworkId, args.PlayersTeam == TeamSideType.Corpo ? _corpoIcons : _natifIcons);
-    }
-    private void PlayerIconsUpdate(List<string> ids, VisualElement teamIcons)
-    {
-		//GetClientPlayersByTeam
+        List<ClientComponent> players = PlayerHelpers.GetClientPlayersByTeam(team).OrderBy(x => x.networkID).ToList();
+        //GetClientPlayersByTeam
         for (int i = 0; i < teamIcons.Children().Count(); i++)
         {
             VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
-            if (i < ids.Count)
+            if (i < players.Count)
             {
-                if (ids[i] == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+                
+                if (players[i].playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
                 {
+                    Debug.Log($"iconname {icon.name}");
                     UI.SetBorderColor(ref icon, Color.green);
                 }
                 else
