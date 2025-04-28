@@ -18,13 +18,17 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (stuffList, characterEntity) in SystemAPI
-            .Query<RefRO<CharacterStuffList>>()
+        foreach (var (stuffList, stuffInfo, characterEntity) in SystemAPI
+            .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>>()
             .WithEntityAccess())
         {
-            if (!state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffList.ValueRO.StuffInHand)) continue;
+            Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
-            FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffList.ValueRO.StuffInHand).NameInDatabase;
+            if (stuffInHand == Entity.Null) continue;
+
+            if (!state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand)) continue;
+
+            FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
 
             if (stuffName == "KnifeNeutral")
             {
@@ -50,9 +54,6 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
                 AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimKnife", false, characterEntity, ecb);
             }
-
-
-            //AnimationUtils.AddTriggerCommand("");
         }
 
         ecb.Playback(state.EntityManager);

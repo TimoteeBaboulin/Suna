@@ -62,32 +62,39 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
-                    if (state.EntityManager.HasComponent<CharacterStuffList>(owner))
+                    if (state.EntityManager.HasBuffer<CharacterStuffList>(owner)
+                        && state.EntityManager.HasComponent<CharacterStuffList>(owner))
                     {
-                        RefRO<CharacterStuffList> stuffList = SystemAPI.GetComponentRO<CharacterStuffList>(owner);
+                        DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
+                        RefRO<CharacterStuffInfos> stuffInfo = SystemAPI.GetComponentRO<CharacterStuffInfos>(owner);
 
-                        if (state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffList.ValueRO.StuffInHand))
+                        Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
+
+                        if (stuffInHand != Entity.Null)
                         {
-                            FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffList.ValueRO.StuffInHand).NameInDatabase;
+                            if (state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand))
+                            {
+                                FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
 
-                            if (stuffName == "LP-17"
-                                || stuffName == "FAKIR")
-                            {
-                                AnimationUtils.AddTriggerCommand("ReloadHandgun", owner, animationEcb);
-                            }
-                            else if (stuffName == "Decimator"
-                                || stuffName == "SKAR-18")
-                            {
-                                AnimationUtils.AddTriggerCommand("ReloadRifle", owner, animationEcb);
-                            }
-                            else if (stuffName == "Banduka")
-                            {
-                                AnimationUtils.AddTriggerCommand("ReloadShotgun", owner, animationEcb);
+                                if (stuffName == "LP-17"
+                                    || stuffName == "FAKIR")
+                                {
+                                    AnimationUtils.AddTriggerCommand("ReloadHandgun", owner, animationEcb);
+                                }
+                                else if (stuffName == "Decimator"
+                                    || stuffName == "SKAR-18")
+                                {
+                                    AnimationUtils.AddTriggerCommand("ReloadRifle", owner, animationEcb);
+                                }
+                                else if (stuffName == "Banduka")
+                                {
+                                    AnimationUtils.AddTriggerCommand("ReloadShotgun", owner, animationEcb);
+                                }
                             }
                         }
                     }
 
-                    SoundUtils.PlayAtEmitter(ref state, soundQueue, weapon, "Reload");
+                    SoundUtils.PlayAtEmitterWithRPC(ref state, "Reload", weapon);
                 }
             }
             else
