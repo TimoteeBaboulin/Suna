@@ -59,26 +59,33 @@ public class HUDController : MonoBehaviour
     private GameObject _errorWindowInstance;
 
     // Bomb Interaction
-    HarvesterPlantingLinkSystem _harvesterPlantingSystem;
-    HarvesterDefusingLinkSystem _harvesterDefusingSystem;
+    private HarvesterPlantingLinkSystem _harvesterPlantingSystem;
+    private HarvesterDefusingLinkSystem _harvesterDefusingSystem;
 
     // Bomb Interaction - Deffuse
-    VisualElement _defuse;
-    VisualElement _defuseFill;
+    private VisualElement _defuse;
+    private VisualElement _defuseFill;
 
     // Bomb Interaction - Plant
-    VisualElement _plant;
-    VisualElement _plantFill;
+    private VisualElement _plant;
+    private VisualElement _plantFill;
 
     // Round Information
-    VisualElement _roundElement;
-    VisualElement _roundInfo;
-    Label _roundNumber;
-    Label _roundPhase;
-    VisualElement _roundBuyPhaseText;
-    readonly float _roundPhaseTimer = 4f;
-    float _roundPhaseTime = 0f;
-    RoundPhase _lastPhase = RoundPhase.PostRoundPhase;
+    private VisualElement _roundElement;
+    private VisualElement _roundInfo;
+    private Label _roundNumber;
+    private Label _roundPhase;
+    private VisualElement _roundBuyPhaseText;
+    private readonly float _roundPhaseTimer = 4f;
+    private float _roundPhaseTime = 0f;
+    private RoundPhase _lastPhase = RoundPhase.PostRoundPhase;
+
+    // Player Icons
+    private VisualElement _corpoIcons;
+    private VisualElement _natifIcons;
+
+    // KillFeed
+    private VisualElement _killFeedContainer;
 
     private void Awake()
     {
@@ -135,6 +142,25 @@ public class HUDController : MonoBehaviour
         UI.SetOpacity(ref _roundInfo, 0f);
         UI.SetOpacity(ref _roundBuyPhaseText, 0f);
         UI.SetActive(ref _roundElement, false);
+
+        // Initialize Player Icons by hiding all of them
+        _corpoIcons = _HUD.Q<VisualElement>("CorpoIcons");
+        foreach (VisualElement icon in _corpoIcons.Children())
+        {
+            VisualElement iconRef = icon;
+            UI.SetBorderColor(ref iconRef, Color.clear);
+            UI.SetImageTintColor(ref iconRef, Color.clear);
+        }
+        _natifIcons = _HUD.Q<VisualElement>("NatifIcons");
+        foreach (VisualElement icon in _natifIcons.Children())
+        {
+            VisualElement iconRef = icon;
+            UI.SetBorderColor(ref iconRef, Color.clear);
+            UI.SetImageTintColor(ref iconRef, Color.clear);
+        }
+
+        // Initialize KillFeed
+        _killFeedContainer = _HUD.Q<VisualElement>("KillFeedContainer");
     }
 
     private void Update()
@@ -214,8 +240,8 @@ public class HUDController : MonoBehaviour
 
         if (world.Name == "ClientWorld")
         {
-            PlayerIconsUpdate(TeamSideType.Corpo);
-            PlayerIconsUpdate(TeamSideType.Natif);
+            PlayerIconsUpdate(TeamSideType.Corpo, _corpoIcons);
+            PlayerIconsUpdate(TeamSideType.Natif, _natifIcons);
         }
     }
 
@@ -235,6 +261,7 @@ public class HUDController : MonoBehaviour
         UI.SetOpacity(ref _flash, FlashIntensity(e.intensity));
     }
 
+    //----------Start of Round Phase Functions
     private void RoundPhaseUpdate(RoundComponent roundComponent)
     {
         _corpoScore.text = roundComponent.corporationScore.ToString().PadLeft(2, '0');
@@ -283,7 +310,6 @@ public class HUDController : MonoBehaviour
             }
         }
     }
-
     private void UpdateForBuyPhase(float t)
     {
         // Animation for Buy Phase
@@ -409,6 +435,7 @@ public class HUDController : MonoBehaviour
             UI.SetActive(ref _roundElement, false);
         }
     }
+    //----------End of Round Phase Functions
 
     //----------Start of Weapon List Link System
     private void OnStuffIdChange(object sender, WeaponListLinkSystem.StuffIdEventArgs args)
@@ -419,7 +446,6 @@ public class HUDController : MonoBehaviour
             weapon.style.unityBackgroundImageTintColor = new Color(1f, 1f, 1f, selectedId ? 1f : .125f);
         }
     }
-
     private void OnStuffListChange(object sender, WeaponListLinkSystem.StuffListChangeEventArgs args)
     {
         _weaponContainer.Clear();
@@ -468,7 +494,6 @@ public class HUDController : MonoBehaviour
         _crosshairElement.style.unityBackgroundImageTintColor = _crosshairBaseColor;
         yield return null;
     }
-
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
@@ -486,7 +511,6 @@ public class HUDController : MonoBehaviour
     {
         _money.text = args.money.ToString();
     }
-
     private void System_OnHitRegistered(object sender, EventArgs args)
     {
         _hitRegistered = true;
@@ -510,60 +534,49 @@ public class HUDController : MonoBehaviour
     {
         UI.SetActive(ref _defuse, value);
     }
-
     public void SetActivePlant(bool value)
     {
         UI.SetActive(ref _plant, value);
     }
-
     public void ResetDefuse()
     {
         UI.SetSize(ref _defuseFill, UI.PercentLength(0), UI.AutoLength());
     }
-
     public void ResetPlant()
     {
         UI.SetSize(ref _plantFill, UI.PercentLength(0), UI.AutoLength());
     }
-
     public void SetDefuseTime(float t)
     {
         UI.SetSize(ref _defuseFill, UI.PercentLength(t * 100f), UI.AutoLength());
     }
-
     public void SetPlantTime(float t)
     {
         UI.SetSize(ref _plantFill, UI.PercentLength(t * 100f), UI.AutoLength());
     }
-
     private void OnDefuseStarts(object sender, EventArgs args)
     {
         ResetDefuse();
         SetActiveDefuse(true);
     }
-
     private void OnDefuseRunning(object sender, HarvesterDefusingLinkSystem.HarversterDefuseRunning args)
     {
         SetDefuseTime(args.time / args.maxTime);
     }
-
     private void OnDefuseCancelOrEnd(object sender, EventArgs args)
     {
         SetActiveDefuse(false);
         ResetDefuse();
     }
-
     private void OnPlantStarts(object sender, EventArgs args)
     {
         ResetPlant();
         SetActivePlant(true);
     }
-
     private void OnPlantRunning(object sender, HarvesterPlantingLinkSystem.HarversterPlantRunning args)
     {
         SetPlantTime(args.time / args.maxTime);
     }
-
     private void OnPlantCancelOrEnd(object sender, EventArgs args)
     {
         SetActivePlant(false);
@@ -571,33 +584,43 @@ public class HUDController : MonoBehaviour
     }
     //----------End of Defuse and Plant Elements System
 
-    private void PlayerIconsUpdate(TeamSideType teamSide)
+    //----------Start of Player Icons Functions
+    private void PlayerIconsUpdate(TeamSideType team, VisualElement teamIcons)
     {
-        var teamList = PlayerHelpers.GetClientPlayersByTeam(teamSide);
-        Debug.Log($"teamside {teamSide} teamlistCOunt {teamList.Count}");
-
-        //for (int i = 0; i < teamIcons.Children().Count(); i++)
-        //{
-        //    VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
-        //    if (i < teamList.Count)
-        //    {
-        //        if (teamList[i].playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
-        //        {
-        //            UI.SetBorderColor(ref icon, Color.green);
-        //        }
-        //        else
-        //        {
-        //            UI.SetBorderColor(ref icon, Color.gray);
-        //        }
-        //        //UI.SetImageTintColor(ref icon, Color.white);
-        //    }
-        //    else
-        //    {
-        //        UI.SetBorderColor(ref icon, Color.clear);
-        //       // UI.SetImageTintColor(ref icon, Color.clear);
-        //    }
-        //}
+        List<ClientComponent> players = PlayerHelpers.GetClientPlayersByTeam(team).OrderBy(x => x.networkID).ToList();
+        //GetClientPlayersByTeam
+        for (int i = 0; i < teamIcons.Children().Count(); i++)
+        {
+            VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
+            if (i < players.Count)
+            {
+                
+                if (players[i].playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+                {
+                    Debug.Log($"iconname {icon.name}");
+                    UI.SetBorderColor(ref icon, Color.green);
+                }
+                else
+                {
+                    UI.SetBorderColor(ref icon, Color.gray);
+                }
+                UI.SetImageTintColor(ref icon, Color.white);
+            }
+            else
+            {
+                UI.SetBorderColor(ref icon, Color.clear);
+                UI.SetImageTintColor(ref icon, Color.clear);
+            }
+        }
     }
+    //----------End of Player Icons Functions
+
+    //----------Start of KillFeed Functions
+    private void InitializeNewKillFeed()
+    {
+        KillFeedElement element = new();
+    }
+    //----------End of KillFeed Functions
 }
 
 [Serializable]
