@@ -109,7 +109,7 @@ partial struct RoundSystemClient : ISystem
         //Read phase change RPCs
         foreach (var (rpcComponent, newRoundComponent, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ChangePhaseRpcCommand>>().WithEntityAccess())
         {
-            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round, buffer);
+            ChangePhase(ref state, newRoundComponent.ValueRO.phase, query.GetSingletonEntity(), round, buffer, newRoundComponent.ValueRO.nextRound);
             buffer.DestroyEntity(entity);
         }
 
@@ -194,13 +194,15 @@ partial struct RoundSystemClient : ISystem
             SystemAPI.SetComponent(clientEntity, updatedMoneyComponent);
         }
     }
-    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
+    public void ChangePhase(ref SystemState state, RoundPhase phase, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb, bool nextRound)
     {
         //Update the timer and phases after receiving an update
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         component.ValueRW.currentPhase = phase;
         component.ValueRW.timer = buffer[(int)phase];
+        if (nextRound)
+            component.ValueRW.currentRound++;
 
         if (phase != RoundPhase.BuyPhase)
         {
