@@ -66,14 +66,32 @@ public partial struct RoundSystemServer : ISystem
     //[BurstCompile]Pas avec les RPC des sons :(
     public void OnUpdate(ref SystemState state)
     {
-        //Check if the singleton exists to avoid crashes
+        if (ClientTransportHelper.instance == null)
+            return;
+
+        if (ClientTransportHelper.instance.Session == null)
+            return;
+
+        if (ClientTransportHelper.isRelease)
+        {
+            if (ClientTransportHelper.instance.Session.AvailableSlots != 0)
+                return;
+        }
+        else
+        {
+            if (ClientTransportHelper.instance.Session.PlayerCount < 2)
+                return;
+        }
+        
+        // Check if the singleton exists
         if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
         {
             return;
         }
 
-        if (roundComponent.ValueRO.gameWon)
-            return;
+
+        //if (roundComponent.ValueRO.gameWon)
+        //    return;
 
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -333,7 +351,9 @@ public partial struct RoundSystemServer : ISystem
 
         if (component.ValueRW.currentRound > component.ValueRO.maxRounds)
         {
-            component.ValueRW.gameWon = true;
+            //Here changeed gameWon from true to false and added InitGame
+            component.ValueRW.gameWon = false;
+            InitGame(ref state, entity, component, ecb);
             GameOverRpcCommand command = new GameOverRpcCommand
             {
                 winners = component.ValueRO.nativeScore > component.ValueRO.corporationScore ? TeamSideType.Natif : TeamSideType.Corpo
