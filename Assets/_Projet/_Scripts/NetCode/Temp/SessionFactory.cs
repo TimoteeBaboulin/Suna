@@ -116,7 +116,7 @@ public class ServerSessionFactory
     {
         Debug.Log($"[OnPlayerHasLeft] Player with NetworkId {playerId} has left the session.");
         await session.RemovePlayerAsync(playerId);
-        await session.RefreshAsync();
+        //await session.RefreshAsync();
 
         var listCorpo = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Corpo);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamCorpo roster size: {listCorpo.Count}");
