@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using Unity.Burst;
+using UnityEngine;
 
 public struct WaitForRespawnTag : IComponentData { }
 public struct ResetStuffTag : IComponentData { }
@@ -13,6 +14,7 @@ public struct ShouldBeDropped : IComponentData
     public float3 direction;
 }
 public struct ShouldBeDestroyed : IComponentData { }
+public struct ShouldEmptyInventory : IComponentData { }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial struct OnDieSystem : ISystem
@@ -49,32 +51,13 @@ public partial struct OnDieSystem : ISystem
             ghostOwnerLookup = SystemAPI.GetComponentLookup<GhostOwner>(true),
             stuffDynamicDataLookup = SystemAPI.GetComponentLookup<StuffDynamicData>(true),
             shootStartPositionDeltaLookup = SystemAPI.GetComponentLookup<CharacterShootStartPositionDelta>(true),
-            localTransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true)
+            localTransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true),
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
         state.Dependency.Complete();
 
-        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
-        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
-
-        foreach (var (shouldDrop, dynamicData, entity) in SystemAPI.Query<RefRO<ShouldBeDropped>, RefRW<StuffDynamicData>>().WithEntityAccess())
-        {
-            //StuffUtils.UnequipUnsafe(ref state, ref database, dynamicData.ValueRO.owner, entity);
-            //StuffUtils.Unequip(ref state, dynamicData.ValueRW.owner, ref database, dynamicData.ValueRO.owner, entity);
-            StuffUtils.InstantiateDrop(ref state, ref commandBuffer, entity, shouldDrop.ValueRO.position, shouldDrop.ValueRO.direction, 3f);
-            commandBuffer.RemoveComponent<ShouldBeDropped>(entity);
-        }
-
-        foreach (var (shouldDelete, dynamicData, entity) in SystemAPI.Query<RefRO<ShouldBeDestroyed>, RefRW<StuffDynamicData>>().WithEntityAccess())
-        {
-            //StuffUtils.UnequipUnsafe(ref state, ref database, dynamicData.ValueRW.owner, entity);
-            commandBuffer.RemoveComponent<ShouldBeDestroyed>(entity);
-            commandBuffer.DestroyEntity(entity);
-        }
-
-        commandBuffer.Playback(state.EntityManager);
-        commandBuffer.Dispose();
+        
     }
 }
 
@@ -102,6 +85,7 @@ public partial struct OnDieJob : IJobEntity
             && HasNoHealthTagLookup.HasComponent(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
+            //commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
 
             //FIX (Aurelien) : Now that the player is dead, we drop some of his stuff, the rest gets destroyed
 
@@ -112,37 +96,51 @@ public partial struct OnDieJob : IJobEntity
 
             if (playerStuff.TryGetBuffer(entity, out var stuffList))
             {
-                if (stuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
+                if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.MainWeapon) != Entity.Null)
                 {
-                    Entity stuff = stuffList.ElementAt((int)StuffSlot.MainWeapon).entity;
+                    Entity stuff = StuffUtils.GetStuffInSlot(stuffList, StuffSlot.MainWeapon);
+
                     commandBuffer.AddComponent(sortKey, stuff, new ShouldBeDropped()
                     {
                         position = playerPos,
                         direction = playerDir
                     });
-                    //commandBuffer.DestroyEntity(sortKey, stuffList.List[(int)StuffSlot.SecondaryWeapon]);
-                    commandBuffer.AddComponent<ShouldBeDestroyed>(sortKey, stuffList.ElementAt((int)StuffSlot.SecondaryWeapon).entity);
+
+                    if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon) != Entity.Null) //If the player has a secondary weapon, we destroy it
+                        commandBuffer.AddComponent<ShouldBeDestroyed>(sortKey, StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon));
                 }
-                else
+                else if(StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon) != Entity.Null) //If the player has a secondary weapon but no main weapon, we drop the secondary weapon
                 {
-                    Entity stuff = stuffList.ElementAt((int)StuffSlot.SecondaryWeapon).entity;
-                    if (stuff != Entity.Null)
-                        commandBuffer.AddComponent(sortKey, stuff, new ShouldBeDropped()
-                        {
-                            position = playerPos,
-                            direction = playerDir
-                        });
+                    Entity stuff = StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon);
+
+                    commandBuffer.AddComponent(sortKey, stuff, new ShouldBeDropped()
+                    {
+                        position = playerPos,
+                        direction = playerDir
+                    });
+                }
+
+                if(StuffUtils.GetStuffInSlot(stuffList, StuffSlot.Harvester) != Entity.Null) //Drops the Harvester if player has it
+                {
+                    Entity stuff = StuffUtils.GetStuffInSlot(stuffList, StuffSlot.Harvester);
+
+                    commandBuffer.AddComponent(sortKey, stuff, new ShouldBeDropped()
+                    {
+                        position = playerPos,
+                        direction = playerDir
+                    });
                 }
 
                 bool stuffDropped = false;
 
                 for (int i = (int)StuffSlot.HEGrenade; i < (int)StuffSlot.nbSlots; i++)
                 {
-                    if (stuffList.ElementAt(i).entity != Entity.Null)
+                    if (StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i) != Entity.Null)
                     {
                         if (!stuffDropped)
                         {
-                            commandBuffer.AddComponent(sortKey, stuffList.ElementAt(i).entity, new ShouldBeDropped()
+
+                            commandBuffer.AddComponent(sortKey, StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i), new ShouldBeDropped()
                             {
                                 position = playerPos,
                                 direction = playerDir
@@ -152,19 +150,20 @@ public partial struct OnDieJob : IJobEntity
                         else
                         {
                             //commandBuffer.DestroyEntity(sortKey, stuffList.List[i]);
-                            commandBuffer.AddComponent<ShouldBeDestroyed>(sortKey, stuffList.ElementAt(i).entity);
+                            commandBuffer.AddComponent<ShouldBeDestroyed>(sortKey, StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i));
                         }
                     }
                 }
 
-                for (int i = 0; i < (int)StuffSlot.nbSlots; i++)
-                {
-                    if (stuffList.ElementAt(i).entity != Entity.Null)
-                    {
-                        UnequipStuff(stuffList.ElementAt(i).entity, entity);
-                        stuffList.Insert(i, new CharacterStuffList() { entity = Entity.Null });
-                    }
-                }
+                //for (int i = 0; i < (int)StuffSlot.nbSlots; i++)
+                //{
+                //    if (StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i) != Entity.Null)
+                //    {
+                //        UnequipStuff(StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i), entity);
+                //    }
+                //}
+
+                //commandBuffer.AddComponent<ShouldEmptyInventory>(sortKey, entity);
             }
 
             if (autoRespawnIsEnable)
@@ -277,13 +276,13 @@ public partial struct RespawnSystem : ISystem
                 transform.ValueRW.Position = buffer[index % buffer.Length];
                 currentHealth.ValueRW.Value = 100;
 
-                //FIX (Aurelien) : When the player dies, he respawns with nothing (if he dropped his stuff)
+                ////FIX (Aurelien) : When the player dies, he respawns with nothing (if he dropped his stuff)
 
-                if(SystemAPI.GetBuffer<CharacterStuffList>(characterEntity).ElementAt((int)StuffSlot.SecondaryWeapon).entity == Entity.Null) //Avoid duplicating gun if for some reason the player already has one
-                {
-                    SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue);
-                    StuffUtils.InstantiateNextFrame(queue, "LP-17", characterEntity); //The player gets to respawn with a handgun
-                }
+                //if(SystemAPI.GetBuffer<CharacterStuffList>(characterEntity).ElementAt((int)StuffSlot.SecondaryWeapon).entity == Entity.Null) //Avoid duplicating gun if for some reason the player already has one
+                //{
+                //    SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue);
+                //    StuffUtils.InstantiateNextFrame(queue, "LP-17", characterEntity); //The player gets to respawn with a handgun
+                //}
 
                 ecb.SetComponentEnabled<CharacterIsEnable>(characterEntity, true);
                 ecb.RemoveComponent<HasNoHealthTag>(characterEntity);

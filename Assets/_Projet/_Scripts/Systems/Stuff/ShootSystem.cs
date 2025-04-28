@@ -116,7 +116,7 @@ public partial struct ShootSystem : ISystem
                             {
                                 // Apply spread on raycast
                                 float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                                float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 5f;
+                                float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
                                 quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                                 quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
                                 recoilRotation = math.mul(shootRotation, recoilRotation);
@@ -256,9 +256,10 @@ public partial struct ShootSystem : ISystem
                         ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
 
                         //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
-                        StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
+                        //StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
+                        StuffUtils.Throw(ref state, linkedEntityGroup, characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
 
-                        if(characterStuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
+                        if (characterStuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
                         {
                             StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.MainWeapon);
                         }
