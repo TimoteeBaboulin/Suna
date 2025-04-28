@@ -1,0 +1,113 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3351486466811909007
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2495947166221910473}
+  - component: {fileID: 292482016184133629}
+  - component: {fileID: 3231184667773183887}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2495947166221910473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3351486466811909007}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.45073223, y: 54.07361, z: -85.29267}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &292482016184133629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3351486466811909007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c87595c55075e6c428932cd0ec95710b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3231184667773183887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3351486466811909007}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7795c795621e64fb9ffd564cfa7ad1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundGroupList:
+  - keyGroup: Hit
+    maping:
+    - keyAction: Impact
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 9e91b35a3421eec42bf16b4234c82156, type: 2}
+    - keyAction: Kill
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: ee5fea220b1fe2e4391161677c76536b, type: 2}
+    - keyAction: Headshot
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: a6f44e1a47cd5e54ca8e1704725fe36a, type: 2}
+  - keyGroup: Management
+    maping:
+    - keyAction: StopAll
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 2f9166542bc3b994da15ba00cf73f695, type: 2}
+  - keyGroup: Music
+    maping:
+    - keyAction: Natif
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 4faba9dd0249fb44aba51ec97b3469e1, type: 2}
+    - keyAction: Corpo
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 328e13cf5e3a8fe4590a3ed4c3503b6a, type: 2}
+    - keyAction: Harvester_Clockwise
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 9007dbb144fe4864dae95dea681c9473, type: 2}
+  - keyGroup: Bullet
+    maping:
+    - keyAction: NearBullet
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: bc5360d91a629304eb4d3603002f8bb0, type: 2}
+    - keyAction: NoBullet
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: fcf7a05214d61d347a4d5515b7047499, type: 2}

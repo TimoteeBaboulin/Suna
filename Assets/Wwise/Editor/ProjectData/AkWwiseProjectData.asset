@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584560432164609947
+    m_lastTime: -8584558364947689838
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -82,6 +82,20 @@ MonoBehaviour:
         ObjectType: 7
         guid: bc866bf90dfff1479f016a5a99d55c1e
       Path: SoundBanks\Default Work Unit\DefaultBank
+    - name: MainMenu
+      guid: 5e203f377d20ef45a994fd3faf1cae9e
+      id: 3604647259
+      PathAndIcons:
+      - ElementName: SoundBanks
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: ba60688da2d0e14e9c2083f407a04640
+      - ElementName: MainMenu
+        ObjectType: 7
+        guid: 5e203f377d20ef45a994fd3faf1cae9e
+      Path: SoundBanks\Default Work Unit\MainMenu
   EventWwu:
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
@@ -94,8 +108,85 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584560432165323052
+    m_lastTime: -8584558364947252511
     List:
+    - name: Bullet
+      guid: f31ddc298c55be49ad82765d29c29e87
+      id: 1256513485
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Bullet
+        ObjectType: 4
+        guid: f31ddc298c55be49ad82765d29c29e87
+      Path: Events\Default Work Unit\Bullet
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Button_Clic
+      guid: 68fd3d2ea644dc4898707a9573ba6c84
+      id: 2494499361
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      - ElementName: Button_Clic
+        ObjectType: 3
+        guid: 68fd3d2ea644dc4898707a9573ba6c84
+      Path: Events\Default Work Unit\UI\Button_Clic
+      maxAttenuation: 0
+      maxDuration: 0.5679592
+      minDuration: 0.5679592
+    - name: Button_Release
+      guid: a4c6365210e4794b9268829aad4a5d1b
+      id: 3732113631
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      - ElementName: Button_Release
+        ObjectType: 3
+        guid: a4c6365210e4794b9268829aad4a5d1b
+      Path: Events\Default Work Unit\UI\Button_Release
+      maxAttenuation: 0
+      maxDuration: 1.9878231
+      minDuration: 1.9878231
+    - name: Button_Rollover
+      guid: e8846a73b087254fbe7820925ee13382
+      id: 3644104355
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      - ElementName: Button_Rollover
+        ObjectType: 3
+        guid: e8846a73b087254fbe7820925ee13382
+      Path: Events\Default Work Unit\UI\Button_Rollover
+      maxAttenuation: 0
+      maxDuration: 2.6647391
+      minDuration: 2.6647391
     - name: Character
       guid: b02d4c429ef96448b30705fc5351842d
       id: 436743010
@@ -113,6 +204,126 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: CS_Like_Counter_Clockwise
+      guid: ac91fdc5d9a45d4ca086b29c57d6fec3
+      id: 4036144589
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: CS_Like_Counter_Clockwise
+        ObjectType: 3
+        guid: ac91fdc5d9a45d4ca086b29c57d6fec3
+      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise
+      maxAttenuation: 0
+      maxDuration: 12.857165
+      minDuration: 12.857165
+    - name: CS_Like_Counter_Clockwise_STOP
+      guid: 6a1ae4e4c162de4eade1e8f2c0039726
+      id: 1779440320
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: CS_Like_Counter_Clockwise_STOP
+        ObjectType: 3
+        guid: 6a1ae4e4c162de4eade1e8f2c0039726
+      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: CS_Like_Natives_Loop
+      guid: a443772f5e0060478f9aa11f1ca04d94
+      id: 1531110987
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: CS_Like_Natives_Loop
+        ObjectType: 3
+        guid: a443772f5e0060478f9aa11f1ca04d94
+      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop
+      maxAttenuation: 0
+      maxDuration: 56.47059
+      minDuration: 56.47059
+    - name: CS_Like_Natives_Loop_STOP
+      guid: b310670b6f203d47acb1341a9042126a
+      id: 2301338566
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: CS_Like_Natives_Loop_STOP
+        ObjectType: 3
+        guid: b310670b6f203d47acb1341a9042126a
+      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: CS_Like_Robots_Loop
+      guid: 6b9c0c5e7a187b48a3ccdf6dd7d25436
+      id: 2598419022
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: CS_Like_Robots_Loop
+        ObjectType: 3
+        guid: 6b9c0c5e7a187b48a3ccdf6dd7d25436
+      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop
+      maxAttenuation: 0
+      maxDuration: 56.47059
+      minDuration: 56.47059
+    - name: CS_Like_Robots_Loop_STOP
+      guid: 3c37fa7516a3f74aa9bc5aee6b74524b
+      id: 267023757
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: CS_Like_Robots_Loop_STOP
+        ObjectType: 3
+        guid: 3c37fa7516a3f74aa9bc5aee6b74524b
+      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
     - name: Footstep
       guid: 9b328937a796d24fb9542e5b638b2771
       id: 1866025847
@@ -133,6 +344,80 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0.5611338
       minDuration: 0.5611338
+    - name: Headshot
+      guid: 2a761a9a80f72149a25ae5eb8cf78ac4
+      id: 2632074263
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Headshot
+        ObjectType: 3
+        guid: 2a761a9a80f72149a25ae5eb8cf78ac4
+      Path: Events\Default Work Unit\Hit\Headshot
+      maxAttenuation: 0
+      maxDuration: 3.9009523
+      minDuration: 3.9009523
+    - name: Hit
+      guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      id: 1116398592
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      Path: Events\Default Work Unit\Hit
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Kill
+      guid: 9e98fa6538e3dc4a8971344c56e1d173
+      id: 2030840469
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Kill
+        ObjectType: 4
+        guid: fa68bd054ce809469dee31f8694942cb
+      - ElementName: Kill
+        ObjectType: 3
+        guid: 9e98fa6538e3dc4a8971344c56e1d173
+      Path: Events\Default Work Unit\Kill\Kill
+      maxAttenuation: 0
+      maxDuration: 2.2553968
+      minDuration: 2.2553968
+    - name: Kill
+      guid: fa68bd054ce809469dee31f8694942cb
+      id: 2030840469
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Kill
+        ObjectType: 4
+        guid: fa68bd054ce809469dee31f8694942cb
+      Path: Events\Default Work Unit\Kill
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: LP17
       guid: 79cba981a1aa2948a0cd724ec0459f51
       id: 1599998537
@@ -153,6 +438,106 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: Management
+      guid: 7434eb46ee7cc64aa24200c8418b4ac1
+      id: 62536604
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Management
+        ObjectType: 4
+        guid: 7434eb46ee7cc64aa24200c8418b4ac1
+      Path: Events\Default Work Unit\Management
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Miss
+      guid: 67f25658d5142147ae79e516e88ffa3f
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      Path: Events\Default Work Unit\Hit\Miss
+      maxAttenuation: 0
+      maxDuration: 1.6925397
+      minDuration: 1.6925397
+    - name: Miss
+      guid: b6a11cb79fc954428527a1aeaa5a936c
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      - ElementName: Miss
+        ObjectType: 3
+        guid: b6a11cb79fc954428527a1aeaa5a936c
+      Path: Events\Default Work Unit\Hit\Miss\Miss
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Near_Bullet
+      guid: b2afa0342dc680418ef8c51a15c84493
+      id: 2962560402
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Bullet
+        ObjectType: 4
+        guid: f31ddc298c55be49ad82765d29c29e87
+      - ElementName: Near_Bullet
+        ObjectType: 3
+        guid: b2afa0342dc680418ef8c51a15c84493
+      Path: Events\Default Work Unit\Bullet\Near_Bullet
+      maxAttenuation: 0
+      maxDuration: 0.86489797
+      minDuration: 0.86489797
+    - name: No_Bullet
+      guid: 4670e409b9c0a244914dc4b3324edf42
+      id: 3728918479
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Bullet
+        ObjectType: 4
+        guid: f31ddc298c55be49ad82765d29c29e87
+      - ElementName: No_Bullet
+        ObjectType: 3
+        guid: 4670e409b9c0a244914dc4b3324edf42
+      Path: Events\Default Work Unit\Bullet\No_Bullet
+      maxAttenuation: 0
+      maxDuration: 0.37188208
+      minDuration: 0.37188208
     - name: Pistol_Reload
       guid: 7c31bd991b042f4f9d594c0543e9f945
       id: 1068215004
@@ -199,6 +584,204 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 2.0273924
       minDuration: 2.0273924
+    - name: Ragdoll
+      guid: 8d06e527d1e4c641824e90af8992ab44
+      id: 4135087902
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Character
+        ObjectType: 4
+        guid: b02d4c429ef96448b30705fc5351842d
+      - ElementName: Ragdoll
+        ObjectType: 3
+        guid: 8d06e527d1e4c641824e90af8992ab44
+      Path: Events\Default Work Unit\Character\Ragdoll
+      maxAttenuation: 0
+      maxDuration: 0.34
+      minDuration: 0.34
+    - name: Rifle
+      guid: 76a7f5020e018b46a55a12807b809d3b
+      id: 4262674733
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Rifle
+        ObjectType: 4
+        guid: 76a7f5020e018b46a55a12807b809d3b
+      Path: Events\Default Work Unit\Stuff\Rifle
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Rifle_Reload
+      guid: e9309a3c4c410246a83dc61624164224
+      id: 3214964847
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Rifle
+        ObjectType: 4
+        guid: 76a7f5020e018b46a55a12807b809d3b
+      - ElementName: Rifle_Reload
+        ObjectType: 3
+        guid: e9309a3c4c410246a83dc61624164224
+      Path: Events\Default Work Unit\Stuff\Rifle\Rifle_Reload
+      maxAttenuation: 0
+      maxDuration: 1.2909751
+      minDuration: 1.2909751
+    - name: Rifle_Shoot
+      guid: 4f16e0081a30e74d87330d3ac9078238
+      id: 1117295805
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Rifle
+        ObjectType: 4
+        guid: 76a7f5020e018b46a55a12807b809d3b
+      - ElementName: Rifle_Shoot
+        ObjectType: 3
+        guid: 4f16e0081a30e74d87330d3ac9078238
+      Path: Events\Default Work Unit\Stuff\Rifle\Rifle_Shoot
+      maxAttenuation: 0
+      maxDuration: 5.1215644
+      minDuration: 5.1215644
+    - name: Shotgun
+      guid: adc23f9512001740a16ce9d80d58f5a8
+      id: 51683977
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      Path: Events\Default Work Unit\Stuff\Shotgun
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Shotgun_Cock_Back
+      guid: e4a9e0061903f942b42de6bd6ffc81be
+      id: 3750486034
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Cock_Back
+        ObjectType: 3
+        guid: e4a9e0061903f942b42de6bd6ffc81be
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Back
+      maxAttenuation: 0
+      maxDuration: 0.218322
+      minDuration: 0.218322
+    - name: Shotgun_Cock_Forward
+      guid: ed45917fde0c684c8ef01a0dc1e2628e
+      id: 3003651970
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Cock_Forward
+        ObjectType: 3
+        guid: ed45917fde0c684c8ef01a0dc1e2628e
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Forward
+      maxAttenuation: 0
+      maxDuration: 0.23437642
+      minDuration: 0.23437642
+    - name: Shotgun_Shoot
+      guid: 97190818ce08ce4d843f3041b0b11a51
+      id: 2040071657
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Shoot
+        ObjectType: 3
+        guid: 97190818ce08ce4d843f3041b0b11a51
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot
+      maxAttenuation: 0
+      maxDuration: 1.1954195
+      minDuration: 1.1954195
+    - name: Shotgun_Shoot_Test
+      guid: dd3eeb47c4b42941b222c21aad323884
+      id: 3542188584
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Shotgun
+        ObjectType: 4
+        guid: adc23f9512001740a16ce9d80d58f5a8
+      - ElementName: Shotgun_Shoot_Test
+        ObjectType: 3
+        guid: dd3eeb47c4b42941b222c21aad323884
+      Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot_Test
+      maxAttenuation: 0
+      maxDuration: 1.1954195
+      minDuration: 1.1954195
     - name: SMG
       guid: 038061cdfe726940a83fd5a5174d61cd
       id: 510683180
@@ -265,6 +848,92 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 2.970771
       minDuration: 2.970771
+    - name: Sniper
+      guid: 51a5568df7765a42bce0a5d108fe779c
+      id: 2550763292
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Sniper
+        ObjectType: 4
+        guid: 51a5568df7765a42bce0a5d108fe779c
+      Path: Events\Default Work Unit\Stuff\Sniper
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Sniper_Reload
+      guid: 6b91a1b731f91f4d9f61b6d97f0b60da
+      id: 2515054376
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Sniper
+        ObjectType: 4
+        guid: 51a5568df7765a42bce0a5d108fe779c
+      - ElementName: Sniper_Reload
+        ObjectType: 3
+        guid: 6b91a1b731f91f4d9f61b6d97f0b60da
+      Path: Events\Default Work Unit\Stuff\Sniper\Sniper_Reload
+      maxAttenuation: 0
+      maxDuration: 0.92764175
+      minDuration: 0.92764175
+    - name: Sniper_Shoot
+      guid: f14fd24298e08143930b352f46f1634c
+      id: 2801873252
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Sniper
+        ObjectType: 4
+        guid: 51a5568df7765a42bce0a5d108fe779c
+      - ElementName: Sniper_Shoot
+        ObjectType: 3
+        guid: f14fd24298e08143930b352f46f1634c
+      Path: Events\Default Work Unit\Stuff\Sniper\Sniper_Shoot
+      maxAttenuation: 0
+      maxDuration: 3.6140363
+      minDuration: 3.6140363
+    - name: StopAll
+      guid: af2bec073af99d45bd88575149e4ae05
+      id: 3086540886
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Management
+        ObjectType: 4
+        guid: 7434eb46ee7cc64aa24200c8418b4ac1
+      - ElementName: StopAll
+        ObjectType: 3
+        guid: af2bec073af99d45bd88575149e4ae05
+      Path: Events\Default Work Unit\Management\StopAll
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
     - name: Stuff
       guid: 92a464832e1fee42bc8a9fc8ed7aa103
       id: 1883833725
@@ -282,6 +951,172 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: Tom_Musics
+      guid: 86eab33a5887404b8902de47d35940e6
+      id: 756763670
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Tom_Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      Path: Events\Default Work Unit\Tom_Musics
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: UI
+      guid: 6760bcf681159f4d9d7d162d41a0c076
+      id: 1551306167
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: UI
+        ObjectType: 4
+        guid: 6760bcf681159f4d9d7d162d41a0c076
+      Path: Events\Default Work Unit\UI
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+  - PhysicalPath: Events\MainMenu.wwu
+    PathAndIcons:
+    - ElementName: Events
+      ObjectType: 5
+      guid: 00000000000000000000000000000000
+    - ElementName: MainMenu
+      ObjectType: 12
+      guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+    ParentPath: Events\MainMenu
+    guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+    GuidInternal: 
+    m_lastTime: -8584558364020681719
+    List:
+    - name: CS_Like_Main_Title_Loop
+      guid: f5a8660a87212443a57b5fb3c3f3d40c
+      id: 2735489995
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Main_Title_Loop
+        ObjectType: 3
+        guid: f5a8660a87212443a57b5fb3c3f3d40c
+      Path: Events\MainMenu\CS_Like_Main_Title_Loop
+      maxAttenuation: 0
+      maxDuration: 28.235306
+      minDuration: 28.235306
+    - name: CS_Like_Main_Title_Loop_STOP
+      guid: 84c31f8e0876374592fe4d5b3cc809c4
+      id: 251419718
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Main_Title_Loop_STOP
+        ObjectType: 3
+        guid: 84c31f8e0876374592fe4d5b3cc809c4
+      Path: Events\MainMenu\CS_Like_Main_Title_Loop_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: CS_Like_Menus_Launcher
+      guid: 54f545ddf8d0394bbfd0a819bbc1e4c2
+      id: 1901903297
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Launcher
+        ObjectType: 3
+        guid: 54f545ddf8d0394bbfd0a819bbc1e4c2
+      Path: Events\MainMenu\CS_Like_Menus_Launcher
+      maxAttenuation: 0
+      maxDuration: 146.4706
+      minDuration: 146.4706
+    - name: CS_Like_Menus_Launcher_STOP
+      guid: 7e74ea60085758499d9a6dbeb0b645a0
+      id: 715144708
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Launcher_STOP
+        ObjectType: 3
+        guid: 7e74ea60085758499d9a6dbeb0b645a0
+      Path: Events\MainMenu\CS_Like_Menus_Launcher_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: CS_Like_Menus_Main_Loop
+      guid: 995bc6b4c8f9634d914c34c343bf248c
+      id: 947053159
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Main_Loop
+        ObjectType: 3
+        guid: 995bc6b4c8f9634d914c34c343bf248c
+      Path: Events\MainMenu\CS_Like_Menus_Main_Loop
+      maxAttenuation: 0
+      maxDuration: 121.76472
+      minDuration: 121.76472
+    - name: CS_Like_Menus_Main_Loop_STOP
+      guid: 068d2b6962dab64892f5a452f743b162
+      id: 2164583458
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: CS_Like_Menus_Main_Loop_STOP
+        ObjectType: 3
+        guid: 068d2b6962dab64892f5a452f743b162
+      Path: Events\MainMenu\CS_Like_Menus_Main_Loop_STOP
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
+    - name: StopAll_01
+      guid: d7d21ec239b7e644a0990d0a2da6222c
+      id: 4256069028
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: StopAll_01
+        ObjectType: 3
+        guid: d7d21ec239b7e644a0990d0a2da6222c
+      Path: Events\MainMenu\StopAll_01
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:
@@ -339,7 +1174,7 @@ MonoBehaviour:
     m_lastTime: -8584560549817907744
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 0500000006000000080000000b0000000c00000018000000
+  ExpandedWaapiItemIds: 010000000500000007000000090000000b0000000c0000000d0000001000000011000000120000001f000000270000004b000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

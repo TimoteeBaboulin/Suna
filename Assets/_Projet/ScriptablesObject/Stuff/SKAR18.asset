@@ -32,8 +32,8 @@ MonoBehaviour:
   roundsPerShot: 1
   spread: 1.2
   spreadAiming: 1
-  coefSpray: 10
-  coefSprayAiming: 8
+  coefSpray: 2
+  coefSprayAiming: 1.2
   ergonomics: 10
   dmgFallOff: 0.01
   coefModifMoveSpeed: 0.82
@@ -56,3 +56,14 @@ MonoBehaviour:
   legs_Arms: 21
   head: 91
   ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 2594b6076a768c84a8a95fc3a1ab19de, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a7d3624565523084598f382cf6f6d9ea, type: 2}

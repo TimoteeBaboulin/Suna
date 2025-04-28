@@ -113,7 +113,7 @@ partial class CameraSystem : SystemBase
                 RefRO<LocalTransform> localTransform = SystemAPI.GetComponentRO<LocalTransform>(currentTarget);
                 RefRO<CharacterViewRotation> localViewRotation = SystemAPI.GetComponentRO<CharacterViewRotation>(currentTarget);
 
-                bool ADSActive = true;
+                //bool ADSActive = true;
 
                 //If you can't find the database or the database access of the currently equipped
                 //Stuff, you can not ADS
@@ -166,11 +166,12 @@ partial class CameraSystem : SystemBase
     {
         stuffEntity = default;
 
-        if (!SystemAPI.HasComponent<CharacterStuffList>(characterEntity))
+        if (!SystemAPI.HasBuffer<CharacterStuffList>(characterEntity))
             return false;
 
-        CharacterStuffList stuffList = SystemAPI.GetComponent<CharacterStuffList>(characterEntity);
-        stuffEntity = stuffList.StuffInHand;
+        DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
+        CharacterStuffInfos stuffInfos = SystemAPI.GetComponent<CharacterStuffInfos>(characterEntity);
+        stuffEntity = StuffUtils.GetStuffInHand(stuffList, stuffInfos);
         return true;
     }
 }

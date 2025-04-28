@@ -8,7 +8,7 @@ public class MeleeWeaponData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
-    public Image UIImage;
+    public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
     public TeamSideType side;

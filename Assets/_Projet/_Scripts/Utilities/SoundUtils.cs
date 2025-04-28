@@ -1,6 +1,7 @@
 using System;
 
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -43,7 +44,7 @@ public static class SoundUtils
             maping = soundMaping
         });
     }
-public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soundList)
+    public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soundList)
     {
 
         SoundRegister soundRegister = new SoundRegister();
@@ -78,7 +79,7 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
     }
 
     //The entity holding the soundBuffer must have SoundAuthoring attached
-    public static void Play(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
+    public static void PlayWithSoundQueue(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
     {
         soundQueue.Add(new SoundQueue()
         {
@@ -90,7 +91,7 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
     }
 
     //The entity holding the soundBuffer must have SoundAuthoring attached
-    public static void PlayAtEmitter(ref SystemState state, DynamicBuffer<SoundQueue> soundQueue, Entity entity, FixedString32Bytes keyAction)
+    public static void PlayAtEmitterWithSoundQueue(ref SystemState state, DynamicBuffer<SoundQueue> soundQueue, Entity entity, FixedString32Bytes keyAction)
     {
         if (state.EntityManager.HasComponent<SoundEmitter>(entity))
         {
@@ -100,13 +101,13 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
             if (state.EntityManager.HasComponent<LocalToWorld>(entity))
             {
                 LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
-                Play(soundQueue, emitter, keyAction, transform.Position);
+                PlayWithSoundQueue(soundQueue, emitter, keyAction, transform.Position);
 
             }
         }
     }
 
-    public static void Play(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos)
+    public static void PlayWithRPC(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos)
     {
         SoundRpc soundRpc = new SoundRpc()
         {
@@ -117,12 +118,17 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
         RpcUtils.SendServerToClientRpc(ref soundRpc);
     }
 
-    public static void Play(in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
+    public static void PlayWithRPC(ref SoundEmitter emitterRW, FixedString32Bytes keyAction, float3 pos, float cooldown = 0f, float dt = 0f)
     {
-        Play(emitter.keyGroup, keyAction, pos);
+        emitterRW.timer -= dt;
+        if (emitterRW.timer <= 0f)
+        {
+            emitterRW.timer = cooldown;
+            PlayWithRPC(emitterRW.keyGroup, keyAction, pos);
+        }
     }
 
-    public static void PlayAtEmitter(ref SystemState state, FixedString32Bytes keyAction, Entity entity)
+    public static void PlayAtEmitterWithRPC(ref SystemState state, FixedString32Bytes keyAction, Entity entity)
     {
         if (state.EntityManager.HasComponent<SoundEmitter>(entity))
         {
@@ -131,7 +137,7 @@ public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soun
             if (state.EntityManager.HasComponent<LocalToWorld>(entity))
             {
                 LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
-                Play(emitter.keyGroup, keyAction, transform.Position);
+                PlayWithRPC(emitter.keyGroup, keyAction, transform.Position);
             }
         }
 

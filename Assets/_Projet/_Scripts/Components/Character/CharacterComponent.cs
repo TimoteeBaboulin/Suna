@@ -58,29 +58,44 @@ public struct CharacterClientAttachedComponent : IComponentData
     [GhostField] public Entity ClientEntity;
 }
 
+[GhostComponent]
 public struct CharacterDefaultStuffName : IBufferElementData
 {
-    public FixedString128Bytes Value;
+    [GhostField] public FixedString128Bytes Value;
+}
+
+//[GhostComponent]
+//public struct CharacterStuffList : IComponentData
+//{
+//    [GhostField] public FixedList128Bytes<Entity> List;
+//    [GhostField] public StuffSlot StuffInHandSlot;
+
+//    public Entity StuffInHand { get => List[(int)StuffInHandSlot]; set => List[(int)StuffInHandSlot] = value; }
+
+//    public Entity GetStuffInSlot(StuffSlot slot)
+//    {
+//        return List[(int)slot];
+//    }
+
+//    public void SetStuffInSlot(StuffSlot slot, Entity stuff)
+//    {
+//        List[(int)slot] = stuff;
+//    }
+//}
+
+[GhostComponent]
+public struct CharacterStuffInfos : IComponentData
+{
+    [GhostField] public StuffSlot StuffInHandSlot;
 }
 
 [GhostComponent]
-public struct CharacterStuffList : IComponentData
+[InternalBufferCapacity((int)StuffSlot.nbSlots)]
+public struct CharacterStuffList: IBufferElementData
 {
-    [GhostField] public FixedList128Bytes<Entity> List;
-    [GhostField] public StuffSlot StuffInHandSlot;
-
-    public Entity StuffInHand { get => List[(int)StuffInHandSlot]; set => List[(int)StuffInHandSlot] = value; }
-
-    public Entity GetStuffInSlot(StuffSlot slot)
-    {
-        return List[(int)slot];
-    }
-
-    public void SetStuffInSlot(StuffSlot slot, Entity stuff)
-    {
-        List[(int)slot] = stuff;
-    }
+    [GhostField] public Entity entity;
 }
+
 
 [GhostEnabledBit]
 public struct IsInstanciateDefaultStuff : IComponentData, IEnableableComponent { }

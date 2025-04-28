@@ -33,5 +33,6 @@ public class SoundRegister : IComponentData
 public struct SoundEmitter : IComponentData
 {
     [GhostField] public FixedString32Bytes keyGroup;
+    [GhostField] public float timer;
 }
 

@@ -1,8 +1,11 @@
+using GameNetwork.Utils;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
@@ -15,6 +18,9 @@ public class HUDController : MonoBehaviour
 
     // Main HUD
     private VisualElement _crosshairElement;
+
+    //Grenade effects
+    private VisualElement _flash;
 
     private Label _health;
     //private Label _armor; // Should be uncommented when Armor in working
@@ -74,12 +80,13 @@ public class HUDController : MonoBehaviour
     float _roundPhaseTime = 0f;
     RoundPhase _lastPhase = RoundPhase.PostRoundPhase;
 
-
     private void Awake()
     {
         // Initialize all HUD elements
         _HUDDocument = GetComponent<UIDocument>();
         _HUD = _HUDDocument.rootVisualElement;
+
+        _flash = _HUD.Q<VisualElement>("Flash");
 
         _health = _HUD.Q<Label>("HealthLabel");
         //_armor = _HUD.Q<Label>("ArmorLabel");
@@ -146,6 +153,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.HitRegister += System_OnHitRegistered;
             _inGameHUDSystem.AmmoChangeEvent += System_OnAmmoChange;
             _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
+            _inGameHUDSystem.FlashGrenadeEvent += System_OnFlashGrenade;
         }
 
         if (_roundManagerLinkSystem == null && world.Name == "ClientWorld")
@@ -203,6 +211,28 @@ public class HUDController : MonoBehaviour
         //{
         //    UI.ToggleActive(ref _messageBox);
         //}
+
+        if (world.Name == "ClientWorld")
+        {
+            PlayerIconsUpdate(TeamSideType.Corpo);
+            PlayerIconsUpdate(TeamSideType.Natif);
+        }
+    }
+
+    private float FlashIntensity(float x)
+    {
+        if (x > 0.68f) return 1f;
+
+        x /= 0.68f; // Normalize to [0, 1] range
+
+        return x == 0 ? 0 : x == 1 ? 1
+              : x < 0.5 ? math.pow(2, 20 * x - 10) / 2
+              : (2 - math.pow(2, -20 * x + 10)) / 2;
+    }
+
+    private void System_OnFlashGrenade(object sender, InGameHUDSystem.FlashGrenadeArgs e)
+    {
+        UI.SetOpacity(ref _flash, FlashIntensity(e.intensity));
     }
 
     private void RoundPhaseUpdate(RoundComponent roundComponent)
@@ -540,6 +570,34 @@ public class HUDController : MonoBehaviour
         ResetPlant();
     }
     //----------End of Defuse and Plant Elements System
+
+    private void PlayerIconsUpdate(TeamSideType teamSide)
+    {
+        var teamList = PlayerHelpers.GetClientPlayersByTeam(teamSide);
+        Debug.Log($"teamside {teamSide} teamlistCOunt {teamList.Count}");
+
+        //for (int i = 0; i < teamIcons.Children().Count(); i++)
+        //{
+        //    VisualElement icon = teamIcons.Q<VisualElement>("Position" + (i + 1).ToString());
+        //    if (i < teamList.Count)
+        //    {
+        //        if (teamList[i].playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+        //        {
+        //            UI.SetBorderColor(ref icon, Color.green);
+        //        }
+        //        else
+        //        {
+        //            UI.SetBorderColor(ref icon, Color.gray);
+        //        }
+        //        //UI.SetImageTintColor(ref icon, Color.white);
+        //    }
+        //    else
+        //    {
+        //        UI.SetBorderColor(ref icon, Color.clear);
+        //       // UI.SetImageTintColor(ref icon, Color.clear);
+        //    }
+        //}
+    }
 }
 
 [Serializable]

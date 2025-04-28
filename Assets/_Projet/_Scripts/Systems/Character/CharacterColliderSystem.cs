@@ -1,8 +1,9 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 partial struct CommonCharacterColliderSystem : ISystem
 {
@@ -16,56 +17,31 @@ partial struct CommonCharacterColliderSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (characterCollider, entity) in SystemAPI
-            .Query<RefRW<CharacterColliderComponent>>()
-            .WithAll<CharacterColliderInitEntityTag>()
+        foreach (var(characterCollider, ghostOwner, entity) in SystemAPI
+            .Query<RefRW<CharacterColliderComponent>, RefRO<GhostOwner>>()
+            .WithAll<ThirdPersonCharacterModelBonesTransform, CharacterColliderInitEntityTag>()
             .WithEntityAccess())
         {
             if (!SystemAPI.TryGetSingleton(out ClientPrefabData prefabsData)) { continue; }
 
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.HeadEntity,
-                prefabsData.CharacterHeadCollider, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity0,
-                prefabsData.CharacterArmCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity1,
-                prefabsData.CharacterArmCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmLeftEntity2,
-                prefabsData.CharacterArmCollider2, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity0,
-                prefabsData.CharacterArmCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity1,
-                prefabsData.CharacterArmCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ArmRightEntity2,
-                prefabsData.CharacterArmCollider2, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.ThoraxEntity,
-                prefabsData.CharacterThoraxCollider, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.StomachEntity0,
-                prefabsData.CharacterStomachCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.StomachEntity1,
-                prefabsData.CharacterStomachCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity0,
-                prefabsData.CharacterLegCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity1,
-                prefabsData.CharacterLegCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegLeftEntity2,
-                prefabsData.CharacterLegCollider2, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity0,
-                prefabsData.CharacterLegCollider0, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity1,
-                prefabsData.CharacterLegCollider1, entity, ecb, state.EntityManager);
-            CharacterColliderUtils.InstantiateCollider(ref characterCollider.ValueRW.LegRightEntity2,
-                prefabsData.CharacterLegCollider2, entity, ecb, state.EntityManager);
+            TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+
+            switch (teamSide)
+            {
+                case TeamSideType.Corpo:
+                    CharacterColliderUtils.InstantiateCorpoCollider(characterCollider, entity, prefabsData, ecb, state.EntityManager);
+                    break;
+                case TeamSideType.Natif:
+                    CharacterColliderUtils.InstantiateNatifCollider(characterCollider, entity, prefabsData, ecb, state.EntityManager);
+                    break;
+            }
 
             ecb.RemoveComponent<CharacterColliderInitEntityTag>(entity);
         }
 
-        ecb.Playback(state.EntityManager);
-        ecb.Dispose();
-
-        ecb = new EntityCommandBuffer(Allocator.Temp);
-
         foreach (var (characterCollider, modelBones) in SystemAPI
-            .Query<RefRO<CharacterColliderComponent>, ThirdPersonCharacterModelBonesTransform>())
+            .Query<RefRO<CharacterColliderComponent>, ThirdPersonCharacterModelBonesTransform>()
+            .WithNone<CharacterColliderInitEntityTag>())
         {
             CharacterColliderUtils.SetTransform(characterCollider.ValueRO.HeadEntity, modelBones.HeadBoneTransform, ecb, state.EntityManager);
             CharacterColliderUtils.SetTransform(characterCollider.ValueRO.ArmLeftEntity0, modelBones.ArmLeftBoneTransform0, ecb, state.EntityManager);

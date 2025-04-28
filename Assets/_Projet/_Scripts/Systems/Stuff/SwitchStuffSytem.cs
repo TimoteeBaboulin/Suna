@@ -19,64 +19,62 @@ public partial struct SwitchStuffSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         //Switch with mouseScroll
-        foreach (var (stuffListRef, inputRef, chara) in SystemAPI
-        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
+        foreach (var (stuffList, stuffInfosRW, inputRef, chara) in SystemAPI
+        .Query<DynamicBuffer<CharacterStuffList>, RefRW<CharacterStuffInfos>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRef.ValueRO;
-            ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
+            ref CharacterStuffInfos stuffInfos = ref stuffInfosRW.ValueRW;
 
             int dir = input.selectNext.IsSet ? 1 : input.selectPrevious.IsSet ? -1 : 0;
 
-            if (dir != 0 && stuffList.List.Length > 1)
+            if (dir != 0 && stuffList.Length > 1)
             {
-                Entity previousStuff = stuffList.StuffInHand;
-                StuffSlot nextStuffSlot = stuffList.StuffInHandSlot;
+                Entity previousStuff = StuffUtils.GetStuffInHand(stuffList, stuffInfos);
+                StuffSlot nextStuffSlot = stuffInfos.StuffInHandSlot;
 
-                for (int i = 0; i < stuffList.List.Length; i++)
+                for (int i = 0; i < stuffList.Length; i++)
                 {
                     nextStuffSlot += dir;
-                    nextStuffSlot = (StuffSlot)((stuffList.List.Length + (int)nextStuffSlot) % stuffList.List.Length);
+                    nextStuffSlot = (StuffSlot)((stuffList.Length + (int)nextStuffSlot) % stuffList.Length);
 
-                    if (stuffList.GetStuffInSlot(nextStuffSlot) != Entity.Null) break;
+                    if (StuffUtils.GetStuffInSlot(stuffList, nextStuffSlot) != Entity.Null) break;
                 }
 
-                StuffUtils.SwitchTo(ref state, ref stuffList, nextStuffSlot);
+                StuffUtils.SwitchTo(stuffList, stuffInfosRW, nextStuffSlot);
             }
         }
 
         //Switch with shortcut
-        foreach (var (stuffListRef, inputRef, chara) in SystemAPI
-        .Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
+        foreach (var (stuffList, stuffInfosRW, inputRef, chara) in SystemAPI
+        .Query<DynamicBuffer<CharacterStuffList>, RefRW<CharacterStuffInfos>, RefRO<CharacterInput>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRef.ValueRO;
-            ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
+            ref CharacterStuffInfos stuffInfos = ref stuffInfosRW.ValueRW;
 
-            if (stuffList.List.Length <= 1) continue;
+            if (stuffList.Length <= 1) continue;
 
             if (input.stuffLocation > 0)
             {
-                if ((int)stuffList.StuffInHandSlot == input.stuffLocation - 1) continue;
+                if ((int)stuffInfos.StuffInHandSlot == input.stuffLocation - 1) continue;
 
-                StuffUtils.SwitchTo(ref state, ref stuffList, (StuffSlot)(input.stuffLocation - 1));
+                StuffUtils.SwitchTo(stuffList, stuffInfosRW, (StuffSlot)(input.stuffLocation - 1));
             }
         }
 
         //Auto Switch if Hands empty
-        foreach (var (stuffListRef, chara) in SystemAPI
-        .Query<RefRW<CharacterStuffList>>()
+        foreach (var (stuffList, stuffInfosRW, chara) in SystemAPI
+        .Query<DynamicBuffer<CharacterStuffList>, RefRW<CharacterStuffInfos>>()
         .WithEntityAccess())
         {
-            ref CharacterStuffList stuffList = ref stuffListRef.ValueRW;
-
-            if (stuffList.StuffInHand == Entity.Null)
+            if (StuffUtils.GetStuffInHand(stuffList, stuffInfosRW.ValueRW) == Entity.Null)
             {
-                for (int i = 0; i < stuffList.List.Length; i++)
+                for (int i = 0; i < stuffList.Length; i++)
                 {
-                    if (stuffList.GetStuffInSlot((StuffSlot)i) == Entity.Null) continue;
+                    if (StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i) == Entity.Null) continue;
 
-                    StuffUtils.SwitchTo(ref state, ref stuffList, (StuffSlot)i);
+                    StuffUtils.SwitchTo(stuffList, stuffInfosRW, (StuffSlot)i);
                     break;
                 }
             }
@@ -90,7 +88,7 @@ public partial struct SwitchStuffSystem : ISystem
         {
             if (dynData.ValueRO.owner != Entity.Null)
             {
-                Entity stuffInHand = state.EntityManager.GetComponentData<CharacterStuffList>(dynData.ValueRO.owner).StuffInHand;
+                Entity stuffInHand = StuffUtils.GetStuffInHandUnsafe(ref state, dynData.ValueRO.owner);
                 state.EntityManager.SetComponentEnabled<IsStuffInHand>(stuff, stuffInHand == stuff);
             }
             else

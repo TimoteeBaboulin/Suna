@@ -56,4 +56,5 @@
             <engine:Label text="Press B to Open Shop" name="RoundBuyLabel" style="position: relative;" />
         </engine:VisualElement>
     </engine:VisualElement>
+    <engine:VisualElement name="Flash" style="flex-grow: 1; background-color: rgb(255, 255, 255); opacity: 0;" />
 </engine:UXML>

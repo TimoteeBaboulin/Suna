@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{E21A8B7C-E39D-4F42-8B0C-4B3B848EDF5A}" SchemaVersion="123">
+	<Events>
+		<WorkUnit Name="MainMenu" ID="{E21A8B7C-E39D-4F42-8B0C-4B3B848EDF5A}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="CS_Like_Main_Title_Loop" ID="{0A66A8F5-2187-4324-A57B-5FB3C3F3D40C}">
+					<ChildrenList>
+						<Action Name="" ID="{EEDBEB11-625E-477D-BFBD-D4C9C8187E9F}" ShortID="756026881">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Main_Title_Loop" ID="{93FEE187-48D5-46E1-B767-A1B2C0CAD229}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="CS_Like_Menus_Launcher" ID="{DD45F554-D0F8-4B39-BFD0-A819BBC1E4C2}">
+					<ChildrenList>
+						<Action Name="" ID="{0FAD3767-7116-43B9-A900-60EC490F9B2D}" ShortID="1055218929">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Menus_Launcher" ID="{20779729-474F-4B1B-A865-E032BC51ACA7}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="CS_Like_Menus_Main_Loop" ID="{B4C65B99-F9C8-4D63-914C-34C343BF248C}">
+					<ChildrenList>
+						<Action Name="" ID="{F5574C45-A417-4653-8BDE-F6D0517C4CB7}" ShortID="115429456">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Menus_Main_Loop" ID="{89F1927C-6B93-4EBB-8A7C-1975EE45B184}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="CS_Like_Main_Title_Loop_STOP" ID="{8E1FC384-7608-4537-92FE-4D5B3CC809C4}">
+					<ChildrenList>
+						<Action Name="" ID="{FF7D84E9-6752-4953-ABDF-A33CE70E044D}" ShortID="835472225">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Main_Title_Loop" ID="{93FEE187-48D5-46E1-B767-A1B2C0CAD229}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="CS_Like_Menus_Launcher_STOP" ID="{60EA747E-5708-4958-9D9A-6DBEB0B645A0}">
+					<ChildrenList>
+						<Action Name="" ID="{6898784D-03C0-47B8-A733-ED934C9AC918}" ShortID="807354279">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Menus_Launcher" ID="{20779729-474F-4B1B-A865-E032BC51ACA7}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="CS_Like_Menus_Main_Loop_STOP" ID="{692B8D06-DA62-48B6-92F5-A452F743B162}">
+					<ChildrenList>
+						<Action Name="" ID="{91610E78-690B-4928-A503-F80C23D69D46}" ShortID="685618100">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="2"/>
+							</PropertyList>
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Menus_Main_Loop" ID="{89F1927C-6B93-4EBB-8A7C-1975EE45B184}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+				<Event Name="StopAll_01" ID="{C21ED2D7-B739-44E6-A099-0D0A2DA6222C}">
+					<ChildrenList>
+						<Action Name="" ID="{EED580B4-B217-421A-B9FA-1E23F6E92FD4}" ShortID="176705965">
+							<PropertyList>
+								<Property Name="ActionType" Type="int16" Value="3"/>
+							</PropertyList>
+							<ReferenceList/>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

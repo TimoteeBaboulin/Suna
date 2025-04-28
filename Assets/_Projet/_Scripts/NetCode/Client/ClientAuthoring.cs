@@ -8,7 +8,12 @@ public class ClientAuthoring : MonoBehaviour
         public override void Bake(ClientAuthoring authoring)
         {
             Entity entity = GetEntity(TransformUsageFlags.None);
-            AddComponent(entity, new ClientComponent { });
+            AddComponent(entity, new ClientComponent 
+            {
+                networkID = 0,
+                playerID = default,
+                team = TeamSideType.Neutre
+            });
             AddComponent(entity, new ClientCharacterAttached { Value = Entity.Null });
             AddComponent<WaitForRespawnTag>(entity);
         }

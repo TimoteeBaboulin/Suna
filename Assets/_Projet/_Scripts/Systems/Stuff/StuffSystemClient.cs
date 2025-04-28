@@ -83,6 +83,14 @@ partial struct StuffSystemClient : ISystem
             {
                 viewTransform.position = entityTransform.Position;
                 viewTransform.rotation = entityTransform.Rotation;
+
+                if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
+                {
+                    if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
+                    {
+                        viewTransform.localScale = Vector3.one * .8f;
+                    }
+                }
             }
         }
 
