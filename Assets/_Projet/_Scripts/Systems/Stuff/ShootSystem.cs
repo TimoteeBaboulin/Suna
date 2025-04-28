@@ -114,14 +114,47 @@ public partial struct ShootSystem : ISystem
 
                             for (int i = 0; i < commonData.roundsPerShot; i++)
                             {
-                                // Apply spread on raycast
-                                float2 recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                                float2 visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                                float2 recoil = default;
+                                float2 visualRecoil = default;
+
+                                if (stuffCommonData.Name.ToString() == "SKAR-18")
+                                {
+                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
+                                }
+                                else if(stuffCommonData.Name.ToString() == "Banduka")
+                                {
+                                    recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                                }
+                                else if (stuffCommonData.Name.ToString() == "Nelara")
+                                {
+                                    recoil = CharacterShootUtils.NelaraPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.NelaraPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
+                                }
+                                else
+                                {
+                                    recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
+                                }
+
                                 quaternion recoilRotation = math.normalize(quaternion.Euler(recoil.y * math.TORADIANS, recoil.x * math.TORADIANS, 0));
                                 quaternion visualRecoilRotation = quaternion.Euler(visualRecoil.y * math.TORADIANS, visualRecoil.x * math.TORADIANS, 0);
                                 recoilRotation = math.mul(shootRotation, recoilRotation);
 
                                 localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
+
+                                if(math.isnan(recoilRotation.value.x) || math.isnan(recoilRotation.value.y) || math.isnan(recoilRotation.value.z) || math.isnan(recoilRotation.value.w))
+                                {
+                                    Debug.LogError($"Recoil rotation is NaN {dynamicData.patternBulletIndex}");
+                                    recoilRotation = quaternion.identity;
+                                }
+
+                                if(math.isnan(visualRecoilRotation.value.x) || math.isnan(visualRecoilRotation.value.y) || math.isnan(visualRecoilRotation.value.z) || math.isnan(visualRecoilRotation.value.w))
+                                {
+                                    Debug.LogError($"Visual recoil rotation is NaN {dynamicData.patternBulletIndex}");
+                                    visualRecoilRotation = quaternion.identity;
+                                }
 
                                 dynamicData.patternBulletIndex++;
 
@@ -207,7 +240,7 @@ public partial struct ShootSystem : ISystem
                 }
             }
 
-            localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt);
+            localView.ValueRW.ShootingModifier = math.slerp(localView.ValueRW.ShootingModifier, quaternion.identity, dt * 3);
             SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
 
@@ -382,71 +415,80 @@ public partial struct ShootSystem : ISystem
 
     RaycastHit ClosestRayCast(quaternion shootRotation, float3 startPos, float range, Entity owner, in EntityManager entityManager)
     {
-        const int additionalRenderDelay = 2;
-
-        CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
-        uint delay = interpolationDelay.Delay + additionalRenderDelay;
-
-        PhysicsWorldHistorySingleton collisionHistory = SystemAPI.GetSingleton<PhysicsWorldHistorySingleton>();
-        PhysicsWorld physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
-        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        NetworkTick tick = networkTime.ServerTick;
-
-        collisionHistory.GetCollisionWorldFromTick(tick, delay, ref physicsWorld, out var collWorld);
-
-        CollisionFilter filter = new CollisionFilter
-        {
-            BelongsTo = ~0u,
-            CollidesWith = (1u << 12), // Collides only with 12 (Shoot and Grenade Collider (body parts are using that tag but TODO : find some other way)
-        };
-
-        float3 forward = math.mul(shootRotation, math.forward());
-        RaycastInput raycastInput = new RaycastInput()
-        {
-            Start = startPos,
-            End = startPos + new float3(forward * range),
-            Filter = filter //filtre pour partie du corps
-        };
-
         RaycastHit closestHit = default;
-        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
-        if (collWorld.CastRay(raycastInput, ref allHits))
+
+        try
         {
-            // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
-            float closestDist = float.MaxValue;
-            foreach (RaycastHit hit in allHits)
+            const int additionalRenderDelay = 2;
+
+            CommandDataInterpolationDelay interpolationDelay = entityManager.GetComponentData<CommandDataInterpolationDelay>(owner);
+            uint delay = interpolationDelay.Delay + additionalRenderDelay;
+
+            PhysicsWorldHistorySingleton collisionHistory = SystemAPI.GetSingleton<PhysicsWorldHistorySingleton>();
+            PhysicsWorld physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().PhysicsWorld;
+            NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
+            NetworkTick tick = networkTime.ServerTick;
+
+            collisionHistory.GetCollisionWorldFromTick(tick, delay, ref physicsWorld, out var collWorld);
+
+            CollisionFilter filter = new CollisionFilter
             {
-                // If the entity hit is the shooter, skip
-                if (hit.Entity == owner) continue;
+                BelongsTo = ~0u,
+                CollidesWith = (1u << 12), // Collides only with 12 (Shoot and Grenade Collider (body parts are using that tag but TODO : find some other way)
+            };
 
-                if (entityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+            float3 forward = math.mul(shootRotation, math.forward());
+            RaycastInput raycastInput = new RaycastInput()
+            {
+                Start = startPos,
+                End = startPos + new float3(forward * range),
+                Filter = filter //filtre pour partie du corps
+            };
+            
+            NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+            if (collWorld.CastRay(raycastInput, ref allHits))
+            {
+                // Raycast retrieves hits in the wrong order, so they need to be sorted by distance
+                float closestDist = float.MaxValue;
+                foreach (RaycastHit hit in allHits)
                 {
-                    Entity characterHitEntity = entityManager.GetComponentData<CharacterColliderDataComponent>(hit.Entity).CharacterEntity;
-                    if (characterHitEntity == owner)
+                    // If the entity hit is the shooter, skip
+                    if (hit.Entity == owner) continue;
+
+                    if (entityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
                     {
-                        continue;
+                        Entity characterHitEntity = entityManager.GetComponentData<CharacterColliderDataComponent>(hit.Entity).CharacterEntity;
+                        if (characterHitEntity == owner)
+                        {
+                            continue;
+                        }
+
+                        if (entityManager.HasComponent<CharacterIsEnable>(characterHitEntity)
+                            && !entityManager.IsComponentEnabled<CharacterIsEnable>(characterHitEntity))
+                        {
+                            continue;
+                        }
                     }
 
-                    if (entityManager.HasComponent<CharacterIsEnable>(characterHitEntity)
-                        && !entityManager.IsComponentEnabled<CharacterIsEnable>(characterHitEntity))
+                    float currentDist = math.distancesq(raycastInput.Start, hit.Position);
+
+                    if (currentDist < closestDist)
                     {
-                        continue;
+                        closestHit = hit;
+                        closestDist = currentDist;
                     }
-                }
-
-                float currentDist = math.distancesq(raycastInput.Start, hit.Position);
-
-                if (currentDist < closestDist)
-                {
-                    closestHit = hit;
-                    closestDist = currentDist;
                 }
             }
-        }
 
 #if !UNITY_SERVER
-        Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
+            Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, Color.red, 0.5f);
 #endif
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+
         return closestHit;
     }
 }

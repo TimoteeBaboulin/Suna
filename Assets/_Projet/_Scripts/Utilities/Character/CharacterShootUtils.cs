@@ -3,6 +3,64 @@ using UnityEngine;
 
 public class CharacterShootUtils
 {
+    public static float2 SKAR18Pattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 1f, in float targetDistance = 0f)
+    {
+        float y = 0;
+        if(bulletIndex < 3) 
+            y = math.log2(bulletIndex + 1) * 0.2f;
+        else
+            y = 0.3f + (bulletIndex - 2) * 0.4f;
+
+        float x = 0;
+        if (bulletIndex < 8)
+            x = -math.log2(bulletIndex + 1) * 0.1f;
+        else if (bulletIndex < 12)
+            x = -math.log2(8) * 0.1f;
+        else if(bulletIndex < 21)
+            x = -math.log2(8) * 0.1f + math.log2(bulletIndex - 11) * 0.3f;
+        else
+            x = -math.log2(8) * 0.1f + math.log2(bulletIndex - 11) * 0.3f - math.log2(bulletIndex - 20) * .5f;
+
+        // Amplifying the effect
+        x *= 100;
+        y *= 50;
+
+        float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
+        float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);
+        x += Mathf.Cos(randomTheta) * radius;
+        y += Mathf.Sin(randomTheta) * radius;
+
+        y *= amplifier;
+        x *= amplifier;
+
+        return new(x, -y);
+    }
+
+    public static float2 NelaraPattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 1f, in float targetDistance = 0f)
+    {
+        float y = 0;
+        if (bulletIndex < 3)
+            y = math.log2(bulletIndex + 1) * 0.2f;
+        else
+            y = 0.3f + (bulletIndex - 2) * 0.4f;
+
+        float x = math.sin(4 + (bulletIndex % 8 - 4) / 8f);
+
+        // Amplifying the effect
+        x *= 100;
+        y *= 50;
+
+        float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
+        float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);
+        x += Mathf.Cos(randomTheta) * radius;
+        y += Mathf.Sin(randomTheta) * radius;
+
+        y *= amplifier;
+        x *= amplifier;
+
+        return new(x, -y);
+    }
+
     public static float2 TSprayPattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 10f, in float targetDistance = 0f)
     {
         if (bulletIndex == 0) return new float2(0.0f, 0.0f);
