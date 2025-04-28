@@ -41,21 +41,21 @@ public class ShopController : MonoBehaviour
     private void Start()
     {
         CreateShopLine(out VisualElement line); shopmenu.Add(line);
-        CreateShopButton(out Button button, 30); line.Add(button); weaponDict[button] = lp17;
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = banduka;
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = skar18;
+        CreateShopButton(out Button button, 30, lp17.UIImage); line.Add(button); weaponDict[button] = lp17;
+        CreateShopButton(out button, 30, banduka.UIImage); line.Add(button); weaponDict[button] = banduka;
+        CreateShopButton(out button, 30, skar18.UIImage); line.Add(button); weaponDict[button] = skar18;
         CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = fakir;
-        CreateShopButton(out button, 30); line.Add(button); 
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = decimator;
+        CreateShopButton(out button, 30, null); line.Add(button); //weaponDict[button] = fakir;
+        CreateShopButton(out button, 30, null); line.Add(button); 
+        CreateShopButton(out button, 30, null); line.Add(button); //weaponDict[button] = decimator;
         CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30); line.Add(button); 
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = SMG;
-        CreateShopButton(out button, 30); line.Add(button); weaponDict[button] = Sniper;
+        CreateShopButton(out button, 30, null); line.Add(button); 
+        CreateShopButton(out button, 30, SMG.UIImage); line.Add(button); weaponDict[button] = SMG;
+        CreateShopButton(out button, 30, Sniper.UIImage); line.Add(button); weaponDict[button] = Sniper;
         CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 10); line.Add(button); grenadeDict[button] = heGrenade;
-        CreateShopButton(out button, 10); line.Add(button); grenadeDict[button] = flashbang;
-        CreateShopButton(out button, 10); line.Add(button);
+        CreateShopButton(out button, 20, heGrenade.UIImage); line.Add(button); grenadeDict[button] = heGrenade;
+        CreateShopButton(out button, 20, flashbang.UIImage); line.Add(button); grenadeDict[button] = flashbang;
+        CreateShopButton(out button, 20, null); line.Add(button);
 
         List<Button> buttonList = shopmenu.Query<Button>().ToList();
 
@@ -65,7 +65,7 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, weaponDict[btn].entityName, weaponDict[btn].price.ToString() + " $");
-                AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
+                //AddWeaponIcon(ref btnRef, weaponDict[btn].UIImage);
 
                 btn.clicked += () =>
                 {
@@ -87,7 +87,7 @@ public class ShopController : MonoBehaviour
             {
                 Button btnRef = btn;
                 AddProductLabelsToShopButton(ref btnRef, grenadeDict[btn].entityName, grenadeDict[btn].price.ToString() + " $");
-                AddWeaponIcon(ref btnRef, grenadeDict[btn].UIImage);
+                //AddWeaponIcon(ref btnRef, grenadeDict[btn].UIImage);
                 btn.clicked += () =>
                 {
                     ShopCommand sc = new ShopCommand
@@ -125,7 +125,7 @@ public class ShopController : MonoBehaviour
         }
     }
 
-    private void CreateShopButton(out Button button, float widthPercent)
+    private void CreateShopButton(out Button button, float widthPercent, Texture2D texture)
     {
         button = new();
         button.AddToClassList("shop_buy_slot_button");
@@ -133,6 +133,24 @@ public class ShopController : MonoBehaviour
         button.style.width = UI.PercentLength(widthPercent);
         UI.SetMargin(ref button, 10);
         UI.SetPadding(ref button, 10);
+
+        if (texture == null)
+        {
+            button.style.backgroundColor = new Color(.2f, .2f, .2f, 1f);
+            button.SetEnabled(false);
+        }
+
+        if (texture != null)
+        {
+            Image icon = new();
+            icon.image = texture;
+            icon.scaleMode = ScaleMode.ScaleToFit;
+            button.style.justifyContent = Justify.Center;
+            icon.style.alignSelf = Align.Center;
+            icon.style.height = UI.PercentLength(50);
+
+            button.Add(icon);
+        }
     }
 
     private void CreateShopLine(out VisualElement line)
@@ -158,15 +176,29 @@ public class ShopController : MonoBehaviour
         button.Add(label);
     }
 
-    private void AddWeaponIcon(ref Button button, Texture2D icon)
+    private void AddWeaponIcon(ref Button button, Texture2D texture)
     {
-        VisualElement iconElement = new();
-        iconElement.style.backgroundImage = icon;
-        iconElement.style.position = Position.Absolute;
-        UI.SetPosition(ref iconElement, TextAnchor.MiddleCenter, 0, 0);
-        float ratio = (float)icon.height / icon.width;
-        UI.SetSize(ref iconElement, new Length(80, LengthUnit.Percent), new Length(100 * ratio, LengthUnit.Percent));
-        button.Add(iconElement);
+        /*button.Children().GetEnumerator().
+
+        Image icon = new();
+        icon.image = texture;
+        icon.scaleMode = ScaleMode.ScaleAndCrop;
+        icon.style.justifyContent = Justify.Center;
+        icon.style.alignSelf = Align.Center;
+        icon.style.width = texture.width;
+        icon.style.height = texture.height;
+
+        button.Add(icon);*/
+
+        throw new System.NotImplementedException("AddWeaponIcon is not implemented yet.");
+
+        //VisualElement iconElement = new();
+        //iconElement.style.backgroundImage = icon;
+        //iconElement.style.position = Position.Absolute;
+        //UI.SetPosition(ref iconElement, TextAnchor.MiddleCenter, 0, 0);
+        //float ratio = (float)icon.height / icon.width;
+        //UI.SetSize(ref iconElement, new Length(80, LengthUnit.Percent), new Length(100 * ratio, LengthUnit.Percent));
+        //button.Add(iconElement);
     }
 
     private void AddProductLabelsToShopButton(ref Button button, string productName, string productPrice)

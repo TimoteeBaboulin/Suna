@@ -27,13 +27,13 @@ MonoBehaviour:
   recoil: {x: 2, y: 3}
   damage: 16
   range: 220
-  firerate: 600
+  firerate: 1100
   isAutomatic: 1
   roundsPerShot: 1
   spread: 5
   spreadAiming: 4.5
-  coefSpray: 3
-  coefSprayAiming: 2.8
+  coefSpray: 1
+  coefSprayAiming: 0.9
   ergonomics: 0
   dmgFallOff: 0.02
   coefModifMoveSpeed: 0.92
