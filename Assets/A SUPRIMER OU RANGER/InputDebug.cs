@@ -1,3 +1,4 @@
+using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
@@ -20,9 +21,9 @@ public partial class DebugInputSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        foreach (var characterDebugInput in SystemAPI
+        foreach (var (characterDebugInput, entity) in SystemAPI
             .Query<RefRW<CharacterDebugInput>>()
-            .WithAll<GhostOwnerIsLocal>())
+            .WithAll<GhostOwnerIsLocal>().WithEntityAccess())
         {
             if (Input.GetKeyDown(KeyCode.P))
             {
@@ -47,14 +48,20 @@ public partial struct CharacterInputDebugSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (characterDebugInput, currentHeath) in SystemAPI
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (characterDebugInput, currentHeath, entity) in SystemAPI
             .Query<RefRO<CharacterDebugInput>, RefRW<CurrentHealthComponent>>()
-            .WithAll<CharacterComponent>())
+            .WithAll<CharacterComponent>().WithEntityAccess())
         {
             if (characterDebugInput.ValueRO.Respawn.IsSet)
             {
                 currentHeath.ValueRW.Value = 0;
+                ecb.AddComponent<HasNoHealthTag>(entity);
             }
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

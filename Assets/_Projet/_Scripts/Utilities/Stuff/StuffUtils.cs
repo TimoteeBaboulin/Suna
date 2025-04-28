@@ -105,22 +105,6 @@ public static class StuffUtils
         });
     }
 
-    public static void ThrowUnsafe(ref SystemState state, ref GameResourcesDatabase database, Entity owner, Entity stuff)
-    {
-        if (owner == Entity.Null || stuff == Entity.Null) return;
-
-        var linkedEntityGroup = state.EntityManager.GetBuffer<LinkedEntityGroup>(owner);
-        var ownerStuffList = state.EntityManager.GetBuffer<CharacterStuffList>(owner);
-        var stuffGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(stuff);
-        var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
-        ref var stuffData = ref state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuff).GetData(ref database);
-
-        Throw(linkedEntityGroup, ref ownerStuffList, ref stuffGhostOwner, ref stuffDynamicData, ref stuffData, owner, stuff);
-
-        state.EntityManager.SetComponentData(stuff, stuffGhostOwner);
-        state.EntityManager.SetComponentData(stuff, stuffDynamicData);
-    }
-
     public static void Unequip(
         ref SystemState state,
         Entity owner,
@@ -153,8 +137,10 @@ public static class StuffUtils
         }
     }
 
-    public static void Throw(DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
-        ref DynamicBuffer<CharacterStuffList> ownerStuffListRef,
+    public static void Throw(
+        ref SystemState state,
+        DynamicBuffer<LinkedEntityGroup> linkedEntityGroup,
+        DynamicBuffer<CharacterStuffList> ownerStuffListRef,
         ref GhostOwner stuffGhostOwnerRef,
         ref StuffDynamicData stuffDynamicDataRef,
         ref StuffCommonData stuffDataRef,
@@ -163,10 +149,14 @@ public static class StuffUtils
     {
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
-        if (ownerStuffListRef.ElementAt((int)stuffDataRef.slot).entity == stuff)
+        if (GetStuffInSlot(ownerStuffListRef, stuffDataRef.slot) == stuff)
         {
-            ownerStuffListRef.Insert((int)stuffDataRef.slot, new CharacterStuffList() { entity = Entity.Null });
+            SetStuffInSlot(ownerStuffListRef, stuffDataRef.slot, Entity.Null);
         }
+
+        var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
+        stuffDynamicData.owner = Entity.Null;
+        state.EntityManager.SetComponentData(stuff, stuffDynamicData);
 
         //Network
         stuffGhostOwnerRef.NetworkId = -1;
@@ -289,7 +279,7 @@ public static class StuffUtils
         return stuffListe[(int)slot].entity;
     }
 
-    private static void SetStuffInSlot(DynamicBuffer<CharacterStuffList> stuffs, StuffSlot slot, Entity stuff)
+    public static void SetStuffInSlot(DynamicBuffer<CharacterStuffList> stuffs, StuffSlot slot, Entity stuff)
     {
         stuffs[(int)slot] = new CharacterStuffList { entity = stuff };
     }
