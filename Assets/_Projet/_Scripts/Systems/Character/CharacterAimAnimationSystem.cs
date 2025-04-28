@@ -41,6 +41,7 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
                 AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHEGrenade", false, characterEntity, ecb);
             }
             else if (stuffName == "Decimator"
                 || stuffName == "SKAR-18")
@@ -52,6 +53,7 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
                 AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHEGrenade", false, characterEntity, ecb);
             }
             else if (stuffName == "Banduka")
             {
@@ -62,6 +64,7 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
                 AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHEGrenade", false, characterEntity, ecb);
             }
             else if (stuffName == "Nelara")
             {
@@ -72,6 +75,7 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
                 AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHEGrenade", false, characterEntity, ecb);
             }
             else if (stuffName == "Laksya")
             {
@@ -82,16 +86,30 @@ partial struct ServerCharacterAimAnimationSystem : ISystem
                 AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHEGrenade", false, characterEntity, ecb);
             }
             else if (stuffName == "Harvester")
             {
                 AnimationUtils.AddBoolCommand("AimHarvester", true, characterEntity, ecb);
-                
+
                 AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
                 AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHEGrenade", false, characterEntity, ecb);
+            }
+            else if (stuffName == "HEGrenade" 
+                || stuffName == "Flashbang")
+            {
+                AnimationUtils.AddBoolCommand("AimHEGrenade", true, characterEntity, ecb);
+
+                AnimationUtils.AddBoolCommand("AimHandgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimShotgun", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimRifle", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimPM", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimSniper", false, characterEntity, ecb);
+                AnimationUtils.AddBoolCommand("AimHarvester", false, characterEntity, ecb);
             }
         }
 
