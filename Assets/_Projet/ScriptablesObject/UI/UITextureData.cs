@@ -14,4 +14,18 @@ public class UITextureData : ScriptableObject
     }
 
     public UITexture[] Textures;
+
+    public Texture2D GetTexture(string name)
+    {
+        foreach (var texture in Textures)
+        {
+            if (texture.Name == name)
+            {
+                return texture.Texture;
+            }
+        }
+
+        Debug.LogError($"Texture with name {name} not found.");
+        return null;
+    }
 }

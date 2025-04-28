@@ -1,5 +1,6 @@
 <engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <engine:VisualElement name="HUDLines" enabled="true" picking-mode="Ignore" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/hud_lines.png?fileID=2800000&amp;guid=dc217cd2b4eb0ea40a1ada0170589782&amp;type=3#hud_lines&quot;); align-self: center; position: absolute; top: 50%; bottom: 50%; translate: 0 -50%; width: 1886px; height: 1066px;" />
+    <engine:VisualElement name="HUDLineTop" enabled="true" picking-mode="Ignore" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/HUD_General/GENERAL/Line_haut.png?fileID=2800000&amp;guid=b80891351259db744b477fd140bb2758&amp;type=3#Line_haut&quot;); align-self: center; position: absolute; top: 5px; bottom: auto; translate: 0 0; width: 1164px; height: 50px;" />
+    <engine:VisualElement name="HUDLineBottom" enabled="true" picking-mode="Ignore" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/HUD_General/GENERAL/Line_bas.png?fileID=2800000&amp;guid=55c87dc0ca203d749a7f374823039d1e&amp;type=3#Line_bas&quot;); align-self: center; position: absolute; top: auto; bottom: 10px; translate: 0 0; width: 1886px; height: 51px;" />
     <engine:Label text="100" name="HealthLabel" style="font-size: 40%; color: rgb(255, 255, 255); position: absolute; left: 690px; top: auto; flex-direction: column; width: auto; flex-shrink: 1; flex-grow: 1; -unity-text-align: middle-center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; bottom: 15px;" />
     <engine:VisualElement name="Armor" style="flex-grow: 1; position: absolute; background-image: url(&quot;project://database/Assets/_Projet/Arts/Textures/UI/InGame/ConstantHUD/shield.png?fileID=2800000&amp;guid=41e2e3e016267c24280d84320f3975d2&amp;type=3#shield&quot;); width: 47px; height: 55px; bottom: 20px; left: 620px; justify-content: center;">
         <engine:Label text="0&#10;" name="ArmorLabel" style="font-size: 25%; background-image: none; -unity-background-scale-mode: scale-to-fit; color: rgb(255, 255, 255); -unity-background-image-tint-color: rgb(0, 0, 0); width: auto; -unity-text-align: middle-center; position: absolute; right: auto; top: auto; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); align-self: center;" />
@@ -58,6 +59,8 @@
             </engine:VisualElement>
         </engine:VisualElement>
     </engine:VisualElement>
+    <engine:VisualElement name="KillFeedContainer" style="flex-grow: 1; position: absolute; top: 20px; right: 20px;" />
+    <engine:VisualElement name="Flash" picking-mode="Ignore" style="flex-grow: 1; background-color: rgb(255, 255, 255); opacity: 0; position: absolute; width: 100%; height: 100%;" />
     <engine:VisualElement name="RoundPhaseElement" style="flex-grow: 1; position: absolute; align-items: center; align-self: center; top: 100px; width: auto; align-content: center; justify-content: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); color: rgb(255, 255, 255); -unity-text-align: middle-center;">
         <engine:VisualElement name="RoundInfo" style="flex-direction: row; font-size: 30px; -unity-font-style: normal; height: 30px; margin-top: 10px; margin-right: 10px; margin-bottom: 10px; margin-left: 10px;">
             <engine:Label text="Round :" name="RoundNumberLabel" style="text-overflow: ellipsis;" />
@@ -70,6 +73,6 @@
             <engine:Label text="Press B to Open Shop" name="RoundBuyLabel" style="position: relative;" />
         </engine:VisualElement>
     </engine:VisualElement>
-    <engine:VisualElement name="KillFeedContainer" style="flex-grow: 1; position: absolute; top: 20px; right: 20px;" />
-    <engine:VisualElement name="Flash" style="flex-grow: 1; background-color: rgb(255, 255, 255); opacity: 0;" />
+    <engine:VisualElement name="WinLoseRound" picking-mode="Ignore" style="width: 200px; height: 80px; position: absolute; background-image: none; top: 230px; left: auto; right: auto; align-self: center;" />
+    <engine:VisualElement name="WinLoseGame" picking-mode="Ignore" style="flex-grow: 1; background-image: none; width: 1920px; height: 1080px;" />
 </engine:UXML>
