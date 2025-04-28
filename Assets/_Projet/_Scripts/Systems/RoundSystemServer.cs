@@ -228,13 +228,15 @@ public partial struct RoundSystemServer : ISystem
             SystemAPI.SetComponent(clientEntity, updatedMoneyComponent);
         }
 
-        foreach ((CharacterMoney moneyComponent, ClientComponent client, Entity clientEntity) in 
-            SystemAPI.Query<CharacterMoney, ClientComponent>()
+        foreach ((CharacterMoney moneyComponent, CharacterClientAttachedComponent clientAttached, Entity clientEntity) in
+            SystemAPI.Query<CharacterMoney, CharacterClientAttachedComponent>()
             .WithEntityAccess())
         {
             CharacterMoney updatedMoneyComponent = moneyComponent;
 
-            if (client.team == team)
+            TeamSideType clientTeam = SystemAPI.GetComponent<ClientComponent>(clientAttached.ClientEntity).team;
+
+            if (clientTeam == team)
             {
                 updatedMoneyComponent.money += (uint)component.ValueRO.victoryCredits;
 
@@ -243,7 +245,7 @@ public partial struct RoundSystemServer : ISystem
             }
             else
             {
-                uint lossStreakBonus = (uint) (component.ValueRO.lossStreakBonus * (client.team == TeamSideType.Corpo ? component.ValueRO.corporationLossStreak : component.ValueRO.nativeLossStreak));
+                uint lossStreakBonus = (uint)(component.ValueRO.lossStreakBonus * (clientTeam == TeamSideType.Corpo ? component.ValueRO.corporationLossStreak : component.ValueRO.nativeLossStreak));
                 updatedMoneyComponent.money += (uint)component.ValueRO.lossCredits + lossStreakBonus;
 
                 if (updatedMoneyComponent.money > updatedMoneyComponent.maxMoney)
