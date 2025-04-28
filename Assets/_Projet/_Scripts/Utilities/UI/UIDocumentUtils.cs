@@ -154,6 +154,14 @@ public class UIDocumentUtils
         element.style.borderRightColor = value;
         element.style.borderBottomColor = value;
     }
+    static public void SetBackgroundColor<T>(ref T element, Color value) where T : VisualElement
+    {
+        element.style.backgroundColor = value;
+    }
+    static public void SetImageTintColor<T>(ref T element, Color value) where T : VisualElement
+    {
+        element.style.unityBackgroundImageTintColor = value;
+    }
 
     static public Label Label(string text, float fontSize, Color color)
     {

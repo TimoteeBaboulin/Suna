@@ -1,0 +1,57 @@
+.floating-window {
+	position: Absolute;
+	background-color: rgba(255, 255, 255, .4);
+	min-width: 200px;
+	min-height: 160px;
+}
+
+.floating-window-tab {
+	min-height: 40px;
+	background-color: rgba(47, 47, 47, 1);
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	align-content: center;
+}
+
+.floating-window-title {
+	color: rgb(109, 109, 109);
+	font-size: 20px;
+	-unity-font-style: bold;
+}
+
+.floating-window-close-button {
+	width: 30px;
+	height: 30px;
+	color: rgb(0, 0, 0);
+	-unity-font-style: bold;
+	font-size: 14px;
+	background-color: rgba(188, 0, 0, 1);
+}
+
+.floating-window-close-button:hover {
+	background-color: rgba(235, 0, 0, 1);
+}
+
+.floating-window-close-button:active {
+	background-color: rgba(147, 0, 0, 1);
+}
+
+.floating-window-scrollview {
+	flex-grow: 1;
+	min-height: 40px;
+}
+
+.floating-window-validate-button {
+	min-height: 30px;
+	background-color: rgba(0, 188, 16, 1);
+	color: rgb(0, 0, 0);
+}
+
+.floating-window-validate-button:hover {
+	background-color: rgba(0, 223, 19, 1);
+}
+
+.floating-window-validate-button:active {
+	background-color: rgba(0, 147, 13, 1);
+}
