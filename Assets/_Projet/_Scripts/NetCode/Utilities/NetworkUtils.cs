@@ -37,7 +37,7 @@ namespace GameNetwork.Utils
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
         public static int MaxNbOfPlayers = 7; //count of players + server
-        public static bool isRelease = false;
+        public static bool isRelease = true;
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;
 
