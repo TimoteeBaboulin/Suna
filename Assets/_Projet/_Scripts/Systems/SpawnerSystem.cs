@@ -85,7 +85,7 @@ public partial struct OnDieJob : IJobEntity
             && HasNoHealthTagLookup.HasComponent(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
-            commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
+           // commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
 
             //FIX (Aurelien) : Now that the player is dead, we drop some of his stuff, the rest gets destroyed
 

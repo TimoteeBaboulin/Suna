@@ -456,7 +456,6 @@ public class HUDController : MonoBehaviour
     private async void HandleGameOverAsync()
     {
         await LoadUtils.QuitAsync();
-        await Awaitable.NextFrameAsync();
         await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
     }
 
