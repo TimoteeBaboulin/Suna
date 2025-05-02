@@ -52,12 +52,11 @@ public partial struct OnDieSystem : ISystem
             stuffDynamicDataLookup = SystemAPI.GetComponentLookup<StuffDynamicData>(true),
             shootStartPositionDeltaLookup = SystemAPI.GetComponentLookup<CharacterShootStartPositionDelta>(true),
             localTransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true),
+            characterIsEnableLookup = SystemAPI.GetComponentLookup<CharacterIsEnable>(true)
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
         state.Dependency.Complete();
-
-        
     }
 }
 
@@ -78,14 +77,22 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public ComponentLookup<StuffDynamicData> stuffDynamicDataLookup;
     [ReadOnly] public ComponentLookup<CharacterShootStartPositionDelta> shootStartPositionDeltaLookup;
     [ReadOnly] public ComponentLookup<LocalTransform> localTransformLookup;
+    [ReadOnly] public ComponentLookup<CharacterIsEnable> characterIsEnableLookup;
 
-    public void Execute(Entity entity, ref LocalTransform transform, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
+    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
     {
         if (!resetStuffLookup.HasComponent(entity)
-            && HasNoHealthTagLookup.HasComponent(entity))
+            && HasNoHealthTagLookup.HasComponent(entity)
+            && characterIsEnableLookup.HasComponent(entity)
+            && characterIsEnableLookup.IsComponentEnabled(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
-            SoundUtils.PlayWithRPC("Hit", "Kill", transform.Position);
+
+            //if (localTransformLookup.HasComponent(entity))
+            //{
+            //    RefRO<LocalTransform> transform = localTransformLookup.GetRefRO(entity);
+            //    SoundUtils.PlayWithRPC("Hit", "Kill", transform.ValueRO.Position);
+            //}
 
             // commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
 
