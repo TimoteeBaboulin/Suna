@@ -285,6 +285,14 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6581820845664296946, guid: a9f65ac37e7e7a34f8a436d2926691de, type: 3}
+      propertyPath: m_Size.y
+      value: 1.1081731
+      objectReference: {fileID: 0}
+    - target: {fileID: 6581820845664296946, guid: a9f65ac37e7e7a34f8a436d2926691de, type: 3}
+      propertyPath: m_Center.y
+      value: 0.054086592
+      objectReference: {fileID: 0}
     - target: {fileID: 8258632706813195956, guid: a9f65ac37e7e7a34f8a436d2926691de, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -835,6 +843,14 @@ PrefabInstance:
     - target: {fileID: 4874211723848481597, guid: 9f0e6d1ebc486394ea73c384371e6c3c, type: 3}
       propertyPath: m_Name
       value: CorpoSpawnHitboxes
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083443129270019619, guid: 9f0e6d1ebc486394ea73c384371e6c3c, type: 3}
+      propertyPath: m_Size.y
+      value: 1.3384956
+      objectReference: {fileID: 0}
+    - target: {fileID: 5083443129270019619, guid: 9f0e6d1ebc486394ea73c384371e6c3c, type: 3}
+      propertyPath: m_Center.y
+      value: 0.16924803
       objectReference: {fileID: 0}
     - target: {fileID: 8415680108667910724, guid: 9f0e6d1ebc486394ea73c384371e6c3c, type: 3}
       propertyPath: m_LocalPosition.x
