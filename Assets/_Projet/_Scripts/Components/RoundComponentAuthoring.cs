@@ -13,6 +13,8 @@ public class RoundComponentAuthoring : MonoBehaviour
     [SerializeField] private int _lossStreakBonus;
     [SerializeField] private int _maxStreakCount;
 
+    [SerializeField] private bool _roundSystemActive;
+
     public class RoundComponentBaker : Baker<RoundComponentAuthoring>
     {
         public override void Bake(RoundComponentAuthoring authoring)
@@ -27,7 +29,8 @@ public class RoundComponentAuthoring : MonoBehaviour
                 lossStreakBonus = authoring._lossStreakBonus,
                 maxStreakCount = authoring._maxStreakCount,
                 maxRounds = authoring._maxRounds,
-                gameWon = false
+                gameWon = false,
+                roundSystemActive = authoring._roundSystemActive
             });
 
             AddComponent<PlayerAliveCounts>(entity);
