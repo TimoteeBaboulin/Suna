@@ -86,9 +86,10 @@ partial struct HarvesterSystemServer : ISystem
             }
         }
 
-        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag, CorpoTeamTag>().WithEntityAccess())
+        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithEntityAccess())
         {
-            corpoEntities.Add(clientEntity);
+            if (playerComponent.ValueRO.team == TeamSideType.Corpo)
+                corpoEntities.Add(clientEntity);
         }
 
         foreach ((RefRW<HarvesterComponent> harvesterRW, RefRO<StuffDynamicData> ownerRO, Entity harvesterEntity) in SystemAPI
