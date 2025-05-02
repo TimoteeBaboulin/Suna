@@ -23,6 +23,22 @@ partial struct HarvesterSystemServer : ISystem
         frameCounter = 60;
     }
 
+    float3 GetRandomHarvesterSpawn(ref SystemState state)
+    {
+        foreach (var (spawn, spawnEntity) in SystemAPI.Query<TeamSpawnComponent>().WithEntityAccess())
+        {
+            if (spawn.team == TeamSideType.Corpo)
+            {
+                var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(spawnEntity);
+                int random = UnityEngine.Random.Range(0, buffer.Length);
+                return buffer[random];
+            }
+        }
+
+        Debug.LogWarning("[Server] Harvester couldn't find corporation spawn, default spawn set to [0,0,0]");
+        return float3.zero;
+    }
+
     //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -41,12 +57,9 @@ partial struct HarvesterSystemServer : ISystem
                 StuffUtils.InstantiateNextFrame(queue, "Harvester", new float3(40f,0f,2f));
 
                 harvesterIsInstantiated = true;
-                return;
             }
-            else
-            {
-                return;
-            }
+
+            return;
         }
 
         //Prepare the current tick since it's used in multiple branches
@@ -73,18 +86,7 @@ partial struct HarvesterSystemServer : ISystem
         //Give the harvester to players if they don't have an owner already
         //TODO: Currently, the entities need to be spawned on the client for the RPCs to not get Entity.Null'd
         NativeList<Entity> corpoEntities = new NativeList<Entity>(Allocator.Temp);
-        float3 corpoSpawnPosition = float3.zero;
-
-        foreach (var (spawn, spawnEntity) in SystemAPI.Query<TeamSpawnComponent>().WithEntityAccess())
-        {
-            if (spawn.team == TeamSideType.Corpo)
-            {
-                var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(spawnEntity);
-                int random = UnityEngine.Random.Range(0, buffer.Length);
-                corpoSpawnPosition = buffer[random];
-                break;
-            }
-        }
+        float3 corpoSpawnPosition = GetRandomHarvesterSpawn(ref state);
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithEntityAccess())
         {
@@ -100,6 +102,7 @@ partial struct HarvesterSystemServer : ISystem
 
             if (corpoEntities.Length > 0)
             {
+                //Equip the harvester to a random player (without forgetting to unequip it if it's already equipped to someone else)
                 int random = UnityEngine.Random.Range(0, corpoEntities.Length);
                 Entity clientEntity = corpoEntities[random];
                 Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
@@ -109,7 +112,35 @@ partial struct HarvesterSystemServer : ISystem
             }
             else
             {
+<<<<<<< Updated upstream
                 SpawnHarvesterInMap(ref state, harvesterEntity, corpoSpawnPosition, currentTick, unequipStuffQueu);
+=======
+                if (ownerRO.ValueRO.owner != Entity.Null)
+                {
+                    unequipStuffQueu.Add(new UnequipStuffQueue
+                    {
+                        Owner = ownerRO.ValueRO.owner,
+                        Stuff = harvesterEntity,
+                    });
+                }
+
+                harvesterRW.ValueRW.DroppedTick = currentTick;
+                harvesterRW.ValueRW.IsActive = true;
+
+                RpcHarvesterDropped rpc = new RpcHarvesterDropped
+                {
+                    harvester = harvesterEntity,
+                    position = corpoSpawnPosition
+                };
+                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+                foreach (var client in query.ToEntityArray(Allocator.Temp))
+                {
+                    RpcUtils.SendServerToClientRpc(ref rpc, client);
+                }
+
+                SystemAPI.GetComponentRW<LocalTransform>(harvesterEntity).ValueRW.Position = corpoSpawnPosition;
+>>>>>>> Stashed changes
             }
             ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
         }
