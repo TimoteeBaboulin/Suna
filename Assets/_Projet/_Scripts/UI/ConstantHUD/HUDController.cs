@@ -95,13 +95,13 @@ public class HUDController : MonoBehaviour
     // WinLose
     private VisualElement _winLoseRoundElement;
     private VisualElement _winLoseGameElement;
-    private float _winLoseGameTime = 1.5f;
+    readonly private float _winLoseGameTime = 1.5f;
     private float _winLoseGameTimer = 0f;
-    private float _winLoseEndGameTime = 5f;
-    public bool _winLoseRoundSubscribed = false;
-    public bool _winLoseRoundEngaged = false;
-    public float _winLoseRoundTimer = 0f;
-    public float _winLoseRoundTime = 4f;
+    readonly private float _winLoseEndGameTime = 5f;
+    private bool _winLoseRoundSubscribed = false;
+    private bool _winLoseRoundEngaged = false;
+    private float _winLoseRoundTimer = 0f;
+    private float _winLoseRoundTime = 4f;
 
     private void Awake()
     {
