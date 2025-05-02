@@ -79,13 +79,15 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public ComponentLookup<CharacterShootStartPositionDelta> shootStartPositionDeltaLookup;
     [ReadOnly] public ComponentLookup<LocalTransform> localTransformLookup;
 
-    public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
+    public void Execute(Entity entity, ref LocalTransform transform, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
     {
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
-           // commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
+            SoundUtils.PlayWithRPC("Hit", "Kill", transform.Position);
+
+            // commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
 
             //FIX (Aurelien) : Now that the player is dead, we drop some of his stuff, the rest gets destroyed
 
