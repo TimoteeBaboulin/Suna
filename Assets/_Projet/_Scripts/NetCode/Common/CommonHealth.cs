@@ -142,7 +142,6 @@ public partial struct ApplyDamageSystem : ISystem
                     {
                         Entity killer = healtRO.ValueRO.lastDamager;
                         float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
-                        //SoundUtils.PlayWithRPC("Hit", "Kill", pos);
                     }
                 }
             }
