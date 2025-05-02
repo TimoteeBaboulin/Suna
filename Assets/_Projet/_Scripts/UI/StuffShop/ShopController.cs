@@ -123,6 +123,12 @@ public class ShopController : MonoBehaviour
             UI.ToggleActive(ref root);
             ActivateUIInput(UI.IsActive(ref root));
         }
+
+        if (UI.IsActive(ref root) && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            UI.SetActive(ref root, false);
+            ActivateUIInput(false);
+        }
     }
 
     private void CreateShopButton(out Button button, float widthPercent, Texture2D texture)
@@ -242,5 +248,10 @@ public class ShopController : MonoBehaviour
             UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             UnityEngine.Cursor.visible = false;
         }
+    }
+
+    public bool IsShopActive()
+    {
+        return UI.IsActive(ref root);
     }
 }
