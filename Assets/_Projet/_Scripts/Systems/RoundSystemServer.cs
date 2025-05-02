@@ -66,6 +66,35 @@ public partial struct RoundSystemServer : ISystem
     //[BurstCompile]Pas avec les RPC des sons :(
     public void OnUpdate(ref SystemState state)
     {
+        // Check if the singleton exists
+        if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
+        {
+            return;
+        }
+
+        if (!roundComponent.ValueRO.roundSystemActive && !_firstFrame)
+        {
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+            {
+                physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
+            }
+
+            DeactivateSpawnBarriersCommand rpc = new DeactivateSpawnBarriersCommand
+            {
+                value = true
+            };
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+            foreach (var client in query.ToEntityArray(Allocator.Temp))
+            {
+                RpcUtils.SendServerToClientRpc(ref rpc, client);
+            }
+            _firstFrame = true;
+        }
+
         if (ClientTransportHelper.instance == null)
             return;
 
@@ -83,11 +112,7 @@ public partial struct RoundSystemServer : ISystem
                 return;
         }
         
-        // Check if the singleton exists
-        if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
-        {
-            return;
-        }
+        
 
 
         //if (roundComponent.ValueRO.gameWon)

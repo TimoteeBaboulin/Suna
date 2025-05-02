@@ -124,7 +124,13 @@ partial struct RoundSystemClient : ISystem
             round.ValueRW.gameWon = true;
             round.ValueRW.winners = gameOverRpc.ValueRO.winners;
 
-            //TODO: Don't disconnect instantly, let a win/lose screen appear first
+            buffer.DestroyEntity(entity);
+        }
+
+        foreach (var (rpcComponent, barrierDeactivateRpc, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<DeactivateSpawnBarriersCommand>>().WithEntityAccess())
+        {
+            SetBarrierState(ref state, false);
+
             buffer.DestroyEntity(entity);
         }
 
@@ -139,6 +145,19 @@ partial struct RoundSystemClient : ISystem
         Entity newEntity = ecb.CreateEntity();
         ecb.AddComponent(newEntity, rpc);
         ecb.AddComponent(newEntity, new SendRpcCommandRequest());
+    }
+
+    public void SetBarrierState(ref SystemState state, bool active)
+    {
+        foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+        {
+            physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(active? CollisionResponsePolicy.Collide : CollisionResponsePolicy.None);
+
+            matOverride.ValueRW.Value = active ? 0 : 1;
+        }
     }
 
     public void ChangeScore(ref SystemState state, TeamSideType team, RefRW<RoundComponent> component)
@@ -201,27 +220,11 @@ partial struct RoundSystemClient : ISystem
 
         if (phase != RoundPhase.BuyPhase)
         {
-            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
-                    .WithAll<SpawnBarrierComponent>()
-                    .WithEntityAccess())
-            {
-                physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
-
-                matOverride.ValueRW.Value = 1;
-            }
+            SetBarrierState(ref state, false);
         }
         else
         {
-            foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
-                    .WithAll<SpawnBarrierComponent>()
-                    .WithEntityAccess())
-            {
-                physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
-
-                matOverride.ValueRW.Value = 0;
-            }
+            SetBarrierState(ref state, true);
         }
     }
 }
