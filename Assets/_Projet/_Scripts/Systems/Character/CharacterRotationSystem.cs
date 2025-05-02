@@ -28,16 +28,12 @@ public partial struct CommonCharacterRotationSystem : ISystem
             .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>>()
             .WithEntityAccess())
         {
-            float mouseX = CharacterInput.ValueRO.look.x * SystemAPI.Time.DeltaTime;
-            float mouseY = CharacterInput.ValueRO.look.y * SystemAPI.Time.DeltaTime;
+            characterTransform.ValueRW.Rotation = quaternion.RotateY(CharacterInput.ValueRO.Yaw);
+            characterViewRotation.ValueRW.ViewRotation = quaternion.RotateX(CharacterInput.ValueRO.Pitch);
 
-            characterTransform.ValueRW.Rotation = math.mul(characterTransform.ValueRO.Rotation, quaternion.RotateY(mouseX));
-
-            characterViewRotation.ValueRW.Pitch += math.degrees(-mouseY);
-            characterViewRotation.ValueRW.Pitch = math.clamp(characterViewRotation.ValueRW.Pitch, -89f, 89f);
-            characterViewRotation.ValueRW.ViewRotation.value = quaternion.RotateX(math.radians(characterViewRotation.ValueRO.Pitch)).value;
-
-            float RemappedValue = math.clamp((characterViewRotation.ValueRW.Pitch - (-89f)) / (89f - (-89f)), 0f, 1f);
+            float minPitch = -math.PI / 2;
+            float maxPitch = math.PI / 2;
+            float RemappedValue = Mathf.Clamp((characterViewRotation.ValueRW.Pitch - minPitch) / (maxPitch - minPitch), 0f, 1f);
 
             AnimationUtils.AddFloatCommand("ViewRotation", RemappedValue, characterEntity, ecb);
         }
