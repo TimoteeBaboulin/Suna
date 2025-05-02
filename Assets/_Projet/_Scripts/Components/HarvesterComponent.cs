@@ -41,7 +41,6 @@ public partial struct HarvesterPlanted : IComponentData, IEnableableComponent
 public partial struct RpcHarvesterOwnerChange : IRpcCommand
 {
     public Entity harvester;
-    public Entity newOwner;
     public Entity character;
 }
 
