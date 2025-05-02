@@ -123,6 +123,7 @@ partial struct HarvesterSystemServer : ISystem
         switch (currentPhase)
         {
             case RoundPhase.BuyPhase:
+            case RoundPhase.ActionPhase:
                 {
                     //Other harvesters (owned or unowned)
                     foreach (var (harvesterRW, ownerRW, harvesterEntity) in
@@ -143,45 +144,6 @@ partial struct HarvesterSystemServer : ISystem
                             foreach ((LocalTransform playerTransform, DynamicBuffer<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
                             in SystemAPI.Query<LocalTransform, DynamicBuffer<CharacterStuffList>, CharacterClientAttachedComponent>()
                             .WithAll<CharacterComponent>()
-                            .WithEntityAccess())
-                            {
-                                ClientComponent client = SystemAPI.GetComponent<ClientComponent>(clientAttached.ClientEntity);
-
-                                if (client.team == TeamSideType.Corpo && math.distance(playerTransform.Position, harvesterPosition) <= harvesterRW.ValueRO.pickupDistance)
-                                {
-                                    EquipHarvester(ref state, characterEntity, harvesterEntity, unequipStuffQueu, equipStuffQueu);
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                }
-                break;
-            case RoundPhase.ActionPhase:
-                {
-                    //Other harvesters (owned or unowned)
-                    foreach (var (harvesterRW, ownerRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<StuffDynamicData>>()
-                        .WithNone<HarvesterPlanting, HarvesterRespawn>()
-                        .WithEntityAccess())
-                    {
-                        if (!harvesterRW.ValueRO.IsActive)
-                            continue;
-
-                        if (ownerRW.ValueRO.owner == Entity.Null)
-                        {
-                            if (currentTick.TicksSince(harvesterRW.ValueRO.DroppedTick) < 1)
-                                continue;
-
-                            float3 harvesterPosition = state.EntityManager.GetComponentData<LocalTransform>(harvesterEntity).Position;
-
-                            foreach ((LocalTransform playerTransform, DynamicBuffer<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
-                            in SystemAPI.Query<LocalTransform, DynamicBuffer<CharacterStuffList>, CharacterClientAttachedComponent>()
-                            .WithAll<CharacterComponent, CorpoTeamTag>()
                             .WithEntityAccess())
                             {
                                 ClientComponent client = SystemAPI.GetComponent<ClientComponent>(clientAttached.ClientEntity);
