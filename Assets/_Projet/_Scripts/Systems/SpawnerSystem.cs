@@ -85,7 +85,6 @@ public partial struct OnDieJob : IJobEntity
             && HasNoHealthTagLookup.HasComponent(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
-            //SoundUtils.PlayWithSoundQueue("Hit", "Kill", localTransformLookup.pos);
 
             // commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
 
