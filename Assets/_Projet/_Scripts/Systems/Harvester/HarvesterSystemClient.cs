@@ -148,6 +148,7 @@ partial class HarvesterSystemClient : SystemBase
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
             
             StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
+            SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.plantPosition;
 
             ecb.DestroyEntity(entity);
         }

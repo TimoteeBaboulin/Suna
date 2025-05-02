@@ -51,7 +51,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
                     Entity characterEntity = ownerRW.ValueRO.owner;
-
                     
                     StuffSlot switchToLocation = StuffSlot.MainWeapon;
                     Entity targetWeaponEntity = Entity.Null;
