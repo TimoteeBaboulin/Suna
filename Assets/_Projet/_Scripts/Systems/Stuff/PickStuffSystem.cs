@@ -25,12 +25,14 @@ public partial struct PickStuffSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         var equipStuffQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
         //Pick stuff with interact input
-        foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, chara) in SystemAPI
-        .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>>()
+        foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, ghostOwnerRO, chara) in SystemAPI
+        .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
         .WithEntityAccess())
         {
+
             ref readonly CharacterInput input = ref inputRO.ValueRO;
             if (input.interact.IsSet)
             {
@@ -41,6 +43,10 @@ public partial struct PickStuffSystem : ISystem
                 RaycastHit hit = RayCast(startPosition, forward, 4, chara, state.EntityManager);
                 if (hit.Entity != Entity.Null)
                 {
+                    //Natif doesen't pick harvester
+                    StuffType stuffHitedType = state.EntityManager.GetComponentData<StuffDatabaseAccess>(hit.Entity).GetData(ref database).type;
+                    if (PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId) == TeamSideType.Natif && stuffHitedType == StuffType.Harvester) continue;
+
                     StuffUtils.EquipNextFrame(equipStuffQueue, chara, state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value, true);
 
                     ecb.DestroyEntity(hit.Entity);
@@ -89,7 +95,7 @@ public partial struct PickStuffSystem : ISystem
         {
             foreach (RaycastHit hit in allHits)
             {
-                    UnityEngine.Debug.Log("Hit: " + hit.Entity.Index);
+                UnityEngine.Debug.Log("Hit: " + hit.Entity.Index);
                 if (entityManager.HasComponent<StuffEntityInHandRef>(hit.Entity))
                 {
                     return hit;

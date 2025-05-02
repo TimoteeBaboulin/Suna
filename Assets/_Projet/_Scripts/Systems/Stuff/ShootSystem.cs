@@ -214,7 +214,7 @@ public partial struct ShootSystem : ISystem
                                 // === SON ===
                                 if (i == 0)
                                 {
-                                    SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                                    //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
                                     SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
                                 }
 

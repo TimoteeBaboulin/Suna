@@ -22,7 +22,7 @@ public sealed class CharacterAuthoring : MonoBehaviour
     public float sensivity = 1f;
 
     [Header("Temp(Debug)")]
-    public TeamSideType side;
+    //public TeamSideType side;
     public RangedWeaponData mainWeapon;
     public RangedWeaponData secondWeapon;
     public MeleeWeaponData meleeWeapon;

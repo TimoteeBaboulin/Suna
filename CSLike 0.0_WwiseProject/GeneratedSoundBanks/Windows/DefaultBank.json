@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{B6E6FF12-6734-4491-4073-DEAF52734D6D}",
+    "Hash": "{F893EDBA-F01A-4878-DE83-12115378BE9B}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
@@ -370,6 +370,7 @@
       "Name": "Miss",
       "ObjectPath": "\\Events\\Default Work Unit\\Hit\\Miss\\Miss",
       "GUID": "{B71CA1B6-C99F-4254-8527-A1AEAA5A936C}",
+      "MaxAttenuation": "100",
       "DurationType": "OneShot",
       "DurationMin": "1.6925397",
       "DurationMax": "1.6925397",
@@ -608,6 +609,6 @@
     ]
    }
   ],
-  "FileHash": "{C65EF19A-B691-6343-7565-706BD0D59FFA}"
+  "FileHash": "{8D66EA2B-4C42-7147-332F-91079F314073}"
  }
 }
