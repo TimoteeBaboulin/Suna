@@ -24,6 +24,7 @@ public struct RoundComponent : IComponentData
     public int maxStreakCount;
 
     public bool gameWon;
+    public bool roundSystemActive;
 }
 
 public struct PlayerAliveCounts : IComponentData
@@ -40,4 +41,9 @@ public struct RoundCollectorPlantedComponent : IComponentData
 public struct GameOverRpcCommand : IRpcCommand
 {
     public TeamSideType winners;
+}
+
+public struct DeactivateSpawnBarriersCommand : IRpcCommand
+{
+    public bool value;
 }

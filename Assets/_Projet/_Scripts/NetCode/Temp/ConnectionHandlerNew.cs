@@ -139,14 +139,16 @@ public class ConnectionHandlerNew : MonoBehaviour
     {
         while (!token.IsCancellationRequested && session.AvailableSlots > 0)
         {
-            // You might need to re-query the session object here, e.g.
-            // session = await MultiplayerService.Instance.GetSessionByIdAsync(session.Id, token);
-            SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingForPlayers);
-            await Task.Delay(TimeSpan.FromMilliseconds(500), token);
+            try
+            {
+                SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingForPlayers);
+                await Task.Delay(TimeSpan.FromMilliseconds(500), token);
+            }
+            catch (Exception)
+            {
+               //No need to catch the exception here
+            }
         }
-
-        if (token.IsCancellationRequested)
-            throw new OperationCanceledException(token);
     }
 
     private async Task WaitUntilSessionIsFullAsync(CancellationToken token, World clientWorld)
@@ -282,7 +284,6 @@ public class ConnectionHandlerNew : MonoBehaviour
 
         if (results == null || results.Sessions.Count == 0)
         {
-            sessionID = "0";
             Debug.Log("No sessions found.");
             return;
         }

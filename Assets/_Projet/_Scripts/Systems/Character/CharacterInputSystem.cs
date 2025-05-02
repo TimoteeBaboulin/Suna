@@ -50,7 +50,7 @@ public partial class CharacterInputSystem : SystemBase
         bool isDropPressed = actions.Drop.WasPressedThisFrame();
         bool isInteractPressed = actions.Interact.WasPressedThisFrame();
 
-
+        float sensitivity = SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
 
         foreach (var (controller, input, harvesterActions) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<PlayerHarvesterActions>>()
@@ -60,7 +60,10 @@ public partial class CharacterInputSystem : SystemBase
 
             input.ValueRW.move = !plantingOrDefusing ? CharacterMove : new Vector2(0, 0);
 
-            input.ValueRW.look = math.radians(CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity);
+            input.ValueRW.Pitch = math.clamp(input.ValueRW.Pitch - math.radians(CharacterLook.y) * sensitivity / 10, -math.PI / 2, math.PI / 2);
+            input.ValueRW.Yaw = math.fmod(input.ValueRW.Yaw + math.radians(CharacterLook.x) * sensitivity / 10, 2 * math.PI);
+
+            //input.ValueRW.look = math.radians(CharacterLook * SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity);
 
             //TODO :Make these into a function
             if (isJumpPerfomered && !plantingOrDefusing)
