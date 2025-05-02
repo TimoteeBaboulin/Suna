@@ -4254,13 +4254,17 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1742075933062191219, guid: c885e24b33c6512408dffff61fe74700, type: 3}
+      propertyPath: _shopController
+      value: 
+      objectReference: {fileID: 1037228149}
     - target: {fileID: 8117814211565531284, guid: c885e24b33c6512408dffff61fe74700, type: 3}
       propertyPath: m_Name
       value: PauseMenu
       objectReference: {fileID: 0}
     - target: {fileID: 8117814211565531284, guid: c885e24b33c6512408dffff61fe74700, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8454011489246002764, guid: c885e24b33c6512408dffff61fe74700, type: 3}
       propertyPath: m_LocalPosition.x
@@ -19555,6 +19559,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 779be0a0477345941add539ad9178106, type: 3}
+--- !u!114 &1037228149 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3697976406561640613, guid: 779be0a0477345941add539ad9178106, type: 3}
+  m_PrefabInstance: {fileID: 1037228148}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 594129500dd49d24bb6f4a2324fb8c1c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1037444106
 PrefabInstance:
   m_ObjectHideFlags: 0
