@@ -396,7 +396,7 @@ public partial struct RoundSystemServer : ISystem
             .Query<RefRO<StuffDynamicData>>()
             .WithEntityAccess())
         {
-            if(stuffOwner.ValueRO.owner == Entity.Null)
+            if(stuffOwner.ValueRO.owner == Entity.Null && !SystemAPI.HasComponent<HarvesterComponent>(stuffEntity))
             {
                 ecb.DestroyEntity(stuffEntity);
             }

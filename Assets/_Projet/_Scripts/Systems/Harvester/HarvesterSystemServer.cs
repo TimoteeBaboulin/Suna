@@ -99,6 +99,7 @@ partial struct HarvesterSystemServer : ISystem
             .WithAll<HarvesterRespawn>()
             .WithEntityAccess())
         {
+            Debug.Log("Respawning harvester");
 
             if (corpoEntities.Length > 0)
             {
@@ -112,35 +113,7 @@ partial struct HarvesterSystemServer : ISystem
             }
             else
             {
-<<<<<<< Updated upstream
                 SpawnHarvesterInMap(ref state, harvesterEntity, corpoSpawnPosition, currentTick, unequipStuffQueu);
-=======
-                if (ownerRO.ValueRO.owner != Entity.Null)
-                {
-                    unequipStuffQueu.Add(new UnequipStuffQueue
-                    {
-                        Owner = ownerRO.ValueRO.owner,
-                        Stuff = harvesterEntity,
-                    });
-                }
-
-                harvesterRW.ValueRW.DroppedTick = currentTick;
-                harvesterRW.ValueRW.IsActive = true;
-
-                RpcHarvesterDropped rpc = new RpcHarvesterDropped
-                {
-                    harvester = harvesterEntity,
-                    position = corpoSpawnPosition
-                };
-                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
-
-                foreach (var client in query.ToEntityArray(Allocator.Temp))
-                {
-                    RpcUtils.SendServerToClientRpc(ref rpc, client);
-                }
-
-                SystemAPI.GetComponentRW<LocalTransform>(harvesterEntity).ValueRW.Position = corpoSpawnPosition;
->>>>>>> Stashed changes
             }
             ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
         }
