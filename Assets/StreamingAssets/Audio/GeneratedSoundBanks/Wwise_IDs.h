@@ -51,6 +51,11 @@ namespace AK
         static const AkUniqueID STOPALL_01 = 4256069028U;
     } // namespace EVENTS
 
+    namespace GAME_PARAMETERS
+    {
+        static const AkUniqueID VOLUME = 2415836739U;
+    } // namespace GAME_PARAMETERS
+
     namespace BANKS
     {
         static const AkUniqueID INIT = 1355168291U;

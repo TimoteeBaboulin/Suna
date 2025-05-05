@@ -6,7 +6,8 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
-[WorldSystemFilter(WorldSystemFilterFlags.Default, WorldSystemFilterFlags.ClientSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.Default | WorldSystemFilterFlags.ClientSimulation)]
+//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial struct ClientSettingsSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
