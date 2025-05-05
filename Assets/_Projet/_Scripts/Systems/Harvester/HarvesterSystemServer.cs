@@ -23,6 +23,22 @@ partial struct HarvesterSystemServer : ISystem
         frameCounter = 60;
     }
 
+    float3 GetRandomHarvesterSpawn(ref SystemState state)
+    {
+        foreach (var (spawn, spawnEntity) in SystemAPI.Query<TeamSpawnComponent>().WithEntityAccess())
+        {
+            if (spawn.team == TeamSideType.Corpo)
+            {
+                var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(spawnEntity);
+                int random = UnityEngine.Random.Range(0, buffer.Length);
+                return buffer[random];
+            }
+        }
+
+        Debug.LogWarning("[Server] Harvester couldn't find corporation spawn, default spawn set to [0,0,0]");
+        return float3.zero;
+    }
+
     //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
@@ -41,12 +57,9 @@ partial struct HarvesterSystemServer : ISystem
                 StuffUtils.InstantiateNextFrame(queue, "Harvester", new float3(40f,0f,2f));
 
                 harvesterIsInstantiated = true;
-                return;
             }
-            else
-            {
-                return;
-            }
+
+            return;
         }
 
         //Prepare the current tick since it's used in multiple branches
@@ -73,22 +86,12 @@ partial struct HarvesterSystemServer : ISystem
         //Give the harvester to players if they don't have an owner already
         //TODO: Currently, the entities need to be spawned on the client for the RPCs to not get Entity.Null'd
         NativeList<Entity> corpoEntities = new NativeList<Entity>(Allocator.Temp);
-        float3 corpoSpawnPosition = float3.zero;
+        float3 corpoSpawnPosition = GetRandomHarvesterSpawn(ref state);
 
-        foreach (var (spawn, spawnEntity) in SystemAPI.Query<TeamSpawnComponent>().WithEntityAccess())
+        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithEntityAccess())
         {
-            if (spawn.team == TeamSideType.Corpo)
-            {
-                var buffer = SystemAPI.GetBuffer<SpawnPointBufferComponent>(spawnEntity);
-                int random = UnityEngine.Random.Range(0, buffer.Length);
-                corpoSpawnPosition = buffer[random];
-                break;
-            }
-        }
-
-        foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag, CorpoTeamTag>().WithEntityAccess())
-        {
-            corpoEntities.Add(clientEntity);
+            if (playerComponent.ValueRO.team == TeamSideType.Corpo)
+                corpoEntities.Add(clientEntity);
         }
 
         foreach ((RefRW<HarvesterComponent> harvesterRW, RefRO<StuffDynamicData> ownerRO, Entity harvesterEntity) in SystemAPI
@@ -96,61 +99,23 @@ partial struct HarvesterSystemServer : ISystem
             .WithAll<HarvesterRespawn>()
             .WithEntityAccess())
         {
+            Debug.Log("Respawning harvester");
 
             if (corpoEntities.Length > 0)
             {
+                //Equip the harvester to a random player (without forgetting to unequip it if it's already equipped to someone else)
                 int random = UnityEngine.Random.Range(0, corpoEntities.Length);
                 Entity clientEntity = corpoEntities[random];
                 Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
                 corpoEntities.RemoveAt(random);
 
-                if (ownerRO.ValueRO.owner != Entity.Null)
-                {
-                    StuffUtils.UnequipNextFrame(unequipStuffQueu, ownerRO.ValueRO.owner, harvesterEntity);
-                }
-
-                StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
-
-                RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
-                {
-                    harvester = harvesterEntity,
-                    newOwner = clientEntity,
-                    character = characterEntity
-                };
-                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
-
-                foreach (var client in query.ToEntityArray(Allocator.Temp))
-                {
-                    RpcUtils.SendServerToClientRpc(ref rpc, client);
-                }
+                SpawnHarvesterOnCharacter(ref state, characterEntity, harvesterEntity, unequipStuffQueu, equipStuffQueu);
             }
             else
             {
-                if (ownerRO.ValueRO.owner != Entity.Null)
-                {
-                    unequipStuffQueu.Add(new UnequipStuffQueue
-                    {
-                        Owner = ownerRO.ValueRO.owner,
-                        Stuff = harvesterEntity,
-                    });
-                }
-                harvesterRW.ValueRW.DroppedTick = currentTick;
-                harvesterRW.ValueRW.IsActive = true;
-
-                RpcHarvesterDropped rpc = new RpcHarvesterDropped
-                {
-                    harvester = harvesterEntity,
-                    position = corpoSpawnPosition
-                };
-                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
-
-                foreach (var client in query.ToEntityArray(Allocator.Temp))
-                {
-                    RpcUtils.SendServerToClientRpc(ref rpc, client);
-                }
-
-                SystemAPI.GetComponentRW<LocalTransform>(harvesterEntity).ValueRW.Position = corpoSpawnPosition;
+                SpawnHarvesterInMap(ref state, harvesterEntity, corpoSpawnPosition, currentTick, unequipStuffQueu);
             }
+
             ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
         }
 
@@ -159,6 +124,7 @@ partial struct HarvesterSystemServer : ISystem
         switch (currentPhase)
         {
             case RoundPhase.BuyPhase:
+            case RoundPhase.ActionPhase:
                 {
                     //Other harvesters (owned or unowned)
                     foreach (var (harvesterRW, ownerRW, harvesterEntity) in
@@ -178,93 +144,14 @@ partial struct HarvesterSystemServer : ISystem
 
                             foreach ((LocalTransform playerTransform, DynamicBuffer<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
                             in SystemAPI.Query<LocalTransform, DynamicBuffer<CharacterStuffList>, CharacterClientAttachedComponent>()
-                            .WithAll<CharacterComponent, CorpoTeamTag>()
+                            .WithAll<CharacterComponent>()
                             .WithEntityAccess())
                             {
-                                if (math.distance(playerTransform.Position, harvesterPosition) <= harvesterRW.ValueRO.pickupDistance)
+                                ClientComponent client = SystemAPI.GetComponent<ClientComponent>(clientAttached.ClientEntity);
+
+                                if (client.team == TeamSideType.Corpo && math.distance(playerTransform.Position, harvesterPosition) <= harvesterRW.ValueRO.pickupDistance)
                                 {
-                                    //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
-                                    //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
-                                    //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-
-                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
-
-                                    RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
-                                    {
-                                        harvester = harvesterEntity,
-                                        newOwner = clientAttached.ClientEntity,
-                                        character = characterEntity
-                                    };
-                                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
-
-                                    foreach (var client in query.ToEntityArray(Allocator.Temp))
-                                    {
-                                        Entity rpcEntity = ecb.CreateEntity();
-                                        ecb.AddComponent(rpcEntity, rpc);
-                                        ecb.AddComponent(rpcEntity, new SendRpcCommandRequest
-                                        {
-                                            TargetConnection = client
-                                        });
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            continue;
-                        }
-                    }
-                }
-                break;
-            case RoundPhase.ActionPhase:
-                {
-                    //Other harvesters (owned or unowned)
-                    foreach (var (harvesterRW, ownerRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<StuffDynamicData>>()
-                        .WithNone<HarvesterPlanting, HarvesterRespawn>()
-                        .WithEntityAccess())
-                    {
-                        if (!harvesterRW.ValueRO.IsActive)
-                            continue;
-
-                        if (ownerRW.ValueRO.owner == Entity.Null)
-                        {
-                            if (currentTick.TicksSince(harvesterRW.ValueRO.DroppedTick) < 1)
-                                continue;
-
-                            float3 harvesterPosition = state.EntityManager.GetComponentData<LocalTransform>(harvesterEntity).Position;
-
-                            foreach ((LocalTransform playerTransform, DynamicBuffer<CharacterStuffList> stuffList, CharacterClientAttachedComponent clientAttached, Entity characterEntity)
-                            in SystemAPI.Query<LocalTransform, DynamicBuffer<CharacterStuffList>, CharacterClientAttachedComponent>()
-                            .WithAll<CharacterComponent, CorpoTeamTag>()
-                            .WithEntityAccess())
-                            {
-                                if (math.distance(playerTransform.Position, harvesterPosition) <= 5)
-                                {
-                                    //ownerRW.ValueRW.Value = clientAttached.ClientEntity;
-                                    //stuffList.ValueRW.Value[(int)StuffType.Harvester] = harvesterEntity;
-                                    //SystemAPI.GetComponentRW<StuffOwner>(harvesterEntity).ValueRW.Value = characterEntity;
-    
-                                    StuffUtils.EquipNextFrame(equipStuffQueu, characterEntity, harvesterEntity, true);
-
-                                    RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
-                                    {
-                                        harvester = harvesterEntity,
-                                        newOwner = clientAttached.ClientEntity,
-                                        character = characterEntity
-                                    };
-                                    EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
-
-                                    foreach (var client in query.ToEntityArray(Allocator.Temp))
-                                    {
-                                        Entity rpcEntity = ecb.CreateEntity();
-                                        ecb.AddComponent(rpcEntity, rpc);
-                                        ecb.AddComponent(rpcEntity, new SendRpcCommandRequest
-                                        {
-                                            TargetConnection = client
-                                        });
-                                    }
+                                    EquipHarvester(ref state, characterEntity, harvesterEntity, unequipStuffQueu, equipStuffQueu);
                                     break;
                                 }
                             }
@@ -297,7 +184,6 @@ partial struct HarvesterSystemServer : ISystem
                 RpcHarvesterOwnerChange response = new RpcHarvesterOwnerChange
                 {
                     harvester = harvesterEntity,
-                    newOwner = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(ownerRO.ValueRO.owner).ValueRO.ClientEntity,
                     character = ownerRO.ValueRO.owner
                 };
 
@@ -312,6 +198,79 @@ partial struct HarvesterSystemServer : ISystem
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+
+    void EquipHarvester(ref SystemState state, Entity characterEntity, Entity harvesterEntity, DynamicBuffer<UnequipStuffQueue> unequipBuffer, DynamicBuffer<EquipStuffQueue> equipBuffer)
+    {
+        RefRO<StuffDynamicData> harvesterDynamicDataRO = SystemAPI.GetComponentRO<StuffDynamicData>(harvesterEntity);
+
+        if (harvesterDynamicDataRO.ValueRO.owner != Entity.Null)
+        {
+            StuffUtils.UnequipNextFrame(unequipBuffer, harvesterDynamicDataRO.ValueRO.owner, harvesterEntity);
+        }
+
+        StuffUtils.EquipNextFrame(equipBuffer, characterEntity, harvesterEntity, true);
+
+        RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
+        {
+            harvester = harvesterEntity,
+            character = characterEntity
+        };
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+        foreach (var client in query.ToEntityArray(Allocator.Temp))
+        {
+            RpcUtils.SendServerToClientRpc(ref rpc, client);
+        }
+    }
+
+    void SpawnHarvesterOnCharacter(ref SystemState state, Entity characterEntity, Entity harvesterEntity, DynamicBuffer<UnequipStuffQueue> unequipBuffer, DynamicBuffer<EquipStuffQueue> equipBuffer)
+    {
+        EquipHarvester(ref state, characterEntity, harvesterEntity, unequipBuffer, equipBuffer);
+
+        RpcHarvesterOwnerChange rpc = new RpcHarvesterOwnerChange
+        {
+            harvester = harvesterEntity,
+            character = characterEntity
+        };
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+        foreach (var client in query.ToEntityArray(Allocator.Temp))
+        {
+            RpcUtils.SendServerToClientRpc(ref rpc, client);
+        }
+    }
+
+    void SpawnHarvesterInMap(ref SystemState state, Entity harvesterEntity, float3 position, NetworkTick currentTick, DynamicBuffer<UnequipStuffQueue> unequipBuffer)
+    {
+        RefRO<StuffDynamicData> harvesterDynamicDataRO = SystemAPI.GetComponentRO<StuffDynamicData>(harvesterEntity);
+        RefRW<HarvesterComponent> harvesterRW = SystemAPI.GetComponentRW<HarvesterComponent>(harvesterEntity);
+
+        if (harvesterDynamicDataRO.ValueRO.owner != Entity.Null)
+        {
+            unequipBuffer.Add(new UnequipStuffQueue
+            {
+                Owner = harvesterDynamicDataRO.ValueRO.owner,
+                Stuff = harvesterEntity,
+            });
+        }
+
+        harvesterRW.ValueRW.DroppedTick = currentTick;
+        harvesterRW.ValueRW.IsActive = true;
+
+        RpcHarvesterDropped rpc = new RpcHarvesterDropped
+        {
+            harvester = harvesterEntity,
+            position = position
+        };
+        EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+        foreach (var client in query.ToEntityArray(Allocator.Temp))
+        {
+            RpcUtils.SendServerToClientRpc(ref rpc, client);
+        }
+
+        SystemAPI.GetComponentRW<LocalTransform>(harvesterEntity).ValueRW.Position = position;
     }
 
     [BurstCompile]
