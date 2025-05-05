@@ -6,7 +6,7 @@ partial struct CharacterInstantiateStuffSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         EntityQuery query = SystemAPI.QueryBuilder()
-        .WithAll<IsInstanciateDefaultStuff>()
+        .WithAll<IsInstanciateDefaultStuff, CharacterIsEnable>()
         .Build();
 
         state.RequireForUpdate(query);
@@ -20,7 +20,7 @@ partial struct CharacterInstantiateStuffSystem : ISystem
 
         foreach (var (defaultStuffNames, chara) in SystemAPI
             .Query<DynamicBuffer<CharacterDefaultStuffName>>()
-            .WithAll<IsInstanciateDefaultStuff>()
+            .WithAll<IsInstanciateDefaultStuff, CharacterIsEnable>()
             .WithEntityAccess())
         {
             //foreach (var name in defaultStuffNames)

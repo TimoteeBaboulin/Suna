@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 1032681953}
   - component: {fileID: 1032681954}
   - component: {fileID: 1032681951}
+  - component: {fileID: 1032681955}
   m_Layer: 5
   m_Name: MainMenuController
   m_TagString: Untagged
@@ -302,6 +303,26 @@ MonoBehaviour:
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920
   m_WorldSpaceHeight: 1080
+--- !u!114 &1032681955
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1032681950}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca7795c795621e64fb9ffd564cfa7ad1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  soundGroupList:
+  - keyGroup: Music
+    maping:
+    - keyAction: MainMenu
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 5e1f071cbea5db64cad05f142587df18, type: 2}
 --- !u!1001 &1086009981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -523,7 +544,6 @@ GameObject:
   - component: {fileID: 1959021614}
   - component: {fileID: 1959021613}
   - component: {fileID: 1959021612}
-  - component: {fileID: 1959021611}
   m_Layer: 0
   m_Name: MainCamera
   m_TagString: Untagged
@@ -641,35 +661,6 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
---- !u!114 &1959021611
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1959021605}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ca627315ffabff94e8658108f5d186f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  triggerList: f7e1664c
-  useOtherObject: 0
-  actionOnEventType: 0
-  curveInterpolation: 4
-  enableActionOnEvent: 0
-  data:
-    idInternal: 0
-    valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 5e1f071cbea5db64cad05f142587df18, type: 2}
-  useCallbacks: 0
-  stopSoundOnDestroy: 1
-  Callbacks: []
-  soundEmitterObject: {fileID: 0}
-  transitionDuration: 0
-  eventIdInternal: 0
-  valueGuidInternal: 
-  m_callbackDataInternal: {fileID: 0}
 --- !u!114 &1959021612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -946,6 +937,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 292482016184133629, guid: 8cde5203f6187fe4696f20bed40f32d9, type: 3}
+      propertyPath: volumeRTPC.WwiseObjectReference
+      value: 
+      objectReference: {fileID: 11400000, guid: f801baff7d4c64d488f3701a17ec8c5f, type: 2}
     - target: {fileID: 2495947166221910473, guid: 8cde5203f6187fe4696f20bed40f32d9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.45073223

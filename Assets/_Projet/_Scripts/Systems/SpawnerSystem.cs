@@ -46,13 +46,13 @@ public partial struct OnDieSystem : ISystem
             autoRespawnIsEnable = SpawnerUtils.AutoRespawnIsEnable(ref state),
             resetStuffLookup = resetStuffLookupInit,
             HasNoHealthTagLookup = hasNoHealthTagLookup,
+            CharacterEnabledLookup = SystemAPI.GetComponentLookup<CharacterIsEnable>(true),
             playerStuff = SystemAPI.GetBufferLookup<CharacterStuffList>(true),
             linkedEntityGroupLookup = SystemAPI.GetBufferLookup<LinkedEntityGroup>(true),
             ghostOwnerLookup = SystemAPI.GetComponentLookup<GhostOwner>(true),
             stuffDynamicDataLookup = SystemAPI.GetComponentLookup<StuffDynamicData>(true),
             shootStartPositionDeltaLookup = SystemAPI.GetComponentLookup<CharacterShootStartPositionDelta>(true),
             localTransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true),
-            characterIsEnableLookup = SystemAPI.GetComponentLookup<CharacterIsEnable>(true)
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
@@ -70,6 +70,7 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public bool autoRespawnIsEnable;
     [ReadOnly] public ComponentLookup<ResetStuffTag> resetStuffLookup;
     [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
+    [ReadOnly] public ComponentLookup<CharacterIsEnable> CharacterEnabledLookup;
     [ReadOnly] public BufferLookup<CharacterStuffList> playerStuff;
 
     [ReadOnly] public BufferLookup<LinkedEntityGroup> linkedEntityGroupLookup;
@@ -77,24 +78,15 @@ public partial struct OnDieJob : IJobEntity
     [ReadOnly] public ComponentLookup<StuffDynamicData> stuffDynamicDataLookup;
     [ReadOnly] public ComponentLookup<CharacterShootStartPositionDelta> shootStartPositionDeltaLookup;
     [ReadOnly] public ComponentLookup<LocalTransform> localTransformLookup;
-    [ReadOnly] public ComponentLookup<CharacterIsEnable> characterIsEnableLookup;
 
     public void Execute(Entity entity, [ChunkIndexInQuery] int sortKey, RefRO<CharacterClientAttachedComponent> CharacterPlayerAttached)
     {
         if (!resetStuffLookup.HasComponent(entity)
             && HasNoHealthTagLookup.HasComponent(entity)
-            && characterIsEnableLookup.HasComponent(entity)
-            && characterIsEnableLookup.IsComponentEnabled(entity))
+            && CharacterEnabledLookup.IsComponentEnabled(entity))
         {
             commandBuffer.SetComponentEnabled<CharacterIsEnable>(sortKey, entity, false);
-
-            //if (localTransformLookup.HasComponent(entity))
-            //{
-            //    RefRO<LocalTransform> transform = localTransformLookup.GetRefRO(entity);
-            //    SoundUtils.PlayWithRPC("Hit", "Kill", transform.ValueRO.Position);
-            //}
-
-            // commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
+            commandBuffer.SetComponentEnabled<IsInstanciateDefaultStuff>(sortKey, entity, true); //Enable the default stuff instantiation at respawn
 
             //FIX (Aurelien) : Now that the player is dead, we drop some of his stuff, the rest gets destroyed
 

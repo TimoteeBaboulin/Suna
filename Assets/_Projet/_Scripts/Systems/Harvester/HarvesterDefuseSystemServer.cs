@@ -1,3 +1,4 @@
+using AK.Wwise;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
@@ -46,6 +47,14 @@ partial struct HarvesterDefuseSystemServer : ISystem
         {
             Debug.LogError("[Server] Couldn't find round component for harvester defuse systems");
             currentPhase = RoundPhase.ActionPhase;
+        }
+
+        if (currentPhase == RoundPhase.BuyPhase && defuserEntity != Entity.Null)
+        {
+            SystemAPI.SetComponentEnabled<HarvesterDefusing>(defusingHarvesterEntity, false);
+            SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
+            defuserEntity = Entity.Null;
+            defusingHarvesterEntity = Entity.Null;
         }
 
         if (defusingHarvesterEntity != Entity.Null)

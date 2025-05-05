@@ -163,21 +163,11 @@ public partial struct ApplyDamageSystem : ISystem
 
         entities.Dispose();
 
-        //ApplyDamageJob job = new ApplyDamageJob
-        //{
-        //    CurrentTick = currentTick,
-        //    MoneyLookup = moneyLookup,
-        //    ClientAttachedComponents = ccacLookup,
-        //    StuffListLookup = stuffListLookup,
-        //    InHandLookup = inHandLookup,
-        //    CommonDataMap = commonDataMap,
-        //    ECB = ecb.AsParallelWriter()
-        //};
-
         DamageSourceJob damageSourceJob = new DamageSourceJob
         {
             CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
             MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
+            GhostOwnerLookup = state.GetComponentLookup<GhostOwner>(),
             ecb = ecb.AsParallelWriter()
         };
 
@@ -196,6 +186,7 @@ public partial struct DamageSourceJob : IJobEntity
 {
     [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
+    [ReadOnly] public ComponentLookup<GhostOwner> GhostOwnerLookup;
 
     public EntityCommandBuffer.ParallelWriter ecb;
 
@@ -204,8 +195,6 @@ public partial struct DamageSourceJob : IJobEntity
         Entity target = damageComponent.ValueRO.targetEntity;
 
         if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth)) return;
-
-        Debug.Log($"Applying {damageComponent.ValueRO.damage} damage to {target} from {entity}");
 
         targetHealth.Value -= damageComponent.ValueRO.damage;
         ecb.SetComponent(sortKey, target, targetHealth);
@@ -219,10 +208,16 @@ public partial struct DamageSourceJob : IJobEntity
 
             if (source != Entity.Null && source != target) //If the source is not null and if the source is the different than the target
             {
-                if (MoneyLookup.TryGetComponent(source, out var cm))
+                if(GhostOwnerLookup.TryGetComponent(source, out var ghostOwnerSource) && 
+                   GhostOwnerLookup.TryGetComponent(target, out var ghostOwnerTarget) &&
+                   PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerSource.NetworkId) != PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerTarget.NetworkId))
+                // Make sure money is given only when killing a player and when it's not a team kill
                 {
-                    cm.money += damageComponent.ValueRO.killReward;
-                    ecb.SetComponent(sortKey, source, cm);
+                    if (MoneyLookup.TryGetComponent(source, out var cm))
+                    {
+                        cm.money += damageComponent.ValueRO.killReward;
+                        ecb.SetComponent(sortKey, source, cm);
+                    }
                 }
             }
         }
@@ -233,66 +228,5 @@ public partial struct DamageSourceJob : IJobEntity
         }
 
         ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
-    }
-}
-
-[BurstCompile]
-[WithNone(typeof(HasNoHealthTag))]
-public partial struct ApplyDamageJob : IJobEntity
-{
-    [ReadOnly] public NetworkTick CurrentTick;
-    [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
-    [ReadOnly] public ComponentLookup<ClientCharacterAttached> ClientAttachedComponents;
-    [ReadOnly] public BufferLookup<CharacterStuffList> StuffListLookup;
-    [ReadOnly] public ComponentLookup<IsStuffInHand> InHandLookup;
-    [ReadOnly] public NativeHashMap<Entity, StuffCommonData> CommonDataMap;
-    public EntityCommandBuffer.ParallelWriter ECB;
-
-    public void Execute(Entity entity, [EntityIndexInQuery] int sortKey,
-        RefRW<CurrentHealthComponent> currentHealth,
-        DynamicBuffer<DamageThisTickCommand> damageThisTickBuffer)
-    {
-        if (!damageThisTickBuffer.GetDataAtTick(CurrentTick, out var damageThisTick))
-        {
-            return;
-        }
-
-        if (damageThisTick.Tick != CurrentTick)
-        {
-            return;
-        }
-
-        currentHealth.ValueRW.Value -= damageThisTick.Value;
-
-        if (currentHealth.ValueRO.Value <= 0)
-        {
-            currentHealth.ValueRW.Value = 0;
-            ECB.AddComponent<HasNoHealthTag>(sortKey, entity);
-
-            //Aurelien (when the player dies, we add money to the killer)
-
-            if (currentHealth.ValueRO.lastDamager != Entity.Null)
-            {
-                Entity client = currentHealth.ValueRO.lastDamager;
-
-                if (MoneyLookup.TryGetComponent(client, out var cm) && ClientAttachedComponents.TryGetComponent(client, out var chara))
-                {
-                    if (StuffListLookup.TryGetBuffer(chara.Value, out var stuffList))
-                    {
-                        foreach (var element in stuffList)
-                        {
-                            if (element.entity == Entity.Null) continue;
-
-                            if (InHandLookup.TryGetComponent(element.entity, out var inHand) && InHandLookup.IsComponentEnabled(element.entity))
-                            {
-                                cm.money += CommonDataMap[element.entity].killGain;
-                                ECB.SetComponent(sortKey, client, cm);
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

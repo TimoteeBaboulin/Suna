@@ -26,6 +26,17 @@ public enum StuffType
     Harvester,
 }
 
+//public enum StuffState
+//{
+//    InShop,
+//    Instantiate,
+//    Equip,
+//    Unequip,
+//    Throw,
+//    Drop,
+//    Destroy,
+//}
+
 [GhostComponent]
 public struct StuffDatabaseAccess : IComponentData
 {
