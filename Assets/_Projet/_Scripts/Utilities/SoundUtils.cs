@@ -79,33 +79,33 @@ public static class SoundUtils
     }
 
     //The entity holding the soundBuffer must have SoundAuthoring attached
-    public static void PlayWithSoundQueue(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
-    {
-        soundQueue.Add(new SoundQueue()
-        {
-            keyGroup = emitter.keyGroup,
-            keyAction = keyAction,
-            pos = pos
-        });
+    //public static void PlayWithSoundQueue(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
+    //{
+    //    soundQueue.Add(new SoundQueue()
+    //    {
+    //        keyGroup = emitter.keyGroup,
+    //        keyAction = keyAction,
+    //        pos = pos
+    //    });
 
-    }
+    //}
 
     //The entity holding the soundBuffer must have SoundAuthoring attached
-    public static void PlayAtEmitterWithSoundQueue(ref SystemState state, DynamicBuffer<SoundQueue> soundQueue, Entity entity, FixedString32Bytes keyAction)
-    {
-        if (state.EntityManager.HasComponent<SoundEmitter>(entity))
-        {
+    //public static void PlayAtEmitterWithSoundQueue(ref SystemState state, DynamicBuffer<SoundQueue> soundQueue, Entity entity, FixedString32Bytes keyAction)
+    //{
+    //    if (state.EntityManager.HasComponent<SoundEmitter>(entity))
+    //    {
 
-            SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
+    //        SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
 
-            if (state.EntityManager.HasComponent<LocalToWorld>(entity))
-            {
-                LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
-                PlayWithSoundQueue(soundQueue, emitter, keyAction, transform.Position);
+    //        if (state.EntityManager.HasComponent<LocalToWorld>(entity))
+    //        {
+    //            LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
+    //            PlayWithSoundQueue(soundQueue, emitter, keyAction, transform.Position);
 
-            }
-        }
-    }
+    //        }
+    //    }
+    //}
 
     public static void PlayWithRPC(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos)
     {
@@ -128,18 +128,18 @@ public static class SoundUtils
         }
     }
 
-    public static void PlayAtEmitterWithRPC(ref SystemState state, FixedString32Bytes keyAction, Entity entity)
-    {
-        if (state.EntityManager.HasComponent<SoundEmitter>(entity))
-        {
-            SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
+    //public static void PlayAtEmitterWithRPC(ref SystemState state, FixedString32Bytes keyAction, Entity entity)
+    //{
+    //    if (state.EntityManager.HasComponent<SoundEmitter>(entity))
+    //    {
+    //        SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
 
-            if (state.EntityManager.HasComponent<LocalToWorld>(entity))
-            {
-                LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
-                PlayWithRPC(emitter.keyGroup, keyAction, transform.Position);
-            }
-        }
-
-    }
+    //        if (state.EntityManager.HasComponent<LocalTransform>(entity))
+    //        {
+    //            LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(entity);
+    //            UnityEngine.Debug.Log(transform.Position);
+    //            PlayWithRPC(emitter.keyGroup, keyAction, transform.Position);
+    //        }
+    //    }
+    //}
 }
