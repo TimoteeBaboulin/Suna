@@ -108,6 +108,8 @@ partial class HarvesterSystemClient : SystemBase
             .WithAll<HarvesterPlanted>()
             .WithEntityAccess())
         {
+            StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
+
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
             float3 harvesterPos = harvesterTransform.Position;
             float3 characterPos = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;
@@ -122,10 +124,6 @@ partial class HarvesterSystemClient : SystemBase
                 };
 
                 RpcUtils.SendClientToServerRpc(ref rpc);
-
-                /*Entity rpcEntity = ecb.CreateEntity();
-                ecb.AddComponent(rpcEntity, rpc);
-                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);*/
             }
 
             //Find a way to check whethere we're currently defusing
@@ -139,13 +137,10 @@ partial class HarvesterSystemClient : SystemBase
                 };
 
                 RpcUtils.SendClientToServerRpc(ref rpc);
-
-                /*Entity rpcEntity = ecb.CreateEntity();
-                ecb.AddComponent(rpcEntity, rpc);
-                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);*/
             }
         }
 
+        //HARVESTER PLANTED
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlanted rpc, Entity entity)
              in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
@@ -154,10 +149,25 @@ partial class HarvesterSystemClient : SystemBase
             SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.plantPosition;
             StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
 
+            //var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+            ////Owner
+            //var linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(rpc.harvesterOwner);
+            //var ownerStuffList = SystemAPI.GetBuffer<CharacterStuffList>(rpc.harvesterOwner);
+
+            ////Stuff
+            //var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(rpc.harvester);
+            //ref var stuffData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(rpc.harvester).ValueRO.GetData(ref database);
+
+            //StuffUtils.Unequip(ref CheckedStateRef, rpc.harvesterOwner, linkedEntityGroup, ownerStuffList, rpc.harvester, stuffGhostOwnerRW, ref stuffData);
+            StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
+            LocalTransform harvesterTransform = SystemAPI.GetComponent<LocalTransform>(rpc.harvester);
+            StuffUtils.SetStuffViewTransform(goRef, harvesterTransform);
+
             ecb.DestroyEntity(entity);
         }
 
-        //Add Harvester to Player
+        //HARVESTER PICKED UP
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
         {
@@ -189,7 +199,6 @@ partial class HarvesterSystemClient : SystemBase
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterDropped>().WithEntityAccess())
         {
             ecb.DestroyEntity(entity);
-            Debug.Log("RPC Harvester Dropped message received");
 
             if (rpc.harvester == Entity.Null)
             {

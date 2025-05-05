@@ -115,6 +115,7 @@ partial struct HarvesterSystemServer : ISystem
             {
                 SpawnHarvesterInMap(ref state, harvesterEntity, corpoSpawnPosition, currentTick, unequipStuffQueu);
             }
+
             ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
         }
 
