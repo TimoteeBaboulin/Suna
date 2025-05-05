@@ -8,9 +8,8 @@ public struct SpawnBarrierComponent : IComponentData
     
 }
 
-[GhostComponent]
 [MaterialProperty("_OpenSince")]
 public struct SpawnFenceMaterialOverride : IComponentData
 {
-    [GhostField] public float Value;
+    public float Value;
 }
