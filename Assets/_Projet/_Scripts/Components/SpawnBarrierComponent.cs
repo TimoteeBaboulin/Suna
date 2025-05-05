@@ -1,5 +1,6 @@
 using Unity.Entities;
 using Unity.Entities.Graphics;
+using Unity.NetCode;
 using Unity.Rendering;
 
 public struct SpawnBarrierComponent : IComponentData
@@ -7,8 +8,9 @@ public struct SpawnBarrierComponent : IComponentData
     
 }
 
+[GhostComponent]
 [MaterialProperty("_OpenSince")]
 public struct SpawnFenceMaterialOverride : IComponentData
 {
-    public float Value;
+    [GhostField] public float Value;
 }
