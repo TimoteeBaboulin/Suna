@@ -67,7 +67,7 @@ public partial struct StrikeSystem : ISystem
                 dynamicData.strikeTimer -= dt;
 
             // If the player shoots, the fire rate is valid, and there are still bullets left
-            if (input.attack.IsSet)
+            if (input.attackStarted.IsSet)
             {
                 if (dynamicData.strikeTimer <= 0)
                 {

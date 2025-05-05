@@ -51,6 +51,7 @@ public partial class CharacterInputSystem : SystemBase
         bool isInteractPressed = actions.Interact.WasPressedThisFrame();
 
         float sensitivity = SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
+        sensitivity *= Camera.main.fieldOfView / CameraSystem.defaultFov;
 
         foreach (var (controller, input, harvesterActions) in SystemAPI
             .Query<RefRO<CharacterComponent>, RefRW<CharacterInput>, RefRO<PlayerHarvesterActions>>()
@@ -113,11 +114,20 @@ public partial class CharacterInputSystem : SystemBase
 
             if (isShootPressed && !plantingOrDefusing)
             {
-                input.ValueRW.attack.Set();
+                input.ValueRW.attackStarted.Set();
             }
             else
             {
-                input.ValueRW.attack = default;
+                input.ValueRW.attackStarted = default;
+            }
+            
+            if(!isShootPressed && !plantingOrDefusing)
+            {
+                input.ValueRW.attackCanceled.Set();
+            }
+            else
+            {
+                input.ValueRW.attackCanceled = default;
             }
 
 

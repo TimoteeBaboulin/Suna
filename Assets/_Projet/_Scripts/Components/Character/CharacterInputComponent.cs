@@ -13,7 +13,8 @@ public struct CharacterInput : IInputComponentData
     [GhostField] public InputEvent reload;
     [GhostField] public InputEvent walkStarted;
     [GhostField] public InputEvent walkCanceled;
-    [GhostField] public InputEvent attack;
+    [GhostField] public InputEvent attackStarted;
+    [GhostField] public InputEvent attackCanceled;
     [GhostField] public InputEvent selectNext;
     [GhostField] public InputEvent selectPrevious;
 
