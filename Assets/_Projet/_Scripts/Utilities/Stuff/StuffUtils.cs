@@ -283,4 +283,17 @@ public static class StuffUtils
     {
         stuffs[(int)slot] = new CharacterStuffList { entity = stuff };
     }
+
+    //Only if stuff is unequip before
+    public static void SetStuffViewTransform(StuffGameObjectRef stuffView, LocalTransform transform)
+    {
+        if (stuffView.Value.transform.parent != null)
+        {
+            stuffView.Value.transform.SetParent(null);
+        }
+
+        stuffView.Value.transform.position = transform.Position;
+        stuffView.Value.transform.rotation = transform.Rotation;
+        stuffView.Value.transform.localScale = new Vector3(transform.Scale, transform.Scale, transform.Scale);
+    }
 }

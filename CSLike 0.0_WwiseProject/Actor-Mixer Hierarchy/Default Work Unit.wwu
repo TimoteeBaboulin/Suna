@@ -8,7 +8,13 @@
 						<Folder Name="SMG" ID="{77C2E88D-97F2-4F62-943B-97038F28146D}" ShortID="901671578">
 							<ChildrenList>
 								<Sound Name="smg_clip_in" ID="{EB59BBA8-1FDE-477C-908B-03CFA1133451}" ShortID="688207109">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -30,7 +36,13 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="smg_shoot" ID="{9527AB01-F0DD-4FA4-B11B-A9AA3467E616}" ShortID="139084488">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Loud Attenuation Distance" ID="{D5A37BE7-93D4-4C52-A6CE-956FFAD53FC0}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -52,7 +64,13 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="smg_clip_out" ID="{58A1F685-F522-4461-9FE4-4B25044421D2}" ShortID="219925906">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -78,7 +96,13 @@
 						<Folder Name="LP17" ID="{C72BCB18-4113-4AB5-822E-6FF6EF30D245}" ShortID="320809009">
 							<ChildrenList>
 								<Sound Name="pistol_shoot" ID="{3B129407-21A2-4B2B-80A8-9726A4351553}" ShortID="88181631">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Loud Attenuation Distance" ID="{D5A37BE7-93D4-4C52-A6CE-956FFAD53FC0}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -101,6 +125,9 @@
 								</Sound>
 								<Sound Name="pistol_worldreload" ID="{CC435951-8D78-420A-B240-2DA2D46AE172}" ShortID="468705036">
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -122,6 +149,9 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="pistol_clipin" ID="{4A2652A4-2209-47F6-ADC7-E6C8D3363D34}" ShortID="622105543">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
@@ -148,7 +178,13 @@
 						<Folder Name="Shotgun" ID="{AFBEE37F-1128-4C37-9735-E33352AFEBBD}" ShortID="958821938">
 							<ChildrenList>
 								<Sound Name="shotgun_cock_back" ID="{5CC849B6-7C24-4EA8-A8B0-095805E46380}" ShortID="665176729">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -170,7 +206,13 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="shotgun_cock_forward" ID="{045D83B3-EF7C-4807-ABC3-35AC25E0B852}" ShortID="462562254">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -192,7 +234,13 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="shotgun_shoot" ID="{126AF352-56CD-41EB-B283-0D7585DA4E40}" ShortID="1064954012">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Loud Attenuation Distance" ID="{D5A37BE7-93D4-4C52-A6CE-956FFAD53FC0}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -219,6 +267,9 @@
 							<ChildrenList>
 								<Sound Name="sniper_railgun_world_reload" ID="{2D5E00E7-F2CB-4A8C-AA40-449210E35001}" ShortID="248024215">
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -240,7 +291,13 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="sniper_railgun_single_01" ID="{F58BFCEF-1510-43C3-B2F0-115D877B1EE3}" ShortID="722530194">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Loud Attenuation Distance" ID="{D5A37BE7-93D4-4C52-A6CE-956FFAD53FC0}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -266,7 +323,13 @@
 						<Folder Name="Rifle" ID="{B3425B48-7EDD-4A89-8FC2-382B650B1E63}" ShortID="406938334">
 							<ChildrenList>
 								<Sound Name="M16A4-MagSlideOutFoley" ID="{4FB68207-A7EC-4143-B8E6-AF506CECF3BB}" ShortID="933341908">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -288,7 +351,13 @@
 									</ActiveSourceList>
 								</Sound>
 								<Sound Name="M16A4-Fire" ID="{E3CE0581-8F3B-43EC-85C3-98E385CE3800}" ShortID="765954545">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Loud Attenuation Distance" ID="{D5A37BE7-93D4-4C52-A6CE-956FFAD53FC0}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -318,7 +387,13 @@
 						<Folder Name="Steps" ID="{F351DBA8-265F-4E23-96C4-4CE7FC4DD32B}" ShortID="716844232">
 							<ChildrenList>
 								<Sound Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" ShortID="244587320">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -346,7 +421,13 @@
 				<Folder Name="Ragdoll" ID="{D1C4FC00-CD37-4C8C-A7EF-DA826B1FD4DC}" ShortID="871515803">
 					<ChildrenList>
 						<Sound Name="body_medium_impact_hard13" ID="{127E925C-66DB-4AA8-B290-C31D3A655553}" ShortID="33138465">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="1"/>
+							</PropertyList>
 							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 								</Reference>
@@ -372,7 +453,13 @@
 				<Folder Name="Bullet" ID="{17341C69-4248-48AF-A6E8-C574A09F1B22}" ShortID="1013139713">
 					<ChildrenList>
 						<Sound Name="near_bullet" ID="{230F7DF9-C195-43E9-94A0-2A504B22C1D7}" ShortID="714284920">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="1"/>
+							</PropertyList>
 							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 								</Reference>
@@ -389,12 +476,54 @@
 									</MediaIDList>
 								</AudioFileSource>
 							</ChildrenList>
+							<ObjectLists>
+								<ObjectList Name="RTPC">
+									<Reference>
+										<Local>
+											<RTPC Name="" ID="{4356C942-8610-49AE-A967-40BA8E99A9F0}" ShortID="99708470">
+												<PropertyList>
+													<Property Name="PropertyName" Type="string" Value="Volume"/>
+												</PropertyList>
+												<ReferenceList>
+													<Reference Name="ControlInput">
+														<ObjectRef Name="Volume" ID="{AD86F2EB-0F7C-4EE1-91C3-88DB707E5572}" WorkUnitID="{512BC968-44BA-4F25-A885-C7D3EA087ECF}"/>
+													</Reference>
+													<Reference Name="Curve">
+														<Custom>
+															<Curve Name="" ID="{E6AE7B6C-16CA-4632-A090-1B7E08D930B0}">
+																<PropertyList>
+																	<Property Name="Flags" Type="int32" Value="3"/>
+																</PropertyList>
+																<PointList>
+																	<Point>
+																		<XPos>0</XPos>
+																		<YPos>-200</YPos>
+																		<Flags>5</Flags>
+																	</Point>
+																	<Point>
+																		<XPos>100</XPos>
+																		<YPos>0</YPos>
+																		<Flags>37</Flags>
+																	</Point>
+																</PointList>
+															</Curve>
+														</Custom>
+													</Reference>
+												</ReferenceList>
+											</RTPC>
+										</Local>
+									</Reference>
+								</ObjectList>
+							</ObjectLists>
 							<ActiveSourceList>
 								<ActiveSource Name="bulletCartboard-6" ID="{8C0EFEB8-00FA-4154-AA4A-C3D2060741F4}" Platform="Linked"/>
 							</ActiveSourceList>
 						</Sound>
 						<Sound Name="no_bullet" ID="{3EBCE319-A671-4076-A4E1-44EC8B0B22D5}" ShortID="268908901">
 							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 								</Reference>
@@ -420,7 +549,13 @@
 				<Folder Name="Kill" ID="{69A2A34B-E856-48A5-99DD-510BF6C1EC99}" ShortID="996243877">
 					<ChildrenList>
 						<Sound Name="kill" ID="{902156AD-B7FA-48BF-8E95-A6FA80D15091}" ShortID="698603326">
+							<PropertyList>
+								<Property Name="3DSpatialization" Type="int16" Value="1"/>
+							</PropertyList>
 							<ReferenceList>
+								<Reference Name="Attenuation">
+									<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 								</Reference>
@@ -450,7 +585,13 @@
 								<Folder Name="concrete" ID="{2AD5804F-5542-47A4-8064-C869E3D20631}" ShortID="790617202">
 									<ChildrenList>
 										<Sound Name="concrete_impact_bullet1" ID="{8E6F47B3-8E20-497E-87B3-B47D8198D25D}" ShortID="179430286">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -472,7 +613,13 @@
 											</ActiveSourceList>
 										</Sound>
 										<Sound Name="concrete_impact_bullet2" ID="{8CC9BEE0-E0B1-421A-9168-2542F4E79FD0}" ShortID="392254064">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -494,7 +641,13 @@
 											</ActiveSourceList>
 										</Sound>
 										<Sound Name="concrete_impact_bullet3" ID="{D160E160-57CF-4875-9F27-6F7D7DC190A9}" ShortID="264216140">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -516,7 +669,13 @@
 											</ActiveSourceList>
 										</Sound>
 										<Sound Name="concrete_impact_bullet4" ID="{83311FA7-4DE2-4B23-8719-C78F49975118}" ShortID="188075633">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -542,7 +701,13 @@
 								<Folder Name="glass" ID="{94B699EE-91AE-4383-9BBE-6622299D424F}" ShortID="563137742">
 									<ChildrenList>
 										<Sound Name="glass_impact_bullet1" ID="{582EC510-684E-4579-8A4C-10057F471428}" ShortID="367207789">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Medium Attenuation Distance" ID="{627B22DD-99E5-4295-B0C3-2F32F4BCF8B5}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -564,7 +729,13 @@
 											</ActiveSourceList>
 										</Sound>
 										<Sound Name="glass_impact_bullet2" ID="{3C83F389-305E-4E93-BE66-4C0BF48C358D}" ShortID="118470796">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Medium Attenuation Distance" ID="{627B22DD-99E5-4295-B0C3-2F32F4BCF8B5}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -586,7 +757,13 @@
 											</ActiveSourceList>
 										</Sound>
 										<Sound Name="glass_impact_bullet3" ID="{32AF37F7-B0C6-4282-826A-4391F227590F}" ShortID="538037308">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Medium Attenuation Distance" ID="{627B22DD-99E5-4295-B0C3-2F32F4BCF8B5}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -608,7 +785,13 @@
 											</ActiveSourceList>
 										</Sound>
 										<Sound Name="glass_impact_bullet4" ID="{B36A1386-D36C-476F-9CA7-6DA4787A176B}" ShortID="584623134">
+											<PropertyList>
+												<Property Name="3DSpatialization" Type="int16" Value="1"/>
+											</PropertyList>
 											<ReferenceList>
+												<Reference Name="Attenuation">
+													<ObjectRef Name="Medium Attenuation Distance" ID="{627B22DD-99E5-4295-B0C3-2F32F4BCF8B5}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+												</Reference>
 												<Reference Name="Conversion">
 													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 												</Reference>
@@ -934,7 +1117,13 @@
 						<Folder Name="Headshot" ID="{147B3742-3642-4AEC-AF04-AF822DC3618F}" ShortID="639348802">
 							<ChildrenList>
 								<Sound Name="headshot2" ID="{7A58C341-5FB2-441B-ADAC-87715B07BF17}" ShortID="444163507">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
 									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
 										<Reference Name="Conversion">
 											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 										</Reference>
@@ -1033,7 +1222,93 @@
 				<Folder Name="Tom_Musics" ID="{992549E0-EEA5-4381-8733-A3F7EB167DEB}" ShortID="962747382">
 					<ChildrenList>
 						<Sound Name="CS_Like_Counter_Clockwise" ID="{9623D9C1-5C6C-4622-B7FD-CED5F2BD51BA}" ShortID="839573009">
+							<PropertyList>
+								<Property Name="EnableAttenuation" Type="bool" Value="False"/>
+							</PropertyList>
 							<ReferenceList>
+								<Reference Name="Attenuation">
+									<Custom>
+										<Attenuation Name="Attenuation (Custom)" ID="{617175E5-8EFD-4073-BAAE-D8CE3E579E20}" ShortID="1001860021">
+											<CurveUsageInfoList>
+												<VolumeDryUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="Custom">
+														<Curve Name="VolumeDry" ID="{A67AA2CD-FB4E-42E5-871E-4C61559C6A9F}">
+															<PropertyList>
+																<Property Name="Flags" Type="int32" Value="3"/>
+															</PropertyList>
+															<PointList>
+																<Point>
+																	<XPos>0</XPos>
+																	<YPos>0</YPos>
+																	<Flags>5</Flags>
+																</Point>
+																<Point>
+																	<XPos>100</XPos>
+																	<YPos>-200</YPos>
+																	<Flags>37</Flags>
+																</Point>
+															</PointList>
+														</Curve>
+													</CurveUsageInfo>
+												</VolumeDryUsage>
+												<VolumeWetGameUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseVolumeDry"/>
+												</VolumeWetGameUsage>
+												<VolumeWetUserUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseVolumeDry"/>
+												</VolumeWetUserUsage>
+												<LowPassFilterUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</LowPassFilterUsage>
+												<HighPassFilterUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</HighPassFilterUsage>
+												<SpreadUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</SpreadUsage>
+												<FocusUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="None"/>
+												</FocusUsage>
+												<ObstructionVolumeUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</ObstructionVolumeUsage>
+												<ObstructionLPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</ObstructionLPFUsage>
+												<ObstructionHPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</ObstructionHPFUsage>
+												<OcclusionVolumeUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</OcclusionVolumeUsage>
+												<OcclusionLPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</OcclusionLPFUsage>
+												<OcclusionHPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</OcclusionHPFUsage>
+												<DiffractionVolumeUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</DiffractionVolumeUsage>
+												<DiffractionLPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</DiffractionLPFUsage>
+												<DiffractionHPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</DiffractionHPFUsage>
+												<TransmissionVolumeUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</TransmissionVolumeUsage>
+												<TransmissionLPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</TransmissionLPFUsage>
+												<TransmissionHPFUsage>
+													<CurveUsageInfo Platform="Linked" CurveToUse="UseProject"/>
+												</TransmissionHPFUsage>
+											</CurveUsageInfoList>
+										</Attenuation>
+									</Custom>
+								</Reference>
 								<Reference Name="Conversion">
 									<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
 								</Reference>

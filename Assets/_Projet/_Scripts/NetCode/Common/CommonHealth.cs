@@ -17,6 +17,7 @@ public struct CurrentHealthComponent : IComponentData
 {
     [GhostField] public float Value;
     [GhostField] public Entity lastDamager;
+    [GhostField] public bool killSoundAlreadyPlayed;
 }
 
 [GhostComponent(PrefabType = GhostPrefabType.AllPredicted)]
@@ -49,6 +50,29 @@ public partial struct CalculateFrameDamageSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        if (state.World.IsServer())
+        {
+            foreach (var (healtRW, chara) in SystemAPI
+            .Query<RefRW<CurrentHealthComponent>>()
+            .WithEntityAccess())
+            {
+                if (healtRW.ValueRO.Value <= 0)
+                {
+                    if (!healtRW.ValueRW.killSoundAlreadyPlayed)
+                    {
+                        Entity killer = healtRW.ValueRO.lastDamager;
+                        float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
+                        SoundUtils.PlayWithRPC("Hit", "Kill", pos);
+                        healtRW.ValueRW.killSoundAlreadyPlayed = true;
+                    }
+                }
+                else
+                {
+                    healtRW.ValueRW.killSoundAlreadyPlayed = false;
+                }
+            }
+        }
+
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         ComponentLookup<HasNoHealthTag> lookup = state.GetComponentLookup<HasNoHealthTag>();
 
@@ -129,24 +153,6 @@ public partial struct ApplyDamageSystem : ISystem
         EntityQuery query = state.GetEntityQuery(typeof(StuffDatabaseAccess));
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
         NativeHashMap<Entity, StuffCommonData> commonDataMap = new NativeHashMap<Entity, StuffCommonData>(entities.Length, Allocator.TempJob);
-
-        if (state.World.IsServer())
-        {
-            foreach (var (healtRO, chara) in SystemAPI
-            .Query<RefRO<CurrentHealthComponent>>()
-            .WithEntityAccess())
-            {
-                if (healtRO.ValueRO.Value <= 0)
-                {
-                    if (healtRO.ValueRO.lastDamager != Entity.Null)
-                    {
-                        Entity killer = healtRO.ValueRO.lastDamager;
-                        float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
-                        //SoundUtils.PlayWithRPC("Hit", "Kill", pos);
-                    }
-                }
-            }
-        }
 
         GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
         foreach (var entity in entities)

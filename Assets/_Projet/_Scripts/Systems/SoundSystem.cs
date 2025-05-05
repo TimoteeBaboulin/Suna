@@ -94,7 +94,7 @@ partial struct SoundPlayRPCSystemClient : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<StuffGameObjectRef>();
+        //state.RequireForUpdate<StuffGameObjectRef>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -117,6 +117,48 @@ partial struct SoundPlayRPCSystemClient : ISystem
         ecb.Dispose();
     }
 }
+
+[WorldSystemFilter(WorldSystemFilterFlags.Default | WorldSystemFilterFlags.ClientSimulation)]
+partial struct SoundMainMenuVolumeSystemClient : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<ClientSettingsComponent>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        if (state.World.IsServer()) return;
+
+        SoundManager soundManager = SoundManager.Instance;
+        float volume = SystemAPI.GetSingleton<ClientSettingsComponent>().Volume;
+        UnityEngine.Debug.Log("volume : " + volume + " IsServer : " +  state.World.IsServer());
+
+#if !UNITY_SERVER
+        soundManager.SetVolume(volume);
+#endif
+    }
+}
+
+//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+//partial struct SoundVolumeSystemClient : ISystem
+//{
+//    public void OnCreate(ref SystemState state)
+//    {
+//        state.RequireForUpdate<ClientSettingsComponent>();
+//    }
+
+//    public void OnUpdate(ref SystemState state)
+//    {
+//        SoundManager soundManager = SoundManager.Instance;
+//        float volume = SystemAPI.GetSingleton<ClientSettingsComponent>().Volume;
+//        //UnityEngine.Debug.Log("volume : " + volume);
+
+//#if !UNITY_SERVER
+//        soundManager.SetVolume(volume);
+//#endif
+//    }
+//}
 
 
 

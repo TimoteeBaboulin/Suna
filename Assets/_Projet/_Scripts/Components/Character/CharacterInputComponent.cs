@@ -5,7 +5,9 @@ using Unity.NetCode;
 public struct CharacterInput : IInputComponentData
 {
     [GhostField] public float2 move;
-    [GhostField] public float2 look;
+
+    [GhostField] public float Pitch;
+    [GhostField] public float Yaw;
 
     [GhostField] public InputEvent jump;
     [GhostField] public InputEvent reload;

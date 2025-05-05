@@ -53,12 +53,11 @@ public partial struct OnDieSystem : ISystem
             stuffDynamicDataLookup = SystemAPI.GetComponentLookup<StuffDynamicData>(true),
             shootStartPositionDeltaLookup = SystemAPI.GetComponentLookup<CharacterShootStartPositionDelta>(true),
             localTransformLookup = SystemAPI.GetComponentLookup<LocalTransform>(true),
+            characterIsEnableLookup = SystemAPI.GetComponentLookup<CharacterIsEnable>(true)
         };
 
         state.Dependency = job.ScheduleParallel(state.Dependency);
         state.Dependency.Complete();
-
-        
     }
 }
 

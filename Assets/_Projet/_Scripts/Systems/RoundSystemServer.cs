@@ -38,6 +38,7 @@ public partial struct RoundSystemServer : ISystem
 
     //private EntityQuery _query;
     private bool _firstFrame;
+    private bool _harvesterMusicClockWiseStarted;
 
     //[BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -66,6 +67,35 @@ public partial struct RoundSystemServer : ISystem
     //[BurstCompile]Pas avec les RPC des sons :(
     public void OnUpdate(ref SystemState state)
     {
+        // Check if the singleton exists
+        if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
+        {
+            return;
+        }
+
+        if (!roundComponent.ValueRO.roundSystemActive && !_firstFrame)
+        {
+            foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+            {
+                physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
+            }
+
+            DeactivateSpawnBarriersCommand rpc = new DeactivateSpawnBarriersCommand
+            {
+                value = true
+            };
+            EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+            foreach (var client in query.ToEntityArray(Allocator.Temp))
+            {
+                RpcUtils.SendServerToClientRpc(ref rpc, client);
+            }
+            _firstFrame = true;
+        }
+
         if (ClientTransportHelper.instance == null)
             return;
 
@@ -82,16 +112,9 @@ public partial struct RoundSystemServer : ISystem
             if (ClientTransportHelper.instance.Session.PlayerCount < 2)
                 return;
         }
-        
-        // Check if the singleton exists
-        if (!SystemAPI.TryGetSingletonRW<RoundComponent>(out var roundComponent))
-        {
-            return;
-        }
-
-
         //if (roundComponent.ValueRO.gameWon)
         //    return;
+
 
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -105,8 +128,6 @@ public partial struct RoundSystemServer : ISystem
             _firstFrame = true;
         }
 
-        //Debug.Log(entity);
-
         EntityQuery plantedHarvesterQuery = new EntityQueryBuilder(Allocator.Temp).WithAll<HarvesterComponent, HarvesterPlanted>().Build(ref state);
         NativeArray<Entity> plantedHarvesterEntities = plantedHarvesterQuery.ToEntityArray(Allocator.Temp);
 
@@ -114,50 +135,36 @@ public partial struct RoundSystemServer : ISystem
         //Entity entity = _query.GetSingletonEntity();
         if (roundComponent.ValueRO.currentPhase is RoundPhase.ActionPhase && plantedHarvesterEntities.Length is not 0)
         {
-            //Debug.Log("Collector has been planted on the server");
             CollectorPlanted(ref state, entity, roundComponent, ecb);
-            //foreach (Entity harvesterEntity in plantedHarvesterEntities)
-            //{
-            //    ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, false);
-            //}
         }
         else if (roundComponent.ValueRO.currentPhase is RoundPhase.PostPlantPhase && plantedHarvesterEntities.Length is 0)
         {
             HarvesterDefused(ref state, entity, roundComponent, ecb);
-
         }
         else
         {
             PlayerAliveCounts playerCount = SystemAPI.GetComponent<PlayerAliveCounts>(entity);
 
-            var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
-
-            //Update the timer and change to next phase in case the timer runs out
+            //This handles any case where we want the round to end in case of a team wipe
             switch (roundComponent.ValueRO.currentPhase)
             {
                 case RoundPhase.ActionPhase:
                     if (playerCount.nativePlayersAlive == 0)
                     {
                         Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
-                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
-                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
-                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                        SetPhase(ref state, entity, roundComponent, RoundPhase.PostRoundPhase, ecb);
                     }
                     else if (playerCount.corpoPlayersAlive == 0)
                     {
                         Victory(ref state, entity, roundComponent, TeamSideType.Natif, ecb);
-                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
-                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
-                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                        SetPhase(ref state, entity, roundComponent, RoundPhase.PostRoundPhase, ecb);
                     }
                     break;
                 case RoundPhase.PostPlantPhase:
                     if (playerCount.nativePlayersAlive == 0)
                     {
                         Victory(ref state, entity, roundComponent, TeamSideType.Corpo, ecb);
-                        roundComponent.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
-                        roundComponent.ValueRW.timer = timeBuffer[(int)RoundPhase.PostRoundPhase];
-                        SendCurrentPhase(ref state, entity, roundComponent, ecb);
+                        SetPhase(ref state, entity, roundComponent, RoundPhase.PostRoundPhase, ecb);
                     }
                     break;
             }
@@ -169,10 +176,11 @@ public partial struct RoundSystemServer : ISystem
                 TimeOutPhase(ref state, entity, roundComponent, ecb);
             }
 
-            if (roundComponent.ValueRO.timer <= 10f && roundComponent.ValueRO.currentPhase == RoundPhase.PostPlantPhase)
+            if (roundComponent.ValueRO.timer <= 10f && roundComponent.ValueRO.currentPhase == RoundPhase.PostPlantPhase && !_harvesterMusicClockWiseStarted)
             {
-                //Debug.Log("10 seconds left");
+                SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
                 SoundUtils.PlayWithRPC("Music", "Harvester_Clockwise", float3.zero);
+                _harvesterMusicClockWiseStarted = true;
             }
         }
 
@@ -196,6 +204,28 @@ public partial struct RoundSystemServer : ISystem
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
         //Debug: Allow to fake a collector plant
+    }
+
+    private void SetPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> componentRW, RoundPhase phase, EntityCommandBuffer ecb)
+    {
+        var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
+
+        componentRW.ValueRW.currentPhase = phase;
+        componentRW.ValueRW.timer = timeBuffer[(int)phase];
+        SendCurrentPhase(ref state, entity, componentRW, ecb);
+
+        SetSpawnBarriersActive(ref state, phase == RoundPhase.BuyPhase);
+    }
+
+    private void SetSpawnBarriersActive(ref SystemState state, bool active)
+    {
+        foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>()
+                    .WithEntityAccess())
+        {
+            physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(active? CollisionResponsePolicy.Collide : CollisionResponsePolicy.None);
+        }
     }
 
     private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
@@ -294,40 +324,23 @@ public partial struct RoundSystemServer : ISystem
     {
         //Gets to next phase because of time out
         //Update the score accordingly
-        if (component.ValueRW.currentPhase == RoundPhase.ActionPhase)
+        switch (component.ValueRO.currentPhase)
         {
-            Victory(ref state, entity, component, TeamSideType.Natif, ecb);
-            component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
-        }
-        else
-        {
-            if (component.ValueRW.currentPhase == RoundPhase.PostPlantPhase)
+            case RoundPhase.BuyPhase:
+                SetPhase(ref state, entity, component, RoundPhase.ActionPhase, ecb);
+                break;
+            case RoundPhase.ActionPhase:
+                Victory(ref state, entity, component, TeamSideType.Natif, ecb);
+                SetPhase(ref state, entity, component, RoundPhase.PostRoundPhase, ecb);
+                break;
+            case RoundPhase.PostPlantPhase:
                 Victory(ref state, entity, component, TeamSideType.Corpo, ecb);
-            if (component.ValueRO.currentPhase == RoundPhase.BuyPhase)
-            {
-                foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>>()
-                    .WithAll<SpawnBarrierComponent>()
-                    .WithEntityAccess())
-                {
-                    physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
-                }
-            }
-            component.ValueRW.currentPhase++;
+                SetPhase(ref state, entity, component, RoundPhase.PostRoundPhase, ecb);
+                break;
+            case RoundPhase.PostRoundPhase:
+                InitRound(ref state, entity, component, ecb);
+                break;
         }
-
-        //If the round ended, get to next one
-        if (component.ValueRW.currentPhase > RoundPhase.PostRoundPhase)
-        {
-            InitRound(ref state, entity, component, ecb);
-        }
-
-        //Sets the timer for the new phase
-        var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
-        component.ValueRW.timer = buffer[(int)component.ValueRW.currentPhase];
-
-        //Send the message to the clients
-        SendCurrentPhase(ref state, entity, component, ecb);
     }
 
     private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
@@ -346,8 +359,9 @@ public partial struct RoundSystemServer : ISystem
     private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
         //Reset the phase and increase the round number
-        component.ValueRW.currentPhase = RoundPhase.BuyPhase;
-        component.ValueRW.currentRound++;
+        SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb);
+        _harvesterMusicClockWiseStarted = false;
+
 
         if (component.ValueRW.currentRound > component.ValueRO.maxRounds)
         {
@@ -384,21 +398,12 @@ public partial struct RoundSystemServer : ISystem
             ecb.AddComponent<HarvesterRespawn>(harvesterEntity);
         }
 
-        foreach ((RefRW<PhysicsCollider> physicsColliderRW, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>>()
-                    .WithAll<SpawnBarrierComponent>()
-                    .WithEntityAccess())
-        {
-            physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.Collide);
-        }
-
         //FIX (Aurelien) : Destroy all dropped weapons and equipment on the ground
-
         foreach (var (stuffOwner, stuffEntity) in SystemAPI
             .Query<RefRO<StuffDynamicData>>()
             .WithEntityAccess())
         {
-            if(stuffOwner.ValueRO.owner == Entity.Null)
+            if(stuffOwner.ValueRO.owner == Entity.Null && !SystemAPI.HasComponent<HarvesterComponent>(stuffEntity))
             {
                 ecb.DestroyEntity(stuffEntity);
             }
@@ -452,9 +457,4 @@ public partial struct RoundSystemServer : ISystem
             });
         }
     }
-
-    //private void UpdateRoundData(ref SystemState state, Entity target, RefRO<RoundComponent> component, EntityCommandBuffer ecb)
-    //{
-
-    //}
 }

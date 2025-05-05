@@ -122,7 +122,7 @@ public partial struct ShootSystem : ISystem
                                     recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
                                     visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
                                 }
-                                else if(stuffCommonData.Name.ToString() == "Banduka")
+                                else if (stuffCommonData.Name.ToString() == "Banduka")
                                 {
                                     recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
                                     visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
@@ -144,13 +144,13 @@ public partial struct ShootSystem : ISystem
 
                                 localView.ValueRW.ShootingModifier = math.mul(localView.ValueRW.ShootingModifier, visualRecoilRotation);
 
-                                if(math.isnan(recoilRotation.value.x) || math.isnan(recoilRotation.value.y) || math.isnan(recoilRotation.value.z) || math.isnan(recoilRotation.value.w))
+                                if (math.isnan(recoilRotation.value.x) || math.isnan(recoilRotation.value.y) || math.isnan(recoilRotation.value.z) || math.isnan(recoilRotation.value.w))
                                 {
                                     Debug.LogError($"Recoil rotation is NaN {dynamicData.patternBulletIndex}");
                                     recoilRotation = quaternion.identity;
                                 }
 
-                                if(math.isnan(visualRecoilRotation.value.x) || math.isnan(visualRecoilRotation.value.y) || math.isnan(visualRecoilRotation.value.z) || math.isnan(visualRecoilRotation.value.w))
+                                if (math.isnan(visualRecoilRotation.value.x) || math.isnan(visualRecoilRotation.value.y) || math.isnan(visualRecoilRotation.value.z) || math.isnan(visualRecoilRotation.value.w))
                                 {
                                     Debug.LogError($"Visual recoil rotation is NaN {dynamicData.patternBulletIndex}");
                                     visualRecoilRotation = quaternion.identity;
@@ -204,7 +204,7 @@ public partial struct ShootSystem : ISystem
                                 };
 
                                 if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                        // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                                                                      // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
                                 {
                                     RpcUtils.SendServerToClientRpc(ref hc);
                                 }
@@ -214,8 +214,14 @@ public partial struct ShootSystem : ISystem
                                 // === SON ===
                                 if (i == 0)
                                 {
-                                    SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                                    SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                                    SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(weapon);
+                                    LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(owner);
+                                    SoundUtils.PlayWithRPC(ref emitter, "Shoot", transform.Position);
+
+                                    if (!hc.position.Equals(float3.zero))
+                                    {
+                                        SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                                    }
                                 }
 
                                 // === FIN SON ===
@@ -244,7 +250,7 @@ public partial struct ShootSystem : ISystem
             SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
 
-        foreach(var (dynamicDataRW, databaseAccessRO, sddRW, grenade) in SystemAPI
+        foreach (var (dynamicDataRW, databaseAccessRO, sddRW, grenade) in SystemAPI
             .Query<RefRW<GrenadeDynamicData>, RefRO<GrenadeDatabaseAccess>, RefRW<StuffDynamicData>>()
             .WithAll<IsStuffInHand, Simulate>()
             .WithDisabled<ReleasedGrenade>()
@@ -271,13 +277,13 @@ public partial struct ShootSystem : ISystem
                 dynamicData.cookingTime += dt;
             }
 
-            if(input.attack.IsSet)
+            if (input.attack.IsSet)
             {
                 dynamicData.isCooking = true;
             }
             else
             {
-                if(dynamicData.isCooking)
+                if (dynamicData.isCooking)
                 {
                     if (dynamicData.cookingTime >= commonData.cookingTime)
                     {
@@ -444,7 +450,7 @@ public partial struct ShootSystem : ISystem
                 End = startPos + new float3(forward * range),
                 Filter = filter //filtre pour partie du corps
             };
-            
+
             NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
             if (collWorld.CastRay(raycastInput, ref allHits))
             {

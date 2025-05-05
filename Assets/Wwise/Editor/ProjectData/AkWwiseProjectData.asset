@@ -38,7 +38,7 @@ MonoBehaviour:
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
     guid: 6924ad1a7785a4489344f7ee45689393
     GuidInternal: 
-    m_lastTime: -8584557811541823625
+    m_lastTime: -8584551720769158866
     List:
     - name: Master Audio Bus
       guid: d8a41415a61d2a41a17e75ca0c2149f3
@@ -341,7 +341,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 9b328937a796d24fb9542e5b638b2771
       Path: Events\Default Work Unit\Character\Footstep
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.5611338
       minDuration: 0.5611338
     - name: Headshot
@@ -361,7 +361,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 2a761a9a80f72149a25ae5eb8cf78ac4
       Path: Events\Default Work Unit\Hit\Headshot
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 3.9009523
       minDuration: 3.9009523
     - name: Hit
@@ -398,7 +398,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 9e98fa6538e3dc4a8971344c56e1d173
       Path: Events\Default Work Unit\Kill\Kill
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 2.2553968
       minDuration: 2.2553968
     - name: Kill
@@ -472,7 +472,7 @@ MonoBehaviour:
         ObjectType: 4
         guid: 67f25658d5142147ae79e516e88ffa3f
       Path: Events\Default Work Unit\Hit\Miss
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 1.6925397
       minDuration: 1.6925397
     - name: Miss
@@ -515,7 +515,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: b2afa0342dc680418ef8c51a15c84493
       Path: Events\Default Work Unit\Bullet\Near_Bullet
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.86489797
       minDuration: 0.86489797
     - name: No_Bullet
@@ -535,7 +535,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 4670e409b9c0a244914dc4b3324edf42
       Path: Events\Default Work Unit\Bullet\No_Bullet
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.37188208
       minDuration: 0.37188208
     - name: Pistol_Reload
@@ -558,7 +558,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 7c31bd991b042f4f9d594c0543e9f945
       Path: Events\Default Work Unit\Stuff\LP17\Pistol_Reload
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.69659865
       minDuration: 0.69659865
     - name: Pistol_Shoot
@@ -581,7 +581,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: cf6965ca56287c4f9e9f530727951166
       Path: Events\Default Work Unit\Stuff\LP17\Pistol_Shoot
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 2.0273924
       minDuration: 2.0273924
     - name: Ragdoll
@@ -601,7 +601,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 8d06e527d1e4c641824e90af8992ab44
       Path: Events\Default Work Unit\Character\Ragdoll
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.34
       minDuration: 0.34
     - name: Rifle
@@ -644,7 +644,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: e9309a3c4c410246a83dc61624164224
       Path: Events\Default Work Unit\Stuff\Rifle\Rifle_Reload
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 1.2909751
       minDuration: 1.2909751
     - name: Rifle_Shoot
@@ -667,7 +667,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 4f16e0081a30e74d87330d3ac9078238
       Path: Events\Default Work Unit\Stuff\Rifle\Rifle_Shoot
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 5.1215644
       minDuration: 5.1215644
     - name: Shotgun
@@ -710,7 +710,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: e4a9e0061903f942b42de6bd6ffc81be
       Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Back
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.218322
       minDuration: 0.218322
     - name: Shotgun_Cock_Forward
@@ -733,7 +733,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: ed45917fde0c684c8ef01a0dc1e2628e
       Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Forward
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.23437642
       minDuration: 0.23437642
     - name: Shotgun_Shoot
@@ -756,7 +756,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 97190818ce08ce4d843f3041b0b11a51
       Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 1.1954195
       minDuration: 1.1954195
     - name: Shotgun_Shoot_Test
@@ -779,7 +779,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: dd3eeb47c4b42941b222c21aad323884
       Path: Events\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot_Test
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 1.1954195
       minDuration: 1.1954195
     - name: SMG
@@ -822,7 +822,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 4c505f4ba9ab8148903749464fff5b5f
       Path: Events\Default Work Unit\Stuff\SMG\SMG_Reload
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.23832199
       minDuration: 0.23832199
     - name: SMG_Shoot
@@ -845,7 +845,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 9a27464da56fff45bee18aa41bdabb7c
       Path: Events\Default Work Unit\Stuff\SMG\SMG_Shoot
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 2.970771
       minDuration: 2.970771
     - name: Sniper
@@ -888,7 +888,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: 6b91a1b731f91f4d9f61b6d97f0b60da
       Path: Events\Default Work Unit\Stuff\Sniper\Sniper_Reload
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 0.92764175
       minDuration: 0.92764175
     - name: Sniper_Shoot
@@ -911,7 +911,7 @@ MonoBehaviour:
         ObjectType: 3
         guid: f14fd24298e08143930b352f46f1634c
       Path: Events\Default Work Unit\Stuff\Sniper\Sniper_Shoot
-      maxAttenuation: 0
+      maxAttenuation: 150
       maxDuration: 3.6140363
       minDuration: 3.6140363
     - name: StopAll
@@ -1129,8 +1129,22 @@ MonoBehaviour:
     ParentPath: Game Parameters\Default Work Unit
     guid: 68c92b51ba44254fa885c7d3ea087ecf
     GuidInternal: 
-    m_lastTime: -8584557811545743171
-    List: []
+    m_lastTime: -8584551720766865643
+    List:
+    - name: Volume
+      guid: ebf286ad7c0fe14e91c388db707e5572
+      id: 2415836739
+      PathAndIcons:
+      - ElementName: Game Parameters
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 68c92b51ba44254fa885c7d3ea087ecf
+      - ElementName: Volume
+        ObjectType: 13
+        guid: ebf286ad7c0fe14e91c388db707e5572
+      Path: Game Parameters\Default Work Unit\Volume
   StateWwu:
   - PhysicalPath: States\Default Work Unit.wwu
     PathAndIcons:
@@ -1174,7 +1188,7 @@ MonoBehaviour:
     m_lastTime: -8584557811540344724
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 190000001a000000
+  ExpandedWaapiItemIds: 050000000f000000190000001a0000002300000024000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

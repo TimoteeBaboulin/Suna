@@ -106,23 +106,23 @@ public static class PlayerHelpers
     {
         GlobalTeamCount teamCounts = GetCurrentTeamCounts();
 
-        //TeamSideType assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
-        //    ? (UnityEngine.Random.value < 0.5f ? TeamSideType.Corpo : TeamSideType.Natif)
-        //    : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? TeamSideType.Corpo : TeamSideType.Natif);
+        TeamSideType assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
+            ? (UnityEngine.Random.value < 0.5f ? TeamSideType.Corpo : TeamSideType.Natif)
+            : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? TeamSideType.Corpo : TeamSideType.Natif);
 
-        int maxPlayers = ClientTransportHelper.MaxNbOfPlayers - 1;
-        int halfPoint = maxPlayers / 2;    
+        //int maxPlayers = ClientTransportHelper.MaxNbOfPlayers - 1;
+        //int halfPoint = maxPlayers / 2;    
 
-        int totalConnected = teamCounts.corpoPlayersCount + teamCounts.natifPlayersCount;
-        TeamSideType assignedTeam;
-        if (totalConnected < halfPoint)
-        {
-            assignedTeam = TeamSideType.Corpo;
-        }
-        else
-        {
-            assignedTeam = TeamSideType.Natif;
-        }
+        //int totalConnected = teamCounts.corpoPlayersCount + teamCounts.natifPlayersCount;
+        //TeamSideType assignedTeam;
+        //if (totalConnected < halfPoint)
+        //{
+        //    assignedTeam = TeamSideType.Corpo;
+        //}
+        //else
+        //{
+        //    assignedTeam = TeamSideType.Natif;
+        //}
 
         if (readOnlyPlayer is IPlayer player)
         {

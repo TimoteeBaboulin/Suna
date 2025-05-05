@@ -8,7 +8,9 @@ public class SoundManager : Singleton<SoundManager>
 {
 #if !UNITY_SERVER
     public Dictionary<string, AK.Wwise.Event> bank = new();
+    public AK.Wwise.RTPC volumeRTPC = null;
 #endif
+
     GameObject go;
 
     protected override void Awake()
@@ -31,6 +33,13 @@ public class SoundManager : Singleton<SoundManager>
         {
             Debug.LogWarning($"Sound {key} not found in bank Dictionary");
         }
+#endif
+    }
+
+    public void SetVolume(float volume)
+    {
+#if !UNITY_SERVER
+        volumeRTPC.SetValue(go, volume);
 #endif
     }
 }
