@@ -121,13 +121,15 @@ partial class HarvesterSystemClient : SystemBase
                     character = characterEntity
                 };
 
-                Entity rpcEntity = ecb.CreateEntity();
+                RpcUtils.SendClientToServerRpc(ref rpc);
+
+                /*Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
-                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);*/
             }
 
             //Find a way to check whethere we're currently defusing
-            if (harvesterActions.Interact.WasReleasedThisFrame())
+            if (harvesterActions.Interact.WasReleasedThisFrame() || math.distance(harvesterPos, characterPos) >= 10)
             {
                 RpcHarvesterDefuseStop rpc = new RpcHarvesterDefuseStop
                 {
@@ -136,9 +138,11 @@ partial class HarvesterSystemClient : SystemBase
                     character = characterEntity
                 };
 
-                Entity rpcEntity = ecb.CreateEntity();
+                RpcUtils.SendClientToServerRpc(ref rpc);
+
+                /*Entity rpcEntity = ecb.CreateEntity();
                 ecb.AddComponent(rpcEntity, rpc);
-                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);
+                ecb.AddComponent<SendRpcCommandRequest>(rpcEntity);*/
             }
         }
 
@@ -146,9 +150,9 @@ partial class HarvesterSystemClient : SystemBase
              in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
             ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
-            
-            StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
+
             SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.plantPosition;
+            StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
 
             ecb.DestroyEntity(entity);
         }
