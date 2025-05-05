@@ -284,6 +284,7 @@ public static class StuffUtils
         stuffs[(int)slot] = new CharacterStuffList { entity = stuff };
     }
 
+    //Only if stuff is unequip before
     public static void SetStuffViewTransform(StuffGameObjectRef stuffView, LocalTransform transform)
     {
         if (stuffView.Value.transform.parent != null)
