@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5466323949784936394}
   - component: {fileID: 8593690690128907739}
   m_Layer: 0
-  m_Name: vfx_Graph_Hit
+  m_Name: vfx_FLASH
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -57,10 +57,10 @@ VisualEffect:
       m_Array: []
     m_Vector4f:
       m_Array:
-      - m_Value: {x: 5.992157, y: 2.372507, z: 0.84705865, w: 1}
+      - m_Value: {x: 15.182915, y: 11.494613, z: 7.8063097, w: 1}
         m_Name: Color01
         m_Overridden: 1
-      - m_Value: {x: 12.065062, y: 1.7358487, z: 0.28455332, w: 1}
+      - m_Value: {x: 13.676436, y: 4.4613514, z: 3.1610634, w: 1}
         m_Name: Color02
         m_Overridden: 1
     m_Uint:
