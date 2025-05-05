@@ -24,6 +24,9 @@ public class PauseMenuController : MonoBehaviour
     // Input enabling variables
     [SerializeField] private DefaultInputSystem input;
 
+    // Shop Link for Escape Key
+    [SerializeField] private ShopController _shopController;
+
     private void Awake()
     {
         // Initializing elements
@@ -51,8 +54,11 @@ public class PauseMenuController : MonoBehaviour
         }
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            UI.ToggleActive(ref _root);
-            ActivateUIInput(UI.IsActive(ref _root));
+            if ((_shopController != null && !_shopController.IsShopActive()) || _shopController == null)
+            {
+                UI.ToggleActive(ref _root);
+                ActivateUIInput(UI.IsActive(ref _root));
+            }
         }
     }
 

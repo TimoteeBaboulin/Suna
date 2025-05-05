@@ -38,6 +38,7 @@ public partial struct RoundSystemServer : ISystem
 
     //private EntityQuery _query;
     private bool _firstFrame;
+    private bool _harvesterMusicClockWiseStarted;
 
     //[BurstCompile]
     public void OnCreate(ref SystemState state)
@@ -111,6 +112,9 @@ public partial struct RoundSystemServer : ISystem
             if (ClientTransportHelper.instance.Session.PlayerCount < 2)
                 return;
         }
+        //if (roundComponent.ValueRO.gameWon)
+        //    return;
+
 
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -172,10 +176,11 @@ public partial struct RoundSystemServer : ISystem
                 TimeOutPhase(ref state, entity, roundComponent, ecb);
             }
 
-            if (roundComponent.ValueRO.timer <= 10f && roundComponent.ValueRO.currentPhase == RoundPhase.PostPlantPhase)
+            if (roundComponent.ValueRO.timer <= 10f && roundComponent.ValueRO.currentPhase == RoundPhase.PostPlantPhase && !_harvesterMusicClockWiseStarted)
             {
-                //Debug.Log("10 seconds left");
+                SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
                 SoundUtils.PlayWithRPC("Music", "Harvester_Clockwise", float3.zero);
+                _harvesterMusicClockWiseStarted = true;
             }
         }
 
@@ -355,6 +360,8 @@ public partial struct RoundSystemServer : ISystem
     {
         //Reset the phase and increase the round number
         SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb);
+        _harvesterMusicClockWiseStarted = false;
+
 
         if (component.ValueRW.currentRound > component.ValueRO.maxRounds)
         {

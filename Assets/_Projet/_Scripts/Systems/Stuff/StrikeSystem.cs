@@ -1,5 +1,6 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
@@ -57,9 +58,9 @@ public partial struct StrikeSystem : ISystem
             if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) continue;
             ref CharacterInput input = ref inputRef.ValueRW;
 
-            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) continue;
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var strikeStartpos)) continue;
 
-            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) continue;
+            if (!TryGetCharacterShootRotation(owner, ref state, out var strikeRotation)) continue;
 
             // Calculate fire rate
             if (dynamicData.strikeTimer > 0)
@@ -74,56 +75,100 @@ public partial struct StrikeSystem : ISystem
 
                     SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
 
-                    RaycastHit hit = ClosestRayCast(shootRotation, shootStartpos, commonData.range, owner, state.EntityManager);
+                    bool strikedPlayer = false;
 
-                    // Apply damage to the target player
-                    if (state.EntityManager.HasComponent<CharacterColliderDataComponent>(hit.Entity))
+                    LocalTransform transform = new LocalTransform
                     {
-                        RefRO<CharacterColliderDataComponent> CharacterBodyPartData
-                        = SystemAPI.GetComponentRO<CharacterColliderDataComponent>(hit.Entity);
+                        Position = strikeStartpos,
+                        Rotation = strikeRotation,
+                        Scale = 1.0f,
+                    };
 
-                        if (CharacterBodyPartData.ValueRO.CharacterEntity != owner
-                            && state.EntityManager.HasComponent<DamageBufferElement>(CharacterBodyPartData.ValueRO.CharacterEntity)
-                            && state.EntityManager.IsComponentEnabled<CharacterIsEnable>(CharacterBodyPartData.ValueRO.CharacterEntity))
+                    CollisionFilter filter = new CollisionFilter
+                    {
+                        BelongsTo = ~0u,
+                        CollidesWith = (1u << 6)
+                    };
+
+                    var hits = new NativeList<DistanceHit>(Allocator.Temp);
+                    if (SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(transform.Position + transform.Forward() * commonData.range, commonData.range, ref hits, filter))
+                    {
+                        foreach (var hit in hits)
                         {
-                            SystemAPI.GetComponentRW<CurrentHealthComponent>(CharacterBodyPartData.ValueRO.CharacterEntity).ValueRW.lastDamager
-                                = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
+                            if (hit.Entity == owner) continue;
+                            if (!SystemAPI.HasComponent<Damageable>(hit.Entity) || !SystemAPI.IsComponentEnabled<Damageable>(hit.Entity)) continue;
+
+                            SystemAPI.GetComponentRW<CurrentHealthComponent>(hit.Entity).ValueRW.lastDamager
+                                = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity;
 
                             Entity damageSource = ecb.CreateEntity();
 
                             ecb.AddComponent(damageSource, new ApplyDamage
                             {
                                 source = DamageSource.Weapon,
-                                damage = commonData.damage * CharacterBodyPartData.ValueRO.DamageMultiplier,
+                                damage = commonData.damage,
                                 playerSource = owner,
-                                targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
+                                targetEntity = hit.Entity,
                                 killReward = stuffCommonData.killGain,
                                 weapon = Entity.Null, //TODO : Store the player weapon entity here
                             });
 
                             ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                            strikedPlayer = true;
+
+                            // === VISUEL ===
+                            HitCommand hc = new HitCommand()
+                            {
+                                position = hit.Position,
+                                normal = hit.SurfaceNormal,
+                                origin = strikeStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                            };
+
+                            if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                                  // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                            {
+                                RpcUtils.SendServerToClientRpc(ref hc);
+                            }
+                            // === FIN VISUEL ===
+
+                            // === SON ===
+                            //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                            SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                            // === FIN SON ===
+
+#if !UNITY_SERVER
+                            Debug.DrawRay(transform.Position + transform.Forward() * commonData.range, hit.Position - (transform.Position + transform.Forward() * commonData.range), Color.magenta, 0.5f);
+#endif
+                            break;
                         }
                     }
 
-                    // === VISUEL ===
-                    HitCommand hc = new HitCommand()
+                    if (!strikedPlayer)
                     {
-                        position = hit.Position,
-                        normal = hit.SurfaceNormal,
-                        origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
-                    };
+                        RaycastHit hit = ClosestRayCast(transform.Rotation, transform.Position, commonData.range * 2f, owner, state.EntityManager);
 
-                    if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                          // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
-                    {
-                        RpcUtils.SendServerToClientRpc(ref hc);
+                        if (hit.Entity != default)
+                        {
+                            // === VISUEL ===
+                            HitCommand hc = new HitCommand()
+                            {
+                                position = hit.Position,
+                                normal = hit.SurfaceNormal,
+                                origin = strikeStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
+                            };
+
+                            if (!hc.position.Equals(float3.zero))
+                            {
+                                RpcUtils.SendServerToClientRpc(ref hc);
+                            }
+                            // === FIN VISUEL ===
+
+                            // === SON ===
+                            //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
+                            SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                            // === FIN SON ===
+                        }
                     }
-                    // === FIN VISUEL ===
-
-                    // === SON ===
-                    //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                    //SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
-                    // === FIN SON ===
                 }
                 else
                 {

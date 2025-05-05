@@ -3,6 +3,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Transforms;
 using UnityEngine;
 
 
@@ -93,8 +94,9 @@ public partial struct RangedWeaponReloadSystem : ISystem
                             }
                         }
                     }
-
-                    SoundUtils.PlayAtEmitterWithRPC(ref state, "Reload", weapon);
+                    SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(weapon);
+                    LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(owner);
+                    SoundUtils.PlayWithRPC(ref emitter, "Reload", transform.Position);
                 }
             }
             else

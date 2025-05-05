@@ -44,7 +44,7 @@ partial class CameraSystem : SystemBase
                         .Build()
                         .ToEntityArray(Allocator.Temp))
                     {
-                        if (currentTarget != Entity.Null
+                        if (currentTarget != Entity.Null 
                             && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
                         {
                             EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
@@ -68,8 +68,29 @@ partial class CameraSystem : SystemBase
                 .Build()
                 .ToEntityArray(Allocator.Temp))
             {
+                if (currentTarget != Entity.Null 
+                    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                {
+                    EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                }
+
+                currentTarget = entity;
+                EntityManager.AddComponent<CameraIsAtached>(currentTarget);
+                needNewTarget = false;
+            }
+        }
+
+        if (needNewTarget)
+        {
+            foreach (var entity in SystemAPI
+                .QueryBuilder()
+                .WithAll<CharacterTag, CharacterIsEnable>()
+                .WithNone<GhostOwnerIsLocal>()
+                .Build()
+                .ToEntityArray(Allocator.Temp))
+            {
                 if (currentTarget != Entity.Null
-                            && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
                 {
                     EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
                 }
@@ -83,24 +104,12 @@ partial class CameraSystem : SystemBase
         if (needNewTarget)
         {
             if (currentTarget != Entity.Null
-                            && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
             {
                 EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
             }
 
             currentTarget = Entity.Null;
-
-            foreach (var entity in SystemAPI
-                .QueryBuilder()
-                .WithAll<CharacterTag, CharacterIsEnable>()
-                .WithNone<GhostOwnerIsLocal>()
-                .Build()
-                .ToEntityArray(Allocator.Temp))
-            {
-                currentTarget = entity;
-                EntityManager.AddComponent<CameraIsAtached>(currentTarget);
-                needNewTarget = false;
-            }
         }
 
         if (currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
@@ -134,7 +143,7 @@ partial class CameraSystem : SystemBase
                     Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
                 }
 
-				Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
+                Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;
                 Camera.main.transform.rotation = math.mul(localTransform.ValueRO.Rotation, math.mul(localViewRotation.ValueRO.ViewRotation, localViewRotation.ValueRO.ShootingModifier));
             }
         }
@@ -147,7 +156,7 @@ partial class CameraSystem : SystemBase
         if (SystemAPI.HasComponent<ScopeComponent>(stuffEntity))
         {
             fov = SystemAPI.GetComponentRO<ScopeComponent>(stuffEntity).ValueRO.ScopeFOV;
-            return true; 
+            return true;
         }
 
         if (SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity))
