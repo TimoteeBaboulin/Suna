@@ -132,7 +132,6 @@ partial struct SoundMainMenuVolumeSystemClient : ISystem
 
         SoundManager soundManager = SoundManager.Instance;
         float volume = SystemAPI.GetSingleton<ClientSettingsComponent>().Volume;
-        UnityEngine.Debug.Log("volume : " + volume + " IsServer : " +  state.World.IsServer());
 
 #if !UNITY_SERVER
         soundManager.SetVolume(volume);
