@@ -21,13 +21,18 @@ public partial struct TeamChoiceSystemServer : ISystem
         SystemAPI.Query<ReceiveRpcCommandRequest, ChooseTeamRpc>()
         .WithEntityAccess())
         {
+            Debug.Log("Receiving please make me a team player rpc");
+
             ecb.DestroyEntity(rpcEntity);
 
             ClientComponent client = SystemAPI.GetComponent<ClientComponent>(rpc.clientEntity);
             int networkId = client.networkID;
             TeamSideType team = PlayerHelpers.AssignTeamToPlayer(PlayerHelpers.FindCurrentPlayerForNetworkId(networkId), rpc.team);
             client.team = team;
-
+            if (team == TeamSideType.Neutre)
+            {
+                Debug.Log("Couldn't change teams");
+            }
             
             SystemAPI.SetComponent(rpc.clientEntity, client);
 

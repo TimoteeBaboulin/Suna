@@ -28,11 +28,13 @@ public partial struct TeamChoiceSystemClient : ISystem
 
             if (Input.GetKeyDown(KeyCode.C))
             {
+                Debug.Log("Sending please make me a corpor rpc");
                 rpc.team = TeamSideType.Corpo;
                 RpcUtils.SendClientToServerRpc(ref rpc);
             }
             else if (Input.GetKeyDown(KeyCode.N))
             {
+                Debug.Log("Sending please make me a corpor rpc");
                 rpc.team = TeamSideType.Natif;
                 RpcUtils.SendClientToServerRpc(ref rpc);
             }
