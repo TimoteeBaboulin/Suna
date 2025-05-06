@@ -104,12 +104,12 @@ public partial struct RoundSystemServer : ISystem
 
         if (ClientTransportHelper.isRelease)
         {
-            if (ClientTransportHelper.instance.Session.AvailableSlots != 0)
+            if (ClientTransportHelper.instance.Session.AvailableSlots != 0 || PlayerHelpers.GetCurrentTeamCounts().neutralPlayersCount > 0)
                 return;
         }
         else
         {
-            if (ClientTransportHelper.instance.Session.PlayerCount < 2)
+            if (ClientTransportHelper.instance.Session.PlayerCount < 2 || PlayerHelpers.GetCurrentTeamCounts().neutralPlayersCount > 0)
                 return;
         }
         //if (roundComponent.ValueRO.gameWon)

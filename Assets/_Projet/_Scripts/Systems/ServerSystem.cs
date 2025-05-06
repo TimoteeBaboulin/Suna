@@ -119,7 +119,7 @@ public partial class ServerSystem : SystemBase
 #endregion
 }
 
-#if UNITY_SERVER
+//#if UNITY_SERVER
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 [UpdateAfter(typeof(CountPlayersSystemServer))]
 public partial class SessionStatusSystem : SystemBase
@@ -163,6 +163,7 @@ public partial class SessionStatusSystem : SystemBase
             PlayerHelpers.GlobalTeamCount teamCounts = PlayerHelpers.GetCurrentTeamCounts();
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
             Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated neutral teamCounts: {teamCounts.neutralPlayersCount}");
 
             //PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
             //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
@@ -171,4 +172,4 @@ public partial class SessionStatusSystem : SystemBase
         }
     }
 }
-#endif
+//#endif
