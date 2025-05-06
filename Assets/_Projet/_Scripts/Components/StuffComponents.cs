@@ -51,6 +51,7 @@ public struct StuffDynamicData : IComponentData
     [GhostField] public Entity owner;
     [GhostField] public Entity dropedEntityPrefab;
     [GhostField] public Entity grenadeThrownPrefab; //Only useful for grenades but I didn't have time to refactor this, sorry
+    [GhostField] public Entity dropedEntityRef;
 }
 
 [GhostEnabledBit]

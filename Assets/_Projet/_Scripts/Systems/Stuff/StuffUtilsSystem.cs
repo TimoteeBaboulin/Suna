@@ -101,34 +101,34 @@ public partial struct UnequipStuffSystem : ISystem
     }
 }
 
-//[BurstCompile]
-//[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-//public partial struct StuffOwnershipSystem : ISystem
-//{
-//    public void OnUpdate(ref SystemState state)
-//    {
-//        var ecb = new EntityCommandBuffer(Allocator.Temp);
+[BurstCompile]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct StuffOwnershipSystem : ISystem
+{
+    public void OnUpdate(ref SystemState state)
+    {
+        var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-//        //Fixes the stuff owner if it doesn't match the player who actually owns it
-//        foreach (var (charaStuffList, chara) in SystemAPI.Query<DynamicBuffer<CharacterStuffList>>().WithEntityAccess())
-//        {
-//            foreach (var stuff in charaStuffList)
-//            {
-//                if (SystemAPI.Exists(stuff.entity) && SystemAPI.HasComponent<StuffDynamicData>(stuff.entity))
-//                {
-//                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity).ownerTest;
+        //Fixes the stuff owner if it doesn't match the player who actually owns it
+        foreach (var (charaStuffList, chara) in SystemAPI.Query<DynamicBuffer<CharacterStuffList>>().WithEntityAccess())
+        {
+            foreach (var stuff in charaStuffList)
+            {
+                if (SystemAPI.Exists(stuff.entity) && SystemAPI.HasComponent<StuffDynamicData>(stuff.entity))
+                {
+                    Entity owner = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity).owner;
 
-//                    if (owner != chara)
-//                    {
-//                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity);
-//                        dynData.ownerTest = chara;
-//                        ecb.SetComponent(stuff.entity, dynData);
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}
+                    if (owner != chara)
+                    {
+                        var dynData = SystemAPI.GetComponent<StuffDynamicData>(stuff.entity);
+                        dynData.owner = chara;
+                        ecb.SetComponent(stuff.entity, dynData);
+                    }
+                }
+            }
+        }
+    }
+}
 
 
 

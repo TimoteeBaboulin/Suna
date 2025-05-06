@@ -61,6 +61,10 @@ public static class StuffUtils
 
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
+        if (stuffDynamicDataRW.ValueRO.dropedEntityRef != Entity.Null)
+        {
+            ecb.DestroyEntity(stuffDynamicDataRW.ValueRW.dropedEntityRef);
+        }
 
         if (GetStuffInSlot(ownerStuffList, stuffData.slot) != Entity.Null)
         {
@@ -170,20 +174,20 @@ public static class StuffUtils
         }
     }
 
-    public static void DropNextFrame(
-        ref SystemState state,
-        DynamicBuffer<UnequipStuffQueue> unequipStuffQueue,
-        ref EntityCommandBuffer ecb,
-        Entity owner,
-        Entity stuff,
-        RefRO<CharacterShootStartPositionDelta> shootStartPosDelta,
-        RefRO<CharacterViewRotation> ownerView,
-        RefRO<LocalTransform> ownerTransform,
-        float impulse)
-    {
-        UnequipNextFrame(unequipStuffQueue, owner, stuff);
-        DropBehavior(ref state, ref ecb, stuff, shootStartPosDelta, ownerView, ownerTransform, impulse);
-    }
+    //public static void DropNextFrame(
+    //    ref SystemState state,
+    //    DynamicBuffer<UnequipStuffQueue> unequipStuffQueue,
+    //    ref EntityCommandBuffer ecb,
+    //    Entity owner,
+    //    Entity stuff,
+    //    RefRO<CharacterShootStartPositionDelta> shootStartPosDelta,
+    //    RefRO<CharacterViewRotation> ownerView,
+    //    RefRO<LocalTransform> ownerTransform,
+    //    float impulse)
+    //{
+    //    UnequipNextFrame(unequipStuffQueue, owner, stuff);
+    //    DropBehavior(ref state, ref ecb, stuff, shootStartPosDelta, ownerView, ownerTransform, impulse);
+    //}
 
     public static void Drop(
         ref SystemState state,
@@ -246,6 +250,9 @@ public static class StuffUtils
             Linear = direction * impulse,
             Angular = float3.zero
         });
+
+        stuffDynamicData.dropedEntityRef = dropedStuff;
+        ecb.SetComponent(stuff, stuffDynamicData);
     }
 
     public static void SwitchTo(DynamicBuffer<CharacterStuffList> stuffListe, RefRW<CharacterStuffInfos> stuffInfosRW, StuffSlot slotToSwitch)

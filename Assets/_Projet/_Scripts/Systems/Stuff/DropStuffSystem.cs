@@ -14,6 +14,7 @@ public partial struct DropStuffSystem : ISystem
         state.RequireForUpdate<CharacterStuffList>();
         state.RequireForUpdate<CharacterInput>();
         state.RequireForUpdate<UnequipStuffQueue>();
+        state.RequireForUpdate<GameResourcesDatabase>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -23,9 +24,16 @@ public partial struct DropStuffSystem : ISystem
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         var unequipStuffQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
+        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
-        foreach (var (stuffList, stuffInfosRO, inputRO, transformRO, shootStartPosDeltaRO, viewRO, chara) in SystemAPI
-        .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>, RefRO<CharacterInput>, RefRO<LocalTransform>, RefRO<CharacterShootStartPositionDelta>, RefRO<CharacterViewRotation>>()
+        foreach (var (stuffList, linkedBuffer, stuffInfosRO, inputRO, transformRO, shootStartPosDeltaRO, viewRO, chara) in SystemAPI
+        .Query<DynamicBuffer<CharacterStuffList>, 
+        DynamicBuffer<LinkedEntityGroup>, 
+        RefRO<CharacterStuffInfos>, 
+        RefRO<CharacterInput>, 
+        RefRO<LocalTransform>,
+        RefRO<CharacterShootStartPositionDelta>, 
+        RefRO<CharacterViewRotation>>()
         .WithEntityAccess())
         {
             ref readonly CharacterInput input = ref inputRO.ValueRO;
@@ -33,33 +41,11 @@ public partial struct DropStuffSystem : ISystem
             if (input.drop.IsSet && stuffInfos.StuffInHandSlot != StuffSlot.Melee)
             {
                 Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfos);
-                unequipStuffQueue.Add(new UnequipStuffQueue
-                {
-                    Stuff = stuffInHand,
-                    Owner = chara,
-                });
+                var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(stuffInHand);
+                ref var stuffCommonData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(stuffInHand).ValueRO.GetData(ref database);
+                StuffUtils.Drop(ref state, ref ecb, linkedBuffer, stuffList, stuffGhostOwnerRW, ref stuffCommonData, chara, stuffInHand, shootStartPosDeltaRO, viewRO, transformRO, 5f);
 
-                Entity dropedStuffPrefab = SystemAPI.GetComponent<StuffDynamicData>(stuffInHand).dropedEntityPrefab;
-                Entity dropedStuff = ecb.Instantiate(dropedStuffPrefab);
-
-                ecb.SetComponent(dropedStuff, new StuffEntityInHandRef { Value = stuffInHand });
-
-                float3 startPosition = shootStartPosDeltaRO.ValueRO.PositionDelta + transformRO.ValueRO.Position;
-                quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
-                float3 forward = math.mul(shootRotation, math.forward());
-
-                ecb.SetComponent(dropedStuff, new LocalTransform
-                {
-                    Position = startPosition + forward,
-                    Rotation = quaternion.identity,
-                    Scale = 1f
-                });
-
-                ecb.SetComponent(dropedStuff, new PhysicsVelocity
-                {
-                    Linear = forward * 5f,
-                    Angular = float3.zero
-                });
+                //StuffUtils.UnequipNextFrame(unequipStuffQueue, chara, stuffInHand);
             }
         }
     }
@@ -79,6 +65,7 @@ public partial struct StuffDropedCleanup : ISystem
         {
             if (stuffInHandRef.ValueRO.Value == Entity.Null)
             {
+                UnityEngine.Debug.Log("StuffDropedCleanup Run");
                 ecb.DestroyEntity(dropedStuff);
             }
         }

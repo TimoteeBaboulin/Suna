@@ -29,8 +29,8 @@ public partial struct PickStuffSystem : ISystem
 
         //Pick stuff with interact input
         foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, ghostOwnerRO, chara) in SystemAPI
-        .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
-        .WithEntityAccess())
+                .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
+                .WithEntityAccess())
         {
 
             ref readonly CharacterInput input = ref inputRO.ValueRO;
@@ -44,7 +44,8 @@ public partial struct PickStuffSystem : ISystem
                 if (hit.Entity != Entity.Null)
                 {
                     //Natif doesen't pick harvester
-                    StuffType stuffHitedType = state.EntityManager.GetComponentData<StuffDatabaseAccess>(hit.Entity).GetData(ref database).type;
+                    StuffEntityInHandRef stuffInHandRef = state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity);
+                    StuffType stuffHitedType = state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuffInHandRef.Value).GetData(ref database).type;
                     if (PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId) == TeamSideType.Natif && stuffHitedType == StuffType.Harvester) continue;
 
                     StuffUtils.EquipNextFrame(equipStuffQueue, chara, state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value, true);
@@ -95,7 +96,6 @@ public partial struct PickStuffSystem : ISystem
         {
             foreach (RaycastHit hit in allHits)
             {
-                UnityEngine.Debug.Log("Hit: " + hit.Entity.Index);
                 if (entityManager.HasComponent<StuffEntityInHandRef>(hit.Entity))
                 {
                     return hit;
@@ -105,3 +105,4 @@ public partial struct PickStuffSystem : ISystem
         return default;
     }
 }
+

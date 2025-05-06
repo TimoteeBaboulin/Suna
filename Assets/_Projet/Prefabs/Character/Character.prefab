@@ -178,7 +178,6 @@ MonoBehaviour:
   maxSlopeAngle: 50
   jumpForce: 5.8
   sensivity: 3
-  side: 0
   mainWeapon: {fileID: 0}
   secondWeapon: {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
   meleeWeapon: {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
@@ -314,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ef6e0c7e666504f99bffa51e864d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  money: 0
+  money: 50000
   maxMoney: 90000
 --- !u!114 &2262721556041804453
 MonoBehaviour:
