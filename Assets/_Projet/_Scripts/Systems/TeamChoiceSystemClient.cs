@@ -8,13 +8,20 @@ public partial struct TeamChoiceSystemClient : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
+
+
+        Debug.Log("sdmlfjsqmldfj 1");
+
+
         foreach (var (client, clientEntity) in
         SystemAPI.Query<ClientComponent>()
         .WithEntityAccess())
         {
+            Debug.Log("sdmlfjsqmldfj 2");
             if (!SystemAPI.HasComponent<GhostOwnerIsLocal>(clientEntity))
                 continue;
 
+            Debug.Log("sdmlfjsqmldfj 3");
 
             if (client.team != TeamSideType.Neutre)
                 continue;
