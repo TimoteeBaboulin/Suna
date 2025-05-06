@@ -12,10 +12,11 @@ partial class InGameHUDSystem : SystemBase
     public class HealthArgs : EventArgs { public int Health; }
     public class AmmoArgs : EventArgs { public int ammo; public int remainingAmmo; }
     public class MoneyArgs : EventArgs { public uint money; }
+    public class HitArgs : EventArgs { public bool headHit; }
     public class FlashGrenadeArgs : EventArgs { public float intensity; }
 
     public event EventHandler<HealthArgs> HealthChangedEvent;
-    public event EventHandler HitRegister;
+    public event EventHandler<HitArgs> HitRegister;
     public event EventHandler<AmmoArgs> AmmoChangeEvent;
     public event EventHandler<MoneyArgs> MoneyChangedEvent;
     public event EventHandler<FlashGrenadeArgs> FlashGrenadeEvent;
@@ -42,7 +43,7 @@ partial class InGameHUDSystem : SystemBase
 
             if (hasHit.ValueRO.Value)
             {
-                HitRegister?.Invoke(this, EventArgs.Empty);
+                HitRegister?.Invoke(this, new HitArgs { headHit = hasHit.ValueRO.HeadHit });
             }
         }
 
