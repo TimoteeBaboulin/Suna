@@ -52,23 +52,23 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
                     Entity characterEntity = ownerRW.ValueRO.owner;
                     
-                    StuffSlot switchToLocation = StuffSlot.MainWeapon;
-                    Entity targetWeaponEntity = Entity.Null;
-                    DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
-                    if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.MainWeapon) == Entity.Null)
-                    {
-                        if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon) == Entity.Null)
-                        {
-                            switchToLocation = StuffSlot.Melee;
-                        }
-                        else
-                        {
-                            switchToLocation = StuffSlot.Melee;
-                        }
-                    }
-                    targetWeaponEntity = StuffUtils.GetStuffInSlot(stuffList, switchToLocation);
+                    //StuffSlot switchToLocation = StuffSlot.MainWeapon;
+                    //Entity targetWeaponEntity = Entity.Null;
+                    //DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
+                    //if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.MainWeapon) == Entity.Null)
+                    //{
+                    //    if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon) == Entity.Null)
+                    //    {
+                    //        switchToLocation = StuffSlot.Melee;
+                    //    }
+                    //    else
+                    //    {
+                    //        switchToLocation = StuffSlot.Melee;
+                    //    }
+                    //}
+                    //targetWeaponEntity = StuffUtils.GetStuffInSlot(stuffList, switchToLocation);
 
-                    SystemAPI.GetComponentRW<CharacterStuffInfos>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
+                    //SystemAPI.GetComponentRW<CharacterStuffInfos>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
 
                     var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
                     unequipStuffQueu.Add(new UnequipStuffQueue
