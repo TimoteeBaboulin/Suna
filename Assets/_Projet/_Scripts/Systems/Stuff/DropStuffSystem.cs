@@ -43,9 +43,9 @@ public partial struct DropStuffSystem : ISystem
                 Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfos);
                 var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(stuffInHand);
                 ref var stuffCommonData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(stuffInHand).ValueRO.GetData(ref database);
-                //StuffUtils.Drop(ref state, ref ecb, linkedBuffer, stuffList, stuffGhostOwnerRW, ref stuffCommonData, chara, stuffInHand, shootStartPosDeltaRO, viewRO, transformRO, 5f);
+                StuffUtils.Drop(ref state, ref ecb, linkedBuffer, stuffList, stuffGhostOwnerRW, ref stuffCommonData, chara, stuffInHand, shootStartPosDeltaRO, viewRO, transformRO, 5f);
 
-                StuffUtils.UnequipNextFrame(unequipStuffQueue, chara, stuffInHand);
+                //StuffUtils.UnequipNextFrame(unequipStuffQueue, chara, stuffInHand);
             }
         }
     }
