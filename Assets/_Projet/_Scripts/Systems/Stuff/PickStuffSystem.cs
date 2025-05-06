@@ -47,7 +47,6 @@ public partial struct PickStuffSystem : ISystem
                     if (PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId) == TeamSideType.Natif && stuffHitedType == StuffType.Harvester) continue;
 
                     StuffUtils.EquipNextFrame(equipStuffQueue, chara, state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value, true);
-
                     ecb.DestroyEntity(hit.Entity);
                 }
             }

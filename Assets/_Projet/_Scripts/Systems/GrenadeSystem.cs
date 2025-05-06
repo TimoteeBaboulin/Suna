@@ -140,7 +140,6 @@ public partial class GrenadeSystem : SystemBase
                                 });
                             }
                         }
-
                         commandBuffer.DestroyEntity(thrownGrenade);
                         commandBuffer.DestroyEntity(grenade);
                     }

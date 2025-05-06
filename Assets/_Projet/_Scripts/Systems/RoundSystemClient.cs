@@ -123,14 +123,12 @@ partial struct RoundSystemClient : ISystem
         {
             round.ValueRW.gameWon = true;
             round.ValueRW.winners = gameOverRpc.ValueRO.winners;
-
             buffer.DestroyEntity(entity);
         }
 
         foreach (var (rpcComponent, barrierDeactivateRpc, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<DeactivateSpawnBarriersCommand>>().WithEntityAccess())
         {
             SetBarrierState(ref state, false);
-
             buffer.DestroyEntity(entity);
         }
 

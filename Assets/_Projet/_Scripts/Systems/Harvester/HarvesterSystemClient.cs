@@ -168,32 +168,32 @@ partial class HarvesterSystemClient : SystemBase
         }
 
         //HARVESTER PICKED UP
-        foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
-            in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
-        {
-            ecb.DestroyEntity(entity);
+        //foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterOwnerChange rpc, Entity entity)
+        //    in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterOwnerChange>().WithEntityAccess())
+        //{
+        //    ecb.DestroyEntity(entity);
 
-            if (rpc.harvester == Entity.Null)
-            {
-                Entity responseEntity = ecb.CreateEntity();
-                ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
-                ecb.AddComponent<SendRpcCommandRequest>(responseEntity);
+        //    if (rpc.harvester == Entity.Null)
+        //    {
+        //        Entity responseEntity = ecb.CreateEntity();
+        //        ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
+        //        ecb.AddComponent<SendRpcCommandRequest>(responseEntity);
 
-                continue;
-            }
+        //        continue;
+        //    }
 
-            if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
-            {
-                StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
+        //    if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
+        //    {
+        //        StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
 
-                if (stuffOwner.owner != Entity.Null)
-                {
-                    StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
-                }
-            }
+        //        if (stuffOwner.owner != Entity.Null)
+        //        {
+        //            StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
+        //        }
+        //    }
 
-            StuffUtils.EquipNextFrame(equipStuffQueu, rpc.character, rpc.harvester, true);
-        }
+        //    StuffUtils.EquipNextFrame(equipStuffQueu, rpc.character, rpc.harvester, true);
+        //}
 
         foreach ((RefRO<ReceiveRpcCommandRequest> RequestSceneLoaded, RpcHarvesterDropped rpc, Entity entity)
             in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterDropped>().WithEntityAccess())
@@ -225,7 +225,7 @@ partial class HarvesterSystemClient : SystemBase
             }
         }
 
-            ecb.Playback(EntityManager);
+        ecb.Playback(EntityManager);
         ecb.Dispose();
     }
 }

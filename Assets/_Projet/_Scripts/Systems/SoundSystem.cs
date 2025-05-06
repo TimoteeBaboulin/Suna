@@ -29,7 +29,8 @@ public partial struct SoundBankSystemClient : ISystem
 
             foreach (var pair in register.bank)
             {
-                bank.Add(pair.Key, pair.Value);
+                if (!bank.ContainsKey(pair.Key))
+                    bank.Add(pair.Key, pair.Value);
             }
 
             register.bank.Clear();
