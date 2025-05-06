@@ -1,11 +1,9 @@
-using System.Diagnostics;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using static UnityEngine.UI.GridLayoutGroup;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -29,8 +27,8 @@ public partial struct PickStuffSystem : ISystem
 
         //Pick stuff with interact input
         foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, ghostOwnerRO, chara) in SystemAPI
-        .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
-        .WithEntityAccess())
+                .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
+                .WithEntityAccess())
         {
 
             ref readonly CharacterInput input = ref inputRO.ValueRO;
@@ -44,35 +42,15 @@ public partial struct PickStuffSystem : ISystem
                 if (hit.Entity != Entity.Null)
                 {
                     //Natif doesen't pick harvester
-                    StuffType stuffHitedType = state.EntityManager.GetComponentData<StuffDatabaseAccess>(hit.Entity).GetData(ref database).type;
+                    StuffEntityInHandRef stuffInHandRef = state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity);
+                    StuffType stuffHitedType = state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuffInHandRef.Value).GetData(ref database).type;
                     if (PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId) == TeamSideType.Natif && stuffHitedType == StuffType.Harvester) continue;
 
                     StuffUtils.EquipNextFrame(equipStuffQueue, chara, state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value, true);
-
                     ecb.DestroyEntity(hit.Entity);
                 }
             }
         }
-
-        //foreach (var (stuffListRW, inputRO, chara) in SystemAPI
-        //.Query<RefRW<CharacterStuffList>, RefRO<CharacterInput>>()
-        //.WithEntityAccess())
-        //{
-        //    ref readonly CharacterInput input = ref inputRO.ValueRO;
-        //    ref CharacterStuffList stuffList = ref stuffListRW.ValueRW;
-        //    if (input.interact.IsSet)
-        //    {
-        //        equipStuffQueue.Add(new EquipStuffQueue
-        //        {
-        //            Stuff = stuffList.StuffInHand,
-        //            Owner = chara,
-        //        });
-
-        //        ecb.DestroyEntity(hit.Entity);
-        //        SystemAPI.GetComponentRW<StuffDynamicData>(hit.Entity).ValueRW.dropedEntity = Entity.Null;
-
-        //    }
-        //}
     }
 
     RaycastHit RayCast(float3 startPos, float3 direction, float range, Entity owner, in EntityManager entityManager)

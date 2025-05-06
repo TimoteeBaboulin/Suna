@@ -226,7 +226,6 @@ public partial struct DamageSourceJob : IJobEntity
         {
             ecb.DestroyEntity(sortKey, damageComponent.ValueRO.grenade);
         }
-
         ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
     }
 }

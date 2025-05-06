@@ -41,7 +41,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
         if (currentPhase is RoundPhase.ActionPhase)
         {
             foreach (var (harvesterRW, harvesterTransformRW, ownerRW, harvesterEntity) in
-                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<LocalTransform>, RefRW<StuffDynamicData>> ()
+                        SystemAPI.Query<RefRW<HarvesterComponent>, RefRW<LocalTransform>, RefRW<StuffDynamicData>>()
                         .WithAll<HarvesterPlanting>()
                         .WithEntityAccess())
             {
@@ -51,31 +51,27 @@ partial struct HarvesterPlantingSystemServer : ISystem
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
                     Entity characterEntity = ownerRW.ValueRO.owner;
-                    
-                    StuffSlot switchToLocation = StuffSlot.MainWeapon;
-                    Entity targetWeaponEntity = Entity.Null;
-                    DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
-                    if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.MainWeapon) == Entity.Null)
-                    {
-                        if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon) == Entity.Null)
-                        {
-                            switchToLocation = StuffSlot.Melee;
-                        }
-                        else
-                        {
-                            switchToLocation = StuffSlot.Melee;
-                        }
-                    }
-                    targetWeaponEntity = StuffUtils.GetStuffInSlot(stuffList, switchToLocation);
 
-                    SystemAPI.GetComponentRW<CharacterStuffInfos>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
+                    //StuffSlot switchToLocation = StuffSlot.MainWeapon;
+                    //Entity targetWeaponEntity = Entity.Null;
+                    //DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
+                    //if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.MainWeapon) == Entity.Null)
+                    //{
+                    //    if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.SecondaryWeapon) == Entity.Null)
+                    //    {
+                    //        switchToLocation = StuffSlot.Melee;
+                    //    }
+                    //    else
+                    //    {
+                    //        switchToLocation = StuffSlot.Melee;
+                    //    }
+                    //}
+                    //targetWeaponEntity = StuffUtils.GetStuffInSlot(stuffList, switchToLocation);
+
+                    //SystemAPI.GetComponentRW<CharacterStuffInfos>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
 
                     var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
-                    unequipStuffQueu.Add(new UnequipStuffQueue
-                    {
-                        Owner = characterEntity,
-                        Stuff = harvesterEntity
-                    });
+                    StuffUtils.UnequipNextFrame(unequipStuffQueu, characterEntity, harvesterEntity);
 
                     float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
@@ -101,7 +97,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
                         });
                     }
                     SystemAPI.GetComponentRW<PlayerHarvesterActions>(characterEntity).ValueRW.IsPlanting = false;
-                    ownerRW.ValueRW.owner = Entity.Null;
+
 
 
                     Debug.Log("[Server] Harvester planted");
@@ -135,7 +131,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
             {
                 Debug.Log("[Server] A native is trying to plant the defuser");
 
-                continue;   
+                continue;
             }
 
             ecb.SetComponentEnabled<HarvesterPlanting>(rpc.harvester, true);
