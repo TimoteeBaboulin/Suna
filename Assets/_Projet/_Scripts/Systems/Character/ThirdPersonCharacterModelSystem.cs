@@ -86,6 +86,8 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
 
+            if (modelPrefab == null) continue;
+
             // === Aurelien ===
             if(PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
             {
@@ -98,7 +100,6 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             }
             // === Aurelien ===
 
-            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
