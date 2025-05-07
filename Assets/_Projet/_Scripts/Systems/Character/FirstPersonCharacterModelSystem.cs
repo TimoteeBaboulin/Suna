@@ -20,6 +20,8 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab, 
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
 
+            modelGameObject.layer = 15;
+
             if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);

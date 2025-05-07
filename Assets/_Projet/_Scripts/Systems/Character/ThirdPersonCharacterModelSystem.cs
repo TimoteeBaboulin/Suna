@@ -65,6 +65,19 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        // === Aurelien ===
+        int localNetworkId = -1;
+
+        foreach(var (ghostOwner, ghostOwnerLocal, playerEntity) in SystemAPI
+            .Query<RefRO<GhostOwner>, RefRO<GhostOwnerIsLocal>>()
+            .WithNone<ThirdPersonCharacterModelReference>()
+            .WithEntityAccess())
+        {
+            localNetworkId = ghostOwner.ValueRO.NetworkId;
+            break;
+        }
+        // === Aurelien ===
+
         foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
@@ -72,6 +85,18 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
         {
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            // === Aurelien ===
+            if(PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            {
+                modelGameObject.layer = 13; // Visibility through walls is managed just by using that layer
+                modelGameObject.GetComponent<MeshRenderer>().materials[1] = null; // Disable the enemy outline material (since we are the same team)
+            }
+            else
+            {                 
+                modelGameObject.layer = 14;
+            }
+            // === Aurelien ===
 
             if (modelPrefab == null) continue;
 
