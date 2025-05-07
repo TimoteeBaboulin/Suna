@@ -61,11 +61,6 @@ public static class StuffUtils
 
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
-        if (stuffDynamicDataRW.ValueRO.dropedEntityRef != Entity.Null)
-        {
-            ecb.DestroyEntity(stuffDynamicDataRW.ValueRW.dropedEntityRef);
-        }
-
         if (GetStuffInSlot(ownerStuffList, stuffData.slot) != Entity.Null)
         {
             Entity stuffToDrop = GetStuffInSlot(ownerStuffList, stuffData.slot);
@@ -87,6 +82,7 @@ public static class StuffUtils
         // Add the stuff in player inventory
         SetStuffInSlot(ownerStuffList, stuffData.slot, stuff);
         stuffDynamicDataRW.ValueRW.owner = owner;
+        stuffDynamicDataRW.ValueRW.dropedEntityRef = Entity.Null;
 
         // Network
         stuffGhostOwnerRW.ValueRW.NetworkId = ownerGhostOwnerRO.ValueRO.NetworkId;
@@ -283,7 +279,10 @@ public static class StuffUtils
 
     public static Entity GetStuffInSlot(DynamicBuffer<CharacterStuffList> stuffListe, StuffSlot slot)
     {
-        return stuffListe[(int)slot].entity;
+        if (stuffListe.Length > 0)
+            return stuffListe[(int)slot].entity;
+        else
+            return Entity.Null;
     }
 
     public static void SetStuffInSlot(DynamicBuffer<CharacterStuffList> stuffs, StuffSlot slot, Entity stuff)

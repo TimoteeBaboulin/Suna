@@ -196,7 +196,6 @@ public partial struct RoundSystemServer : ISystem
             {
                 roundData = roundComponent.ValueRO
             });
-
             ecb.DestroyEntity(rpcEntity);
         }
 
