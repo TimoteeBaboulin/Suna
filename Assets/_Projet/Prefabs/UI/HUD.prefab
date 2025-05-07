@@ -1,3 +1,99 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:fe059b982001a35bf6b35892d2a63e9a4aaead04360c69038ce5d955c7dc6b76
-size 3521
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &8977548657208505599
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2642215316524588410}
+  - component: {fileID: 879477122032621473}
+  - component: {fileID: 1770968620400763954}
+  - component: {fileID: 6461208371077268186}
+  m_Layer: 0
+  m_Name: HUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2642215316524588410
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8977548657208505599}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &879477122032621473
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8977548657208505599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: c2023facb0ba74e4faf01a8cad90b871, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 49d6a691fc6c7dd4d8004b1ee1e32a1b, type: 3}
+  m_SortingOrder: 0
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+--- !u!114 &1770968620400763954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8977548657208505599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37552a61dc3cba047a11b7b5f333cf65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _weaponAsset: {fileID: 9197481963319205126, guid: 6bd4124618971034296a0ec34e5b3522, type: 3}
+  _weaponMap:
+  - Weapon: SKAR-18
+    Tex: {fileID: 2800000, guid: e2e1832659d81c44ba08a143e5421e9d, type: 3}
+  - Weapon: LP-17
+    Tex: {fileID: 2800000, guid: 9d076c00ff6b0e94d862e903a834706e, type: 3}
+  - Weapon: Banduka
+    Tex: {fileID: 2800000, guid: 31be4f1881b8fe74ab1392a30014e25f, type: 3}
+  - Weapon: KnifeNeutral
+    Tex: {fileID: 2800000, guid: 054a0bb488ca6d046b34cb72836a576d, type: 3}
+  - Weapon: HEGrenade
+    Tex: {fileID: 2800000, guid: f9507442cc546b84095db68b49dac28e, type: 3}
+  - Weapon: Harvester
+    Tex: {fileID: 2800000, guid: deb69a190942ce2409dce4797a303eb9, type: 3}
+  - Weapon: Laksya
+    Tex: {fileID: 2800000, guid: da62ae940eb07204da519622b2e8921c, type: 3}
+  - Weapon: Nelara
+    Tex: {fileID: 2800000, guid: ea18ecaefaa4ae948a60eb1e4c1a6f49, type: 3}
+  - Weapon: Flashbang
+    Tex: {fileID: 2800000, guid: cda047a761f3cb64ca43b9ca54de7ed2, type: 3}
+  _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}
+--- !u!1652712579 &6461208371077268186
+MultiplayerRolesData:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8977548657208505599}
+  m_GameObjectRolesMask: 3
+  m_ComponentsRolesMasks:
+  - m_Object: {fileID: 1770968620400763954}
+    m_RolesMask: 1
