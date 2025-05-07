@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public struct ChooseTeamRpc : IRpcCommand
 {
@@ -39,6 +40,15 @@ public partial struct TeamChoiceSystemServer : ISystem
             var hostSession = ClientTransportHelper.instance.Session.AsHost();
             hostSession.SavePlayerDataAsync(client.playerID.ToString());
         }
+
+        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<MessageToServer>>().WithEntityAccess())
+        {
+            ServerConsole.Log(ServerConsole.LogType.Info, $"{command.ValueRO.word} from client index" +
+                $" {request.ValueRO.SourceConnection.Index}, version {request.ValueRO.SourceConnection.Version}");
+            Debug.Log($"{command.ValueRO.word} from client index {request.ValueRO.SourceConnection.Index}");
+            ecb.DestroyEntity(entity);
+        }
+
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

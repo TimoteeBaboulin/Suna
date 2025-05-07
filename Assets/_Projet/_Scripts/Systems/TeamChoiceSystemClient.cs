@@ -3,6 +3,13 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
+
+ public struct MessageToServer : IRpcCommand
+{
+    public FixedString32Bytes word;
+}
+
+
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct TeamChoiceSystemClient : ISystem
 {
@@ -38,6 +45,9 @@ public partial struct TeamChoiceSystemClient : ISystem
                 Debug.Log("Sending please make me a corpor rpc");
                 rpc.team = TeamSideType.Corpo;
                 RpcUtils.SendClientToServerRpc(ref rpc);
+
+                var command = new MessageToServer { word = "Corpo asked to spawn" };
+                RpcUtils.SendClientToServerRpc(ref command);
             }
             else if (Input.GetKeyDown(KeyCode.N))
             {

@@ -322,7 +322,7 @@ MonoBehaviour:
       sound:
         idInternal: 0
         valueGuidInternal: 
-        WwiseObjectReference: {fileID: 11400000, guid: 5e1f071cbea5db64cad05f142587df18, type: 2}
+        WwiseObjectReference: {fileID: 0}
 --- !u!1001 &1086009981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -718,7 +718,7 @@ MonoBehaviour:
   data:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 74ead161ac07e1d4696a072a3a4fe5e0, type: 2}
+    WwiseObjectReference: {fileID: 0}
   decodeBank: 0
   overrideLoadSetting: 0
   loadAsynchronous: 0
@@ -871,18 +871,6 @@ PrefabInstance:
     - target: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_Name
       value: ConnectionManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: Port
-      value: 59692
-      objectReference: {fileID: 0}
-    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: isRelease
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: isClientLocal
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7540693576825535764, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_LocalPosition.x
