@@ -47,8 +47,11 @@ partial struct HarvesterSystemServer : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var instantiateStuffQueue = SystemAPI.GetSingletonBuffer<InstantiateStuffQueue>();
+        var unequipStuffQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
         var equipStuffQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+        float3 corpoSpawnPosition = GetRandomHarvesterSpawn(ref state);
+
         //if (!SystemAPI.TryGetSingletonBuffer<EquipStuffQueue>(out var equipStuffQueu) || !SystemAPI.TryGetSingletonBuffer<UnequipStuffQueue>(out var unequipStuffQueu))
         //{
         //    // Debug.Log("Can't handle harvester spawn since equip and unequip queues are not loaded yet");
@@ -60,7 +63,7 @@ partial struct HarvesterSystemServer : ISystem
         {
             if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue))
             {
-                StuffUtils.InstantiateNextFrame(queue, "Harvester", new float3(40f, 0f, 2f));
+                StuffUtils.InstantiateNextFrame(queue, "Harvester", corpoSpawnPosition);
 
                 harvesterIsInstantiated = true;
             }
@@ -92,7 +95,6 @@ partial struct HarvesterSystemServer : ISystem
         //Give the harvester to players if they don't have an owner already
         //TODO: Currently, the entities need to be spawned on the client for the RPCs to not get Entity.Null'd
         NativeList<Entity> corpoEntities = new NativeList<Entity>(Allocator.Temp);
-        float3 corpoSpawnPosition = GetRandomHarvesterSpawn(ref state);
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithEntityAccess())
         {
@@ -100,38 +102,75 @@ partial struct HarvesterSystemServer : ISystem
                 corpoEntities.Add(clientEntity);
         }
 
-        foreach ((RefRW<HarvesterComponent> harvesterRW, RefRO<StuffDynamicData> ownerRO, Entity harvesterEntity) in SystemAPI
+        foreach (var (harvesterCompRW, dynDataRO, harvester) in SystemAPI
             .Query<RefRW<HarvesterComponent>, RefRO<StuffDynamicData>>()
             .WithAll<HarvesterRespawn>()
             .WithEntityAccess())
         {
-            Debug.Log("Respawning harvester");
+            Debug.Log("Respawning harvester : nb Corpo " + corpoEntities.Length);
+            ref readonly StuffDynamicData dynData = ref dynDataRO.ValueRO;
 
             if (corpoEntities.Length > 0)
             {
-                //Equip the harvester to a random player (without forgetting to unequip it if it's already equipped to someone else)
                 int random = UnityEngine.Random.Range(0, corpoEntities.Length);
-                Entity clientEntity = corpoEntities[random];
-                Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
-                if (characterEntity != Entity.Null)
+                Entity randomCorpoClient = corpoEntities[random];
+
+                if (dynData.owner != Entity.Null)
                 {
-                    corpoEntities.RemoveAt(random);
-
-                    StuffUtils.EquipNextFrame(equipStuffQueue, characterEntity, harvesterEntity, true);
-                    ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
-
+                    StuffUtils.UnequipNextFrame(unequipStuffQueue, dynData.owner, harvester);
                 }
 
-                //StuffUtils.InstantiateNextFrame(instantiateStuffQueue, "Harvester", characterEntity);
-                //SpawnHarvesterOnCharacter(ref state, characterEntity, harvesterEntity, unequipStuffQueu, equipStuffQueu);
+                if (SystemAPI.HasComponent<ClientCharacterAttached>(randomCorpoClient))
+                {
+                    Entity randomCorpo = SystemAPI.GetComponent<ClientCharacterAttached>(randomCorpoClient).Value;
+                    StuffUtils.EquipNextFrame(equipStuffQueue, randomCorpo, harvester, true);
+                }
+                else if (dynData.owner != Entity.Null)
+                {
+                    Entity previousOwner = dynData.owner;
+                    StuffUtils.EquipNextFrame(equipStuffQueue, previousOwner, harvester, true);
+                }
+                else if (dynData.dropedEntityRef != Entity.Null)
+                {
+                    SystemAPI.GetComponentRW<LocalTransform>(dynData.dropedEntityRef).ValueRW.Position = corpoSpawnPosition;
+                }
+
             }
             else
             {
-                ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
-                //    StuffUtils.DropNextFrame(ref state, characterEntity, harvesterEntity, true);
-                //    StuffUtils.InstantiateNextFrame(instantiateStuffQueue, "Harvester", corpoSpawnPosition);
-                //    //SpawnHarvesterInMap(ref state, harvesterEntity, corpoSpawnPosition, currentTick, unequipStuffQueu);
+                if (dynData.dropedEntityRef != Entity.Null)
+                {
+                    SystemAPI.GetComponentRW<LocalTransform>(dynData.dropedEntityRef).ValueRW.Position = corpoSpawnPosition;
+                }
             }
+            ecb.RemoveComponent<HarvesterRespawn>(harvester);
+
+
+            //if (corpoEntities.Length > 0)
+            //{
+            //    //Equip the harvester to a random player (without forgetting to unequip it if it's already equipped to someone else)
+            //    int random = UnityEngine.Random.Range(0, corpoEntities.Length);
+            //    Entity clientEntity = corpoEntities[random];
+            //    Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(clientEntity).Value;
+            //    if (characterEntity != Entity.Null)
+            //    {
+            //        corpoEntities.RemoveAt(random);
+
+            //        StuffUtils.EquipNextFrame(equipStuffQueue, characterEntity, harvesterEntity, true);
+            //        ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
+
+            //    }
+
+            //    //StuffUtils.InstantiateNextFrame(instantiateStuffQueue, "Harvester", characterEntity);
+            //    //SpawnHarvesterOnCharacter(ref state, characterEntity, harvesterEntity, unequipStuffQueu, equipStuffQueu);
+            //}
+            //else
+            //{
+            //    ecb.RemoveComponent<HarvesterRespawn>(harvesterEntity);
+            //    //    StuffUtils.DropNextFrame(ref state, characterEntity, harvesterEntity, true);
+            //    //    StuffUtils.InstantiateNextFrame(instantiateStuffQueue, "Harvester", corpoSpawnPosition);
+            //    //    //SpawnHarvesterInMap(ref state, harvesterEntity, corpoSpawnPosition, currentTick, unequipStuffQueu);
+            //}
 
         }
 

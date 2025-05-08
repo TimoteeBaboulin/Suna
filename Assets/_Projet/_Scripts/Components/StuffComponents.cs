@@ -26,16 +26,16 @@ public enum StuffType
     Harvester,
 }
 
-//public enum StuffState
-//{
-//    InShop,
-//    Instantiate,
-//    Equip,
-//    Unequip,
-//    Throw,
-//    Drop,
-//    Destroy,
-//}
+public enum StuffState
+{
+    InShop,
+    Instantiate,
+    Equip,
+    Unequip,
+    Throw,
+    Drop,
+    Plant
+}
 
 [GhostComponent]
 public struct StuffDatabaseAccess : IComponentData
@@ -59,6 +59,7 @@ public struct StuffEntityInHandRef : IComponentData
 [GhostComponent]
 public struct StuffDynamicData : IComponentData
 {
+    [GhostField] public StuffState state;
     [GhostField] public Entity owner;
     [GhostField] public Entity dropedEntityPrefab;
     [GhostField] public Entity dropedEntityRef;

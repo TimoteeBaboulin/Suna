@@ -68,7 +68,7 @@ public partial struct StuffDropedCleanup : ISystem
                 UnityEngine.Debug.Log("StuffDropedCleanup Run");
                 ecb.DestroyEntity(dropedStuff);
             }
-            else
+            else if(state.EntityManager.HasComponent<StuffDynamicData>(stuffInHandRef.ValueRO.Value))
             {
                 var stuffDynData = state.EntityManager.GetComponentData<StuffDynamicData>(stuffInHandRef.ValueRO.Value);
                 if (stuffDynData.dropedEntityRef == Entity.Null)

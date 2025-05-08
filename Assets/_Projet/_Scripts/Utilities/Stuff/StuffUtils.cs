@@ -83,6 +83,7 @@ public static class StuffUtils
         SetStuffInSlot(ownerStuffList, stuffData.slot, stuff);
         stuffDynamicDataRW.ValueRW.owner = owner;
         stuffDynamicDataRW.ValueRW.dropedEntityRef = Entity.Null;
+        stuffDynamicDataRW.ValueRW.state = StuffState.Equip;
 
         // Network
         stuffGhostOwnerRW.ValueRW.NetworkId = ownerGhostOwnerRO.ValueRO.NetworkId;
@@ -123,6 +124,7 @@ public static class StuffUtils
 
         var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
         stuffDynamicData.owner = Entity.Null;
+        stuffDynamicData.state = StuffState.Unequip;
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
 
         //Network
@@ -156,6 +158,7 @@ public static class StuffUtils
 
         var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
         stuffDynamicData.owner = Entity.Null;
+        stuffDynamicData.state = StuffState.Throw;
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
 
         //Network
@@ -248,6 +251,7 @@ public static class StuffUtils
         });
 
         stuffDynamicData.dropedEntityRef = dropedStuff;
+        stuffDynamicData.state = StuffState.Drop;
         ecb.SetComponent(stuff, stuffDynamicData);
     }
 

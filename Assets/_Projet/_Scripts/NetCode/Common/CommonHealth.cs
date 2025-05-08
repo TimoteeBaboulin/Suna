@@ -61,9 +61,12 @@ public partial struct CalculateFrameDamageSystem : ISystem
                     if (!healtRW.ValueRW.killSoundAlreadyPlayed)
                     {
                         Entity killer = healtRW.ValueRO.lastDamager;
-                        float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
-                        SoundUtils.PlayWithRPC("Hit", "Kill", pos);
-                        healtRW.ValueRW.killSoundAlreadyPlayed = true;
+                        if (state.EntityManager.Exists(killer))
+                        {
+                            float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
+                            SoundUtils.PlayWithRPC("Hit", "Kill", pos);
+                            healtRW.ValueRW.killSoundAlreadyPlayed = true;
+                        }
                     }
                 }
                 else
@@ -208,9 +211,10 @@ public partial struct DamageSourceJob : IJobEntity
 
             if (source != Entity.Null && source != target) //If the source is not null and if the source is the different than the target
             {
-                if(GhostOwnerLookup.TryGetComponent(source, out var ghostOwnerSource) && 
-                   GhostOwnerLookup.TryGetComponent(target, out var ghostOwnerTarget) &&
-                   PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerSource.NetworkId) != PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerTarget.NetworkId))
+                if (GhostOwnerLookup.TryGetComponent(source, out var ghostOwnerSource) &&
+                   GhostOwnerLookup.TryGetComponent(target, out var ghostOwnerTarget) /*&&
+                   PlayerHelpers.GetPlayerInTeam(ghostOwnerSource.NetworkId) != PlayerHelpers.GetPlayerInTeam(ghostOwnerTarget.NetworkId)*/)
+                //TODO : PlayerHelpers.GetPlayerInTeam pas thread safe (@Leonnel et @Adrien)
                 // Make sure money is given only when killing a player and when it's not a team kill
                 {
                     if (MoneyLookup.TryGetComponent(source, out var cm))
