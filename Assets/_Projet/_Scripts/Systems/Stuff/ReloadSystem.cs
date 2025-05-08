@@ -64,10 +64,12 @@ public partial struct RangedWeaponReloadSystem : ISystem
                     Debug.Log("Reload Start !");
 #endif
                     if (state.EntityManager.HasBuffer<CharacterStuffList>(owner)
-                        && state.EntityManager.HasComponent<CharacterStuffList>(owner))
+                        && state.EntityManager.HasComponent<CharacterStuffList>(owner)
+                        && state.EntityManager.HasComponent<GhostOwner>(owner))
                     {
                         DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
                         RefRO<CharacterStuffInfos> stuffInfo = SystemAPI.GetComponentRO<CharacterStuffInfos>(owner);
+                        int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
 
                         Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
@@ -80,16 +82,16 @@ public partial struct RangedWeaponReloadSystem : ISystem
                                 if (stuffName == "LP-17"
                                     || stuffName == "FAKIR")
                                 {
-                                    AnimationUtils.AddTriggerCommand("ReloadHandgun", owner, animationEcb);
+                                    AnimationUtils.AddTriggerCommand("ReloadHandgun", owner, animationEcb, networkId);
                                 }
                                 else if (stuffName == "Decimator"
                                     || stuffName == "SKAR-18")
                                 {
-                                    AnimationUtils.AddTriggerCommand("ReloadRifle", owner, animationEcb);
+                                    AnimationUtils.AddTriggerCommand("ReloadRifle", owner, animationEcb, networkId);
                                 }
                                 else if (stuffName == "Banduka")
                                 {
-                                    AnimationUtils.AddTriggerCommand("ReloadShotgun", owner, animationEcb);
+                                    AnimationUtils.AddTriggerCommand("ReloadShotgun", owner, animationEcb, networkId);
                                 }
                             }
                         }

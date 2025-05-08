@@ -140,7 +140,7 @@ public partial struct CharacterMovementJob : IJobEntity
     }
 
     public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRO<GhostOwner> ghostOwner)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -158,11 +158,13 @@ public partial struct CharacterMovementJob : IJobEntity
 
         bool forwardHit = false;
 
+        int networkId = ghostOwner.ValueRO.NetworkId;
+
         if (isMoving)
         {
-            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey);
-            AnimationUtils.AddFloatCommandJob("WalkY", input.move.y, entity, ecb, sortKey);
-            AnimationUtils.AddFloatCommandJob("WalkX", input.move.x, entity, ecb, sortKey);
+            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddFloatCommandJob("WalkY", input.move.y, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddFloatCommandJob("WalkX", input.move.x, entity, ecb, sortKey, networkId);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -187,7 +189,7 @@ public partial struct CharacterMovementJob : IJobEntity
         }
         else
         {
-            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey);
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
@@ -311,7 +313,7 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (input.jump.IsSet && controller.isGrounded)
         {
-            AnimationUtils.AddTriggerCommandJob("Jump", entity, ecb, sortKey);
+            AnimationUtils.AddTriggerCommandJob("Jump", entity, ecb, sortKey, networkId);
             vel.Linear.y = characterController.ValueRW.jumpForce;
             controller.isGrounded = false;
             controller.isJumping = true;

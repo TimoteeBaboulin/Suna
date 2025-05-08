@@ -24,8 +24,8 @@ public partial struct CommonCharacterRotationSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (characterTransform, characterViewRotation, CharacterInput, characterEntity) in SystemAPI
-            .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>>()
+        foreach (var (characterTransform, characterViewRotation, CharacterInput, ghostOwner, characterEntity) in SystemAPI
+            .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>, RefRO<GhostOwner>>()
             .WithEntityAccess())
         {
             characterTransform.ValueRW.Rotation = quaternion.RotateY(CharacterInput.ValueRO.Yaw);
@@ -33,9 +33,9 @@ public partial struct CommonCharacterRotationSystem : ISystem
 
             float minPitch = -math.PI / 2;
             float maxPitch = math.PI / 2;
-            float RemappedValue = Mathf.Clamp((characterViewRotation.ValueRW.Pitch - minPitch) / (maxPitch - minPitch), 0f, 1f);
+            float RemappedValue = Mathf.Clamp((CharacterInput.ValueRO.Pitch - minPitch) / (maxPitch - minPitch), 0f, 1f);
 
-            AnimationUtils.AddFloatCommand("ViewRotation", RemappedValue, characterEntity, ecb);
+            AnimationUtils.AddFloatCommand("ViewRotation", RemappedValue, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
         }
 
         ecb.Playback(state.EntityManager);
