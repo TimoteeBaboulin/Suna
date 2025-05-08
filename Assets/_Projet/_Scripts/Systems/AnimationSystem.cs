@@ -3,32 +3,6 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 
-//[UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
-//[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-//partial struct ServerClearAnimationBufferSystem : ISystem
-//{
-//    [BurstCompile]
-//    public void OnCreate(ref SystemState state)
-//    {
-//        state.RequireForUpdate<AnimatorReference>();
-//    }
-
-//    [BurstCompile]
-//    public void OnUpdate(ref SystemState state)
-//    {
-//        foreach (var (floatBuffer, intBuffer, boolBuffer, triggerBuffer, entity) in SystemAPI
-//            .Query<DynamicBuffer<AnimationFloatBufferElement>, DynamicBuffer<AnimationIntBufferElement>,
-//            DynamicBuffer<AnimationBoolBufferElement>, DynamicBuffer<AnimationTriggerBufferElement>>()
-//            .WithEntityAccess())
-//        {
-//            floatBuffer.Clear();
-//            intBuffer.Clear();
-//            boolBuffer.Clear();
-//            triggerBuffer.Clear();
-//        }
-//    }
-//}
-
 [UpdateInGroup(typeof(LateSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 partial class ServerAnimationSystem : SystemBase
@@ -96,7 +70,6 @@ partial class ClientRpcAnimationSystem : SystemBase
 {
     protected override void OnCreate()
     {
-        RequireForUpdate<AnimatorReference>();
     }
 
     protected override void OnUpdate()
