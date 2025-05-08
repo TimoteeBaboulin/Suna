@@ -11,12 +11,16 @@ public class ThirdPersonCharacterModelPrefab : IComponentData
     public CharacterColliderBones CorpoColliderBones;
     public CharacterColliderBones NatifColliderBones;
 
+    public ModelAnimatorData CorpoAnimatorData;
+    public ModelAnimatorData NatifAnimatorData;
+
     public float3 DeltaPosition;
 }
 
 public class ThirdPersonCharacterModelReference : ICleanupComponentData
 {
     public GameObject ModelGameObject;
+    public ModelAnimatorData AnimatorData;
     public float3 DeltaPosition;
 }
 
