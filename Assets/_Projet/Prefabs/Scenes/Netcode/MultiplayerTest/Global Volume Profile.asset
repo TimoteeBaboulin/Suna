@@ -108,18 +108,18 @@ MonoBehaviour:
   active: 1
   state:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   localClouds:
     m_OverrideState: 0
-    m_Value: 0
-  m_CloudPreset:
-    m_OverrideState: 0
     m_Value: 1
+  m_CloudPreset:
+    m_OverrideState: 1
+    m_Value: 4
   densityMultiplier:
-    m_OverrideState: 0
-    m_Value: 0.4
+    m_OverrideState: 1
+    m_Value: 0.2
   densityCurve:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value:
       serializedVersion: 2
       m_Curve:
@@ -154,19 +154,19 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   shapeFactor:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.9
   shapeScale:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 5
   erosionFactor:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.8
   erosionScale:
-    m_OverrideState: 0
-    m_Value: 107
+    m_OverrideState: 1
+    m_Value: 100
   erosionCurve:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value:
       serializedVersion: 2
       m_Curve:
@@ -201,7 +201,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   ambientOcclusionCurve:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value:
       serializedVersion: 2
       m_Curve:
@@ -239,16 +239,16 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   microErosionFactor:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 0.5
   microErosionScale:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 200
   bottomAltitude:
-    m_OverrideState: 0
-    m_Value: 1200
+    m_OverrideState: 1
+    m_Value: 1000
   altitudeRange:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 2000
   shapeOffset:
     m_OverrideState: 0
@@ -257,11 +257,11 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   globalSpeed:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1000
   globalOrientation:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 45
   shapeSpeedMultiplier:
     m_OverrideState: 0
     m_Value: 1
@@ -296,10 +296,10 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0.5
   shadows:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1
   shadowResolution:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 256
   shadowDistance:
     m_OverrideState: 0
