@@ -93,7 +93,14 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             {
                 Debug.Log("Player in the same team, setting model to layer 13");
                 actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
-                actualVisualGO.GetComponent<MeshRenderer>().materials[1] = null; // Disable the enemy outline material (since we are the same team)
+
+                //Removing the enemy outline
+                Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
+                for (int i = 0; i < newMat.Length; i++)
+                {
+                    newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
+                }
+                actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
             }
             else
             {                 

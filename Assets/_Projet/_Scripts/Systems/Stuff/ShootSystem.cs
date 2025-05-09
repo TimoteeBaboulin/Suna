@@ -189,6 +189,7 @@ public partial struct ShootSystem : ISystem
                                             targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
                                             killReward = stuffCommonData.killGain,
                                             weapon = Entity.Null, //TODO : Store the player weapon entity here
+                                            sourcePosition = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Position,
                                         });
 
                                         ecb.SetComponent(owner, new HasHitComponent { Value = true, HeadHit = CharacterBodyPartData.ValueRO.DamageMultiplier > 1f });
