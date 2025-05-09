@@ -6,6 +6,9 @@ class FirstPersonCharacterModelAuthoring : MonoBehaviour
     public GameObject CorpoModelPrefab;
     public GameObject NatifModelPrefab;
     public Transform DeltaPosition;
+
+    public ModelAnimatorData CorpoAnimatorData;
+    public ModelAnimatorData NatifAnimatorData;
 }
 
 class FirstPersonCharacterModelAuthoringBaker : Baker<FirstPersonCharacterModelAuthoring>
@@ -18,6 +21,8 @@ class FirstPersonCharacterModelAuthoringBaker : Baker<FirstPersonCharacterModelA
         {
             CorpoModelPrefab = authoring.CorpoModelPrefab,
             NatifModelPrefab = authoring.NatifModelPrefab,
+            CorpoAnimatorData = authoring.CorpoAnimatorData,
+            NatifAnimatorData = authoring.NatifAnimatorData,
             DeltaPosition = authoring.DeltaPosition.position,
         });
     }

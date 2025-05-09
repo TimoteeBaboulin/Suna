@@ -23,6 +23,7 @@ public class HUDController : MonoBehaviour
 
     // Main HUD
     private VisualElement _crosshairElement;
+    private VisualElement _hitMarkerElement;
 
     //Grenade effects
     private VisualElement _flash;
@@ -42,7 +43,8 @@ public class HUDController : MonoBehaviour
     // Main Value Getter Systems
     private InGameHUDSystem _inGameHUDSystem = null;
     private bool _hitRegistered = false;
-    private StyleColor _crosshairBaseColor;
+    private float _hitMarkerTimer = 0f;
+    readonly private float _hitMarkerTime = 0.3f;
 
     private RoundManagerLinkSystem _roundManagerLinkSystem = null;
 
@@ -101,7 +103,7 @@ public class HUDController : MonoBehaviour
     private bool _winLoseRoundSubscribed = false;
     private bool _winLoseRoundEngaged = false;
     private float _winLoseRoundTimer = 0f;
-    private float _winLoseRoundTime = 4f;
+    readonly private float _winLoseRoundTime = 4f;
 
     private void Awake()
     {
@@ -120,7 +122,8 @@ public class HUDController : MonoBehaviour
         _money = _HUD.Q<Label>("Cash");
 
         _crosshairElement = _HUD.Q("Crosshair");
-        _crosshairBaseColor = _crosshairElement.style.unityBackgroundImageTintColor;
+        _hitMarkerElement = _crosshairElement.Q("HitMarker");
+        UI.SetOpacity(ref _hitMarkerElement, 0f);
 
         _corpoScore = _HUD.Q<Label>("CorpoScore");
         _natifScore = _HUD.Q<Label>("NatifScore");
@@ -245,7 +248,7 @@ public class HUDController : MonoBehaviour
             _weaponListLinkSystem.OnStuffIdChange += OnStuffIdChange;
         }
 
-        if (!_winLoseRoundSubscribed)
+        if (!_winLoseRoundSubscribed && world.Name == "ClientWorld")
         {
             RoundSystemClient.OnTeamWinRound += OnTeamWinRound;
             _winLoseRoundSubscribed = true;
@@ -254,8 +257,23 @@ public class HUDController : MonoBehaviour
 
         if (_hitRegistered)
         {
-            _hitRegistered = false;
-            StartCoroutine(HitRegistered());
+            _hitMarkerTimer -= Time.deltaTime;
+            if (_hitMarkerTimer < 0f)
+            {
+                _hitMarkerTimer = 0f;
+            }
+
+            float t = Mathf.Clamp01(_hitMarkerTimer / _hitMarkerTime);
+
+            UI.SetOpacity(ref _hitMarkerElement, t);
+
+            if (_hitMarkerTimer <= 0f)
+            {
+                _hitMarkerTimer = 0f;
+                _hitRegistered = false;
+                _hitMarkerElement.style.backgroundImage = null;
+                UI.SetOpacity(ref _hitMarkerElement, 0f);
+            }
         }
 
         // If RoundManager Linked, change values (for now in update and not when needed)
@@ -284,6 +302,11 @@ public class HUDController : MonoBehaviour
             _winLoseRoundTimer += Time.deltaTime;
 
             float t = _winLoseRoundTimer / _winLoseRoundTime;
+
+            if (t > 1f)
+            {
+                t = 1f;
+            }
 
             UI.SetActive(ref _winLoseRoundElement, true);
             UI.SetOpacity(ref _winLoseRoundElement, 0f);
@@ -640,12 +663,6 @@ public class HUDController : MonoBehaviour
     //----------End of Error Window System
 
     //----------Start of Main HUD Elements System
-    IEnumerator HitRegistered()
-    {
-        yield return new WaitForSeconds(1f);
-        _crosshairElement.style.unityBackgroundImageTintColor = _crosshairBaseColor;
-        yield return null;
-    }
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
@@ -663,10 +680,18 @@ public class HUDController : MonoBehaviour
     {
         _money.text = args.money.ToString();
     }
-    private void System_OnHitRegistered(object sender, EventArgs args)
+    private void System_OnHitRegistered(object sender, InGameHUDSystem.HitArgs args)
     {
+        if (args.headHit)
+        {
+            _hitMarkerElement.style.backgroundImage = texData.GetTexture("hud_hit_head");
+        }
+        else
+        {
+            _hitMarkerElement.style.backgroundImage = texData.GetTexture("hud_hit_body");
+        }
+        _hitMarkerTimer = _hitMarkerTime;
         _hitRegistered = true;
-        _crosshairElement.style.unityBackgroundImageTintColor = new StyleColor(Color.red);
     }
     //----------End of Main HUD Elements System
 

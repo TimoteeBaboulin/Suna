@@ -641,7 +641,7 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 0
+  m_Antialiasing: 1
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -874,7 +874,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: Port
-      value: 59692
+      value: 7979
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isRelease
@@ -882,7 +882,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isClientLocal
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7540693576825535764, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_LocalPosition.x

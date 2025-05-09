@@ -13,6 +13,7 @@ using RaycastHit = Unity.Physics.RaycastHit;
 public struct HasHitComponent : IComponentData
 {
     [GhostField] public bool Value;
+    [GhostField] public bool HeadHit;
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -190,7 +191,7 @@ public partial struct ShootSystem : ISystem
                                             weapon = Entity.Null, //TODO : Store the player weapon entity here
                                         });
 
-                                        ecb.SetComponent(owner, new HasHitComponent { Value = true });
+                                        ecb.SetComponent(owner, new HasHitComponent { Value = true, HeadHit = CharacterBodyPartData.ValueRO.DamageMultiplier > 1f });
                                     }
                                 }
 

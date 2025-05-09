@@ -82,7 +82,7 @@ public partial struct SwitchStuffSystem : ISystem
 
         //Auto enable/disable IsStuffInHand
         foreach (var (dynData, stuff) in SystemAPI
-        .Query<RefRO<StuffDynamicData>>()
+        .Query<RefRW<StuffDynamicData>>()
         .WithPresent<IsStuffInHand>()
         .WithEntityAccess())
         {

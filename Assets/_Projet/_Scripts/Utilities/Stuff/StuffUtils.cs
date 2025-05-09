@@ -61,7 +61,6 @@ public static class StuffUtils
 
         if (owner == Entity.Null || stuff == Entity.Null) return;
 
-
         if (GetStuffInSlot(ownerStuffList, stuffData.slot) != Entity.Null)
         {
             Entity stuffToDrop = GetStuffInSlot(ownerStuffList, stuffData.slot);
@@ -83,6 +82,8 @@ public static class StuffUtils
         // Add the stuff in player inventory
         SetStuffInSlot(ownerStuffList, stuffData.slot, stuff);
         stuffDynamicDataRW.ValueRW.owner = owner;
+        stuffDynamicDataRW.ValueRW.dropedEntityRef = Entity.Null;
+        stuffDynamicDataRW.ValueRW.state = StuffState.Equip;
 
         // Network
         stuffGhostOwnerRW.ValueRW.NetworkId = ownerGhostOwnerRO.ValueRO.NetworkId;
@@ -123,6 +124,7 @@ public static class StuffUtils
 
         var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
         stuffDynamicData.owner = Entity.Null;
+        stuffDynamicData.state = StuffState.Unequip;
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
 
         //Network
@@ -156,6 +158,7 @@ public static class StuffUtils
 
         var stuffDynamicData = state.EntityManager.GetComponentData<StuffDynamicData>(stuff);
         stuffDynamicData.owner = Entity.Null;
+        stuffDynamicData.state = StuffState.Throw;
         state.EntityManager.SetComponentData(stuff, stuffDynamicData);
 
         //Network
@@ -170,20 +173,20 @@ public static class StuffUtils
         }
     }
 
-    public static void DropNextFrame(
-        ref SystemState state,
-        DynamicBuffer<UnequipStuffQueue> unequipStuffQueue,
-        ref EntityCommandBuffer ecb,
-        Entity owner,
-        Entity stuff,
-        RefRO<CharacterShootStartPositionDelta> shootStartPosDelta,
-        RefRO<CharacterViewRotation> ownerView,
-        RefRO<LocalTransform> ownerTransform,
-        float impulse)
-    {
-        UnequipNextFrame(unequipStuffQueue, owner, stuff);
-        DropBehavior(ref state, ref ecb, stuff, shootStartPosDelta, ownerView, ownerTransform, impulse);
-    }
+    //public static void DropNextFrame(
+    //    ref SystemState state,
+    //    DynamicBuffer<UnequipStuffQueue> unequipStuffQueue,
+    //    ref EntityCommandBuffer ecb,
+    //    Entity owner,
+    //    Entity stuff,
+    //    RefRO<CharacterShootStartPositionDelta> shootStartPosDelta,
+    //    RefRO<CharacterViewRotation> ownerView,
+    //    RefRO<LocalTransform> ownerTransform,
+    //    float impulse)
+    //{
+    //    UnequipNextFrame(unequipStuffQueue, owner, stuff);
+    //    DropBehavior(ref state, ref ecb, stuff, shootStartPosDelta, ownerView, ownerTransform, impulse);
+    //}
 
     public static void Drop(
         ref SystemState state,
@@ -246,6 +249,10 @@ public static class StuffUtils
             Linear = direction * impulse,
             Angular = float3.zero
         });
+
+        stuffDynamicData.dropedEntityRef = dropedStuff;
+        stuffDynamicData.state = StuffState.Drop;
+        ecb.SetComponent(stuff, stuffDynamicData);
     }
 
     public static void SwitchTo(DynamicBuffer<CharacterStuffList> stuffListe, RefRW<CharacterStuffInfos> stuffInfosRW, StuffSlot slotToSwitch)
@@ -276,7 +283,10 @@ public static class StuffUtils
 
     public static Entity GetStuffInSlot(DynamicBuffer<CharacterStuffList> stuffListe, StuffSlot slot)
     {
-        return stuffListe[(int)slot].entity;
+        if (stuffListe.Length > 0)
+            return stuffListe[(int)slot].entity;
+        else
+            return Entity.Null;
     }
 
     public static void SetStuffInSlot(DynamicBuffer<CharacterStuffList> stuffs, StuffSlot slot, Entity stuff)

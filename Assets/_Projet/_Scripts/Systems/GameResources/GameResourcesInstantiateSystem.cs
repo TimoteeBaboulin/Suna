@@ -71,6 +71,7 @@ partial struct InstanciateEntityStuffSystem : ISystem
 
                             ecb.SetComponent(stuff, new StuffDynamicData
                             {
+                                state = StuffState.Instantiate,
                                 dropedEntityPrefab = stuffPrefabs[i].dropedEntityPrefab,
                                 grenadeThrownPrefab = stuffPrefabs[i].thrownGrenadeEntityPrefab,
                             });

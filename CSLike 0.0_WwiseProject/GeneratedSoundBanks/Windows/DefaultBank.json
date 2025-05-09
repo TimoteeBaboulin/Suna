@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{2B482C5B-A142-1C05-3BFA-59A241B8C2BD}",
+    "Hash": "{5DF72CB1-0620-1D6B-54D2-E66710B9A53A}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
@@ -624,9 +624,17 @@
       "DurationMin": "0",
       "DurationMax": "0"
      }
+    ],
+    "GameParameters": [
+     {
+      "Id": "2415836739",
+      "Name": "Volume",
+      "ObjectPath": "\\Game Parameters\\Default Work Unit\\Volume",
+      "GUID": "{AD86F2EB-0F7C-4EE1-91C3-88DB707E5572}"
+     }
     ]
    }
   ],
-  "FileHash": "{9B965D74-44B4-9488-14FE-21F7CD32E8F3}"
+  "FileHash": "{296F5D5B-34CE-F777-8605-9A760C608F34}"
  }
 }

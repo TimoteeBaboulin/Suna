@@ -29,7 +29,8 @@ public partial struct SoundBankSystemClient : ISystem
 
             foreach (var pair in register.bank)
             {
-                bank.Add(pair.Key, pair.Value);
+                if (!bank.ContainsKey(pair.Key))
+                    bank.Add(pair.Key, pair.Value);
             }
 
             register.bank.Clear();
@@ -132,7 +133,6 @@ partial struct SoundMainMenuVolumeSystemClient : ISystem
 
         SoundManager soundManager = SoundManager.Instance;
         float volume = SystemAPI.GetSingleton<ClientSettingsComponent>().Volume;
-        UnityEngine.Debug.Log("volume : " + volume + " IsServer : " +  state.World.IsServer());
 
 #if !UNITY_SERVER
         soundManager.SetVolume(volume);

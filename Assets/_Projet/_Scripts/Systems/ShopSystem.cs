@@ -47,7 +47,6 @@ partial class ShopSystem : SystemBase
                     break;
                 }
             }
-
             commandBuffer.DestroyEntity(entity);
         }
         
