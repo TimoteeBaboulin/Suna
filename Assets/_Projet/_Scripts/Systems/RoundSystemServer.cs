@@ -6,6 +6,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
+using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
 using static RoundSystemClient;
@@ -95,7 +96,6 @@ public partial struct RoundSystemServer : ISystem
             }
             _firstFrame = true;
         }
-
         if (ClientTransportHelper.instance == null)
             return;
 
@@ -112,8 +112,8 @@ public partial struct RoundSystemServer : ISystem
             if (ClientTransportHelper.instance.Session.PlayerCount < 2)
                 return;
         }
-        //if (roundComponent.ValueRO.gameWon)
-        //    return;
+        if (roundComponent.ValueRO.gameWon)
+            return;
 
 
         //Prepare the Entity Command Buffer to avoid breaking the reference to the component
@@ -223,12 +223,13 @@ public partial struct RoundSystemServer : ISystem
                     .WithAll<SpawnBarrierComponent>()
                     .WithEntityAccess())
         {
-            physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(active? CollisionResponsePolicy.Collide : CollisionResponsePolicy.None);
+            physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(active ? CollisionResponsePolicy.Collide : CollisionResponsePolicy.None);
         }
     }
 
     private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
     {
+        Debug.Log($"Victory by {team}");
         //Update the score and lossstreak of the correct teams
         if (team == TeamSideType.Corpo)
         {
@@ -360,13 +361,13 @@ public partial struct RoundSystemServer : ISystem
         //Reset the phase and increase the round number
         SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb);
         _harvesterMusicClockWiseStarted = false;
-
+        component.ValueRW.currentRound++;
 
         if (component.ValueRW.currentRound > component.ValueRO.maxRounds)
         {
             //Here changeed gameWon from true to false and added InitGame
-            component.ValueRW.gameWon = false;
-            InitGame(ref state, entity, component, ecb);
+            component.ValueRW.gameWon = true;
+            // InitGame(ref state, entity, component, ecb);
             GameOverRpcCommand command = new GameOverRpcCommand
             {
                 winners = component.ValueRO.nativeScore > component.ValueRO.corporationScore ? TeamSideType.Natif : TeamSideType.Corpo
@@ -402,12 +403,12 @@ public partial struct RoundSystemServer : ISystem
             .Query<RefRO<StuffDynamicData>>()
             .WithEntityAccess())
         {
-            if(stuffOwner.ValueRO.owner == Entity.Null && !SystemAPI.HasComponent<HarvesterComponent>(stuffEntity))
+            if (stuffOwner.ValueRO.owner == Entity.Null && !SystemAPI.HasComponent<HarvesterComponent>(stuffEntity))
             {
                 ecb.DestroyEntity(stuffEntity);
             }
         }
-        
+
         SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
     }
 
