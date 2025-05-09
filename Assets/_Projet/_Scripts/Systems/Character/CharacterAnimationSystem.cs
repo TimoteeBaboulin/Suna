@@ -4,7 +4,7 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation | WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 partial class ServerCharacterAnimationSystem : SystemBase
 {
@@ -17,8 +17,10 @@ partial class ServerCharacterAnimationSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
         // For FPS model animator
-        foreach (var (stuffList, stuffInfo, ghostOwner, animatorRef, modelRef, characterEntity) in SystemAPI
+        foreach (var (stuffList, stuffInfo, ghostOwner, animatorRef, modelRef, entity) in SystemAPI
             .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>, RefRO<GhostOwner>,
             AnimatorReference, FirstPersonCharacterModelReference>()
             .WithEntityAccess())
@@ -31,11 +33,11 @@ partial class ServerCharacterAnimationSystem : SystemBase
 
             FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
 
-            SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString());
+            //SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString(), entity, ecb, ghostOwner.ValueRO.NetworkId);
         }
 
         // For TPS model animator
-        foreach (var (stuffList, stuffInfo, ghostOwner, animatorRef, modelRef, characterEntity) in SystemAPI
+        foreach (var (stuffList, stuffInfo, ghostOwner, animatorRef, modelRef, entity) in SystemAPI
             .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>, RefRO<GhostOwner>,
             AnimatorReference, ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
@@ -48,11 +50,15 @@ partial class ServerCharacterAnimationSystem : SystemBase
 
             FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
 
-            SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString());
+            SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString(), entity, ecb, ghostOwner.ValueRO.NetworkId);
         }
+
+        ecb.Playback(EntityManager);
+        ecb.Dispose();
     }
 
-    private void SetAnimator(Animator animator, ModelAnimatorData animatorData, string stuffName)
+    private void SetAnimator(Animator animator, ModelAnimatorData animatorData, string stuffName,
+        Entity entity, EntityCommandBuffer ecb, int networkId)
     {
         if (stuffName == "Banduka")
         {
@@ -122,6 +128,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
             if (animator.runtimeAnimatorController != animatorData.KnifeNeutral)
             {
                 animator.runtimeAnimatorController = animatorData.KnifeNeutral;
+                AnimationUtils.AddTriggerCommand("Change", entity, ecb, networkId);
             }
         }
         else if (stuffName == "Laksya")
@@ -136,6 +143,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
             if (animator.runtimeAnimatorController != animatorData.LP17)
             {
                 animator.runtimeAnimatorController = animatorData.LP17;
+                AnimationUtils.AddTriggerCommand("Change", entity, ecb, networkId);
             }
         }
         else if (stuffName == "SKAR18")

@@ -140,7 +140,7 @@ public partial struct CharacterMovementJob : IJobEntity
     }
 
     public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRO<GhostOwner> ghostOwner)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRO<GhostOwner> ghostOwner, RefRW<SmoothInput> smooth)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -160,11 +160,14 @@ public partial struct CharacterMovementJob : IJobEntity
 
         int networkId = ghostOwner.ValueRO.NetworkId;
 
+        float smoothingSpeed = 1f;
+        smooth.ValueRW.Current = math.lerp(smooth.ValueRO.Current, input.move, smoothingSpeed * dt);
+
         if (isMoving)
         {
             AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddFloatCommandJob("WalkY", input.move.y, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddFloatCommandJob("WalkX", input.move.x, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey, networkId);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
@@ -308,12 +311,13 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (controller.isGrounded)
         {
+            AnimationUtils.AddBoolCommandJob("IsGrounded", true, entity, ecb, sortKey, networkId);
             controller.isJumping = false;
         }
 
         if (input.jump.IsSet && controller.isGrounded)
         {
-            AnimationUtils.AddTriggerCommandJob("Jump", entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsGrounded", false, entity, ecb, sortKey, networkId);
             vel.Linear.y = characterController.ValueRW.jumpForce;
             controller.isGrounded = false;
             controller.isJumping = true;

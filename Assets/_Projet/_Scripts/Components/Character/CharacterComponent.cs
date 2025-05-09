@@ -106,3 +106,8 @@ public struct CharacterMoney : IComponentData
     [GhostField] public uint money;
     [GhostField] public uint maxMoney;
 }
+
+public struct SmoothInput : IComponentData
+{
+    public float2 Current;
+}

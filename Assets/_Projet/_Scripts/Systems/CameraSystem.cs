@@ -14,7 +14,7 @@ partial class CameraSystem : SystemBase
     private static Entity currentTarget = Entity.Null;
     private static float3 currentPosition;
     private static quaternion currentRotation;
-    private static float3 fpsOffset = new float3(0f, 0.9f, 0f);
+    private static float3 fpsOffset = new float3(0f, 0.8f, 0f);
     private static int defaultFov = 60;
     private static int aimingFov = 50;
 
