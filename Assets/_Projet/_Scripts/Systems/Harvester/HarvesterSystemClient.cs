@@ -220,7 +220,7 @@ partial class HarvesterSystemClient : SystemBase
                 else
                 {
                     SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
-                    EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).Value.transform.position = rpc.position;
+                    EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).GetGameObjectSide(TeamSideType.Corpo).transform.position = rpc.position;
                 }
             }
         }

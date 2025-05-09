@@ -33,6 +33,7 @@ public class GameResourcesAuthoring : MonoBehaviour
             Entity grenadeEntity = GetEntity(authoring.grenadesEntityPrefab, TransformUsageFlags.Dynamic);
             Entity harvesterEntity = GetEntity(authoring.harvesterEntityPrefab, TransformUsageFlags.Dynamic);
             List<GameObject> viewPrefabs = new();
+            List<GameObject> viewPrefabs_Baked = new();
 
             List<SoundGroupMapping> soundGroupMapping = new();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -48,6 +49,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, rangedWeaponSO.entityName); //TODO : Refactoriser tout ça
 
                 viewPrefabs.Add(rangedWeaponSO.viewPrefab);
+                viewPrefabs_Baked.Add(rangedWeaponSO.viewPrefab_Baked);
 
                 prefabs.Add(new StuffEntityPrefabsBuffer
                 {
@@ -62,6 +64,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].storageSpeed = rangedWeaponSO.storageSpeed;
                 stuffs[i].price = rangedWeaponSO.price;
                 stuffs[i]._stuffLocalOffsetView = rangedWeaponSO._stuffLocalOffsetView;
+                stuffs[i]._stuffLocalOffsetView_Baked = rangedWeaponSO._stuffLocalOffsetView_Baked;
                 stuffs[i].killGain = rangedWeaponSO.killGain;
                 stuffs[i].canADS = rangedWeaponSO.canADS;
                 stuffs[i].ADSFOV = rangedWeaponSO.ADSFOV;
@@ -77,6 +80,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, meleeWeaponSO.entityName);
 
                 viewPrefabs.Add(meleeWeaponSO.viewPrefab);
+                viewPrefabs_Baked.Add(meleeWeaponSO.viewPrefab_Baked);
 
                 prefabs.Add(new StuffEntityPrefabsBuffer
                 {
@@ -91,6 +95,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].storageSpeed = meleeWeaponSO.storageSpeed;
                 stuffs[i].price = meleeWeaponSO.price;
                 stuffs[i]._stuffLocalOffsetView = meleeWeaponSO._stuffLocalOffsetView;
+                stuffs[i]._stuffLocalOffsetView_Baked = meleeWeaponSO._stuffLocalOffsetView_Baked;
                 stuffs[i].killGain = meleeWeaponSO.killGain;
                 stuffs[i].canADS = false;
                 stuffs[i].ADSFOV = 0;
@@ -107,6 +112,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[i].Name, grenadeSO.entityName);
 
                 viewPrefabs.Add(grenadeSO.viewPrefab);
+                viewPrefabs_Baked.Add(grenadeSO.viewPrefab_Baked);
+
 
                 prefabs.Add(new StuffEntityPrefabsBuffer
                 {
@@ -120,6 +127,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i].side = grenadeSO.side;
                 stuffs[i].price = grenadeSO.price;
                 stuffs[i]._stuffLocalOffsetView = grenadeSO._stuffLocalOffsetView;
+                stuffs[i]._stuffLocalOffsetView_Baked = grenadeSO._stuffLocalOffsetView_Baked;
                 stuffs[i].killGain = grenadeSO.killGain;
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count;
             }
@@ -131,6 +139,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 builder.AllocateString(ref stuffs[id].Name, harvesterSO.entityName);
 
                 viewPrefabs.Add(harvesterSO.viewPrefab);
+                viewPrefabs_Baked.Add(harvesterSO.viewPrefab_Baked);
 
                 prefabs.Add(new StuffEntityPrefabsBuffer
                 {
@@ -145,6 +154,7 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[id].storageSpeed = harvesterSO.storageSpeed;
                 stuffs[id].price = harvesterSO.price;
                 stuffs[id]._stuffLocalOffsetView = harvesterSO._stuffLocalOffsetView;
+                stuffs[id]._stuffLocalOffsetView_Baked = harvesterSO._stuffLocalOffsetView_Baked;
                 stuffs[id].killGain = harvesterSO.killGain;
                 stuffs[id].canADS = false;
                 stuffs[id].ADSFOV = 0;
@@ -228,7 +238,11 @@ public class GameResourcesAuthoring : MonoBehaviour
             AddBlobAsset(ref blobRef, out _);
 
             AddComponent(entity, new GameResourcesDatabase { StuffDatabaseRef = blobRef });
-            AddComponentObject(entity, new GameResourcesViewPrefabs { List = viewPrefabs });
+            AddComponentObject(entity, new GameResourcesViewPrefabs 
+            { 
+                List_ = viewPrefabs,
+                List_Baked = viewPrefabs_Baked
+            });
             
             AddComponentObject(entity, SoundUtils.SetGroupRegister(soundGroupMapping));
             AddBuffer<InstantiateStuffQueue>(entity);

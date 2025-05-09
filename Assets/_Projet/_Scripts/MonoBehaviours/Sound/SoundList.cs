@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class SoundList : MonoBehaviour
 {
-    //public bool autoCreateEntityEmitter;
     public List<SoundGroupMapping> soundGroupList = new List<SoundGroupMapping>();
 
     private EntityManager entityManager;
@@ -23,24 +22,5 @@ public class SoundList : MonoBehaviour
         }
 #endif
         //soundList.Clear();
-    }
-
-    void Start()
-    {
-        //if (autoCreateEntityEmitter)
-        //{
-        //    entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
-
-        //    EntityArchetype archetype = entityManager.CreateArchetype(
-        //        typeof(SoundEmitter)
-        //    );
-
-        //    Entity entity = entityManager.CreateEntity(archetype);
-
-        //    entityManager.SetComponentData(entity, new SoundEmitter
-        //    {
-        //        keyGroup = keyGroup
-        //    });
-        //}
     }
 }

@@ -2,6 +2,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -27,15 +28,23 @@ public partial struct SoundBankSystemClient : ISystem
         {
 #if !UNITY_SERVER
 
+            bool clearNeed = false;
             foreach (var pair in register.bank)
             {
+
                 if (!bank.ContainsKey(pair.Key))
                     bank.Add(pair.Key, pair.Value);
+                clearNeed = true;
             }
 
-            register.bank.Clear();
-#endif
+            if (clearNeed)
+            {
+                register.bank.Clear();
+                ecb.RemoveComponent<SoundRegister>(entity);
+            }
+#else
             ecb.RemoveComponent<SoundRegister>(entity);
+#endif
         }
     }
 }

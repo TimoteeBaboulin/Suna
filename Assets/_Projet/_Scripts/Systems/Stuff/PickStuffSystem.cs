@@ -30,7 +30,6 @@ public partial struct PickStuffSystem : ISystem
                 .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
                 .WithEntityAccess())
         {
-
             ref readonly CharacterInput input = ref inputRO.ValueRO;
             if (input.interact.IsSet)
             {
@@ -39,6 +38,7 @@ public partial struct PickStuffSystem : ISystem
                 float3 forward = math.mul(shootRotation, math.forward());
 
                 RaycastHit hit = RayCast(startPosition, forward, 4, chara, state.EntityManager);
+
                 if (hit.Entity != Entity.Null)
                 {
                     //Natif doesen't pick harvester

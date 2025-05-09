@@ -1,7 +1,9 @@
 using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 //
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
@@ -34,9 +36,7 @@ partial struct StuffSystemClient : ISystem
             var singletonEntity = SystemAPI.GetSingletonEntity<GameResourcesDatabase>();
             var viewPrefabs = state.EntityManager.GetComponentObject<GameResourcesViewPrefabs>(singletonEntity);
 
-            goRef.Value = Object.Instantiate(viewPrefabs.List[stuffDataRef.ValueRO.ID]);
-            goRef.Value.name = viewPrefabs.List[stuffDataRef.ValueRO.ID].name;
-            ecb.AddComponent(stuff, goRef);
+            ecb.AddComponent(stuff, goRef.Instantiate(viewPrefabs, stuffDataRef));
         }
 
         //Attach to camera or drop
@@ -46,11 +46,20 @@ partial struct StuffSystemClient : ISystem
         .WithEntityAccess())
         {
             Entity owner = ownerRO.ValueRO.owner;
-            Transform stuffTransform = goRef.Value.transform;
 
             //Si le stuff à un propriétaire, on l'attache au bone de la vue
             if (owner != Entity.Null)
             {
+                GhostOwner ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(owner);
+                TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
+                GameObject stuffGo = goRef.GetGameObjectSide(ownerSide);
+
+                if (stuffGo == null) continue;
+
+                Transform stuffTransform = stuffGo.transform;
+
+                //goRef.SetActive(ownerSide);
+
                 if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner))
                 {
                     Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner).WeaponSlotTransform;
@@ -59,7 +68,7 @@ partial struct StuffSystemClient : ISystem
                         ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
                         stuffTransform.rotation = viewTransform.rotation;
                         stuffTransform.SetParent(viewTransform);
-                        stuffTransform.localPosition = stuffData._stuffLocalOffsetView;
+                        stuffTransform.localPosition = stuffData.GetStuffLocalOffsetView(ownerSide);
 
                         Animator animator = viewTransform.GetComponentInParent<Animator>();
 
@@ -71,9 +80,23 @@ partial struct StuffSystemClient : ISystem
                 }
             }
             //Si le stuff n'a pas de propriétaire et a un parent, on retire le parent
-            else if (stuffTransform.parent != null)
+            else
             {
-                stuffTransform.SetParent(null);
+                if (goRef.GetGameObjectSide(TeamSideType.Corpo) != null)
+                {
+                    if (goRef.GetGameObjectSide(TeamSideType.Corpo).transform.parent != null)
+                    {
+                        goRef.SetParent(null);
+                    }
+                }
+
+                if (goRef.GetGameObjectSide(TeamSideType.Natif) != null)
+                {
+                    if (goRef.GetGameObjectSide(TeamSideType.Natif).transform.parent != null)
+                    {
+                        goRef.SetParent(null);
+                    }
+                }
             }
         }
 
@@ -85,12 +108,14 @@ partial struct StuffSystemClient : ISystem
             if (!state.EntityManager.HasComponent<StuffGameObjectRef>(inHandRefRO.ValueRO.Value)) continue;
 
             ref LocalTransform entityTransform = ref transformRW.ValueRW;
-            Transform viewTransform = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value).Value.transform;
+            StuffGameObjectRef goRef = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value);
+            Transform viewTransform = goRef.GetTransform();
+
+            if (viewTransform == null) continue;
 
             if (viewTransform.parent == null)
             {
-                viewTransform.position = entityTransform.Position;
-                viewTransform.rotation = entityTransform.Rotation;
+                goRef.SetTransform(entityTransform);
 
                 if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
                 {
@@ -110,14 +135,20 @@ partial struct StuffSystemClient : ISystem
         {
             if (dynDataRO.ValueRO.owner != Entity.Null)
             {
+                GhostOwner ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
+                TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
+                Transform stuffTransform = goRef.GetTransformSide(ownerSide);
+
+                if (stuffTransform == null) continue;
+
                 if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner))
                 {
                     CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner);
                     Transform viewTransform = charaBones.WeaponSlotTransform;
 
-                    if (goRef.Value.transform.parent != viewTransform)
+                    if (stuffTransform.parent != viewTransform)
                     {
-                        goRef.Value.transform.SetParent(viewTransform, false);
+                        stuffTransform.SetParent(viewTransform, false);
 
                         Animator animator = viewTransform.GetComponentInParent<Animator>();
 
@@ -127,9 +158,13 @@ partial struct StuffSystemClient : ISystem
                         }
                     }
                 }
-            }
 
-            goRef.Value.SetActive(SystemAPI.IsComponentEnabled<IsStuffInHand>(entity) || dynDataRO.ValueRO.owner == Entity.Null);
+                goRef.SwitchSetActiveSide(ownerSide, SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));
+            }
+            else
+            {
+                goRef.SetActiveOne(true);
+            }
         }
 
         //Clear Stuff GameObject
@@ -138,7 +173,7 @@ partial struct StuffSystemClient : ISystem
         .WithNone<LocalTransform>()
         .WithEntityAccess())
         {
-            Object.Destroy(goRef.Value);
+            goRef.Destroy();
             ecb.RemoveComponent<StuffGameObjectRef>(entity);
         }
 
