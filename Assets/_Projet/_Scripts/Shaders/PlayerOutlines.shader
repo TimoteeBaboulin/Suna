@@ -21,12 +21,14 @@ Shader "Unlit/PlayerOutlines"
             struct appdata {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normal : NORMAL;
             };
 
             struct v2f {
                 float4 pos : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 float4 screenPos : TEXCOORD1;
+                float3 normScreen : TEXCOORD2;
             };
 
             float4 _OutlineColor;
@@ -38,6 +40,7 @@ Shader "Unlit/PlayerOutlines"
 
                 output.pos = vpi.positionCS;
                 output.uv = input.uv;
+                output.normScreen = normalize(mul(UNITY_MATRIX_IT_MV, float4(input.normal, 1)).xyz);
 
                 return output;
             }
@@ -45,6 +48,7 @@ Shader "Unlit/PlayerOutlines"
             half4 Frag (v2f i) : SV_Target
             {
                 return _OutlineColor;
+                //return lerp(_OutlineColor * 0.5, _OutlineColor, pow(abs(dot(normalize(i.normScreen), float3(0, 0, 1))), 2));
             }
             
             ENDHLSL

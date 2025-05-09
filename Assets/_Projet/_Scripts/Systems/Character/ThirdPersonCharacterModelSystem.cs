@@ -86,20 +86,23 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
 
-            if (modelPrefab == null) continue;
+            GameObject actualVisualGO = modelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
 
             // === Aurelien ===
-            if(PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
             {
-                modelGameObject.layer = 13; // Visibility through walls is managed just by using that layer
-                modelGameObject.GetComponent<MeshRenderer>().materials[1] = null; // Disable the enemy outline material (since we are the same team)
+                Debug.Log("Player in the same team, setting model to layer 13");
+                actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
+                actualVisualGO.GetComponent<MeshRenderer>().materials[1] = null; // Disable the enemy outline material (since we are the same team)
             }
             else
             {                 
-                modelGameObject.layer = 14;
+                Debug.Log("Player in different team, setting model to layer 14");
+                actualVisualGO.layer = 14;
             }
             // === Aurelien ===
 
+            if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
