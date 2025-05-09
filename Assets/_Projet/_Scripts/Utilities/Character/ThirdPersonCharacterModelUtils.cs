@@ -6,12 +6,46 @@ using UnityEngine;
 
 public class ThirdPersonCharacterModelUtils
 {
-    public static void AddReferenceComponent(in GameObject modelGameObject, float3 modelDeltaPosition, in Entity characterEntity, in EntityCommandBuffer ecb)
+    public static void AddReferenceComponent(in GameObject modelGameObject, ThirdPersonCharacterModelPrefab modelPrefab, 
+        in Entity characterEntity, in EntityCommandBuffer ecb, int networkId)
     {
+        ModelAnimatorData animatorData = null;
+
+        TeamSideType teamSide;
+        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
+        }
+        else
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+        }
+
+        switch (teamSide)
+        {
+            case TeamSideType.Corpo:
+                animatorData = modelPrefab.CorpoAnimatorData;
+                break;
+            case TeamSideType.Natif:
+                animatorData = modelPrefab.NatifAnimatorData;
+                break;
+            case TeamSideType.Neutre:
+                if ((networkId % 2) == 0)
+                {
+                    animatorData = modelPrefab.CorpoAnimatorData;
+                }
+                else
+                {
+                    animatorData = modelPrefab.NatifAnimatorData;
+                }
+                break;
+        }
+
         ecb.AddComponent(characterEntity, new ThirdPersonCharacterModelReference
         {
             ModelGameObject = modelGameObject,
-            DeltaPosition = modelDeltaPosition,
+            AnimatorData = animatorData,
+            DeltaPosition = modelPrefab.DeltaPosition,
         });
     }
 
