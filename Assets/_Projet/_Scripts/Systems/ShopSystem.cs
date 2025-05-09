@@ -23,30 +23,41 @@ partial class ShopSystem : SystemBase
         
         foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ShopCommand>>().WithEntityAccess())
         {
-            RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);
-
-            uint dataReceived = FindPriceByName(command.ValueRO.weaponData.ToString());
-
-            foreach (var (characterAttached, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRO<GhostOwner>>())
+            bool canBuy = true;
+            if (SystemAPI.TryGetSingleton<RoundComponent>(out var roundComponent))
             {
-                if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
+                if (roundComponent.currentPhase != RoundPhase.BuyPhase && roundComponent.roundSystemActive)
+                    canBuy = false;
+            }
+
+            if (canBuy)
+            {
+                RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);
+
+                uint dataReceived = FindPriceByName(command.ValueRO.weaponData.ToString());
+
+                foreach (var (characterAttached, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRO<GhostOwner>>())
                 {
-                    continue;
-                }
+                    if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
+                    {
+                        continue;
+                    }
 
-                Entity character = characterAttached.ValueRO.Value;
-                CharacterMoney money = SystemAPI.GetComponent<CharacterMoney>(character);
+                    Entity character = characterAttached.ValueRO.Value;
+                    CharacterMoney money = SystemAPI.GetComponent<CharacterMoney>(character);
 
-                if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.money >= dataReceived)
-                {
-                    StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, character);
+                    if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.money >= dataReceived)
+                    {
+                        StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, character);
 
-                    money.money -= dataReceived;
-                    commandBuffer.SetComponent(character, money);
+                        money.money -= dataReceived;
+                        commandBuffer.SetComponent(character, money);
 
-                    break;
+                        break;
+                    }
                 }
             }
+            
             commandBuffer.DestroyEntity(entity);
         }
         
