@@ -123,6 +123,9 @@ public class ServerSessionFactory
         var listNatif = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Natif);
         Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamNatif roster size: {listNatif.Count}");
 
+        var listNeutre = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Neutre);
+        Debug.Log($"[SessionStatusSystem] OnPlayerHasLeft → CountTeamNatif roster size: {listNeutre.Count}");
+
         if (listCorpo.Count > 0)
         {
             foreach (var playersCorpo in listCorpo)
@@ -160,6 +163,23 @@ public class ServerSessionFactory
             Debug.Log($"[SessionStatusSystem]   – No players in Natif to check");
         }
 
+        if (listNeutre.Count > 0)
+        {
+            foreach (var playersNeutre in listNeutre)
+            {
+                Debug.Log($"[SessionStatusSystem] NATIF := {playerId}→ COMPARING : {playersNeutre.Id}");
+                if (playersNeutre.Id == playerId)
+                {
+                    Debug.Log($"[SessionStatusSystem] → found Natif : {playersNeutre.Id}");
+                    PlayerHelpers.RemovePlayer(playersNeutre.Id);
+                    break;
+                }
+            }
+        }
+        else
+        {
+            Debug.Log($"[SessionStatusSystem]   – No players in Natif to check");
+        }
     }
 
     static private void OnRemovedFromSession()
