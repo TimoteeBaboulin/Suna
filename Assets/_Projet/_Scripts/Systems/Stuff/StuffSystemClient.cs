@@ -3,7 +3,6 @@ using Unity.Entities;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using static UnityEngine.UI.GridLayoutGroup;
 //
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 [UpdateInGroup(typeof(PresentationSystemGroup), OrderFirst = true)]
@@ -32,102 +31,73 @@ partial struct StuffSystemClient : ISystem
         .WithEntityAccess())
         {
             StuffGameObjectRef goRef = new StuffGameObjectRef();
-            ref StuffCommonData data = ref stuffDataRef.ValueRO.GetData(ref database);
             var singletonEntity = SystemAPI.GetSingletonEntity<GameResourcesDatabase>();
             var viewPrefabs = state.EntityManager.GetComponentObject<GameResourcesViewPrefabs>(singletonEntity);
 
-            ecb.AddComponent(stuff, goRef.Instantiate(viewPrefabs, stuffDataRef));
+            goRef.Instantiate(viewPrefabs, stuffDataRef);
+
+            ecb.AddComponent(stuff, goRef);
         }
 
-        //Attach to camera or drop
-        foreach (var (ownerRO, stuffDataRO, transformRO, goRef, stuff) in SystemAPI
+        //Attach to character view or not
+        foreach (var (dynDataRO, stuffDataRO, transformRO, goRef, stuff) in SystemAPI
         .Query<RefRO<StuffDynamicData>, RefRO<StuffDatabaseAccess>, RefRO<LocalTransform>, StuffGameObjectRef>()
-        //.WithAll<IsStuffOwnerUpdate>()
         .WithEntityAccess())
         {
-            Entity owner = ownerRO.ValueRO.owner;
-
-            //Si le stuff à un propriétaire, on l'attache au bone de la vue
-            if (owner != Entity.Null)
+            if (dynDataRO.ValueRO.owner != Entity.Null)
             {
-                GhostOwner ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(owner);
-                TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
-                GameObject stuffGo = goRef.GetGameObjectSide(ownerSide);
+                Transform ownerView = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner).WeaponSlotTransform;
 
-                if (stuffGo == null) continue;
-
-                Transform stuffTransform = stuffGo.transform;
-
-                //goRef.SetActive(ownerSide);
-
-                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(owner))
+                if (ownerView != goRef.GetOneTransform().parent)
                 {
-                    Transform viewTransform = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(owner).WeaponSlotTransform;
-                    if (stuffTransform.parent != viewTransform)
+                    GhostOwner ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
+                    TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
+                    ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
+
+                    goRef.SetParent(ownerView);
+                    goRef.SetLocalTransform(stuffData.GetStuffLocalOffsetView(ownerSide), ownerView.rotation);
+
+                    Animator animator = ownerView.GetComponentInParent<Animator>();
+                    if (animator != null) animator.Rebind();
+                }
+            }
+            else
+            {
+                goRef.SetParent(null);
+            }
+        }
+
+        //View follow Droped stuff
+        foreach (var (inHandRefRO, transformRO, stuff) in SystemAPI
+        .Query<RefRO<StuffEntityInHandRef>, RefRO<LocalTransform>>()
+        .WithEntityAccess())
+        {
+            if (state.EntityManager.HasComponent<StuffGameObjectRef>(inHandRefRO.ValueRO.Value))
+            {
+                StuffGameObjectRef goRef = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value);
+                Transform goTransform = goRef.GetOneTransform();
+
+                if (goTransform != null)
+                {
+                    if (goTransform.parent == null)
                     {
-                        ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
-                        stuffTransform.rotation = viewTransform.rotation;
-                        stuffTransform.SetParent(viewTransform);
-                        stuffTransform.localPosition = stuffData.GetStuffLocalOffsetView(ownerSide);
+                        goRef.SetTransform(transformRO.ValueRO);
 
-                        Animator animator = viewTransform.GetComponentInParent<Animator>();
 
-                        if (animator != null)
+                        //////////////GRENADES//////////////
+                        if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
                         {
-                            animator.Rebind();
+                            if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
+                            {
+                                goRef.SetLocalScale(.8f);
+                            }
                         }
                     }
                 }
             }
-            //Si le stuff n'a pas de propriétaire et a un parent, on retire le parent
-            else
-            {
-                if (goRef.GetGameObjectSide(TeamSideType.Corpo) != null)
-                {
-                    if (goRef.GetGameObjectSide(TeamSideType.Corpo).transform.parent != null)
-                    {
-                        goRef.SetParent(null);
-                    }
-                }
-
-                if (goRef.GetGameObjectSide(TeamSideType.Natif) != null)
-                {
-                    if (goRef.GetGameObjectSide(TeamSideType.Natif).transform.parent != null)
-                    {
-                        goRef.SetParent(null);
-                    }
-                }
-            }
         }
 
-        //Stuff view follow Droped stuff
-        foreach (var (inHandRefRO, transformRW, stuff) in SystemAPI
-        .Query<RefRO<StuffEntityInHandRef>, RefRW<LocalTransform>>()
-        .WithEntityAccess())
-        {
-            if (!state.EntityManager.HasComponent<StuffGameObjectRef>(inHandRefRO.ValueRO.Value)) continue;
-
-            ref LocalTransform entityTransform = ref transformRW.ValueRW;
-            StuffGameObjectRef goRef = state.EntityManager.GetComponentData<StuffGameObjectRef>(inHandRefRO.ValueRO.Value);
-            Transform viewTransform = goRef.GetTransform();
-
-            if (viewTransform == null) continue;
-
-            if (viewTransform.parent == null)
-            {
-                goRef.SetTransform(entityTransform);
-
-                if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
-                {
-                    if (state.EntityManager.IsComponentEnabled<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
-                    {
-                        viewTransform.localScale = Vector3.one * .8f;
-                    }
-                }
-            }
-        }
-
-        //Display stuff
+        //Active or Unactive GameObject
         foreach (var (goRef, dynDataRO, entity) in SystemAPI
         .Query<StuffGameObjectRef, RefRO<StuffDynamicData>>()
         .WithPresent<IsStuffInHand>()
@@ -137,29 +107,15 @@ partial struct StuffSystemClient : ISystem
             {
                 GhostOwner ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
                 TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
-                Transform stuffTransform = goRef.GetTransformSide(ownerSide);
 
-                if (stuffTransform == null) continue;
-
-                if (state.EntityManager.HasComponent<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner))
+                if (SystemAPI.IsComponentEnabled<IsStuffInHand>(entity))
                 {
-                    CommonCharacterModelBonesTransform charaBones = state.EntityManager.GetComponentData<CommonCharacterModelBonesTransform>(dynDataRO.ValueRO.owner);
-                    Transform viewTransform = charaBones.WeaponSlotTransform;
-
-                    if (stuffTransform.parent != viewTransform)
-                    {
-                        stuffTransform.SetParent(viewTransform, false);
-
-                        Animator animator = viewTransform.GetComponentInParent<Animator>();
-
-                        if (animator != null)
-                        {
-                            animator.Rebind();
-                        }
-                    }
+                    goRef.SwitchSetActiveSide(ownerSide, true);
                 }
-
-                goRef.SwitchSetActiveSide(ownerSide, SystemAPI.IsComponentEnabled<IsStuffInHand>(entity));
+                else
+                {
+                    goRef.SetActive(false);
+                }
             }
             else
             {
