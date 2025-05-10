@@ -162,12 +162,12 @@ public partial struct CharacterMovementJob : IJobEntity
 
         float smoothingSpeed = 1f;
         smooth.ValueRW.Current = math.lerp(smooth.ValueRO.Current, input.move, smoothingSpeed * dt);
+        AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey, networkId);
+        AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey, networkId);
 
         if (isMoving)
         {
             AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey, networkId);
 
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
