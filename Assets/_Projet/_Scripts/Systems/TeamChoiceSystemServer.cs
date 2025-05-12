@@ -1,4 +1,5 @@
 ﻿using GameNetwork.Utils;
+using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -28,11 +29,13 @@ public partial struct TeamChoiceSystemServer : ISystem
 
             ClientComponent client = SystemAPI.GetComponent<ClientComponent>(rpc.clientEntity);
             int networkId = client.networkID;
+           
             TeamSideType team = PlayerHelpers.AssignTeamToPlayer(PlayerHelpers.FindCurrentPlayerForNetworkId(networkId), rpc.team);
             client.team = team;
             if (team == TeamSideType.Neutre)
             {
                 Debug.Log("Couldn't change teams");
+                continue;
             }
             
             SystemAPI.SetComponent(rpc.clientEntity, client);
@@ -48,7 +51,6 @@ public partial struct TeamChoiceSystemServer : ISystem
             Debug.Log($"{command.ValueRO.word} from client index {request.ValueRO.SourceConnection.Index}");
             ecb.DestroyEntity(entity);
         }
-
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();

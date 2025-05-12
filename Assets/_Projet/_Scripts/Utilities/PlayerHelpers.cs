@@ -13,6 +13,7 @@ using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
 using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
+using static UnityEditor.Progress;
 
 public static class PlayerHelpers
 {
@@ -102,7 +103,6 @@ public static class PlayerHelpers
         {
             index = networkId;
         }
-        Debug.Log($"[AssignTeam] player check in find {sessionPlayers[index].Id}");
         return (IPlayer)sessionPlayers[index];
     }
 
@@ -168,13 +168,12 @@ public static class PlayerHelpers
 
                 foreach (var item in _teams.neutralPlayers)
                 {
-                    Debug.Log($"[AssignTeam]add plyar :::: {item}");
+                    Debug.Log($"[AssignTeam]player :::: {item.Id}");
                 }
-                Debug.Log($"[AssignTeam]add remove {readOnlyPlayer}");
-                Debug.Log($"[AssignTeam]add remove {_teams.neutralPlayers.Contains(readOnlyPlayer)}");
                 if (_teams.neutralPlayers.Contains(readOnlyPlayer))
                 {
                     _teams.neutralPlayers.Remove(readOnlyPlayer);
+                    Debug.Log($"[AssignTeam]remove player :::: {readOnlyPlayer.Id}");
                 }
                 else if (_teams.natifPlayers.Contains(readOnlyPlayer))
                 {
