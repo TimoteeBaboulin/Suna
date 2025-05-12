@@ -10,6 +10,7 @@ using Unity.NetCode;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
@@ -127,18 +128,19 @@ public static class PlayerHelpers
                 break;
         }
 
-        TeamSideType assignedTeam;
+        TeamSideType assignedTeam = team;
 
-        if (teamSize >= (ClientTransportHelper.MaxNbOfPlayers) / 2)
-        {
-            Debug.Log($"Too many people in the team (Trying to spawn in team {team}, which have {teamSize} players and can only accept {(ClientTransportHelper.MaxNbOfPlayers - 1) / 2} players");
-            return TeamSideType.Neutre;
-        }
-        else
-        {
-            Debug.Log($"Spawning person in team {team}");
-            assignedTeam = team;
-        }
+        //TODO: Uncomment this is we want teams to be limited to half the player limit of the game
+        //if (teamSize >= ClientTransportHelper.MaxNbOfPlayers / 2)
+        //{
+        //    Debug.Log($"Too many people in the team (Trying to spawn in team {team}, which have {teamSize} players and can only accept {(ClientTransportHelper.MaxNbOfPlayers - 1) / 2} players");
+        //    return TeamSideType.Neutre;
+        //}
+        //else
+        //{
+        //    Debug.Log($"Spawning person in team {team}");
+        //    assignedTeam = team;
+        //}
 
         //int maxPlayers = ClientTransportHelper.MaxNbOfPlayers - 1;
         //int halfPoint = maxPlayers / 2;    
@@ -162,15 +164,38 @@ public static class PlayerHelpers
         switch (assignedTeam)
         {
             case TeamSideType.Corpo:
+                if (_teams.corpoPlayers.Contains(readOnlyPlayer))
+                {
+                    return TeamSideType.Neutre;
+                }
+
                 _teams.corpoPlayers.Add(readOnlyPlayer);
-                _teams.neutralPlayers.Remove(readOnlyPlayer);
+                if (_teams.neutralPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.neutralPlayers.Remove(readOnlyPlayer);
+                }
+                else if (_teams.natifPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.natifPlayers.Remove(readOnlyPlayer);
+                }
                 return TeamSideType.Corpo;
             case TeamSideType.Natif:
+                if (_teams.natifPlayers.Contains(readOnlyPlayer))
+                    return TeamSideType.Neutre;
+
                 _teams.natifPlayers.Add(readOnlyPlayer);
-                _teams.neutralPlayers.Remove(readOnlyPlayer);
+                if (_teams.corpoPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.corpoPlayers.Remove(readOnlyPlayer);
+                } 
+                else if (_teams.neutralPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.neutralPlayers.Remove(readOnlyPlayer);
+                }
                 return TeamSideType.Natif;
             default:
-                _teams.neutralPlayers.Add(readOnlyPlayer);
+                if (!_teams.neutralPlayers.Contains(readOnlyPlayer))
+                    _teams.neutralPlayers.Add(readOnlyPlayer);
                 return TeamSideType.Neutre;
         }
     }
