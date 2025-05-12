@@ -167,8 +167,6 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (isMoving)
         {
-            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
-
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
             RaycastInput raycastInput = new RaycastInput()
@@ -189,10 +187,6 @@ public partial struct CharacterMovementJob : IJobEntity
                     }
                 }
             }
-        }
-        else
-        {
-            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
@@ -248,16 +242,22 @@ public partial struct CharacterMovementJob : IJobEntity
         if (!isMoving)
         {
             controller.currentSpeed = math.max(0, controller.currentSpeed - controller.deceleration * dt);
+            AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
         }
         else
         {
             if (controller.isWalking)
             {
                 controller.currentSpeed = math.min(controller.maxWalkingSpeed, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
+                AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
+                AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey, networkId);
             }
             else
             {
                 controller.currentSpeed = math.min(controller.maxRunningSpeed * weaponSpeedModifier, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
+                AnimationUtils.AddBoolCommandJob("IsMoving", true, entity, ecb, sortKey, networkId);
+                AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
             }
         }
 
