@@ -396,6 +396,10 @@ public partial struct RoundSystemServer : ISystem
             .WithEntityAccess())
         {
             ecb.AddComponent<HarvesterRespawn>(harvesterEntity);
+            if (SystemAPI.HasComponent<HarvesterPlanted>(harvesterEntity))
+            {
+                ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
+            }
         }
 
         //FIX (Aurelien) : Destroy all dropped weapons and equipment on the ground

@@ -31,13 +31,25 @@ public partial struct TeamChoiceSystemServer : ISystem
             int networkId = client.networkID;
            
             TeamSideType team = PlayerHelpers.AssignTeamToPlayer(PlayerHelpers.FindCurrentPlayerForNetworkId(networkId), rpc.team);
-            client.team = team;
             if (team == TeamSideType.Neutre)
             {
                 Debug.Log("Couldn't change teams");
                 continue;
             }
-            
+
+            if (team == client.team)
+            {
+                continue;
+            }
+
+            client.team = team;
+
+            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(rpc.clientEntity).Value;
+            if (state.EntityManager.Exists(characterEntity))
+            {
+                ecb.DestroyEntity(characterEntity);
+                ecb.AddComponent<WaitForRespawnTag>(rpc.clientEntity);
+            }
             SystemAPI.SetComponent(rpc.clientEntity, client);
 
             var hostSession = ClientTransportHelper.instance.Session.AsHost();
