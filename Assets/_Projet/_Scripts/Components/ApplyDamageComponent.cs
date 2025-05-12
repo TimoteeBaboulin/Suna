@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
 
 public enum DamageSource
@@ -25,4 +26,6 @@ public struct ApplyDamage : IComponentData
     public uint killReward;
 
     public float damage;
+
+    public float3 sourcePosition;
 }

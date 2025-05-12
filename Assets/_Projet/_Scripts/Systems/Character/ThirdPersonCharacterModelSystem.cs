@@ -65,6 +65,19 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        // === Aurelien ===
+        int localNetworkId = -1;
+
+        foreach(var (ghostOwner, ghostOwnerLocal, playerEntity) in SystemAPI
+            .Query<RefRO<GhostOwner>, RefRO<GhostOwnerIsLocal>>()
+            .WithNone<ThirdPersonCharacterModelReference>()
+            .WithEntityAccess())
+        {
+            localNetworkId = ghostOwner.ValueRO.NetworkId;
+            break;
+        }
+        // === Aurelien ===
+
         foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
@@ -72,6 +85,29 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
         {
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+
+            GameObject actualVisualGO = modelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
+
+            // === Aurelien ===
+            if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            {
+                Debug.Log("Player in the same team, setting model to layer 13");
+                actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
+
+                //Removing the enemy outline
+                Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
+                for (int i = 0; i < newMat.Length; i++)
+                {
+                    newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
+                }
+                actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
+            }
+            else
+            {                 
+                Debug.Log("Player in different team, setting model to layer 14");
+                actualVisualGO.layer = 14;
+            }
+            // === Aurelien ===
 
             if (modelPrefab == null) continue;
 

@@ -162,18 +162,14 @@ public static class PlayerHelpers
         {
             case TeamSideType.Corpo:
                 if (_teams.corpoPlayers.Contains(readOnlyPlayer))
+                {
                     return TeamSideType.Neutre;
+                }
 
                 _teams.corpoPlayers.Add(readOnlyPlayer);
-
-                foreach (var item in _teams.neutralPlayers)
-                {
-                    Debug.Log($"[AssignTeam]player :::: {item.Id}");
-                }
                 if (_teams.neutralPlayers.Contains(readOnlyPlayer))
                 {
                     _teams.neutralPlayers.Remove(readOnlyPlayer);
-                    Debug.Log($"[AssignTeam]remove player :::: {readOnlyPlayer.Id}");
                 }
                 else if (_teams.natifPlayers.Contains(readOnlyPlayer))
                 {
@@ -196,11 +192,7 @@ public static class PlayerHelpers
                 return TeamSideType.Natif;
             default:
                 if (!_teams.neutralPlayers.Contains(readOnlyPlayer))
-                {
                     _teams.neutralPlayers.Add(readOnlyPlayer);
-                    Debug.Log($"[AssignTeam]add {_teams.neutralPlayers.Count}");
-                }
-
                 return TeamSideType.Neutre;
         }
 
