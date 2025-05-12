@@ -129,7 +129,7 @@ public static class PlayerHelpers
 
         TeamSideType assignedTeam;
 
-        if (teamSize >= (ClientTransportHelper.MaxNbOfPlayers - 1) / 2)
+        if (teamSize >= (ClientTransportHelper.MaxNbOfPlayers) / 2)
         {
             Debug.Log($"Too many people in the team (Trying to spawn in team {team}, which have {teamSize} players and can only accept {(ClientTransportHelper.MaxNbOfPlayers - 1) / 2} players");
             return TeamSideType.Neutre;
