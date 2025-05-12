@@ -42,6 +42,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public bool isWalking;
     [GhostField] public bool isOnSite;
     [GhostField] public bool isAiming;
+    [GhostField] public bool isShooting;
 
     [GhostField] public float verticalCameraAngle;
 

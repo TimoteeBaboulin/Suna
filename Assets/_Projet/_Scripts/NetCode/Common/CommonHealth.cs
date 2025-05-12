@@ -33,6 +33,11 @@ public struct DamageThisTickCommand : ICommandData
     public float Value;
 }
 
+public struct DamageIndicator : IRpcCommand
+{
+    public float3 damageSourcePosition;
+}
+
 public struct HasNoHealthTag : IComponentData { }
 
 [BurstCompile]
@@ -153,15 +158,16 @@ public partial struct ApplyDamageSystem : ISystem
         //BufferLookup<CharacterStuffList> stuffListLookup = state.GetBufferLookup<CharacterStuffList>();
         //ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
 
-        EntityQuery query = state.GetEntityQuery(typeof(StuffDatabaseAccess));
+        EntityQuery query = state.GetEntityQuery(typeof(CharacterComponent));
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
-        NativeHashMap<Entity, StuffCommonData> commonDataMap = new NativeHashMap<Entity, StuffCommonData>(entities.Length, Allocator.TempJob);
+        NativeHashMap<Entity, TeamSideType> entityTeamTable = new NativeHashMap<Entity, TeamSideType>(entities.Length, Allocator.TempJob);
 
-        GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
-        foreach (var entity in entities)
+        foreach(Entity entity in entities)
         {
-            ref var data = ref state.EntityManager.GetComponentData<StuffDatabaseAccess>(entity).GetData(ref database);
-            commonDataMap.Add(entity, data);
+            var ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(entity);
+            var teamSideType = PlayerHelpers.GetPlayerInTeam(ghostOwner.NetworkId);
+            Debug.Log($"[ApplyDamageSystem] {ghostOwner.NetworkId} is in team {teamSideType}");
+            entityTeamTable.TryAdd(entity, PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId));
         }
 
         entities.Dispose();
@@ -171,13 +177,14 @@ public partial struct ApplyDamageSystem : ISystem
             CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
             MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
             GhostOwnerLookup = state.GetComponentLookup<GhostOwner>(),
+            entityTeamTable = entityTeamTable,
             ecb = ecb.AsParallelWriter()
         };
 
         state.Dependency = damageSourceJob.ScheduleParallel(state.Dependency);
         state.Dependency.Complete();
 
-        commonDataMap.Dispose();
+        entityTeamTable.Dispose();
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -190,6 +197,7 @@ public partial struct DamageSourceJob : IJobEntity
     [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<GhostOwner> GhostOwnerLookup;
+    [ReadOnly] public NativeHashMap<Entity, TeamSideType> entityTeamTable;
 
     public EntityCommandBuffer.ParallelWriter ecb;
 
@@ -202,6 +210,13 @@ public partial struct DamageSourceJob : IJobEntity
         targetHealth.Value -= damageComponent.ValueRO.damage;
         ecb.SetComponent(sortKey, target, targetHealth);
 
+        //DamageIndicator damageIndicator = new DamageIndicator
+        //{
+        //    damageSourcePosition = damageComponent.ValueRO.sourcePosition
+        //};
+
+        //RpcUtils.SendServerToClientRpc(ref damageIndicator, target);
+
         if (targetHealth.Value <= 0)
         {
             targetHealth.Value = 0;
@@ -212,11 +227,14 @@ public partial struct DamageSourceJob : IJobEntity
             if (source != Entity.Null && source != target) //If the source is not null and if the source is the different than the target
             {
                 if (GhostOwnerLookup.TryGetComponent(source, out var ghostOwnerSource) &&
-                   GhostOwnerLookup.TryGetComponent(target, out var ghostOwnerTarget) /*&&
-                   PlayerHelpers.GetPlayerInTeam(ghostOwnerSource.NetworkId) != PlayerHelpers.GetPlayerInTeam(ghostOwnerTarget.NetworkId)*/)
-                //TODO : PlayerHelpers.GetPlayerInTeam pas thread safe (@Leonnel et @Adrien)
+                   GhostOwnerLookup.TryGetComponent(target, out var ghostOwnerTarget) &&
+                   entityTeamTable.TryGetValue(source, out var sourceTeam) &&
+                   entityTeamTable.TryGetValue(target, out var targetTeam) &&
+                   sourceTeam != targetTeam)
                 // Make sure money is given only when killing a player and when it's not a team kill
                 {
+                    Debug.Log($"[ApplyDamageSystem] {ghostOwnerSource.NetworkId} killed {ghostOwnerTarget.NetworkId}");
+
                     if (MoneyLookup.TryGetComponent(source, out var cm))
                     {
                         cm.money += damageComponent.ValueRO.killReward;
@@ -230,6 +248,7 @@ public partial struct DamageSourceJob : IJobEntity
         {
             ecb.DestroyEntity(sortKey, damageComponent.ValueRO.grenade);
         }
+
         ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
     }
 }
