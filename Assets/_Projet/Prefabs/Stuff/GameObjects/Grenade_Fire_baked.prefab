@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &115276964224071627
+--- !u!1 &288306913941387584
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,31 +8,32 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6450281673274081872}
+  - component: {fileID: 1309676358816310402}
   m_Layer: 0
-  m_Name: Grenade_Gas
+  m_Name: RIG_GrenadeSpecial
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6450281673274081872
+--- !u!4 &1309676358816310402
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 115276964224071627}
+  m_GameObject: {fileID: 288306913941387584}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3174929678714629675}
-  m_Father: {fileID: 0}
+  - {fileID: 4446497189476340081}
+  - {fileID: 7051144771895829646}
+  m_Father: {fileID: 2209574022914832565}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3532081610053386199
+--- !u!1 &1389489319646331221
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,7 +41,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7266934786741287977}
+  - component: {fileID: 4446497189476340081}
   m_Layer: 0
   m_Name: J_GRENADESPECIAL
   m_TagString: Untagged
@@ -48,22 +49,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7266934786741287977
+--- !u!4 &4446497189476340081
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3532081610053386199}
+  m_GameObject: {fileID: 1389489319646331221}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 1.6561067, z: 0.037950575}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3174929678714629675}
+  m_Father: {fileID: 1309676358816310402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &6628741159097228569
+--- !u!1 &1576870585717531151
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -71,8 +72,40 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2216344519126530973}
-  - component: {fileID: 6420383277131218493}
+  - component: {fileID: 2209574022914832565}
+  m_Layer: 0
+  m_Name: Grenade_Fire_baked
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2209574022914832565
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1576870585717531151}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1309676358816310402}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2298361232903023736
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7051144771895829646}
+  - component: {fileID: 5475654484761342432}
   m_Layer: 0
   m_Name: SKIN_GrenadeSpecial
   m_TagString: Untagged
@@ -80,28 +113,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2216344519126530973
+--- !u!4 &7051144771895829646
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6628741159097228569}
+  m_GameObject: {fileID: 2298361232903023736}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 3174929678714629675}
+  m_Father: {fileID: 1309676358816310402}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!137 &6420383277131218493
+--- !u!137 &5475654484761342432
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6628741159097228569}
+  m_GameObject: {fileID: 2298361232903023736}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -118,7 +151,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 010d04fc1a080a845b1acbad8d9044c9, type: 2}
+  - {fileID: 2100000, guid: e08d6b1d337f990449a28c6f720514d2, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -143,45 +176,12 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 5312201154522110981, guid: 574e684c39b0c2e43bea6198904cb9ba, type: 3}
+  m_Mesh: {fileID: 5312201154522110981, guid: c83df6529aea83643a918509db50b96e, type: 3}
   m_Bones:
-  - {fileID: 7266934786741287977}
+  - {fileID: 4446497189476340081}
   m_BlendShapeWeights: []
-  m_RootBone: {fileID: 7266934786741287977}
+  m_RootBone: {fileID: 4446497189476340081}
   m_AABB:
     m_Center: {x: 0, y: 0.008452654, z: -0.010209837}
     m_Extent: {x: 0.0254369, y: 0.071190596, z: 0.03586579}
   m_DirtyAABB: 0
---- !u!1 &8159627302581961231
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 3174929678714629675}
-  m_Layer: 0
-  m_Name: RIG_GrenadeSpecial
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &3174929678714629675
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8159627302581961231}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 7266934786741287977}
-  - {fileID: 2216344519126530973}
-  m_Father: {fileID: 6450281673274081872}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
