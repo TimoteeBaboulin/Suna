@@ -16,7 +16,7 @@ partial class InGameHUDSystem : SystemBase
     public class MoneyArgs : EventArgs { public uint money; }
     public class HitArgs : EventArgs { public bool headHit; }
     public class FlashGrenadeArgs : EventArgs { public float intensity; }
-    public class PositionArgs : EventArgs { public float3 position; }
+    public class PositionArgs : EventArgs { public float3 position; public float3 forward; }
 
     public event EventHandler<HealthArgs> HealthChangedEvent;
     public event EventHandler<HitArgs> HitRegister;
@@ -81,7 +81,7 @@ partial class InGameHUDSystem : SystemBase
             .Query<RefRO<LocalTransform>>()
             .WithAll<GhostOwnerIsLocal, CharacterComponent>())
         {
-            PositionChangedEvent?.Invoke(this, new PositionArgs { position = localTransform.ValueRO.Position });
+            PositionChangedEvent?.Invoke(this, new PositionArgs { position = localTransform.ValueRO.Position, forward = localTransform.ValueRO.Forward() });
         }
     }
 }

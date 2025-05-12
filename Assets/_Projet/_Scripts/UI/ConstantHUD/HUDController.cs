@@ -108,6 +108,7 @@ public class HUDController : MonoBehaviour
     // Minimap
     private VisualElement _minimapElement;
     private VisualElement _minimapMapElement;
+    private VisualElement _minimapPlayerElement;
 
     private void Awake()
     {
@@ -155,6 +156,7 @@ public class HUDController : MonoBehaviour
 
         _minimapElement = _HUD.Q<VisualElement>("Minimap");
         _minimapMapElement = _minimapElement.Q<VisualElement>("Map");
+        _minimapPlayerElement = _minimapElement.Q<VisualElement>("Player");
 
         // Hide Message Box element at start
         //UI.SetActive(ref _messageBox, false);
@@ -703,10 +705,11 @@ public class HUDController : MonoBehaviour
     }
     private void System_OnPositionChanged(object sender, InGameHUDSystem.PositionArgs args)
     {
+        // Set Position of the map element
         Vector2 firstRefWorld = new(-36, 6); // First point of reference in the world
-        Vector2 secondRefWorld = new(-25, 24); // Second point of reference in the world
+        Vector2 secondRefWorld = new(21, 14); // Second point of reference in the world
         Vector2 firstRefUI = new(-2, -43); // First point of reference in the UI
-        Vector2 secondRefUI = new(-43, 27); // Second point of reference in the UI
+        Vector2 secondRefUI = new(-221, -12); // Second point of reference in the UI
 
         Vector2 worldDelta = secondRefWorld - firstRefWorld; // World delta between the two points of reference
         Vector2 uiDelta = secondRefUI - firstRefUI; // UI delta between the two points of reference
@@ -717,6 +720,9 @@ public class HUDController : MonoBehaviour
 
         _minimapMapElement.style.left = new StyleLength(args.position.x * scale.x + offset.x);
         _minimapMapElement.style.top = new StyleLength(args.position.z * scale.y + offset.y);
+
+        // Set Rotation of the player icon
+        _minimapPlayerElement.transform.rotation = Quaternion.Euler(0f, 0f, math.degrees(math.atan2(args.forward.x, args.forward.z)));
     }
     //----------End of Main HUD Elements System
 
