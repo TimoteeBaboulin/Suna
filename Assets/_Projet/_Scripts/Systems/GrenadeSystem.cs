@@ -69,9 +69,6 @@ public partial class GrenadeSystem : SystemBase
                                 Entity damageSource = commandBuffer.CreateEntity();
                                 commandBuffer.SetName(damageSource, "Damage Source");
 
-                                //Debug.Log($"Grenade hit {entity} with {grenade} at distance {hit.Distance} (source : {released.ValueRO.thrower})");
-                                //Debug.Log($"Grenade position : {grenadePos}, hit position : {hit.Position}");
-
                                 commandBuffer.AddComponent(damageSource, new ApplyDamage
                                 {
                                     source = DamageSource.Grenade,
@@ -79,7 +76,8 @@ public partial class GrenadeSystem : SystemBase
                                     playerSource = released.ValueRO.thrower,
                                     targetEntity = entity,
                                     killReward = stuffCommonData.killGain,
-                                    damage = math.saturate(math.lerp(1f, 0f, hit.Distance / radius)) * grenadeCommonData.inflictedDamage
+                                    damage = math.saturate(math.lerp(1f, 0f, hit.Distance / radius)) * grenadeCommonData.inflictedDamage,
+                                    sourcePosition = grenadePos
                                 });
 
                                 hasAppliedDamage = true;

@@ -3,9 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
-using Unity.Networking.Transport;
 using Unity.Physics;
-using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -63,6 +61,7 @@ public partial struct ShootSystem : ISystem
             if (owner == Entity.Null) continue;
 
             RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
+            RefRW<CharacterComponent> controller = SystemAPI.GetComponentRW<CharacterComponent>(owner);
 
             //Check valid state
             if (dynamicData.state == RangedWeaponState.Idle || dynamicData.state == RangedWeaponState.Shoot)
@@ -97,9 +96,9 @@ public partial struct ShootSystem : ISystem
 
 
                 // If the player shoots, the fire rate is valid, and there are still bullets left
-                if (input.attack.IsSet)
+                if (input.attackStarted.IsSet && !input.attackCanceled.IsSet)
                 {
-                    if ((commonData.isAutomatic || (!commonData.isAutomatic && !dynamicData.shotFired))
+                    if ((commonData.isAutomatic || (!commonData.isAutomatic && !dynamicData.shotFired && !controller.ValueRO.isShooting))
                     && dynamicData.firerateTimer <= 0)
                     {
                         dynamicData.firerateTimer += 1.0f / (commonData.firerate / 60f); //turns RPM into RPS
@@ -193,6 +192,7 @@ public partial struct ShootSystem : ISystem
                                             targetEntity = CharacterBodyPartData.ValueRO.CharacterEntity,
                                             killReward = stuffCommonData.killGain,
                                             weapon = Entity.Null, //TODO : Store the player weapon entity here
+                                            sourcePosition = SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Position,
                                         });
 
                                         ecb.SetComponent(owner, new HasHitComponent { Value = true, HeadHit = CharacterBodyPartData.ValueRO.DamageMultiplier > 1f });
@@ -245,10 +245,13 @@ public partial struct ShootSystem : ISystem
                     {
                         ecb.SetComponent(owner, new HasHitComponent { Value = false });
                     }
+
+                    controller.ValueRW.isShooting = true;
                 }
-                else
+                else if(!input.attackStarted.IsSet && input.attackCanceled.IsSet)
                 {
                     dynamicData.shotFired = false;
+                    controller.ValueRW.isShooting = false;
                 }
             }
 
@@ -283,7 +286,7 @@ public partial struct ShootSystem : ISystem
                 dynamicData.cookingTime += dt;
             }
 
-            if (input.attack.IsSet)
+            if (input.attackStarted.IsSet && !input.attackCanceled.IsSet)
             {
                 dynamicData.isCooking = true;
 
@@ -293,7 +296,7 @@ public partial struct ShootSystem : ISystem
                     AnimationUtils.AddTriggerCommand("Throw", owner, animationEcb, networkId);
                 }
             }
-            else
+            else if(!input.attackStarted.IsSet && input.attackCanceled.IsSet)
             {
                 if (dynamicData.isCooking)
                 {

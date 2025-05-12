@@ -120,8 +120,20 @@ public class ShopController : MonoBehaviour
 
         if (Keyboard.current.bKey.wasPressedThisFrame)
         {
-            UI.ToggleActive(ref root);
-            ActivateUIInput(UI.IsActive(ref root));
+            if (!system.TryGetSingleton<RoundComponent>(out var roundData))
+            {
+                UI.ToggleActive(ref root);
+                ActivateUIInput(UI.IsActive(ref root));
+            }
+            else
+            {
+                if (roundData.currentPhase == RoundPhase.BuyPhase)
+                {
+                    UI.ToggleActive(ref root);
+                    ActivateUIInput(UI.IsActive(ref root));
+                }
+            }
+            
         }
 
         if (UI.IsActive(ref root) && Keyboard.current.escapeKey.wasPressedThisFrame)
