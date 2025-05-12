@@ -13,7 +13,6 @@ using UnityEngine;
 using UnityEngine.ProBuilder.MeshOperations;
 using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
-using static UnityEditor.Progress;
 
 public static class PlayerHelpers
 {
