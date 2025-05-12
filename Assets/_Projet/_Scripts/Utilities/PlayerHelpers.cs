@@ -10,6 +10,7 @@ using Unity.NetCode;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
+using UnityEngine.ProBuilder.MeshOperations;
 using static System.Collections.Specialized.BitVector32;
 using static Unity.NetCode.ClientServerBootstrap;
 
@@ -25,18 +26,21 @@ public static class PlayerHelpers
     {
         public int natifPlayersCount;
         public int corpoPlayersCount;
+        public int neutralPlayersCount;
     }
 
     public struct TeamList
     {
         public List<IReadOnlyPlayer> natifPlayers;
         public List<IReadOnlyPlayer> corpoPlayers;
+        public List<IReadOnlyPlayer> neutralPlayers;
     }
 
     private static TeamList _teams = new TeamList
     {
         natifPlayers = new List<IReadOnlyPlayer>(),
-        corpoPlayers = new List<IReadOnlyPlayer>()
+        corpoPlayers = new List<IReadOnlyPlayer>(),
+        neutralPlayers = new List<IReadOnlyPlayer>()
     };
 
     private static int CountPlayersAliveForTeam(TeamSideType team, World world)
@@ -102,13 +106,41 @@ public static class PlayerHelpers
     }
 
 
-    static public TeamSideType AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer)
+    static public TeamSideType AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, TeamSideType team = TeamSideType.Neutre)
     {
         GlobalTeamCount teamCounts = GetCurrentTeamCounts();
 
-        TeamSideType assignedTeam = (teamCounts.corpoPlayersCount == 0 && teamCounts.natifPlayersCount == 0)
-            ? (UnityEngine.Random.value < 0.5f ? TeamSideType.Corpo : TeamSideType.Natif)
-            : (teamCounts.corpoPlayersCount <= teamCounts.natifPlayersCount ? TeamSideType.Corpo : TeamSideType.Natif);
+        int teamSize;
+
+        switch (team)
+        {
+            case TeamSideType.Corpo:
+                teamSize = teamCounts.corpoPlayersCount;
+                break;
+            case TeamSideType.Natif:
+                teamSize = teamCounts.natifPlayersCount;
+                break;
+            case TeamSideType.Neutre:
+                teamSize = 0;
+                break;
+            default:
+                teamSize = 0;
+                break;
+        }
+
+        TeamSideType assignedTeam = team;
+
+        //TODO: Uncomment this is we want teams to be limited to half the player limit of the game
+        //if (teamSize >= ClientTransportHelper.MaxNbOfPlayers / 2)
+        //{
+        //    Debug.Log($"Too many people in the team (Trying to spawn in team {team}, which have {teamSize} players and can only accept {(ClientTransportHelper.MaxNbOfPlayers - 1) / 2} players");
+        //    return TeamSideType.Neutre;
+        //}
+        //else
+        //{
+        //    Debug.Log($"Spawning person in team {team}");
+        //    assignedTeam = team;
+        //}
 
         //int maxPlayers = ClientTransportHelper.MaxNbOfPlayers - 1;
         //int halfPoint = maxPlayers / 2;    
@@ -132,12 +164,38 @@ public static class PlayerHelpers
         switch (assignedTeam)
         {
             case TeamSideType.Corpo:
+                if (_teams.corpoPlayers.Contains(readOnlyPlayer))
+                {
+                    return TeamSideType.Neutre;
+                }
+
                 _teams.corpoPlayers.Add(readOnlyPlayer);
+                if (_teams.neutralPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.neutralPlayers.Remove(readOnlyPlayer);
+                }
+                else if (_teams.natifPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.natifPlayers.Remove(readOnlyPlayer);
+                }
                 return TeamSideType.Corpo;
             case TeamSideType.Natif:
+                if (_teams.natifPlayers.Contains(readOnlyPlayer))
+                    return TeamSideType.Neutre;
+
                 _teams.natifPlayers.Add(readOnlyPlayer);
+                if (_teams.corpoPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.corpoPlayers.Remove(readOnlyPlayer);
+                } 
+                else if (_teams.neutralPlayers.Contains(readOnlyPlayer))
+                {
+                    _teams.neutralPlayers.Remove(readOnlyPlayer);
+                }
                 return TeamSideType.Natif;
             default:
+                if (!_teams.neutralPlayers.Contains(readOnlyPlayer))
+                    _teams.neutralPlayers.Add(readOnlyPlayer);
                 return TeamSideType.Neutre;
         }
     }
@@ -180,7 +238,8 @@ public static class PlayerHelpers
         return new GlobalTeamCount
         {
             corpoPlayersCount = _teams.corpoPlayers.Count,
-            natifPlayersCount = _teams.natifPlayers.Count
+            natifPlayersCount = _teams.natifPlayers.Count,
+            neutralPlayersCount = _teams.neutralPlayers.Count,
         };
     }
 
@@ -305,6 +364,7 @@ public static class PlayerHelpers
     {
         _teams.corpoPlayers.Clear();
         _teams.natifPlayers.Clear();
+        _teams.neutralPlayers.Clear();
     }
 
     static public TeamSideType GetPlayerInTeamOnServer(int networkId)
