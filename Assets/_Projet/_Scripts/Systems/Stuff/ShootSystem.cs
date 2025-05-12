@@ -281,11 +281,11 @@ public partial struct ShootSystem : ISystem
                 dynamicData.cookingTime += dt;
             }
 
-            if (input.attackStarted.IsSet)
+            if (input.attackStarted.IsSet && !input.attackCanceled.IsSet)
             {
                 dynamicData.isCooking = true;
             }
-            else
+            else if(!input.attackStarted.IsSet && input.attackCanceled.IsSet)
             {
                 if (dynamicData.isCooking)
                 {
