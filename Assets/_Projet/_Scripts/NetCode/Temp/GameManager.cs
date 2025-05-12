@@ -150,6 +150,11 @@ public class GameManager : Singleton<GameManager>
 
         loadingToken.Cancel();
 
+        if (RequestedPlayType == PlayType.ClientAndServer || RequestedPlayType == PlayType.Server)
+        {
+            PlayerHelpers.ClearTeams();
+        }
+
 #if !UNITY_EDITOR
         await LoadUtils.QuitAsync();
 #endif

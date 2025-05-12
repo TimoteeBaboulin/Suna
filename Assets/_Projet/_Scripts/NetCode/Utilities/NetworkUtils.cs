@@ -12,6 +12,7 @@ using Unity.Services.Matchmaker;
 using Unity.Services.Multiplayer;
 using Unity.Services.Vivox;
 using UnityEngine;
+using static Unity.NetCode.ClientServerBootstrap;
 
 namespace GameNetwork.Utils
 {
@@ -36,7 +37,7 @@ namespace GameNetwork.Utils
         public static ushort CurrentPort { get; set; } = 7979;
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-        public static int MaxNbOfPlayers = 3; //count of players + server
+        public static int MaxNbOfPlayers = 2; 
         public static bool isRelease = false;
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;
@@ -265,7 +266,7 @@ namespace GameNetwork.Utils
         }
         public SessionOptions CreateSessionOptions()
         {
-            int maxPlayers = ClientTransportHelper.MaxNbOfPlayers;
+            int maxPlayers =  RequestedPlayType == PlayType.ClientAndServer ? MaxNbOfPlayers : MaxNbOfPlayers + 1;
             var options = new SessionOptions
             {
                 MaxPlayers = maxPlayers
