@@ -105,6 +105,10 @@ public class HUDController : MonoBehaviour
     private float _winLoseRoundTimer = 0f;
     readonly private float _winLoseRoundTime = 4f;
 
+    // Minimap
+    private VisualElement _minimapElement;
+    private VisualElement _minimapMapElement;
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -148,6 +152,9 @@ public class HUDController : MonoBehaviour
         _roundPhase = _roundElement.Q<Label>("RoundPhaseLabel");
         _roundBuyPhaseText = _roundElement.Q<VisualElement>("RoundBuyText");
         _roundPhaseTime = _roundPhaseTimer;
+
+        _minimapElement = _HUD.Q<VisualElement>("Minimap");
+        _minimapMapElement = _minimapElement.Q<VisualElement>("Map");
 
         // Hide Message Box element at start
         //UI.SetActive(ref _messageBox, false);
@@ -212,6 +219,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.AmmoChangeEvent += System_OnAmmoChange;
             _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
             _inGameHUDSystem.FlashGrenadeEvent += System_OnFlashGrenade;
+            _inGameHUDSystem.PositionChangedEvent += System_OnPositionChanged;
         }
 
         if (_roundManagerLinkSystem == null && world.Name == "ClientWorld")
@@ -692,6 +700,23 @@ public class HUDController : MonoBehaviour
         }
         _hitMarkerTimer = _hitMarkerTime;
         _hitRegistered = true;
+    }
+    private void System_OnPositionChanged(object sender, InGameHUDSystem.PositionArgs args)
+    {
+        Vector2 firstRefWorld = new(-36, 6); // First point of reference in the world
+        Vector2 secondRefWorld = new(-25, 24); // Second point of reference in the world
+        Vector2 firstRefUI = new(-2, -43); // First point of reference in the UI
+        Vector2 secondRefUI = new(-43, 27); // Second point of reference in the UI
+
+        Vector2 worldDelta = secondRefWorld - firstRefWorld; // World delta between the two points of reference
+        Vector2 uiDelta = secondRefUI - firstRefUI; // UI delta between the two points of reference
+        Vector2 scale = new(uiDelta.x / worldDelta.x, uiDelta.y / worldDelta.y); // Scale between the two points of reference
+
+        Vector2 scaled = new(firstRefWorld.x * scale.x, firstRefWorld.y * scale.y); // Scaled position of the player relative to the two points of reference
+        Vector2 offset = firstRefUI - scaled; // Offset between the two points of reference
+
+        _minimapMapElement.style.left = new StyleLength(args.position.x * scale.x + offset.x);
+        _minimapMapElement.style.top = new StyleLength(args.position.z * scale.y + offset.y);
     }
     //----------End of Main HUD Elements System
 
