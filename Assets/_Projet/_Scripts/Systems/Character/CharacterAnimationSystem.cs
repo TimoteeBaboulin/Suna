@@ -84,7 +84,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
                 AnimationUtils.AddTriggerCommand("Change", entity, ecb, networkId);
             }
         }
-        else if (stuffName == "Grenade_Base")
+        else if (stuffName == "HE Grenade")
         {
             if (animator.runtimeAnimatorController != animatorData.Grenade_Base)
             {
