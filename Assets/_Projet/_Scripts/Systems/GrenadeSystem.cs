@@ -2,9 +2,73 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+
+public enum GrenadeVFXType
+{
+    HE,
+    Flashbang
+}
+
+public struct GrenadeVFXCommand : IRpcCommand
+{
+    public float3 position;
+    public GrenadeVFXType type;
+}
+
+
+[BurstCompile]
+public partial class GrenadeVFXSystem : SystemBase
+{
+    protected override void OnCreate()
+    {
+        RequireForUpdate<GrenadeVFXCommand>();
+        RequireForUpdate<NetworkId>();
+    }
+
+    [BurstCompile]
+    protected override void OnUpdate()
+    {
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.TempJob);
+
+        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<GrenadeVFXCommand>>().WithEntityAccess())
+        {
+            if (SystemAPI.TryGetSingleton(out VisualEffetPrefabData prefabManager))
+            {
+                switch (command.ValueRO.type)
+                {
+                    case GrenadeVFXType.HE:
+                        if (prefabManager.heGrenadeExplosion == null) { continue; }
+
+                        Entity explosionEffect = commandBuffer.Instantiate(prefabManager.heGrenadeExplosion);
+
+                        commandBuffer.SetComponent(explosionEffect, new LocalTransform
+                        {
+                            Position = command.ValueRO.position,
+                            Rotation = quaternion.identity,
+                            Scale = 1.0f
+                        });
+
+                        if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
+                        {
+                            commandBuffer.AddComponent(explosionEffect, new Lifetime
+                            {
+                                RemainingTime = durationData.heGrenadeExplosionDuration
+                            });
+                        }
+
+                        commandBuffer.AddComponent<DestroyTag>(explosionEffect);
+                        break;
+                }
+            }
+
+            commandBuffer.DestroyEntity(entity);
+        }
+    }
+}
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -50,8 +114,6 @@ public partial class GrenadeSystem : SystemBase
                         float3 grenadePos = SystemAPI.GetComponent<LocalTransform>(thrownGrenade).Position;
                         float radius = grenadeCommonData.impactRadius;
 
-                        bool hasAppliedDamage = false;
-
                         CollisionFilter filter = new CollisionFilter
                         {
                             BelongsTo = ~0u,
@@ -80,12 +142,18 @@ public partial class GrenadeSystem : SystemBase
                                     sourcePosition = grenadePos
                                 });
 
-                                hasAppliedDamage = true;
+                                var command = new GrenadeVFXCommand
+                                {
+                                    position = grenadePos,
+                                    type = GrenadeVFXType.HE
+                                };
+
+                                RpcUtils.SendServerToClientRpc(ref command);
                             }
                         }
 
                         commandBuffer.DestroyEntity(thrownGrenade);
-                        if (!hasAppliedDamage) commandBuffer.DestroyEntity(grenade);
+                        commandBuffer.DestroyEntity(grenade);
                     }
 
                     if(grenadeCommonData.grenadeType == GrenadeType.Flashbang)
