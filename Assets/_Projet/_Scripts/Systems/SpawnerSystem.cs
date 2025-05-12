@@ -240,10 +240,13 @@ public partial struct RespawnSystem : ISystem
 
         foreach (var (playerComponent, clientEntity) in SystemAPI.Query<RefRW<ClientComponent>>().WithAll<WaitForRespawnTag>().WithEntityAccess())
         {
+            
             int networkId = SystemAPI.GetComponent<GhostOwner>(clientEntity).NetworkId;
             TeamSideType teamSideType = playerComponent.ValueRW.team;
-            //Debug.Log($"[AliveCheck] Final teamSideType from ClientComponent: {teamSideType} for networkId {networkId}");
-            //Debug.Log($"[AliveCheck] teamSideType : {PlayerHelpers.GetPlayerInTeam(networkId)} for networkId {networkId}");
+            if (teamSideType == TeamSideType.Neutre)
+            {
+                continue;
+            }
 
             if (!teamSpawnsValid[(int)teamSideType])
             {
