@@ -108,6 +108,8 @@ partial class HarvesterSystemClient : SystemBase
             .WithAll<HarvesterPlanted>()
             .WithEntityAccess())
         {
+            if (!EntityManager.HasComponent<StuffGameObjectRef>(harvesterEntity))
+                continue;
             StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
 
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
