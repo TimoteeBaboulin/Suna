@@ -102,9 +102,9 @@ public static class PlayerHelpers
         {
             index = networkId;
         }
+        Debug.Log($"[AssignTeam] player check in find {sessionPlayers[index].Id}");
         return (IPlayer)sessionPlayers[index];
     }
-
 
     static public TeamSideType AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, TeamSideType team = TeamSideType.Neutre)
     {
@@ -156,20 +156,22 @@ public static class PlayerHelpers
         //    assignedTeam = TeamSideType.Natif;
         //}
 
-        if (readOnlyPlayer is IPlayer player)
-        {
-            player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
-        }
+
 
         switch (assignedTeam)
         {
             case TeamSideType.Corpo:
                 if (_teams.corpoPlayers.Contains(readOnlyPlayer))
-                {
                     return TeamSideType.Neutre;
-                }
 
                 _teams.corpoPlayers.Add(readOnlyPlayer);
+
+                foreach (var item in _teams.neutralPlayers)
+                {
+                    Debug.Log($"[AssignTeam]add plyar :::: {item}");
+                }
+                Debug.Log($"[AssignTeam]add remove {readOnlyPlayer}");
+                Debug.Log($"[AssignTeam]add remove {_teams.neutralPlayers.Contains(readOnlyPlayer)}");
                 if (_teams.neutralPlayers.Contains(readOnlyPlayer))
                 {
                     _teams.neutralPlayers.Remove(readOnlyPlayer);
@@ -187,7 +189,7 @@ public static class PlayerHelpers
                 if (_teams.corpoPlayers.Contains(readOnlyPlayer))
                 {
                     _teams.corpoPlayers.Remove(readOnlyPlayer);
-                } 
+                }
                 else if (_teams.neutralPlayers.Contains(readOnlyPlayer))
                 {
                     _teams.neutralPlayers.Remove(readOnlyPlayer);
@@ -195,8 +197,17 @@ public static class PlayerHelpers
                 return TeamSideType.Natif;
             default:
                 if (!_teams.neutralPlayers.Contains(readOnlyPlayer))
+                {
                     _teams.neutralPlayers.Add(readOnlyPlayer);
+                    Debug.Log($"[AssignTeam]add {_teams.neutralPlayers.Count}");
+                }
+
                 return TeamSideType.Neutre;
+        }
+
+        if (readOnlyPlayer is IPlayer player)
+        {
+            player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
         }
     }
     public static void RemovePlayer(string playerId)
