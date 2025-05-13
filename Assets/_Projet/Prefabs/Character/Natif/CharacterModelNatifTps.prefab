@@ -1626,7 +1626,7 @@ Animator:
   m_GameObject: {fileID: 7857420575228654845}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: eca0ce61440e71640ad04026fe442a29, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: d42f29338c167f1488d60b88369f8f07, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
@@ -1651,8 +1651,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MeshRenderer: {fileID: 4472175984348696739}
-  NewHeadRotation: {x: 0, y: 0, z: 0, w: 0}
-  _headBoneTransform: {fileID: 0}
 --- !u!1 &7884496217724521931
 GameObject:
   m_ObjectHideFlags: 0
