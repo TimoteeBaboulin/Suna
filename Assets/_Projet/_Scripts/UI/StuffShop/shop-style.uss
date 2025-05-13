@@ -1,21 +1,5 @@
-.shop-navigation-button {
-    background-color: rgba(255, 255, 255, 0.14);
-    color: rgb(255, 255, 255);
-}
-
-.shop-navigation-button:hover {
-    background-color: rgba(255, 255, 255, 0.24);
-    color: rgb(255, 255, 255);
-}
-
-.shop-navigation-button:active {
-    background-color: rgba(255, 255, 255, 0.38);
-    color: rgb(255, 255, 255);
-    background-image: none;
-}
-
 .shop_buy_slot_button {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(148, 148, 148, 0.25);
     border-top-width: 2px;
     border-right-width: 2px;
     border-bottom-width: 2px;
@@ -24,28 +8,40 @@
     border-right-color: rgba(0, 0, 0, 0);
     border-top-color: rgba(0, 0, 0, 0);
     border-bottom-color: rgba(0, 0, 0, 0);
+    position: absolute;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    width: 445px;
+    height: 190px;
+    -unity-background-scale-mode: scale-to-fit;
 }
 
 .shop_buy_slot_button:hover {
-    background-color: rgba(230, 229, 7, 0.5);
-    border-top-width: 4px;
-    border-right-width: 4px;
-    border-bottom-width: 4px;
-    border-left-width: 4px;
-    border-left-color: rgb(230, 229, 7);
-    border-right-color: rgb(230, 229, 7);
-    border-top-color: rgb(230, 229, 7);
-    border-bottom-color: rgb(230, 229, 7);
+    background-color: rgba(172, 172, 172, 0.5);
 }
 
 .shop_buy_slot_button:active {
-    background-color: rgba(230, 229, 7, 0.38);
-    border-top-width: 4px;
-    border-right-width: 4px;
-    border-bottom-width: 4px;
-    border-left-width: 4px;
-    border-left-color: rgba(230, 229, 7, 0.77);
-    border-right-color: rgba(230, 229, 7, 0.77);
-    border-top-color: rgba(230, 229, 7, 0.77);
-    border-bottom-color: rgba(230, 229, 7, 0.77);
+    background-color: rgba(233, 233, 233, 0.5);
+}
+
+.shop_label_indicator {
+    position: absolute;
+    -unity-font-definition: url("project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&guid=06393c2b6298fae42b401ef0082880d0&type=3#Nasalization Rg");
+    color: rgb(213, 213, 213);
+    -unity-font-style: bold;
+    font-size: 30px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
 }

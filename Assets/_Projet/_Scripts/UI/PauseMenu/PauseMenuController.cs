@@ -17,6 +17,7 @@ public class PauseMenuController : MonoBehaviour
     private VisualElement _root;
     private VisualElement _background;
     private VisualElement _tabBar;
+    private VisualElement _container;
     private Button _homeButton;
     private Button _playButton;
     private Button _settingsButton;
@@ -34,6 +35,7 @@ public class PauseMenuController : MonoBehaviour
         _root = _document.rootVisualElement;
         _background = _root.Q<VisualElement>("Background");
         _tabBar = _background.Q<VisualElement>("TabBar");
+        _container = _background.Q<VisualElement>("Container");
         _homeButton = _tabBar.Q<Button>("HomeButton");
         _playButton = _tabBar.Q<Button>("PlayButton");
         _settingsButton = _tabBar.Q<Button>("SettingsButton");
@@ -87,7 +89,7 @@ public class PauseMenuController : MonoBehaviour
         // Instantiate Settings Menu
         settingsMenuController = gameObject.AddComponent<SettingsMenuController>();
         settingsMenuController.root = _settingsMenuAsset.Instantiate().Children().First();
-        _background.Add(settingsMenuController.root);
+        _container.Add(settingsMenuController.root);
     }
 
 
