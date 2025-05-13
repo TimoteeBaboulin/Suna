@@ -214,6 +214,14 @@ public partial struct ShootSystem : ISystem
                                     RpcUtils.SendServerToClientRpc(ref hc);
                                 }
 
+                                //Muzzle Flash
+                                if (state.EntityManager.HasComponent<StuffGameObjectRef>(weapon))
+                                {
+                                    StuffGameObjectRef goRef = state.EntityManager.GetComponentObject<StuffGameObjectRef>(weapon);
+                                    WeaponVfxLink vfxLink = goRef.Value.GetComponent<WeaponVfxLink>();
+                                    if (vfxLink is not null)
+                                        vfxLink.Fire();
+                                }
                                 // === FIN VISUEL ===
 
                                 // === SON ===
