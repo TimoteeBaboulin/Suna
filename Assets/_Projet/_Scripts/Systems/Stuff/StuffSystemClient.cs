@@ -114,7 +114,6 @@ partial struct StuffSystemClient : ISystem
                     var ownerGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
                     TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeam(ownerGhostOwner.NetworkId);
 
-                    Debug.Log("<color=green>StuffSystemClient</color> : SetActive true " + ownerSide);
                     goRef.SwitchSetActiveSide(ownerSide, true);
                 }
                 else
