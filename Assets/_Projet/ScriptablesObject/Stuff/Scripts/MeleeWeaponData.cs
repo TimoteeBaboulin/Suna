@@ -8,6 +8,7 @@ public class MeleeWeaponData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
+    public GameObject viewPrefab_Baked;
     public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
@@ -17,6 +18,7 @@ public class MeleeWeaponData : ScriptableObject
     public float storageSpeed;
     public int price;
     public Vector3 _stuffLocalOffsetView; //temp
+    public Vector3 _stuffLocalOffsetView_Baked;
     public uint killGain;
 
     [Header("Attack")]

@@ -21,6 +21,7 @@ public class GrenadeData : ScriptableObject
     public GameObject dropedEntityPrefab;
     public GameObject grenadeThrownPrefab;
     public GameObject viewPrefab;
+    public GameObject viewPrefab_Baked;
     public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
@@ -30,6 +31,7 @@ public class GrenadeData : ScriptableObject
     public int price;
     public uint killGain = 300;
     public Vector3 _stuffLocalOffsetView; //temp
+    public Vector3 _stuffLocalOffsetView_Baked;
 
     public float cookingTime = 0.3f;
     public float impactRadius = 5f;
