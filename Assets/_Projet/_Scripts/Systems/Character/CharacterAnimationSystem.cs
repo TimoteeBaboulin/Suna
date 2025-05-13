@@ -25,6 +25,8 @@ partial class ServerCharacterAnimationSystem : SystemBase
             AnimatorReference, FirstPersonCharacterModelReference>()
             .WithEntityAccess())
         {
+            if (animatorRef.Animator == null) continue;
+
             Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
             if (stuffInHand == Entity.Null) continue;
@@ -42,6 +44,8 @@ partial class ServerCharacterAnimationSystem : SystemBase
             AnimatorReference, ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
+            if (animatorRef.Animator == null) continue;
+
             Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
             if (stuffInHand == Entity.Null) continue;
