@@ -61,6 +61,17 @@ partial class ClientLocalAnimationSystem : SystemBase
             boolBuffer.Clear();
             triggerBuffer.Clear();
         }
+
+        foreach (var (animatorRef, floatBuffer, intBuffer, boolBuffer, triggerBuffer) in SystemAPI
+            .Query<AnimatorReference, DynamicBuffer<AnimationFloatBufferElement>, DynamicBuffer<AnimationIntBufferElement>,
+            DynamicBuffer<AnimationBoolBufferElement>, DynamicBuffer<AnimationTriggerBufferElement>>()
+            .WithNone<GhostOwnerIsLocal>())
+        {
+            floatBuffer.Clear();
+            intBuffer.Clear();
+            boolBuffer.Clear();
+            triggerBuffer.Clear();
+        }
     }
 }
 
