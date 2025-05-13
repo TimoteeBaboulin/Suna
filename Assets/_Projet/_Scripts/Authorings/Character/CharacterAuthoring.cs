@@ -108,6 +108,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
             SetComponentEnabled<Damageable>(entity, true);
 
             AddComponent<FlashGrenadeEffect>(entity);
+
+            AddComponent(entity, new SmoothInput { Current = 0 });
         }
     }
 }

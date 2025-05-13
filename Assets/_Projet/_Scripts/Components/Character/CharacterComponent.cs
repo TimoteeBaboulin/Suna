@@ -42,6 +42,7 @@ public struct CharacterComponent : IComponentData
     [GhostField] public bool isWalking;
     [GhostField] public bool isOnSite;
     [GhostField] public bool isAiming;
+    [GhostField] public bool isShooting;
 
     [GhostField] public float verticalCameraAngle;
 
@@ -105,4 +106,9 @@ public struct CharacterMoney : IComponentData
 {
     [GhostField] public uint money;
     [GhostField] public uint maxMoney;
+}
+
+public struct SmoothInput : IComponentData
+{
+    public float2 Current;
 }

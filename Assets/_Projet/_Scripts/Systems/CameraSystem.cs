@@ -14,8 +14,8 @@ partial class CameraSystem : SystemBase
     private static Entity currentTarget = Entity.Null;
     private static float3 currentPosition;
     private static quaternion currentRotation;
-    private static float3 fpsOffset = new float3(0f, 0.9f, 0f);
-    private static int defaultFov = 60;
+    private static float3 fpsOffset = new float3(0f, 0.8f, 0f);
+    public static int defaultFov = 60;
     private static int aimingFov = 50;
 
 
@@ -131,11 +131,11 @@ partial class CameraSystem : SystemBase
                     CharacterComponent character = EntityManager.GetComponentData<CharacterComponent>(currentTarget);
                     if (character.isAiming && WeaponCanADS(stuffEntity, out float adsFov))
                     {
-                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.1f);
+                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.5f);
                     }
                     else
                     {
-                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                        Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.5f);
                     }
                 }
                 else

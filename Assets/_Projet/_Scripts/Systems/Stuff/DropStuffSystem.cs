@@ -71,9 +71,9 @@ public partial struct StuffDropedCleanup : ISystem
             else if(state.EntityManager.HasComponent<StuffDynamicData>(stuffInHandRef.ValueRO.Value))
             {
                 var stuffDynData = state.EntityManager.GetComponentData<StuffDynamicData>(stuffInHandRef.ValueRO.Value);
-                if (stuffDynData.dropedEntityRef == Entity.Null)
+                if (stuffDynData.dropedEntityRef == Entity.Null && (!state.EntityManager.HasComponent<ReleasedGrenade>(stuffInHandRef.ValueRO.Value) || !state.EntityManager.IsComponentEnabled<ReleasedGrenade>(stuffInHandRef.ValueRO.Value)))
                 {
-                    UnityEngine.Debug.Log("StuffDropedCleanup Run");
+                    UnityEngine.Debug.Log($"StuffDropedCleanup Run {dropedStuff}");
                     ecb.DestroyEntity(dropedStuff);
                 }
             }

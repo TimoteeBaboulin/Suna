@@ -25,7 +25,7 @@ Transform:
   m_GameObject: {fileID: 1052856214119025928}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9, z: 0}
+  m_LocalPosition: {x: 0, y: 0.8, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,7 +79,6 @@ Transform:
   m_Children:
   - {fileID: 6774830378860753411}
   - {fileID: 612339555079609452}
-  - {fileID: 990870971847688849}
   - {fileID: 3110814641794125789}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -209,10 +208,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CorpoModelPrefab: {fileID: 4708197382353407829, guid: 733a535c8f7627043937d9ad8872029f, type: 3}
-  NatifModelPrefab: {fileID: 6931120874928209355, guid: 93b335ddf5da4854fb4ec306f478b707, type: 3}
+  NatifModelPrefab: {fileID: 8766051024312863965, guid: 8d06d9bf4d78551408ee24462468bf11, type: 3}
   DeltaPosition: {fileID: 612339555079609452}
   CorpoAnimatorData: {fileID: 11400000, guid: 1a03084459b704c44b8a45c9f0762237, type: 2}
-  NatifAnimatorData: {fileID: 11400000, guid: d46beed7978d07941b845f75ecb0c896, type: 2}
+  NatifAnimatorData: {fileID: 11400000, guid: d34454d54b15d674988d8689b56e129b, type: 2}
 --- !u!114 &7747839720245098777
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,7 +225,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CorpoModelPrefab: {fileID: 6960812845692969296, guid: 5cc0a0c27a43e2343b936429c90ce3df, type: 3}
-  NatifModelPrefab: {fileID: 7547759132804944757, guid: 12969600f82faad4680b4952822bb111, type: 3}
+  NatifModelPrefab: {fileID: 7857420575228654845, guid: 5bbd891a7c2a9e442853ca625938f913, type: 3}
   DeltaPosition: {fileID: 6774830378860753411}
   CorpoColliderBones: {fileID: 11400000, guid: a208921c8dbb082438088ae8f4d66285, type: 2}
   NatifColliderBones: {fileID: 11400000, guid: 4ab57b324540b45498cabafdc4845650, type: 2}
@@ -317,7 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c4ef6e0c7e666504f99bffa51e864d02, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  money: 600
+  money: 50000
   maxMoney: 90000
 --- !u!114 &2262721556041804453
 MonoBehaviour:
@@ -387,37 +386,6 @@ MonoBehaviour:
     PrefabType: 7
     SendTypeOptimization: 3
     VariantHash: 6907887384974514810
---- !u!1 &3781261384739683146
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 990870971847688849}
-  m_Layer: 0
-  m_Name: CameraPosition
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &990870971847688849
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3781261384739683146}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.9, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7095689921242147679}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4029991495055934165
 GameObject:
   m_ObjectHideFlags: 0

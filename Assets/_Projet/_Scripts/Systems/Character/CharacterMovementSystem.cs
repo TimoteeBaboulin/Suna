@@ -140,7 +140,7 @@ public partial struct CharacterMovementJob : IJobEntity
     }
 
     public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRO<GhostOwner> ghostOwner)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRO<GhostOwner> ghostOwner, RefRW<SmoothInput> smooth)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -160,12 +160,13 @@ public partial struct CharacterMovementJob : IJobEntity
 
         int networkId = ghostOwner.ValueRO.NetworkId;
 
+        float smoothingSpeed = 1f;
+        smooth.ValueRW.Current = math.lerp(smooth.ValueRO.Current, input.move, smoothingSpeed * dt);
+        AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey, networkId);
+        AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey, networkId);
+
         if (isMoving)
         {
-            AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddFloatCommandJob("WalkY", input.move.y, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddFloatCommandJob("WalkX", input.move.x, entity, ecb, sortKey, networkId);
-
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
 
             RaycastInput raycastInput = new RaycastInput()
@@ -186,10 +187,6 @@ public partial struct CharacterMovementJob : IJobEntity
                     }
                 }
             }
-        }
-        else
-        {
-            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
         }
 
         if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
@@ -245,16 +242,22 @@ public partial struct CharacterMovementJob : IJobEntity
         if (!isMoving)
         {
             controller.currentSpeed = math.max(0, controller.currentSpeed - controller.deceleration * dt);
+            AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
         }
         else
         {
             if (controller.isWalking)
             {
                 controller.currentSpeed = math.min(controller.maxWalkingSpeed, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
+                AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
+                AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey, networkId);
             }
             else
             {
                 controller.currentSpeed = math.min(controller.maxRunningSpeed * weaponSpeedModifier, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
+                AnimationUtils.AddBoolCommandJob("IsMoving", true, entity, ecb, sortKey, networkId);
+                AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
             }
         }
 
@@ -308,12 +311,13 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (controller.isGrounded)
         {
+            AnimationUtils.AddBoolCommandJob("IsGrounded", true, entity, ecb, sortKey, networkId);
             controller.isJumping = false;
         }
 
         if (input.jump.IsSet && controller.isGrounded)
         {
-            AnimationUtils.AddTriggerCommandJob("Jump", entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsGrounded", false, entity, ecb, sortKey, networkId);
             vel.Linear.y = characterController.ValueRW.jumpForce;
             controller.isGrounded = false;
             controller.isJumping = true;

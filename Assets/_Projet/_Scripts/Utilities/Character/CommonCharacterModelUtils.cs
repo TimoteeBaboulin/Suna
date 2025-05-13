@@ -2,6 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 
 public class CommonCharacterModelUtils
@@ -89,11 +90,10 @@ public class CommonCharacterModelUtils
 
     public static Animator GetAnimator(in GameObject model)
     {
-        if (model.TryGetComponent(out Animator animator))
-        {
-            return animator;
-        }
+        Animator[] allAnimator = model.GetComponentsInChildren<Animator>();
 
-        return null;
+        if (allAnimator.Length == 0) return null; 
+
+        return allAnimator[0];
     }
 }

@@ -296,17 +296,17 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 0
   ambientLightProbeDimmer:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   sunLightDimmer:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
   erosionOcclusion:
     m_OverrideState: 0
     m_Value: 0.1
   scatteringTint:
-    m_OverrideState: 0
-    m_Value: {r: 0, g: 0, b: 0, a: 1}
+    m_OverrideState: 1
+    m_Value: {r: 0.5322179, g: 0.86180055, b: 0.9811321, a: 1}
   powderEffectIntensity:
     m_OverrideState: 0
     m_Value: 0.25

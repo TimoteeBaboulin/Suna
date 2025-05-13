@@ -10,7 +10,7 @@ using UnityEngine;
 using RaycastHit = Unity.Physics.RaycastHit;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct StrikeSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -35,6 +35,8 @@ public partial struct StrikeSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
         float dt = SystemAPI.Time.DeltaTime;
+
+        EntityCommandBuffer animationEcb = new EntityCommandBuffer(Allocator.Temp);
 
         var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
@@ -67,11 +69,17 @@ public partial struct StrikeSystem : ISystem
                 dynamicData.strikeTimer -= dt;
 
             // If the player shoots, the fire rate is valid, and there are still bullets left
-            if (input.attack.IsSet)
+            if (input.attackStarted.IsSet && !input.attackCanceled.IsSet)
             {
                 if (dynamicData.strikeTimer <= 0)
                 {
                     dynamicData.strikeTimer += 1.0f / (commonData.strikeRate / 60f); //turns RPM into RPS
+
+                    if (state.EntityManager.HasComponent<GhostOwner>(owner))
+                    {
+                        int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
+                        AnimationUtils.AddTriggerCommand("Cut", owner, animationEcb, networkId);
+                    }
 
                     SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
 
@@ -124,8 +132,9 @@ public partial struct StrikeSystem : ISystem
                                 origin = strikeStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
                             };
 
-                            if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                  // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                            if (!hc.position.Equals(float3.zero)
+                                && state.World.IsServer()) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                                           // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
                             {
                                 RpcUtils.SendServerToClientRpc(ref hc);
                             }
@@ -133,7 +142,10 @@ public partial struct StrikeSystem : ISystem
 
                             // === SON ===
                             //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                            SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                            if (state.World.IsServer())
+                            {
+                                SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                            }
                             // === FIN SON ===
 
 #if !UNITY_SERVER
@@ -165,7 +177,10 @@ public partial struct StrikeSystem : ISystem
 
                             // === SON ===
                             //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                            SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                            if (state.World.IsServer())
+                            {
+                                SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
+                            }
                             // === FIN SON ===
                         }
                     }
@@ -178,6 +193,9 @@ public partial struct StrikeSystem : ISystem
 
             SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot += dt;
         }
+
+        animationEcb.Playback(state.EntityManager);
+        animationEcb.Dispose();
     }
 
     bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)
