@@ -221,8 +221,12 @@ partial class HarvesterSystemClient : SystemBase
                 }
                 else
                 {
-                    SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
-                    EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).Value.transform.position = rpc.position;
+                    //SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
+                    //EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester)..position = rpc.position;
+
+                    StuffGameObjectRef stuffGameObjectRef = EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
+                    LocalTransform transform = SystemAPI.GetComponentRO<LocalTransform>(rpc.harvester).ValueRO;
+                    StuffUtils.SetStuffViewTransform(stuffGameObjectRef, transform);
                 }
             }
         }

@@ -1,10 +1,9 @@
-using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.UI;
 
 public enum StuffSlot
 {
@@ -60,6 +59,7 @@ public struct StuffEntityInHandRef : IComponentData
 public struct StuffDynamicData : IComponentData
 {
     [GhostField] public StuffState state;
+
     [GhostField] public Entity owner;
     [GhostField] public Entity dropedEntityPrefab;
     [GhostField] public Entity dropedEntityRef;
@@ -90,17 +90,224 @@ public struct StuffCommonData
     public float storageSpeed;
     public int price;
     public float3 _stuffLocalOffsetView;
+    public float3 _stuffLocalOffsetView_Baked;
     public uint killGain;
 
     public bool canADS;
     public float ADSFOV;
 
     public int dataID;
+
+    public float3 GetStuffLocalOffsetView(TeamSideType side)
+    {
+        switch (side)
+        {
+            case TeamSideType.Corpo:
+                return _stuffLocalOffsetView_Baked;
+            case TeamSideType.Natif:
+                return _stuffLocalOffsetView;
+            case TeamSideType.Neutre:
+                break;
+            default:
+                break;
+        }
+        return default;
+    }
 }
 
 public class StuffGameObjectRef : ICleanupComponentData
 {
-    public GameObject Value;
+    public GameObject View;
+    public GameObject View_Baked;
+
+    public void Instantiate(GameResourcesViewPrefabs grViewPrefabs, RefRO<StuffDatabaseAccess> stuffDataRef)
+    {
+        StuffGameObjectRef goRef = new StuffGameObjectRef();
+
+        if (grViewPrefabs.List[stuffDataRef.ValueRO.ID] != null)
+        {
+            View = GameObject.Instantiate(grViewPrefabs.List[stuffDataRef.ValueRO.ID]);
+            View.name = grViewPrefabs.List[stuffDataRef.ValueRO.ID].name;
+        }
+
+        if (grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID] != null)
+        {
+            View_Baked = GameObject.Instantiate(grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID]);
+            View_Baked.name = grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID].name + "_Baked";
+        }
+    }
+
+    public GameObject GetGameObjectSide(TeamSideType side)
+    {
+        switch (side)
+        {
+            case TeamSideType.Corpo:
+                return View_Baked;
+            case TeamSideType.Natif:
+                return View;
+            case TeamSideType.Neutre:
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    public Transform GetTransformSide(TeamSideType side)
+    {
+        switch (side)
+        {
+            case TeamSideType.Corpo:
+                return View_Baked != null ? View_Baked.transform : null;
+            case TeamSideType.Natif:
+                return View != null ? View.transform : null;
+            case TeamSideType.Neutre:
+                return null;
+            default:
+                return null;
+        }
+    }
+
+    public void SwitchSetActiveSide(TeamSideType side, bool isActive)
+    {
+        switch (side)
+        {
+            case TeamSideType.Corpo:
+
+                if (View_Baked != null)
+                {
+                    View_Baked.SetActive(isActive);
+                }
+                if (View != null) View.SetActive(!isActive);
+                break;
+            case TeamSideType.Natif:
+                if (View_Baked != null) View_Baked.SetActive(!isActive);
+                if (View != null) View.SetActive(isActive);
+                break;
+            case TeamSideType.Neutre:
+                break;
+            default:
+                break;
+
+        }
+    }
+    public void SetActive(bool isActive)
+    {
+        if (View != null) View.SetActive(isActive);
+        if (View_Baked != null) View_Baked.SetActive(isActive);
+    }
+    public void SetActiveOne(bool isActive)
+    {
+        if (View_Baked != null)
+        {
+            View_Baked.SetActive(isActive);
+            if (View != null) View.SetActive(false);
+        }
+        else if (View != null)
+        {
+            View.SetActive(isActive);
+            if (View_Baked != null) View_Baked.SetActive(false);
+        }
+    }
+
+    public void SetParent(Transform parent)
+    {
+        if (View_Baked != null)
+        {
+            //Debug.Log("<color=red>SetParent : </color>" + View_Baked_.name + " <color=red>to</color> " + parent);
+            View_Baked.transform.SetParent(parent);
+        }
+        if (View != null)
+        {
+            //Debug.Log("<color=red>SetParent : </color>" + View.name + " <color=red>to</color> " + parent);
+            View.transform.SetParent(parent);
+        }
+    }
+
+    public void SetTransform(Transform transform)
+    {
+        if (View_Baked != null)
+        {
+            View_Baked.transform.position = transform.position;
+            View_Baked.transform.rotation = transform.rotation;
+        }
+
+        if (View != null)
+        {
+            View.transform.position = transform.position;
+            View.transform.rotation = transform.rotation;
+        }
+    }
+
+    public void SetTransform(float3 position, quaternion rotation)
+    {
+        if (View_Baked != null)
+        {
+            View_Baked.transform.position = position;
+            View_Baked.transform.rotation = rotation;
+        }
+
+        if (View != null)
+        {
+            View.transform.position = position;
+            View.transform.rotation = rotation;
+        }
+    }
+
+    public void SetLocalTransform(float3 position, quaternion rotation)
+    {
+        if (View_Baked != null)
+        {
+            View_Baked.transform.localPosition = position;
+            View_Baked.transform.rotation = rotation;
+        }
+
+        if (View != null)
+        {
+            View.transform.localPosition = position;
+            View.transform.rotation = rotation;
+        }
+    }
+
+    public void SetTransform(LocalTransform transform)
+    {
+        if (View_Baked != null)
+        {
+            View_Baked.transform.position = transform.Position;
+            View_Baked.transform.rotation = transform.Rotation;
+        }
+
+        if (View != null)
+        {
+            View.transform.position = transform.Position;
+            View.transform.rotation = transform.Rotation;
+        }
+    }
+
+    public Transform GetOneTransform()
+    {
+        if (View_Baked != null) return View_Baked.transform;
+        if (View != null) return View.transform;
+        return null;
+    }
+
+    public void SetLocalScale(float scale)
+    {
+        if (View_Baked != null) View_Baked.transform.localScale = Vector3.one * scale;
+        if (View != null) View.transform.localScale = Vector3.one * scale;
+    }
+
+    public void Destroy()
+    {
+        if (View != null)
+        {
+            GameObject.Destroy(View);
+        }
+        if (View_Baked != null)
+        {
+            GameObject.Destroy(View_Baked);
+        }
+    }
 }
+
 
 

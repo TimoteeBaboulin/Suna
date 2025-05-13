@@ -4,8 +4,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
 using Unity.Transforms;
-using UnityEngine;
-using Unity.VisualScripting;
 
 public static class StuffUtils
 {
@@ -297,13 +295,7 @@ public static class StuffUtils
     //Only if stuff is unequip before
     public static void SetStuffViewTransform(StuffGameObjectRef stuffView, LocalTransform transform)
     {
-        if (stuffView.Value.transform.parent != null)
-        {
-            stuffView.Value.transform.SetParent(null);
-        }
-
-        stuffView.Value.transform.position = transform.Position;
-        stuffView.Value.transform.rotation = transform.Rotation;
-        stuffView.Value.transform.localScale = new Vector3(transform.Scale, transform.Scale, transform.Scale);
+        stuffView.SetParent(null);
+        stuffView.SetTransform(transform);
     }
 }
