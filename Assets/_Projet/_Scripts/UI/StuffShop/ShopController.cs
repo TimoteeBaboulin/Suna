@@ -127,7 +127,7 @@ public class ShopController : MonoBehaviour
             }
             else
             {
-                if (roundData.currentPhase == RoundPhase.BuyPhase)
+                if (roundData.currentPhase == RoundPhase.BuyPhase || !roundData.roundSystemActive)
                 {
                     UI.ToggleActive(ref root);
                     ActivateUIInput(UI.IsActive(ref root));
