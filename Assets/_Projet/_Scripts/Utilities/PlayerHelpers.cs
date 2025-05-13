@@ -7,6 +7,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Multiplayer.Playmode;
 using Unity.NetCode;
+using Unity.Services.Lobbies.Models;
 using Unity.Services.Matchmaker.Models;
 using Unity.Services.Multiplayer;
 using UnityEngine;
@@ -31,16 +32,16 @@ public static class PlayerHelpers
 
     public struct TeamList
     {
-        public List<IReadOnlyPlayer> natifPlayers;
-        public List<IReadOnlyPlayer> corpoPlayers;
-        public List<IReadOnlyPlayer> neutralPlayers;
+        public List<string> natifPlayersId;
+        public List<string> corpoPlayersid;
+        public List<string> neutralPlayersId;
     }
 
     private static TeamList _teams = new TeamList
     {
-        natifPlayers = new List<IReadOnlyPlayer>(),
-        corpoPlayers = new List<IReadOnlyPlayer>(),
-        neutralPlayers = new List<IReadOnlyPlayer>()
+        natifPlayersId = new List<string>(),
+        corpoPlayersid = new List<string>(),
+        neutralPlayersId = new List<string>()
     };
 
     private static int CountPlayersAliveForTeam(TeamSideType team, World world)
@@ -105,7 +106,7 @@ public static class PlayerHelpers
         return (IPlayer)sessionPlayers[index];
     }
 
-    static public TeamSideType AssignTeamToPlayer(IReadOnlyPlayer readOnlyPlayer, TeamSideType team = TeamSideType.Neutre)
+    static public TeamSideType AssignTeamToPlayer(IPlayer player, TeamSideType team = TeamSideType.Neutre)
     {
         GlobalTeamCount teamCounts = GetCurrentTeamCounts();
 
@@ -156,66 +157,80 @@ public static class PlayerHelpers
         //}
 
 
+        var corpo = _teams.corpoPlayersid.FirstOrDefault(id => id == player.Id);
+        var natif = _teams.natifPlayersId.FirstOrDefault(id => id == player.Id);
+        var neutral = _teams.neutralPlayersId.FirstOrDefault(id => id == player.Id);
 
+        Debug.Log($"assignedTeam {assignedTeam}");
         switch (assignedTeam)
         {
             case TeamSideType.Corpo:
-                if (_teams.corpoPlayers.Contains(readOnlyPlayer))
-                {
+                if (neutral == null)
                     return TeamSideType.Neutre;
+
+                _teams.corpoPlayersid.Add(player.Id);
+                if (neutral != null)
+                {
+                    _teams.neutralPlayersId.Remove(player.Id);
+                    Debug.Log($"_teams.neutralPlayers.Count {_teams.neutralPlayersId.Count}");
+                }
+                else if (natif != null)
+                {
+                    _teams.natifPlayersId.Remove(player.Id);
                 }
 
-                _teams.corpoPlayers.Add(readOnlyPlayer);
-                if (_teams.neutralPlayers.Contains(readOnlyPlayer))
-                {
-                    _teams.neutralPlayers.Remove(readOnlyPlayer);
-                }
-                else if (_teams.natifPlayers.Contains(readOnlyPlayer))
-                {
-                    _teams.natifPlayers.Remove(readOnlyPlayer);
-                }
+                player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
                 return TeamSideType.Corpo;
             case TeamSideType.Natif:
-                if (_teams.natifPlayers.Contains(readOnlyPlayer))
+                if (neutral == null)
                     return TeamSideType.Neutre;
 
-                _teams.natifPlayers.Add(readOnlyPlayer);
-                if (_teams.corpoPlayers.Contains(readOnlyPlayer))
+                _teams.natifPlayersId.Add(player.Id);
+                if (corpo != null)
                 {
-                    _teams.corpoPlayers.Remove(readOnlyPlayer);
+                    _teams.corpoPlayersid.Remove(player.Id);
                 }
-                else if (_teams.neutralPlayers.Contains(readOnlyPlayer))
+                else if (neutral != null)
                 {
-                    _teams.neutralPlayers.Remove(readOnlyPlayer);
+                    _teams.neutralPlayersId.Remove(player.Id);
+                    Debug.Log($"_teams.neutralPlayers.Count {_teams.neutralPlayersId.Count}");
                 }
+
+                player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
                 return TeamSideType.Natif;
             default:
-                if (!_teams.neutralPlayers.Contains(readOnlyPlayer))
-                    _teams.neutralPlayers.Add(readOnlyPlayer);
-                return TeamSideType.Neutre;
-        }
+                if (neutral == null)
+                    _teams.neutralPlayersId.Add(player.Id);
 
-        if (readOnlyPlayer is IPlayer player)
-        {
-            player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
+                player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
+                return TeamSideType.Neutre;
         }
     }
     public static void RemovePlayer(string playerId)
     {
-        var corpo = _teams.corpoPlayers.FirstOrDefault(p => p.Id == playerId);
+        var corpo = _teams.corpoPlayersid.FirstOrDefault(id => id == playerId);
         if (corpo != null)
         {
             Debug.Log($"Player removed from CORPO ID {playerId} ");
-            _teams.corpoPlayers.Remove(corpo);
+            _teams.corpoPlayersid.Remove(corpo);
+            return;
         }
 
-        var natif = _teams.natifPlayers.FirstOrDefault(p => p.Id == playerId);
+        var natif = _teams.natifPlayersId.FirstOrDefault(id => id == playerId);
         if (natif != null)
         {
             Debug.Log($"Player removed from NATIF ID {playerId} ");
-            _teams.natifPlayers.Remove(natif);
+            _teams.natifPlayersId.Remove(natif);
+            return;
         }
 
+        var neutral = _teams.neutralPlayersId.FirstOrDefault(id => id == playerId);
+        if (neutral != null)
+        {
+            Debug.Log($"Player removed from NEUTRAL ID {playerId} ");
+            _teams.neutralPlayersId.Remove(natif);
+            return;
+        }
         Debug.LogWarning($"[PlayerHelpers] Tried to remove {playerId} but they weren’t in any team list");
     }
 
@@ -238,9 +253,9 @@ public static class PlayerHelpers
     {
         return new GlobalTeamCount
         {
-            corpoPlayersCount = _teams.corpoPlayers.Count,
-            natifPlayersCount = _teams.natifPlayers.Count,
-            neutralPlayersCount = _teams.neutralPlayers.Count,
+            corpoPlayersCount = _teams.corpoPlayersid.Count,
+            natifPlayersCount = _teams.natifPlayersId.Count,
+            neutralPlayersCount = _teams.neutralPlayersId.Count,
         };
     }
 
@@ -301,30 +316,30 @@ public static class PlayerHelpers
 
 
 
-    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeamOnServer(TeamSideType teamSide)
+    public static IReadOnlyList<string> GetPlayersByTeamOnServer(TeamSideType teamSide)
     {
         switch (teamSide)
         {
             case TeamSideType.Corpo:
-                return _teams.corpoPlayers;
+                return _teams.corpoPlayersid;
             case TeamSideType.Natif:
-                return _teams.natifPlayers;
+                return _teams.natifPlayersId;
             default:
-                return Array.Empty<IReadOnlyPlayer>();
+                return Array.Empty<string>();
         }
     }
 
-    public static IReadOnlyList<IReadOnlyPlayer> GetPlayersByTeamOnServer(string teamName)
+    public static IReadOnlyList<string> GetPlayersByTeamOnServer(string teamName)
     {
         TeamSideType teamSide = teamName == "Corpo" ? TeamSideType.Corpo : TeamSideType.Natif;
         switch (teamSide)
         {
             case TeamSideType.Corpo:
-                return _teams.corpoPlayers;
+                return _teams.corpoPlayersid;
             case TeamSideType.Natif:
-                return _teams.natifPlayers;
+                return _teams.natifPlayersId;
             default:
-                return Array.Empty<IReadOnlyPlayer>();
+                return Array.Empty<string>();
         }
     }
 
@@ -334,10 +349,10 @@ public static class PlayerHelpers
         switch (teamSide)
         {
             case TeamSideType.Corpo:
-                _teams.corpoPlayers.Clear();
+                _teams.corpoPlayersid.Clear();
                 break;
             case TeamSideType.Natif:
-                _teams.natifPlayers.Clear();
+                _teams.natifPlayersId.Clear();
                 break;
             default:
                 Array.Empty<IReadOnlyPlayer>();
@@ -350,10 +365,10 @@ public static class PlayerHelpers
         switch (teamSide)
         {
             case TeamSideType.Corpo:
-                _teams.corpoPlayers.Clear();
+                _teams.corpoPlayersid.Clear();
                 break;
             case TeamSideType.Natif:
-                _teams.natifPlayers.Clear();
+                _teams.natifPlayersId.Clear();
                 break;
             default:
                 Array.Empty<IReadOnlyPlayer>();
@@ -363,9 +378,9 @@ public static class PlayerHelpers
 
     public static void ClearTeams()
     {
-        _teams.corpoPlayers.Clear();
-        _teams.natifPlayers.Clear();
-        _teams.neutralPlayers.Clear();
+        _teams.corpoPlayersid.Clear();
+        _teams.natifPlayersId.Clear();
+        _teams.neutralPlayersId.Clear();
     }
 
     static public TeamSideType GetPlayerInTeamOnServer(int networkId)
