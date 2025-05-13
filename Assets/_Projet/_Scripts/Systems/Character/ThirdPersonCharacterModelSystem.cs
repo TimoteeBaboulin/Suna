@@ -40,8 +40,6 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = characterTransform.ValueRO.Rotation;
             CommonCharacterModelUtils.UpdateModelPositionAndRotation(modelReference.ModelGameObject.transform, newPosition, newRotation);
-
-            ThirdPersonCharacterModelUtils.UpdateHeadBonesTransform(modelReference.ModelGameObject, characterTransform, localViewRotation.ValueRO.ViewRotation);
         }
 
         foreach (var (modelReference, characterEntity) in SystemAPI
@@ -152,8 +150,6 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             float3 newPosition = characterTransform.ValueRO.Position + modelReference.DeltaPosition;
             quaternion newRotation = characterTransform.ValueRO.Rotation;
             CommonCharacterModelUtils.UpdateModelPositionAndRotation(modelReference.ModelGameObject.transform, newPosition, newRotation);
-
-            ThirdPersonCharacterModelUtils.UpdateHeadBonesTransform(modelReference.ModelGameObject, characterTransform, localViewRotation.ValueRO.ViewRotation);
         }
 
         foreach (var (modelReference, entity) in SystemAPI
