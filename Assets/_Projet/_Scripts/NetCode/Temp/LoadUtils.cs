@@ -154,8 +154,6 @@ namespace GameNetwork.Utils
         public static async void ReturnToMainMenuAsync()
         {
             SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.UnloadingGame);
-            GameManager.Instance.GameState = GlobalGameState.Loading;
-
             await DisconnectAndUnloadWorlds();
         }
 
