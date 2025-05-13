@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 8839504196725151190, guid: e4c05024708181948b45a598c597e898, type: 3}
   viewPrefab: {fileID: 3291034885922681160, guid: a2cd00675126c5e4092a3041b3706af0, type: 3}
+  viewPrefab_Baked: {fileID: 3291034885922681160, guid: a2cd00675126c5e4092a3041b3706af0, type: 3}
   UIImage: {fileID: 2800000, guid: da62ae940eb07204da519622b2e8921c, type: 3}
   location: 0
   type: 0
@@ -24,6 +25,7 @@ MonoBehaviour:
   price: 3150
   killGain: 300
   _stuffLocalOffsetView: {x: 0, y: 1.7, z: 0.00000009536743}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 1.7, z: 0.00000009536743}
   recoil: {x: 0, y: 0}
   damage: 120
   range: 1000

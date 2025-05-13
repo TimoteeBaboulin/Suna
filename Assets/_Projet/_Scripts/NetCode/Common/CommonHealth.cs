@@ -166,7 +166,7 @@ public partial struct ApplyDamageSystem : ISystem
         {
             var ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(entity);
             var teamSideType = PlayerHelpers.GetPlayerInTeam(ghostOwner.NetworkId);
-            Debug.Log($"[ApplyDamageSystem] {ghostOwner.NetworkId} is in team {teamSideType}");
+            //Debug.Log($"[ApplyDamageSystem] {ghostOwner.NetworkId} is in team {teamSideType}");
             entityTeamTable.TryAdd(entity, PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId));
         }
 
