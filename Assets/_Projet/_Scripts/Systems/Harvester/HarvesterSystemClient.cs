@@ -1,4 +1,3 @@
-using System;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -61,7 +60,6 @@ partial class HarvesterSystemClient : SystemBase
         NetworkTick currentTick = networkTime.ServerTick;
 
         var equipStuffQueu = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
-        var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
 
         foreach ((RefRW<HarvesterComponent> harvesterRW, RefRW<StuffDynamicData> ownerRW, Entity harvesterEntity) in SystemAPI
             .Query<RefRW<HarvesterComponent>, RefRW<StuffDynamicData>>()
@@ -146,27 +144,17 @@ partial class HarvesterSystemClient : SystemBase
         foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterPlanted rpc, Entity entity)
              in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterPlanted>().WithEntityAccess())
         {
-            ecb.SetComponentEnabled<HarvesterPlanted>(rpc.harvester, true);
-
-            SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.plantPosition;
-            StuffUtils.UnequipNextFrame(unequipStuffQueu, rpc.harvesterOwner, rpc.harvester);
-
-            //var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
-
-            ////Owner
-            //var linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(rpc.harvesterOwner);
-            //var ownerStuffList = SystemAPI.GetBuffer<CharacterStuffList>(rpc.harvesterOwner);
-
-            ////Stuff
-            //var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(rpc.harvester);
-            //ref var stuffData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(rpc.harvester).ValueRO.GetData(ref database);
-
-            //StuffUtils.Unequip(ref CheckedStateRef, rpc.harvesterOwner, linkedEntityGroup, ownerStuffList, rpc.harvester, stuffGhostOwnerRW, ref stuffData);
-            StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester);
-            LocalTransform harvesterTransform = SystemAPI.GetComponent<LocalTransform>(rpc.harvester);
-            StuffUtils.SetStuffViewTransform(goRef, harvesterTransform);
+            PlantHarvester(rpc, ecb);
 
             ecb.DestroyEntity(entity);
+        }
+
+        foreach ((RefRO<ReceiveRpcCommandRequest> request, RpcHarvesterDefused rpc, Entity rpcEntity)
+            in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RpcHarvesterDefused>()
+            .WithEntityAccess())
+        {
+            DefuseHarvester(rpc.harvester);
+            ecb.DestroyEntity(rpcEntity);
         }
 
         //HARVESTER PICKED UP
@@ -204,30 +192,96 @@ partial class HarvesterSystemClient : SystemBase
 
             if (rpc.harvester == Entity.Null)
             {
-                Entity responseEntity = ecb.CreateEntity();
-                ecb.AddComponent<RpcRequestHarvesterOwners>(responseEntity);
-                ecb.AddComponent<SendRpcCommandRequest>(responseEntity);
+                RpcRequestHarvesterOwners response = new();
+                RpcUtils.SendClientToServerRpc(ref response);
 
                 continue;
             }
 
-            if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
-            {
-                StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
+            SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
+            ChangeHarvesterOwner(rpc.harvester, Entity.Null);
 
-                if (stuffOwner.owner != Entity.Null)
-                {
-                    StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
-                }
-                else
-                {
-                    SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
-                    EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).Value.transform.position = rpc.position;
-                }
-            }
+            //if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
+            //{
+            //    StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
+
+            //    if (stuffOwner.owner != Entity.Null)
+            //    {
+            //        StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
+            //    }
+            //    else
+            //    {
+            //        SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
+            //        EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).Value.transform.position = rpc.position;
+            //    }
+            //}
         }
 
         ecb.Playback(EntityManager);
         ecb.Dispose();
+    }
+
+    private void PlantHarvester(RpcHarvesterPlanted rpc, EntityCommandBuffer ecb)
+    {
+        Entity harvesterEntity = rpc.harvester;
+        Entity ownerEntity = rpc.harvesterOwner;
+        NetworkTick plantTick = rpc.plantedTick;
+        float3 plantPosition = rpc.plantPosition;
+        LocalTransform harvesterTransform = SystemAPI.GetComponent<LocalTransform>(harvesterEntity);
+
+        //ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
+
+        ChangeHarvesterOwner(harvesterEntity, Entity.Null);
+
+        harvesterTransform.Position = plantPosition;
+        harvesterTransform.Rotation = quaternion.identity;
+
+        StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
+        goRef.Value.GetComponent<HarvesterVfxLink>().Play();
+        StuffUtils.SetStuffViewTransform(goRef, harvesterTransform);
+
+        SystemAPI.SetComponent(harvesterEntity, harvesterTransform);
+
+        //Debug.Log($"[Harvester] Client planted harvester {harvesterEntity}");
+    }
+
+    private void DefuseHarvester(Entity harvesterEntity)
+    {
+        StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
+        goRef.Value.GetComponent<HarvesterVfxLink>().Stop();
+
+        //Debug.Log("[Harvester] Client received defuse rpc");
+    }
+
+    private void ChangeHarvesterOwner(Entity harvesterEntity, Entity newOwner)
+    {
+        Entity oldOwner = SystemAPI.GetComponent<StuffDynamicData>(harvesterEntity).owner;
+        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+        if (oldOwner != Entity.Null)
+        {
+            DynamicBuffer<UnequipStuffQueue> unequipQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
+
+            var linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(oldOwner);
+            var ownerStuffList = SystemAPI.GetBuffer<CharacterStuffList>(oldOwner);
+
+            //Stuff
+            var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(harvesterEntity);
+            var stuffDynamicDataRW = SystemAPI.GetComponentRW<StuffDynamicData>(harvesterEntity);
+            ref var stuffData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(harvesterEntity).ValueRO.GetData(ref database);
+
+            StuffUtils.Unequip(ref CheckedStateRef, oldOwner, linkedEntityGroup, ownerStuffList,
+                harvesterEntity, stuffGhostOwnerRW, ref stuffData);
+            stuffDynamicDataRW.ValueRW.owner = Entity.Null;
+
+            //StuffUtils.UnequipNextFrame(unequipQueue, oldOwner, harvesterEntity);
+        }
+
+        if (newOwner != Entity.Null)
+        {
+            DynamicBuffer<EquipStuffQueue> equipQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+
+            StuffUtils.EquipNextFrame(equipQueue, newOwner, harvesterEntity, false);
+        }
     }
 }
