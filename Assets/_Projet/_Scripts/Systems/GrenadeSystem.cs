@@ -1,7 +1,6 @@
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
-using Unity.Entities.UniversalDelegates;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
@@ -187,7 +186,10 @@ public partial class GrenadeSystem : SystemBase
                             BelongsTo = ~0u,
                             CollidesWith = (1u << 6)
                         };
-                        if (SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(grenadePos, radius, ref hits, filter))
+
+                        var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+
+                        if (physicsWorld.OverlapSphere(grenadePos, radius, ref hits, filter))
                         {
                             foreach (var hit in hits)
                             {
@@ -196,18 +198,20 @@ public partial class GrenadeSystem : SystemBase
 
                                 var collisionWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>().CollisionWorld;
 
+                                filter = new CollisionFilter
+                                {
+                                    BelongsTo = ~0u,
+                                    CollidesWith = (1u << 12) // Collide with grenade and shoot colliders
+                                };
+
                                 RaycastInput input = new RaycastInput()
                                 {
                                     Start = grenadePos,
                                     End = hit.Position + math.up(),
-                                    Filter = new CollisionFilter()
-                                    {
-                                        BelongsTo = ~0u,
-                                        CollidesWith = 1u << 12, // Only Collide with grenade and shoot colliders
-                                    }
+                                    Filter = filter
                                 };
 
-                                bool didHit = collisionWorld.CastRay(input, out var directHit);
+                                bool didHit = physicsWorld.CastRay(input, out var directHit);
 
                                 if (didHit) continue; //There's no direct line of sight with the player, so we keep going without applying effect
                                     
@@ -308,66 +312,83 @@ public partial struct GrenadeThrowSystem : ISystem
                 physicsVelocity.ValueRW.Linear += slow * SystemAPI.Time.DeltaTime;
             }
 
-            if (!SystemAPI.TryGetSingleton<SimulationSingleton>(out var simulationSingleton))
+            //if (!SystemAPI.TryGetSingleton<SimulationSingleton>(out var simulationSingleton))
+            //{
+            //    UnityEngine.Debug.LogError("No physics found");
+            //    return;
+            //}
+
+            //if (simulationSingleton.Type == SimulationType.NoPhysics)
+            //{
+            //    UnityEngine.Debug.LogError("No physics type simulation");
+            //    return;
+            //}
+
+            //Simulation simulation = simulationSingleton.AsSimulation();
+
+            //state.Dependency.Complete();
+
+            //int count = 0;
+
+            //foreach(var c in simulation.CollisionEvents)
+            //{
+            //    count++;
+            //}
+
+            //UnityEngine.Debug.LogError($"{count} collisions detected this frame.");
+
+            //foreach (var collision in simulation.CollisionEvents)
+            //{
+            //    Entity a = collision.EntityA;
+            //    Entity b = collision.EntityB;
+
+            //    bool aIsGrenade = state.EntityManager.HasComponent<StuffEntityInHandRef>(a);
+            //    bool bIsGrenade = state.EntityManager.HasComponent<StuffEntityInHandRef>(b);
+
+            //    if ((aIsGrenade && bIsGrenade) || (!aIsGrenade && !bIsGrenade))
+            //    {
+            //        // Both are grenades or none is a grenade, do nothing
+            //        return;
+            //    }
+
+            //    Entity theGrenade = aIsGrenade ? a : b;
+
+            //    if (state.EntityManager.HasComponent<ReleasedGrenade>(state.EntityManager.GetComponentData<StuffEntityInHandRef>(theGrenade).Value))
+            //        // If the entity is not a grenade, skip it
+            //        return;
+
+            //    if (state.EntityManager.HasComponent<PhysicsVelocity>(theGrenade))
+            //    {
+            //        var physicsVelocityCopy = state.EntityManager.GetComponentData<PhysicsVelocity>(theGrenade);
+            //        UnityEngine.Debug.Log($"Grenade velocity before: {physicsVelocityCopy.Linear}");
+            //        physicsVelocityCopy.Linear *= 0.6f;
+            //        physicsVelocityCopy.Angular *= 0.5f;
+
+            //        float angle = math.acos(math.dot(collision.Normal, math.up()) / (math.length(collision.Normal) * math.length(math.up())));
+            //        float damp = math.saturate(1f - angle / 90f);
+            //        physicsVelocityCopy.Linear = new float3(damp * physicsVelocityCopy.Linear.x, 0.6f * physicsVelocityCopy.Linear.y, damp * physicsVelocityCopy.Linear.z);
+
+            //        commandBuffer.SetComponent(theGrenade, physicsVelocityCopy);
+            //        UnityEngine.Debug.Log($"Grenade velocity after: {physicsVelocityCopy}");
+            //    }
+            //}
+
+            state.Dependency = new GrenadeCollisionJob
             {
-                UnityEngine.Debug.LogError("No physics found");
-                return;
-            }
-
-            if (simulationSingleton.Type == SimulationType.NoPhysics)
-            {
-                UnityEngine.Debug.LogError("No physics type simulation");
-                return;
-            }
-
-            Simulation simulation = simulationSingleton.AsSimulation();
-
+                releasedGrenadeLookup = SystemAPI.GetComponentLookup<ReleasedGrenade>(true),
+                stuffEntityInHandLookup = SystemAPI.GetComponentLookup<StuffEntityInHandRef>(true),
+                physicsVelocityLookup = SystemAPI.GetComponentLookup<PhysicsVelocity>(false)
+            }.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
             state.Dependency.Complete();
 
-            int count = 0;
-
-            foreach(var c in simulation.CollisionEvents)
+            if (!math.all(math.isfinite(grenadePosition)))
             {
-                count++;
+                UnityEngine.Debug.LogWarning($"Grenade position is not finite: {grenadePosition}");
+                continue;
             }
 
-            UnityEngine.Debug.LogError($"{count} collisions detected this frame.");
-
-            foreach (var collision in simulation.CollisionEvents)
-            {
-                Entity a = collision.EntityA;
-                Entity b = collision.EntityB;
-
-                bool aIsGrenade = state.EntityManager.HasComponent<StuffEntityInHandRef>(a);
-                bool bIsGrenade = state.EntityManager.HasComponent<StuffEntityInHandRef>(b);
-
-                if ((aIsGrenade && bIsGrenade) || (!aIsGrenade && !bIsGrenade))
-                {
-                    // Both are grenades or none is a grenade, do nothing
-                    return;
-                }
-
-                Entity theGrenade = aIsGrenade ? a : b;
-
-                if (state.EntityManager.HasComponent<ReleasedGrenade>(state.EntityManager.GetComponentData<StuffEntityInHandRef>(theGrenade).Value))
-                    // If the entity is not a grenade, skip it
-                    return;
-
-                if (state.EntityManager.HasComponent<PhysicsVelocity>(theGrenade))
-                {
-                    var physicsVelocityCopy = state.EntityManager.GetComponentData<PhysicsVelocity>(theGrenade);
-                    UnityEngine.Debug.Log($"Grenade velocity before: {physicsVelocityCopy.Linear}");
-                    physicsVelocityCopy.Linear *= 0.6f;
-                    physicsVelocityCopy.Angular *= 0.5f;
-
-                    float angle = math.acos(math.dot(collision.Normal, math.up()) / (math.length(collision.Normal) * math.length(math.up())));
-                    float damp = math.saturate(1f - angle / 90f);
-                    physicsVelocityCopy.Linear = new float3(damp * physicsVelocityCopy.Linear.x, 0.6f * physicsVelocityCopy.Linear.y, damp * physicsVelocityCopy.Linear.z);
-
-                    commandBuffer.SetComponent(theGrenade, physicsVelocityCopy);
-                    UnityEngine.Debug.Log($"Grenade velocity after: {physicsVelocityCopy}");
-                }
-            }
+            if (!released.ValueRO.onGround)
+                physicsVelocity.ValueRW.Linear += math.down() * 7.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
 
             if (math.lengthsq(physicsVelocity.ValueRO.Linear) < 0.1f)
             {
@@ -379,17 +400,16 @@ public partial struct GrenadeThrowSystem : ISystem
     public struct GrenadeCollisionJob : ICollisionEventsJob
     {
         [ReadOnly] public ComponentLookup<ReleasedGrenade> releasedGrenadeLookup;
+        [ReadOnly] public ComponentLookup<StuffEntityInHandRef> stuffEntityInHandLookup;
         public ComponentLookup<PhysicsVelocity> physicsVelocityLookup;
 
         public void Execute(CollisionEvent eventObj)
         {
-            UnityEngine.Debug.Log("Contact !");
-
             Entity a = eventObj.EntityA;
             Entity b = eventObj.EntityB;
 
-            bool aIsGrenade = releasedGrenadeLookup.HasComponent(a);
-            bool bIsGrenade = releasedGrenadeLookup.HasComponent(b);
+            bool aIsGrenade = stuffEntityInHandLookup.HasComponent(a);
+            bool bIsGrenade = stuffEntityInHandLookup.HasComponent(b);
 
             if ((aIsGrenade && bIsGrenade) || (!aIsGrenade && !bIsGrenade))
             {
@@ -399,15 +419,21 @@ public partial struct GrenadeThrowSystem : ISystem
 
             Entity grenade = aIsGrenade ? a : b;
 
-            if (physicsVelocityLookup.HasComponent(grenade))
+            if (releasedGrenadeLookup.HasComponent(stuffEntityInHandLookup[grenade].Value))
+            {
+                // If the entity is not a grenade, skip it
+                return;
+            }
+
+            if (physicsVelocityLookup.HasComponent(grenade)/* && math.all(math.isfinite(physicsVelocityLookup[grenade].Linear))*/)
             {
                 UnityEngine.Debug.Log($"Grenade velocity before: {physicsVelocityLookup[grenade].Linear}");
                 var velocity = physicsVelocityLookup[grenade];
-                velocity.Linear *= 0.6f;
-                velocity.Angular *= 0.5f;
+                velocity.Linear *= 0.4f;
+                velocity.Angular *= 0.4f;
 
                 float angle = math.acos(math.dot(eventObj.Normal, math.up()) / (math.length(eventObj.Normal) * math.length(math.up())));
-                float damp = math.saturate(1f - angle / 90f);
+                float damp = math.pow(math.saturate(angle / 90f), 2);
                 velocity.Linear = new float3(damp * velocity.Linear.x, 0.6f * velocity.Linear.y, damp * velocity.Linear.z);
 
                 physicsVelocityLookup[grenade] = velocity;

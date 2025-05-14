@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Networking.Transport;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -209,6 +210,13 @@ public partial struct DamageSourceJob : IJobEntity
         targetHealth.Value -= damageComponent.ValueRO.damage;
         ecb.SetComponent(sortKey, target, targetHealth);
 
+        ApplyDamageCommand damageCommand = new ApplyDamageCommand
+        {
+            position = damageComponent.ValueRO.sourcePosition
+        };
+
+        RpcUtils.SendServerToClientRpc(ref damageCommand, target);
+
         //DamageIndicator damageIndicator = new DamageIndicator
         //{
         //    damageSourcePosition = damageComponent.ValueRO.sourcePosition
@@ -247,5 +255,33 @@ public partial struct DamageSourceJob : IJobEntity
         }
 
         ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
+    }
+}
+
+[BurstCompile]
+public partial struct DamageSourcePositionSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<NetworkId>();
+        state.RequireForUpdate<ApplyDamageCommand>();
+    }
+
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state)
+    {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach(var (damageCommand, entity) in SystemAPI
+            .Query<RefRW<ApplyDamageCommand>>()
+            .WithEntityAccess())
+        {
+            // Get the source position and show the damage indicator
+
+            ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
+        }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }
