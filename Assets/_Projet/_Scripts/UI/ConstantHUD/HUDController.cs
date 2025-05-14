@@ -207,6 +207,13 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
+        foreach (VisualElement playerPin in _minimapMapElement.Children())
+        {
+            VisualElement visualElement = playerPin;
+            UI.SetActive(ref visualElement, false);
+            UI.SetOpacity(ref visualElement, 0f);
+        }
+
         // If too much message, delete previous ones
         //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
