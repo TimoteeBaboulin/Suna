@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &1555500064835988008
+--- !u!1 &1703416855418670433
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,31 +8,31 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2224197389610463378}
+  - component: {fileID: 2082932652865017819}
   m_Layer: 0
-  m_Name: NeutralKnife
+  m_Name: KnifeNeutral_baked
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2224197389610463378
+--- !u!4 &2082932652865017819
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1555500064835988008}
+  m_GameObject: {fileID: 1703416855418670433}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 6191758981232139238}
+  - {fileID: 6329937332399832239}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2550535121312781476
+--- !u!1 &2400609531508847597
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 6191758981232139238}
+  - component: {fileID: 6329937332399832239}
   m_Layer: 0
   m_Name: RIG_KNIFE
   m_TagString: Untagged
@@ -48,24 +48,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &6191758981232139238
+--- !u!4 &6329937332399832239
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2550535121312781476}
+  m_GameObject: {fileID: 2400609531508847597}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.000000047683713, y: 1.6563287, z: 0.17398556}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 4441497323122444781}
-  - {fileID: 5286573846811039972}
-  m_Father: {fileID: 2224197389610463378}
+  - {fileID: 4582027530064506532}
+  - {fileID: 5433682478697758637}
+  m_Father: {fileID: 2082932652865017819}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2607294705276952172
+--- !u!1 &2745796317661624613
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -73,8 +73,8 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5286573846811039972}
-  - component: {fileID: 7701657396257526265}
+  - component: {fileID: 5433682478697758637}
+  - component: {fileID: 7553723031138432688}
   m_Layer: 0
   m_Name: SKIN_KNIFE
   m_TagString: Untagged
@@ -82,28 +82,28 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5286573846811039972
+--- !u!4 &5433682478697758637
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2607294705276952172}
+  m_GameObject: {fileID: 2745796317661624613}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.000000047683713, y: -1.6563287, z: -0.17398556}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000000047683713, y: -1.6563287, z: 0.17398556}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6191758981232139238}
+  m_Father: {fileID: 6329937332399832239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!137 &7701657396257526265
+--- !u!137 &7553723031138432688
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2607294705276952172}
+  m_GameObject: {fileID: 2745796317661624613}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -145,16 +145,16 @@ SkinnedMeshRenderer:
   m_Quality: 0
   m_UpdateWhenOffscreen: 0
   m_SkinnedMotionVectors: 1
-  m_Mesh: {fileID: 2986511849258456914, guid: f97e18803f79ccb4f968a569a8a70547, type: 3}
+  m_Mesh: {fileID: 2986511849258456914, guid: 1925746c8e84a384fbe04bb3a2ffe90c, type: 3}
   m_Bones:
-  - {fileID: 4441497323122444781}
+  - {fileID: 4582027530064506532}
   m_BlendShapeWeights: []
-  m_RootBone: {fileID: 4441497323122444781}
+  m_RootBone: {fileID: 4582027530064506532}
   m_AABB:
-    m_Center: {x: 0.000000048428774, y: -0.0004005432, z: 0.13174589}
+    m_Center: {x: -0.000000048428774, y: -0.0004005432, z: -0.13174589}
     m_Extent: {x: 0.015903901, y: 0.034181356, z: 0.2168635}
   m_DirtyAABB: 0
---- !u!1 &6296790830886144815
+--- !u!1 &6149470048619998310
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4441497323122444781}
+  - component: {fileID: 4582027530064506532}
   m_Layer: 0
   m_Name: J_KNIFE
   m_TagString: Untagged
@@ -170,18 +170,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4441497323122444781
+--- !u!4 &4582027530064506532
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6296790830886144815}
+  m_GameObject: {fileID: 6149470048619998310}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.000000047683713, y: 0.00040054318, z: -0.13174587}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.000000047683713, y: 0.00040054318, z: 0.13174587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 6191758981232139238}
+  m_Father: {fileID: 6329937332399832239}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
