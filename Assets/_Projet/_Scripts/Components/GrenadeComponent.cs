@@ -44,4 +44,6 @@ public struct GrenadeDatabaseAccess : IComponentData
 public struct ReleasedGrenade : IComponentData, IEnableableComponent 
 {
     [GhostField] public Entity thrower;
+
+    [GhostField] public bool onGround;
 }

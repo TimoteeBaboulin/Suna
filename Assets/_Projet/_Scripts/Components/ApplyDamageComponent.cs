@@ -29,3 +29,8 @@ public struct ApplyDamage : IComponentData
 
     public float3 sourcePosition;
 }
+
+public struct ApplyDamageCommand : IRpcCommand
+{
+    public float3 position;
+}
