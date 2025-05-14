@@ -107,14 +107,6 @@ public class ThirdPersonCharacterModelUtils
         });
     }
 
-    public static void UpdateHeadBonesTransform(in GameObject modelGameObject, RefRO<LocalTransform> characterTransform, in quaternion localViewRotation)
-    {
-        if (modelGameObject.TryGetComponent(out ThirdPersonCharacterModelBehaviour modelBehaviour))
-        {
-            modelBehaviour.NewHeadRotation = math.mul(characterTransform.ValueRO.Rotation, localViewRotation);
-        }
-    }
-
     public static void DestroyModel(in GameObject modelGameObject, in Entity characterEntity, in EntityCommandBuffer ecb)
     {
         Object.Destroy(modelGameObject);

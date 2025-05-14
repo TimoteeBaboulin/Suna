@@ -8,7 +8,7 @@ using UnityEngine;
 
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct RangedWeaponReloadSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -63,42 +63,18 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
-                    if (state.EntityManager.HasBuffer<CharacterStuffList>(owner)
-                        && state.EntityManager.HasComponent<CharacterStuffList>(owner)
-                        && state.EntityManager.HasComponent<GhostOwner>(owner))
+                    if (state.EntityManager.HasComponent<GhostOwner>(owner))
                     {
-                        DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
-                        RefRO<CharacterStuffInfos> stuffInfo = SystemAPI.GetComponentRO<CharacterStuffInfos>(owner);
                         int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
-
-                        Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
-
-                        if (stuffInHand != Entity.Null)
-                        {
-                            if (state.EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand))
-                            {
-                                FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
-
-                                if (stuffName == "LP-17"
-                                    || stuffName == "FAKIR")
-                                {
-                                    AnimationUtils.AddTriggerCommand("ReloadHandgun", owner, animationEcb, networkId);
-                                }
-                                else if (stuffName == "Decimator"
-                                    || stuffName == "SKAR-18")
-                                {
-                                    AnimationUtils.AddTriggerCommand("ReloadRifle", owner, animationEcb, networkId);
-                                }
-                                else if (stuffName == "Banduka")
-                                {
-                                    AnimationUtils.AddTriggerCommand("ReloadShotgun", owner, animationEcb, networkId);
-                                }
-                            }
-                        }
+                        AnimationUtils.AddTriggerCommand("Reload", owner, animationEcb, networkId);
                     }
-                    SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(weapon);
-                    LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(owner);
-                    SoundUtils.PlayWithRPC(ref emitter, "Reload", transform.Position);
+
+                    if (state.World.IsServer())
+                    {
+                        SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(weapon);
+                        LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(owner);
+                        SoundUtils.PlayWithRPC(ref emitter, "Reload", transform.Position);
+                    }
                 }
             }
             else

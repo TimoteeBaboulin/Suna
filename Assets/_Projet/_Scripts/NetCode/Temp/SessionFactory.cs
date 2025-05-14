@@ -45,6 +45,7 @@ public class ServerSessionFactory
             Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
             Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
             Debug.Log($"[ServerSessionFactory] Created session with NB properties: {session.Properties.Count}");
+            Debug.Log($"[ServerSessionFactory] isReleased: {ClientTransportHelper.isRelease}");
 
             for (int i = 0; i < session.Players.Count; i++)
             {
@@ -90,14 +91,14 @@ public class ServerSessionFactory
             Debug.Log($"[SessionStatusSystem] → {i} Player in game: {session.Players[i].Id}");
         }
 
-        foreach (var item in listCorpo)
+        foreach (var playerCorpo in listCorpo)
         {
-            Debug.Log($"[SessionStatusSystem] → TeamCorpo: {item.Id}");
+            Debug.Log($"[SessionStatusSystem] → TeamCorpo: {playerCorpo}");
         }
 
-        foreach (var item in listNatif)
+        foreach (var playerNatif in listNatif)
         {
-            Debug.Log($"[SessionStatusSystem] → TeamNatif: {item.Id}");
+            Debug.Log($"[SessionStatusSystem] → TeamNatif: {playerNatif}");
         }
     }
 
@@ -130,12 +131,12 @@ public class ServerSessionFactory
         {
             foreach (var playersCorpo in listCorpo)
             {
-                Debug.Log($"[SessionStatusSystem] CORPO := {playerId}→ COMPARING : {playersCorpo.Id}");
+                Debug.Log($"[SessionStatusSystem] CORPO := {playerId}→ COMPARING : {playersCorpo}");
 
-                if (playersCorpo.Id == playerId)
+                if (playersCorpo == playerId)
                 {
-                    Debug.Log($"[SessionStatusSystem] → found corpo : {playersCorpo.Id}");
-                    PlayerHelpers.RemovePlayer(playersCorpo.Id);
+                    Debug.Log($"[SessionStatusSystem] → found corpo : {playersCorpo}");
+                    PlayerHelpers.RemovePlayer(playersCorpo);
                     break;
                 }
             }
@@ -149,11 +150,11 @@ public class ServerSessionFactory
         {
             foreach (var playersNatif in listNatif)
             {
-                Debug.Log($"[SessionStatusSystem] NATIF := {playerId}→ COMPARING : {playersNatif.Id}");
-                if (playersNatif.Id == playerId)
+                Debug.Log($"[SessionStatusSystem] NATIF := {playerId}→ COMPARING : {playersNatif}");
+                if (playersNatif == playerId)
                 {
-                    Debug.Log($"[SessionStatusSystem] → found Natif : {playersNatif.Id}");
-                    PlayerHelpers.RemovePlayer(playersNatif.Id);
+                    Debug.Log($"[SessionStatusSystem] → found Natif : {playersNatif}");
+                    PlayerHelpers.RemovePlayer(playersNatif);
                     break;
                 }
             }
@@ -167,11 +168,11 @@ public class ServerSessionFactory
         {
             foreach (var playersNeutre in listNeutre)
             {
-                Debug.Log($"[SessionStatusSystem] NATIF := {playerId}→ COMPARING : {playersNeutre.Id}");
-                if (playersNeutre.Id == playerId)
+                Debug.Log($"[SessionStatusSystem] NATIF := {playerId}→ COMPARING : {playersNeutre}");
+                if (playersNeutre == playerId)
                 {
-                    Debug.Log($"[SessionStatusSystem] → found Natif : {playersNeutre.Id}");
-                    PlayerHelpers.RemovePlayer(playersNeutre.Id);
+                    Debug.Log($"[SessionStatusSystem] → found Natif : {playersNeutre}");
+                    PlayerHelpers.RemovePlayer(playersNeutre);
                     break;
                 }
             }

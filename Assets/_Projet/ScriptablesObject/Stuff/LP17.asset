@@ -14,16 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 7705747212656276575, guid: da3d38d203823e34e94567ce6fa91fb9, type: 3}
   viewPrefab: {fileID: 6446436572543271113, guid: 34a013a590ed717499d9cdb748ec65d3, type: 3}
+  viewPrefab_Baked: {fileID: 5413380354499890259, guid: 321aa2ca3b102194881601285ee67b58, type: 3}
   UIImage: {fileID: 2800000, guid: 9d076c00ff6b0e94d862e903a834706e, type: 3}
   location: 1
   type: 0
   side: 0
-  entityName: LP-17
+  entityName: LP17
   deploymentSpeed: 0
   storageSpeed: 0
   price: 500
   killGain: 500
   _stuffLocalOffsetView: {x: 0, y: 1.623065, z: -0.01332624}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 1.623065, z: 0.01332624}
   recoil: {x: 0, y: 0}
   damage: 20
   range: 250

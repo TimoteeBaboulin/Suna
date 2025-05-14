@@ -17,7 +17,7 @@ public struct HasHitComponent : IComponentData
 }
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 public partial struct ShootSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -42,6 +42,8 @@ public partial struct ShootSystem : ISystem
         var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
         EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
         float dt = SystemAPI.Time.DeltaTime;
+
+        EntityCommandBuffer animationEcb = new EntityCommandBuffer(Allocator.Temp);
 
         var grd = SystemAPI.GetSingleton<GameResourcesDatabase>();
 
@@ -174,7 +176,8 @@ public partial struct ShootSystem : ISystem
                                             = SystemAPI.GetComponentRO<CharacterClientAttachedComponent>(owner).ValueRO.ClientEntity; //We store Client Entity ID instead of character
 
                                         //Head Shot Sound
-                                        if (CharacterBodyPartData.ValueRO.Type == CharacterColliderType.Head && i == 0)
+                                        if (CharacterBodyPartData.ValueRO.Type == CharacterColliderType.Head && i == 0
+                                            && state.World.IsServer())
                                         {
                                             SoundUtils.PlayWithRPC("Hit", "Headshot", hit.Position);
                                         }
@@ -204,19 +207,33 @@ public partial struct ShootSystem : ISystem
                                     origin = shootStartpos + SystemAPI.GetComponentRO<LocalTransform>(owner).ValueRO.Right() * 0.05f
                                 };
 
-                                if (!hc.position.Equals(float3.zero)) // There is such a low chance this happens in game that it's okay to not send it if this happens
+                                if (!hc.position.Equals(float3.zero)
+                                    && state.World.IsServer()) // There is such a low chance this happens in game that it's okay to not send it if this happens
                                                                       // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
                                 {
                                     RpcUtils.SendServerToClientRpc(ref hc);
                                 }
 
+                                //Muzzle Flash
+                                if (state.EntityManager.HasComponent<StuffGameObjectRef>(weapon))
+                                {
+                                    StuffGameObjectRef goRef = state.EntityManager.GetComponentObject<StuffGameObjectRef>(weapon);
+                                    WeaponVfxLink vfxLink;
+                                    if (SystemAPI.GetComponent<ClientComponent>(SystemAPI.GetComponent<CharacterClientAttachedComponent>(owner).ClientEntity).team == TeamSideType.Corpo)
+                                        vfxLink = goRef.View_Baked.GetComponent<WeaponVfxLink>();
+                                    else
+                                        vfxLink = goRef.View.GetComponent<WeaponVfxLink>();
+                                    if (vfxLink is not null)
+                                        vfxLink.Fire();
+                                }
                                 // === FIN VISUEL ===
 
                                 // === SON ===
-                                if (i == 0)
+                                if (i == 0 && state.World.IsServer())
                                 {
                                     SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(weapon);
                                     LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(owner);
+
                                     SoundUtils.PlayWithRPC(ref emitter, "Shoot", transform.Position);
 
                                     if (!hc.position.Equals(float3.zero))
@@ -231,7 +248,7 @@ public partial struct ShootSystem : ISystem
                             dynamicData.timeSinceLastFire = 0f;
                         }
                         //NO AMMO
-                        else
+                        else if (state.World.IsServer())
                         {
                             SoundUtils.PlayWithRPC("Bullet", "NoBullet", shootStartpos);
                         }
@@ -284,6 +301,12 @@ public partial struct ShootSystem : ISystem
             if (input.attackStarted.IsSet && !input.attackCanceled.IsSet)
             {
                 dynamicData.isCooking = true;
+
+                if (state.EntityManager.HasComponent<GhostOwner>(owner))
+                {
+                    int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
+                    AnimationUtils.AddTriggerCommand("Throw", owner, animationEcb, networkId);
+                }
             }
             else if(!input.attackStarted.IsSet && input.attackCanceled.IsSet)
             {
@@ -344,6 +367,9 @@ public partial struct ShootSystem : ISystem
                 }
             }
         }
+
+        animationEcb.Playback(state.EntityManager);
+        animationEcb.Dispose();
     }
 
     bool TryGetOwnerInputRW(Entity owner, ref SystemState state, out RefRW<CharacterInput> Input)

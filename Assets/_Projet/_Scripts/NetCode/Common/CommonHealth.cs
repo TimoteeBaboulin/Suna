@@ -166,7 +166,6 @@ public partial struct ApplyDamageSystem : ISystem
         {
             var ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(entity);
             var teamSideType = PlayerHelpers.GetPlayerInTeam(ghostOwner.NetworkId);
-            Debug.Log($"[ApplyDamageSystem] {ghostOwner.NetworkId} is in team {teamSideType}");
             entityTeamTable.TryAdd(entity, PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId));
         }
 
@@ -233,8 +232,6 @@ public partial struct DamageSourceJob : IJobEntity
                    sourceTeam != targetTeam)
                 // Make sure money is given only when killing a player and when it's not a team kill
                 {
-                    Debug.Log($"[ApplyDamageSystem] {ghostOwnerSource.NetworkId} killed {ghostOwnerTarget.NetworkId}");
-
                     if (MoneyLookup.TryGetComponent(source, out var cm))
                     {
                         cm.money += damageComponent.ValueRO.killReward;

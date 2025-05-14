@@ -11,7 +11,6 @@ public class ShopController : MonoBehaviour
 {
     private UIDocument document;
     private VisualElement root;
-    private VisualElement shop;
     private VisualElement shopmenu;
 
     [SerializeField] private DefaultInputSystem input;
@@ -33,29 +32,21 @@ public class ShopController : MonoBehaviour
     {
         document = GetComponent<UIDocument>();
         root = document.rootVisualElement;
-        shop = root.Q<VisualElement>("Shop");
-        shopmenu = shop.Q<VisualElement>("ShopMenu");
+        shopmenu = root.Q<VisualElement>("ShopMenu");
         UI.SetActive(ref root, false);
     }
 
     private void Start()
     {
-        CreateShopLine(out VisualElement line); shopmenu.Add(line);
-        CreateShopButton(out Button button, 30, lp17.UIImage); line.Add(button); weaponDict[button] = lp17;
-        CreateShopButton(out button, 30, banduka.UIImage); line.Add(button); weaponDict[button] = banduka;
-        CreateShopButton(out button, 30, skar18.UIImage); line.Add(button); weaponDict[button] = skar18;
-        CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30, null); line.Add(button); //weaponDict[button] = fakir;
-        CreateShopButton(out button, 30, null); line.Add(button); 
-        CreateShopButton(out button, 30, null); line.Add(button); //weaponDict[button] = decimator;
-        CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 30, null); line.Add(button); 
-        CreateShopButton(out button, 30, SMG.UIImage); line.Add(button); weaponDict[button] = SMG;
-        CreateShopButton(out button, 30, Sniper.UIImage); line.Add(button); weaponDict[button] = Sniper;
-        CreateShopLine(out line); shopmenu.Add(line);
-        CreateShopButton(out button, 20, heGrenade.UIImage); line.Add(button); grenadeDict[button] = heGrenade;
-        CreateShopButton(out button, 20, flashbang.UIImage); line.Add(button); grenadeDict[button] = flashbang;
-        CreateShopButton(out button, 20, null); line.Add(button);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonSkar18"), skar18);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonDecimator"), decimator);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonLP17"), lp17);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonFakir"), fakir);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonBanduka"), banduka);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonNelara"), SMG);
+        weaponDict.Add(shopmenu.Q<Button>("ButtonLaksya"), Sniper);
+        grenadeDict.Add(shopmenu.Q<Button>("ButtonHE"), heGrenade);
+        grenadeDict.Add(shopmenu.Q<Button>("ButtonFlash"), flashbang);
 
         List<Button> buttonList = shopmenu.Query<Button>().ToList();
 
@@ -127,7 +118,7 @@ public class ShopController : MonoBehaviour
             }
             else
             {
-                if (roundData.currentPhase == RoundPhase.BuyPhase)
+                if (roundData.currentPhase == RoundPhase.BuyPhase || !roundData.roundSystemActive)
                 {
                     UI.ToggleActive(ref root);
                     ActivateUIInput(UI.IsActive(ref root));
@@ -143,44 +134,6 @@ public class ShopController : MonoBehaviour
         }
     }
 
-    private void CreateShopButton(out Button button, float widthPercent, Texture2D texture)
-    {
-        button = new();
-        button.AddToClassList("shop_buy_slot_button");
-        button.style.position = Position.Relative;
-        button.style.width = UI.PercentLength(widthPercent);
-        UI.SetMargin(ref button, 10);
-        UI.SetPadding(ref button, 10);
-
-        if (texture == null)
-        {
-            button.style.backgroundColor = new Color(.2f, .2f, .2f, 1f);
-            button.SetEnabled(false);
-        }
-
-        if (texture != null)
-        {
-            Image icon = new();
-            icon.image = texture;
-            icon.scaleMode = ScaleMode.ScaleToFit;
-            button.style.justifyContent = Justify.Center;
-            icon.style.alignSelf = Align.Center;
-            icon.style.height = UI.PercentLength(50);
-
-            button.Add(icon);
-        }
-    }
-
-    private void CreateShopLine(out VisualElement line)
-    {
-        line = new();
-        line.style.flexDirection = FlexDirection.Row;
-        line.style.width = UI.PercentLength(100);
-        line.style.height = UI.PercentLength(30);
-        line.style.justifyContent = Justify.Center;
-        line.style.alignSelf = Align.Center;
-    }
-
     private void AddLabelToShopButton(ref Button button, string text, float fontSize, TextAnchor anchor, Vector2 shift)
     {
         Label label = new(text);
@@ -194,34 +147,9 @@ public class ShopController : MonoBehaviour
         button.Add(label);
     }
 
-    private void AddWeaponIcon(ref Button button, Texture2D texture)
-    {
-        /*button.Children().GetEnumerator().
-
-        Image icon = new();
-        icon.image = texture;
-        icon.scaleMode = ScaleMode.ScaleAndCrop;
-        icon.style.justifyContent = Justify.Center;
-        icon.style.alignSelf = Align.Center;
-        icon.style.width = texture.width;
-        icon.style.height = texture.height;
-
-        button.Add(icon);*/
-
-        throw new System.NotImplementedException("AddWeaponIcon is not implemented yet.");
-
-        //VisualElement iconElement = new();
-        //iconElement.style.backgroundImage = icon;
-        //iconElement.style.position = Position.Absolute;
-        //UI.SetPosition(ref iconElement, TextAnchor.MiddleCenter, 0, 0);
-        //float ratio = (float)icon.height / icon.width;
-        //UI.SetSize(ref iconElement, new Length(80, LengthUnit.Percent), new Length(100 * ratio, LengthUnit.Percent));
-        //button.Add(iconElement);
-    }
-
     private void AddProductLabelsToShopButton(ref Button button, string productName, string productPrice)
     {
-        AddLabelToShopButton(ref button, productName, 30, TextAnchor.UpperRight, new(5, 5));
+        AddLabelToShopButton(ref button, productName, 30, TextAnchor.LowerLeft, new(5, 5));
         AddLabelToShopButton(ref button, productPrice, 30, TextAnchor.LowerRight, new(2, 5));
     }
 
@@ -229,16 +157,14 @@ public class ShopController : MonoBehaviour
     {
         VisualElement statsElement = new() { name = "StatsElement" };
         shopmenu.Add(statsElement);
-        UI.SetSize(ref statsElement, 300f, shopmenu.resolvedStyle.height * 3 / 4f);
+        UI.SetSize(ref statsElement, 350f, shopmenu.resolvedStyle.height * 3 / 4f);
         statsElement.style.position = Position.Absolute;
-        UI.SetPosition(ref statsElement, TextAnchor.MiddleRight, -300f, 0f);
-        statsElement.style.backgroundColor = new Color(1, 1, 1, .1f);
-        UI.SetBorderWidth(ref statsElement, 2);
-        UI.SetBorderColor(ref statsElement, new Color(1, 1, 1, .5f));
+        UI.SetPosition(ref statsElement, TextAnchor.LowerLeft, -360f, 0f);
+        statsElement.style.backgroundColor = new Color(.58f, .58f, .58f, .25f);
         RangedWeaponData weapon = weaponDict[button];
-        statsElement.Add(UI.Label($"Name: {weapon.entityName}", 20, Color.white));
-        statsElement.Add(UI.Label($"Damage: {weapon.damage}", 20, Color.white));
-        statsElement.Add(UI.Label($"Firerate: {weapon.firerate} RPM", 20, Color.white));
+        statsElement.Add(UI.Label($"Name: {weapon.entityName}", 30, Color.white));
+        statsElement.Add(UI.Label($"Damage: {weapon.damage}", 30, Color.white));
+        statsElement.Add(UI.Label($"Firerate: {weapon.firerate} RPM", 30, Color.white));
     }
 
     private void OnShopButtonLeave()

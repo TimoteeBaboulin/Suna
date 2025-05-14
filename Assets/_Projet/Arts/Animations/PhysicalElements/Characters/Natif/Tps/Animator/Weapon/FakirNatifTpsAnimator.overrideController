@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: FakirNatifTpsAnimator
+  m_Controller: {fileID: 9100000, guid: d42f29338c167f1488d60b88369f8f07, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7389857606932790811, guid: d5e79b271f1d24d42aa9f7ff0916098a, type: 3}
+    m_OverrideClip: {fileID: -7696867211716569360, guid: 2d6fd30c924ee1a4f8a7ad071d229b34, type: 3}
+  - m_OriginalClip: {fileID: -2061807622792415135, guid: 43644bedec1690948823c5ad7b1cf28e, type: 3}
+    m_OverrideClip: {fileID: 678497499032085652, guid: f380d24706d42bf4db4713d9f313b24a, type: 3}
+  - m_OriginalClip: {fileID: -2974271992147726864, guid: a952716789bbb73489819019a3c44a68, type: 3}
+    m_OverrideClip: {fileID: -8827747302951810738, guid: ae48d354fd614454f82de2621a3b185e, type: 3}
+  - m_OriginalClip: {fileID: -3609043218609501809, guid: 4880293c95cafce43bee822e49c7ba83, type: 3}
+    m_OverrideClip: {fileID: -4922986623161438109, guid: 88cf4610251792748b994b90b36486c4, type: 3}
+  - m_OriginalClip: {fileID: -1434921246921096219, guid: 79c9832073393274c8ec3b53523df13a, type: 3}
+    m_OverrideClip: {fileID: 2604046752804277976, guid: 057650acd028da94484bef3ede350ff4, type: 3}

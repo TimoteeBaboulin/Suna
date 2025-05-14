@@ -269,6 +269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _settingsMenuAsset: {fileID: 9197481963319205126, guid: 557c017bc59903445b66d083fc317b9f, type: 3}
+  _gameManager: {fileID: 1102802658}
 --- !u!4 &1032681953
 Transform:
   m_ObjectHideFlags: 0
@@ -322,7 +323,7 @@ MonoBehaviour:
       sound:
         idInternal: 0
         valueGuidInternal: 
-        WwiseObjectReference: {fileID: 11400000, guid: 5e1f071cbea5db64cad05f142587df18, type: 2}
+        WwiseObjectReference: {fileID: 0}
 --- !u!1001 &1086009981
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -380,6 +381,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8eb044850a674214db555dc7ccc5c94e, type: 3}
+--- !u!114 &1102802658 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 732462774845226267, guid: 8eb044850a674214db555dc7ccc5c94e, type: 3}
+  m_PrefabInstance: {fileID: 1086009981}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d20120cc72ae3a4aae3ec7eacf6140f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1236531776
 GameObject:
   m_ObjectHideFlags: 0
@@ -641,7 +653,7 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 1
+  m_Antialiasing: 2
   m_AntialiasingQuality: 2
   m_StopNaN: 0
   m_Dithering: 0
@@ -718,7 +730,7 @@ MonoBehaviour:
   data:
     idInternal: 0
     valueGuidInternal: 
-    WwiseObjectReference: {fileID: 11400000, guid: 74ead161ac07e1d4696a072a3a4fe5e0, type: 2}
+    WwiseObjectReference: {fileID: 0}
   decodeBank: 0
   overrideLoadSetting: 0
   loadAsynchronous: 0
@@ -871,18 +883,6 @@ PrefabInstance:
     - target: {fileID: 5556244542664566637, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_Name
       value: ConnectionManager
-      objectReference: {fileID: 0}
-    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: Port
-      value: 7979
-      objectReference: {fileID: 0}
-    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: isRelease
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
-      propertyPath: isClientLocal
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7540693576825535764, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: m_LocalPosition.x

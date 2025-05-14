@@ -23,6 +23,8 @@ partial struct RoundSystemClient : ISystem
 
     private bool _firstFrame;
 
+    private float _matOverrideValue;
+
     public struct RequestRoundDataRpcCommand : IRpcCommand
     {
     }
@@ -46,6 +48,8 @@ partial struct RoundSystemClient : ISystem
             var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
             reference.ValueRW.timer = buffer[0];
         }
+
+        _matOverrideValue = 0;
     }
 
     //[BurstCompile]
@@ -91,13 +95,25 @@ partial struct RoundSystemClient : ISystem
 
         var b = SystemAPI.GetBuffer<PhaseTimesBuffer>(query.GetSingletonEntity());
 
-        if (round.ValueRW.currentPhase == RoundPhase.ActionPhase && (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) < 2)
+        if (round.ValueRW.currentPhase != RoundPhase.BuyPhase && _matOverrideValue < 1)
         {
-            foreach (var (matOverride, entity) in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>().WithEntityAccess())
+            _matOverrideValue += Time.deltaTime / 2.0f;
+            if (_matOverrideValue > 1)
+                _matOverrideValue = 1;
+
+            foreach (RefRW<SpawnFenceMaterialOverride> matOverrideRW in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>())
             {
-                matOverride.ValueRW.Value = (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) / 2.0f;
+                matOverrideRW.ValueRW.Value = _matOverrideValue;
             }
         }
+
+        //if (round.ValueRW.currentPhase == RoundPhase.ActionPhase && (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) < 2)
+        //{
+        //    foreach (var (matOverride, entity) in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>().WithEntityAccess())
+        //    {
+        //        matOverride.ValueRW.Value = (b[(int)RoundPhase.ActionPhase] - round.ValueRW.timer) / 2.0f;
+        //    }
+        //}
 
         foreach (var (request, update, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<UpdateRoundDataRpcCommand>>().WithEntityAccess())
         {
@@ -147,14 +163,19 @@ partial struct RoundSystemClient : ISystem
 
     public void SetBarrierState(ref SystemState state, bool active)
     {
-        foreach ((RefRW<PhysicsCollider> physicsColliderRW, RefRW<SpawnFenceMaterialOverride> matOverride, Entity barrierEntity) in SystemAPI
-                    .Query<RefRW<PhysicsCollider>, RefRW<SpawnFenceMaterialOverride>>()
-                    .WithAll<SpawnBarrierComponent>()
-                    .WithEntityAccess())
+        foreach (RefRW<PhysicsCollider> physicsColliderRW in SystemAPI
+                    .Query<RefRW<PhysicsCollider>>()
+                    .WithAll<SpawnBarrierComponent>())
         {
             physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(active? CollisionResponsePolicy.Collide : CollisionResponsePolicy.None);
+        }
 
-            matOverride.ValueRW.Value = active ? 0 : 1;
+        if (active)
+            _matOverrideValue = 0;
+
+        foreach (RefRW<SpawnFenceMaterialOverride> matOverrideRW in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>())
+        {
+            matOverrideRW.ValueRW.Value = 0;
         }
     }
 

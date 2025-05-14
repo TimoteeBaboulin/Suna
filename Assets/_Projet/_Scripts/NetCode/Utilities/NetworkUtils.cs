@@ -37,8 +37,8 @@ namespace GameNetwork.Utils
         public static ushort CurrentPort { get; set; } = 7979;
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-        public static int MaxNbOfPlayers = 2; 
-        public static bool isRelease = false;
+        public static int MaxNbOfPlayers = 2;
+        public static bool isRelease = true;
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;
 
@@ -75,12 +75,6 @@ namespace GameNetwork.Utils
                 instance = new ClientTransportHelper();
 
                 var options = instance.CreateSessionOptions();
-#if UNITY_SERVER
-
-                Debug.Log($"[SessionTransportHelper] Default session options created. Overriding MaxPlayers from {options.MaxPlayers} to {sessionOptions.MaxPlayers}");
-#endif
-
-                options.MaxPlayers = sessionOptions.MaxPlayers;
                 options.Name = sessionOptions.Name;
 
                 var networkHandler = new NetworkHandler();
@@ -91,7 +85,6 @@ namespace GameNetwork.Utils
 #endif
 
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
-                //IServerSession hostSession = await MultiplayerServerService.Instance.CreateSessionAsync(options);
                 if (hostSession == null)
                 {
 #if UNITY_SERVER
@@ -266,7 +259,8 @@ namespace GameNetwork.Utils
         }
         public SessionOptions CreateSessionOptions()
         {
-            int maxPlayers =  RequestedPlayType == PlayType.ClientAndServer ? MaxNbOfPlayers : MaxNbOfPlayers + 1;
+            int maxPlayers = RequestedPlayType == PlayType.Server ? MaxNbOfPlayers + 1 : MaxNbOfPlayers;
+            Debug.Log($"maxPlayerServer {maxPlayers}");
             var options = new SessionOptions
             {
                 MaxPlayers = maxPlayers

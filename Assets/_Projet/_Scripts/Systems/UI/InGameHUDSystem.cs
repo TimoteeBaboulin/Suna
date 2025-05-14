@@ -2,7 +2,9 @@ using System;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Transforms;
 using UnityEngine;
 
 [BurstCompile]
@@ -14,12 +16,14 @@ partial class InGameHUDSystem : SystemBase
     public class MoneyArgs : EventArgs { public uint money; }
     public class HitArgs : EventArgs { public bool headHit; }
     public class FlashGrenadeArgs : EventArgs { public float intensity; }
+    public class PositionArgs : EventArgs { public float3 position; public float3 forward; }
 
     public event EventHandler<HealthArgs> HealthChangedEvent;
     public event EventHandler<HitArgs> HitRegister;
     public event EventHandler<AmmoArgs> AmmoChangeEvent;
     public event EventHandler<MoneyArgs> MoneyChangedEvent;
     public event EventHandler<FlashGrenadeArgs> FlashGrenadeEvent;
+    public event EventHandler<PositionArgs> PositionChangedEvent;
 
     [BurstCompile]
     protected override void OnCreate()
@@ -71,6 +75,13 @@ partial class InGameHUDSystem : SystemBase
             .WithEntityAccess())
         {
             AmmoChangeEvent?.Invoke(this, new AmmoArgs { ammo = 0, remainingAmmo = 0 });
+        }
+
+        foreach(var localTransform in SystemAPI
+            .Query<RefRO<LocalTransform>>()
+            .WithAll<GhostOwnerIsLocal, CharacterComponent>())
+        {
+            PositionChangedEvent?.Invoke(this, new PositionArgs { position = localTransform.ValueRO.Position, forward = localTransform.ValueRO.Forward() });
         }
     }
 }

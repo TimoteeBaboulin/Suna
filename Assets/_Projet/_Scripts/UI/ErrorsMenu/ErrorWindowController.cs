@@ -9,7 +9,7 @@ public class ErrorWindowController : MonoBehaviour
     private UIDocument _document;
     private VisualElement _root;
 
-	// Main Features
+    // Main Features
     private FloatingWindow _window;
 
     [HideInInspector] public List<string> ErrorsOnStart = new();
@@ -31,7 +31,7 @@ public class ErrorWindowController : MonoBehaviour
             }
         }
 
-		// Register Methods
+        // Register Methods
         _window.AddCloseButtonMethod(OnCloseButtonClick);
         _window.AddValidateButtonMethod(OnValidateButtonClick);
     }
@@ -43,12 +43,8 @@ public class ErrorWindowController : MonoBehaviour
 
     private async void OnValidateButtonClick()
     {
-        if (GameManager.Instance != null)
-        {
-          //  await GameManager.Instance.DisconnectAndUnloadWorlds();
-            await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
-        }
-	}
+        await LoadUtils.LoadSceneAsync("MainMenu", GameNetwork.SessionData.LoadingSteps.BackToMainMenu);
+    }
 
     public void AddError(string error)
     {
