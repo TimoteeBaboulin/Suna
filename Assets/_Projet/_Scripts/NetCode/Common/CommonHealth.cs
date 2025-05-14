@@ -188,6 +188,22 @@ public partial struct ApplyDamageSystem : ISystem
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+
+        ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
+        {
+            DamageIndicator damageIndicator = new DamageIndicator
+            {
+                damageSourcePosition = command.ValueRO.position
+            };
+
+            RpcUtils.SendServerToClientRpc(ref damageIndicator, command.ValueRO.target);
+            ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
+        }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }
 
@@ -212,10 +228,13 @@ public partial struct DamageSourceJob : IJobEntity
 
         ApplyDamageCommand damageCommand = new ApplyDamageCommand
         {
-            position = damageComponent.ValueRO.sourcePosition
+            position = damageComponent.ValueRO.sourcePosition,
+            target = target
         };
 
-        RpcUtils.SendServerToClientRpc(ref damageCommand, target);
+        ecb.AddComponent(sortKey, entity, damageCommand);
+
+        //RpcUtils.SendServerToClientRpc(ref damageCommand, target);
 
         //DamageIndicator damageIndicator = new DamageIndicator
         //{
@@ -254,17 +273,18 @@ public partial struct DamageSourceJob : IJobEntity
             ecb.DestroyEntity(sortKey, damageComponent.ValueRO.grenade);
         }
 
-        ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
+        ecb.RemoveComponent<ApplyDamage>(sortKey, entity);
     }
 }
 
 [BurstCompile]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct DamageSourcePositionSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
     {
         state.RequireForUpdate<NetworkId>();
-        state.RequireForUpdate<ApplyDamageCommand>();
+        state.RequireForUpdate<DamageIndicator>();
     }
 
     [BurstCompile]
@@ -272,13 +292,13 @@ public partial struct DamageSourcePositionSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach(var (damageCommand, entity) in SystemAPI
-            .Query<RefRW<ApplyDamageCommand>>()
+        foreach(var (damageIndicator, entity) in SystemAPI
+            .Query<RefRW<DamageIndicator>>()
             .WithEntityAccess())
         {
             // Get the source position and show the damage indicator
 
-            ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
+            ecb.DestroyEntity(entity); //Destroying the DamageIndicator entity
         }
 
         ecb.Playback(state.EntityManager);
