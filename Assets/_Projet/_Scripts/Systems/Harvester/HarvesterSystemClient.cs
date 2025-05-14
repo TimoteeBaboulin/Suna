@@ -223,7 +223,7 @@ partial class HarvesterSystemClient : SystemBase
         harvesterTransform.Rotation = quaternion.identity;
 
         StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
-        goRef.Value.GetComponent<HarvesterVfxLink>().Play();
+        goRef.View.GetComponent<HarvesterVfxLink>().Play();
         StuffUtils.SetStuffViewTransform(goRef, harvesterTransform);
 
         SystemAPI.SetComponent(harvesterEntity, harvesterTransform);
@@ -234,7 +234,7 @@ partial class HarvesterSystemClient : SystemBase
     private void DefuseHarvester(Entity harvesterEntity)
     {
         StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
-        goRef.Value.GetComponent<HarvesterVfxLink>().Stop();
+        goRef.View.GetComponent<HarvesterVfxLink>().Stop();
 
         //Debug.Log("[Harvester] Client received defuse rpc");
     }
