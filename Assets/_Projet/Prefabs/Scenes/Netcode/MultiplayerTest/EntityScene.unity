@@ -520,7 +520,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &273525385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1085,7 +1085,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1149339946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2106,6 +2106,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 130976595328536114, guid: b1a8108a955104b4cbfaa8e0a4c91ac3, type: 3}
+      propertyPath: tracerRoundVfxPrefab
+      value: 
+      objectReference: {fileID: 4940725303504062777, guid: a098a52eecd677748901acfcade565e2, type: 3}
     - target: {fileID: 6129847964931826631, guid: b1a8108a955104b4cbfaa8e0a4c91ac3, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

@@ -24,6 +24,7 @@ public class HUDController : MonoBehaviour
     // Main HUD
     private VisualElement _crosshairElement;
     private VisualElement _hitMarkerElement;
+    private VisualElement _sniperElement;
 
     //Grenade effects
     private VisualElement _flash;
@@ -117,6 +118,7 @@ public class HUDController : MonoBehaviour
         _HUD = _HUDDocument.rootVisualElement;
 
         _flash = _HUD.Q<VisualElement>("Flash");
+        _sniperElement = _HUD.Q<VisualElement>("SniperCrosshair");
 
         _health = _HUD.Q<Label>("HealthLabel");
         //_armor = _HUD.Q<Label>("ArmorLabel");
@@ -222,6 +224,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
             _inGameHUDSystem.FlashGrenadeEvent += System_OnFlashGrenade;
             _inGameHUDSystem.PositionChangedEvent += System_OnPositionChanged;
+            _inGameHUDSystem.ADSChangedEvent += System_OnADSChange;
         }
 
         if (_roundManagerLinkSystem == null && world.Name == "ClientWorld")
@@ -345,6 +348,11 @@ public class HUDController : MonoBehaviour
                 _winLoseRoundElement.style.backgroundImage = null;
             }
         }
+    }
+
+    private void System_OnADSChange(object sender, InGameHUDSystem.ADSArgs e)
+    {
+        UI.SetOpacity(ref _sniperElement, e.isAiming ? 1f : 0f);
     }
 
     private void OnTeamWinRound(object sender, RoundSystemClient.TeamWinRoundArgs args)

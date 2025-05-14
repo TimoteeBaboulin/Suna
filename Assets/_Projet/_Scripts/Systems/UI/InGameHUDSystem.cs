@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [BurstCompile]
@@ -17,6 +18,7 @@ partial class InGameHUDSystem : SystemBase
     public class HitArgs : EventArgs { public bool headHit; }
     public class FlashGrenadeArgs : EventArgs { public float intensity; }
     public class PositionArgs : EventArgs { public float3 position; public float3 forward; }
+    public class ADSArgs : EventArgs { public bool isAiming; }
 
     public event EventHandler<HealthArgs> HealthChangedEvent;
     public event EventHandler<HitArgs> HitRegister;
@@ -24,6 +26,7 @@ partial class InGameHUDSystem : SystemBase
     public event EventHandler<MoneyArgs> MoneyChangedEvent;
     public event EventHandler<FlashGrenadeArgs> FlashGrenadeEvent;
     public event EventHandler<PositionArgs> PositionChangedEvent;
+    public event EventHandler<ADSArgs> ADSChangedEvent;
 
     [BurstCompile]
     protected override void OnCreate()
@@ -59,6 +62,23 @@ partial class InGameHUDSystem : SystemBase
             FlashGrenadeEvent?.Invoke(this, new FlashGrenadeArgs { intensity = flashEffect.ValueRO.intensity });
         }
 
+        foreach(var (adsing, entity) in SystemAPI
+            .Query<RefRO<CharacterComponent>>()
+            .WithAll<GhostOwnerIsLocal>()
+            .WithEntityAccess())
+        {
+            if (!TryGetCurrentlyEquippedStuff(entity, out Entity stuffEntity))
+                continue;
+
+            if (SystemAPI.HasComponent<StuffDatabaseAccess>(stuffEntity))
+            {
+                StuffDatabaseAccess databaseAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffEntity);
+                GameResourcesDatabase database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+                ADSChangedEvent?.Invoke(this, new ADSArgs { isAiming = adsing.ValueRO.isAiming && databaseAccess.GetData(ref database).canADS }); 
+            }
+        }
+
         foreach (var (weaponDataRef, stuff) in SystemAPI
             .Query<RefRO<RangedWeaponDynamicData>>()
             .WithAll<GhostOwnerIsLocal, IsStuffInHand>()
@@ -83,5 +103,18 @@ partial class InGameHUDSystem : SystemBase
         {
             PositionChangedEvent?.Invoke(this, new PositionArgs { position = localTransform.ValueRO.Position, forward = localTransform.ValueRO.Forward() });
         }
+    }
+
+    bool TryGetCurrentlyEquippedStuff(Entity characterEntity, out Entity stuffEntity)
+    {
+        stuffEntity = default;
+
+        if (!SystemAPI.HasBuffer<CharacterStuffList>(characterEntity))
+            return false;
+
+        DynamicBuffer<CharacterStuffList> stuffList = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
+        CharacterStuffInfos stuffInfos = SystemAPI.GetComponent<CharacterStuffInfos>(characterEntity);
+        stuffEntity = StuffUtils.GetStuffInHand(stuffList, stuffInfos);
+        return true;
     }
 }
