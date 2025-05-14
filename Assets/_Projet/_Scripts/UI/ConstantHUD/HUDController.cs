@@ -106,6 +106,7 @@ public class HUDController : MonoBehaviour
     readonly private float _winLoseRoundTime = 4f;
 
     // Minimap
+    private bool _minimapSubscribed = false;
     private VisualElement _minimapElement;
     private VisualElement _minimapMapElement;
     private VisualElement _minimapPlayerElement;
@@ -206,6 +207,13 @@ public class HUDController : MonoBehaviour
 
     private void Update()
     {
+        foreach (VisualElement playerPin in _minimapMapElement.Children())
+        {
+            VisualElement visualElement = playerPin;
+            UI.SetActive(ref visualElement, false);
+            UI.SetOpacity(ref visualElement, 0f);
+        }
+
         // If too much message, delete previous ones
         //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
@@ -263,6 +271,11 @@ public class HUDController : MonoBehaviour
             RoundSystemClient.OnTeamWinRound += OnTeamWinRound;
             _winLoseRoundSubscribed = true;
         }
+        if (!_minimapSubscribed && world.Name == "ClientWorld")
+        {
+            MinimapTeamLinkSystem.OnMinimapTeamLinkEvent += System_OnPositionChanged;
+            _minimapSubscribed = true;
+        }
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -309,44 +322,62 @@ public class HUDController : MonoBehaviour
 
         if (world.Name == "ClientWorld" && _winLoseRoundEngaged)
         {
-            _winLoseRoundTimer += Time.deltaTime;
-
-            float t = _winLoseRoundTimer / _winLoseRoundTime;
-
-            if (t > 1f)
-            {
-                t = 1f;
-            }
-
-            UI.SetActive(ref _winLoseRoundElement, true);
-            UI.SetOpacity(ref _winLoseRoundElement, 0f);
-
-            if (t < .25f)
-            {
-                UI.SetOpacity(ref _winLoseRoundElement, t * 4f);
-            }
-            else if (t < .75f)
-            {
-                UI.SetOpacity(ref _winLoseRoundElement, 1f);
-            }
-            else if (t < 1f)
-            {
-                UI.SetOpacity(ref _winLoseRoundElement, 4f - t * 4f);
-            }
-            else
-            {
-                UI.SetOpacity(ref _winLoseRoundElement, 0f);
-            }
-
-            if (t == 1f)
-            {
-                UI.SetActive(ref _winLoseRoundElement, false);
-                _winLoseRoundEngaged = false;
-                _winLoseRoundElement.style.backgroundImage = null;
-            }
+            OnWinLoseRoundUpdate();
         }
     }
 
+    private void System_OnPositionChanged(object sender, MinimapTeamLinkSystem.MinimapTeamArgs args)
+    {
+        if ((TeamSideType)args.TeamId == GetCurrentPlayerInfo().team)
+        {
+            VisualElement teamPlayerElement = _minimapMapElement.Q<VisualElement>("Team" + args.PlayerId.ToString());
+            UI.SetActive(ref teamPlayerElement, args.Alive);
+            UI.SetOpacity(ref teamPlayerElement, args.Alive ? 1f : 0f);
+            Vector2 minimapPinPosition = GetMinimapPinPosition(args.Position);
+            teamPlayerElement.style.left = new StyleLength(-minimapPinPosition.x + _minimapElement.resolvedStyle.width / 2);
+            teamPlayerElement.style.top = new StyleLength(-minimapPinPosition.y + _minimapElement.resolvedStyle.height / 2);
+            teamPlayerElement.transform.rotation = GetMinimapPinRotation(args.Forward);
+        }
+    }
+
+    private void OnWinLoseRoundUpdate()
+    {
+        _winLoseRoundTimer += Time.deltaTime;
+
+        float t = _winLoseRoundTimer / _winLoseRoundTime;
+
+        if (t > 1f)
+        {
+            t = 1f;
+        }
+
+        UI.SetActive(ref _winLoseRoundElement, true);
+        UI.SetOpacity(ref _winLoseRoundElement, 0f);
+
+        if (t < .25f)
+        {
+            UI.SetOpacity(ref _winLoseRoundElement, t * 4f);
+        }
+        else if (t < .75f)
+        {
+            UI.SetOpacity(ref _winLoseRoundElement, 1f);
+        }
+        else if (t < 1f)
+        {
+            UI.SetOpacity(ref _winLoseRoundElement, 4f - t * 4f);
+        }
+        else
+        {
+            UI.SetOpacity(ref _winLoseRoundElement, 0f);
+        }
+
+        if (t == 1f)
+        {
+            UI.SetActive(ref _winLoseRoundElement, false);
+            _winLoseRoundEngaged = false;
+            _winLoseRoundElement.style.backgroundImage = null;
+        }
+    }
     private void OnTeamWinRound(object sender, RoundSystemClient.TeamWinRoundArgs args)
     {
         _winLoseRoundEngaged = true;
@@ -377,9 +408,9 @@ public class HUDController : MonoBehaviour
               : (2 - math.pow(2, -20 * x + 10)) / 2;
     }
 
-    private void System_OnFlashGrenade(object sender, InGameHUDSystem.FlashGrenadeArgs e)
+    private void System_OnFlashGrenade(object sender, InGameHUDSystem.FlashGrenadeArgs args)
     {
-        UI.SetOpacity(ref _flash, FlashIntensity(e.intensity));
+        UI.SetOpacity(ref _flash, FlashIntensity(args.intensity));
     }
 
     //----------Start of Round Phase Functions
@@ -706,6 +737,16 @@ public class HUDController : MonoBehaviour
     private void System_OnPositionChanged(object sender, InGameHUDSystem.PositionArgs args)
     {
         // Set Position of the map element
+        Vector2 minimapPinPosition = GetMinimapPinPosition(args.position);
+
+        _minimapMapElement.style.left = new StyleLength(minimapPinPosition.x);
+        _minimapMapElement.style.top = new StyleLength(minimapPinPosition.y);
+
+        // Set Rotation of the player icon
+        _minimapPlayerElement.transform.rotation = GetMinimapPinRotation(args.forward);
+    }
+    public Vector2 GetMinimapPinPosition(Vector3 worldPos)
+    {
         Vector2 firstRefWorld = new(-36, 6); // First point of reference in the world
         Vector2 secondRefWorld = new(21, 14); // Second point of reference in the world
         Vector2 firstRefUI = new(0, -44); // First point of reference in the UI
@@ -718,11 +759,11 @@ public class HUDController : MonoBehaviour
         Vector2 scaled = new(firstRefWorld.x * scale.x, firstRefWorld.y * scale.y); // Scaled position of the player relative to the two points of reference
         Vector2 offset = firstRefUI - scaled; // Offset between the two points of reference
 
-        _minimapMapElement.style.left = new StyleLength(args.position.x * scale.x + offset.x);
-        _minimapMapElement.style.top = new StyleLength(args.position.z * scale.y + offset.y);
-
-        // Set Rotation of the player icon
-        _minimapPlayerElement.transform.rotation = Quaternion.Euler(0f, 0f, math.degrees(math.atan2(args.forward.x, args.forward.z)));
+        return new(worldPos.x * scale.x + offset.x, worldPos.z * scale.y + offset.y);
+    }
+    public Quaternion GetMinimapPinRotation(Vector3 forward)
+    {
+        return Quaternion.Euler(0f, 0f, math.degrees(math.atan2(forward.x, forward.z)));
     }
     //----------End of Main HUD Elements System
 

@@ -84,10 +84,19 @@ public partial struct RoundSystemServer : ISystem
                 physicsColliderRW.ValueRW.Value.Value.SetCollisionResponse(CollisionResponsePolicy.None);
             }
 
-            DeactivateSpawnBarriersCommand rpc = new DeactivateSpawnBarriersCommand
+            roundComponent.ValueRW.currentPhase = RoundPhase.ActionPhase;
+
+            //DeactivateSpawnBarriersCommand rpc = new DeactivateSpawnBarriersCommand
+            //{
+            //    value = true
+            //};
+
+            ChangePhaseRpcCommand rpc = new ChangePhaseRpcCommand
             {
-                value = true
+                nextRound = false,
+                phase = RoundPhase.ActionPhase
             };
+
             EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
 
             foreach (var client in query.ToEntityArray(Allocator.Temp))
@@ -109,10 +118,13 @@ public partial struct RoundSystemServer : ISystem
         }
         else
         {
-            if (ClientTransportHelper.instance.Session.PlayerCount < 2 || PlayerHelpers.GetCurrentTeamCounts().neutralPlayersCount > 0)
-                return;
+            //if (ClientTransportHelper.instance.Session.PlayerCount < 2 || PlayerHelpers.GetCurrentTeamCounts().neutralPlayersCount > 0)
+            //    return;
         }
         if (roundComponent.ValueRO.gameWon)
+            return;
+
+        if (!roundComponent.ValueRO.roundSystemActive)
             return;
 
 

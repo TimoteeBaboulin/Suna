@@ -88,6 +88,11 @@ public struct RpcRequestHarvesterOwners : IRpcCommand
 {
 
 }
+
+public struct RpcHarvesterDefused : IRpcCommand
+{
+    public Entity harvester;
+}
 #endregion //RPCCommands
 
 

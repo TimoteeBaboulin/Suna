@@ -231,10 +231,12 @@ public partial struct CharacterMovementJob : IJobEntity
         if (controller.isAiming)
         {
             weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeedAiming : 1.0f;
+            AnimationUtils.AddBoolCommandJob("IsAiming", true, entity, ecb, sortKey, networkId);
         }
         else
         {
             weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
+            AnimationUtils.AddBoolCommandJob("IsAiming", false, entity, ecb, sortKey, networkId);
         }
 
         float decelerationFactor = math.dot(controller.direction, math.normalize(vel.Linear)) < 0.5f ? controller.decelerationFactor : 1.0f;

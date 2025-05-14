@@ -165,10 +165,13 @@ public static class PlayerHelpers
         switch (assignedTeam)
         {
             case TeamSideType.Corpo:
-                if (neutral == null)
-                    return TeamSideType.Neutre;
+                if (corpo == null)
+                {
+                    Debug.Log($"[PlayerHelper] Already found player id {player.Id} in {_teams.corpoPlayersid}");
+                    _teams.corpoPlayersid.Add(player.Id);
+                }
 
-                _teams.corpoPlayersid.Add(player.Id);
+                
                 if (neutral != null)
                 {
                     _teams.neutralPlayersId.Remove(player.Id);
@@ -182,10 +185,13 @@ public static class PlayerHelpers
                 player.SetProperty("team", new PlayerProperty(assignedTeam.ToString(), VisibilityPropertyOptions.Public));
                 return TeamSideType.Corpo;
             case TeamSideType.Natif:
-                if (neutral == null)
-                    return TeamSideType.Neutre;
+                if (natif == null)
+                {
+                    Debug.Log($"[PlayerHelper] Already found player id {player.Id} in {_teams.natifPlayersId}");
+                    _teams.natifPlayersId.Add(player.Id);
+                }
 
-                _teams.natifPlayersId.Add(player.Id);
+                
                 if (corpo != null)
                 {
                     _teams.corpoPlayersid.Remove(player.Id);

@@ -104,7 +104,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
                 AnimationUtils.AddTriggerCommand("Change", entity, ecb, networkId);
             }
         }
-        else if (stuffName == "Grenade_Flash")
+        else if (stuffName == "Flashbang")
         {
             if (animator.runtimeAnimatorController != animatorData.Grenade_Flash)
             {
