@@ -15,7 +15,6 @@ Material:
   - _CLOUDS_AMBIENT_PROBE
   - _OUTPUT_CLOUDS_DEPTH
   - _PERCEPTUAL_BLENDING
-  - _PHYSICALLY_BASED_SUN
   m_InvalidKeywords:
   - _SUNDISK_HIGH_QUALITY
   m_LightmapFlags: 4
@@ -121,7 +120,7 @@ Material:
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _CloudNearPlane: 901.76385
+    - _CloudNearPlane: 943.57635
     - _Cull: 2
     - _Cutoff: 0.5
     - _DensityMultiplier: 0.080000006
@@ -174,7 +173,7 @@ Material:
     - _SunSize: 0.04
     - _SunSizeConvergence: 5
     - _Surface: 0
-    - _VerticalErosionWindDisplacement: -487.5494
+    - _VerticalErosionWindDisplacement: -3.4081295
     - _VerticalShapeNoiseOffset: 0
     - _VerticalShapeWindDisplacement: 0
     - _WorkflowMode: 1
@@ -189,7 +188,7 @@ Material:
     - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WindDirection: {r: -0.70710677, g: -0.70710677, b: 0, a: 0}
-    - _WindVector: {r: -77436.8, g: -77436.8, b: 0, a: 0}
+    - _WindVector: {r: -9639.6045, g: -9639.6045, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &4204168956660823475
