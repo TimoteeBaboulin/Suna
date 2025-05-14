@@ -143,6 +143,9 @@ partial struct HarvesterSystemServer : ISystem
                     SystemAPI.GetComponentRW<LocalTransform>(dynData.dropedEntityRef).ValueRW.Position = corpoSpawnPosition;
                 }
             }
+
+            ecb.SetComponentEnabled<HarvesterPlanted>(harvester, false);
+
             ecb.RemoveComponent<HarvesterRespawn>(harvester);
 
 

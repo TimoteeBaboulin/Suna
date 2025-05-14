@@ -48,6 +48,8 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 NetworkTick plantStartTick = SystemAPI.GetComponentRO<HarvesterPlanting>(harvesterEntity).ValueRO.PlantStartedTick;
                 if (currentTick.TicksSince(plantStartTick) >= 60 * 4)
                 {
+                    Debug.Log("[Harvester] Server planted harvester");
+
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
                     Entity characterEntity = ownerRW.ValueRO.owner;
@@ -70,8 +72,7 @@ partial struct HarvesterPlantingSystemServer : ISystem
 
                     //SystemAPI.GetComponentRW<CharacterStuffInfos>(characterEntity).ValueRW.StuffInHandSlot = StuffSlot.Melee;
 
-                    var unequipStuffQueu = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
-                    StuffUtils.UnequipNextFrame(unequipStuffQueu, characterEntity, harvesterEntity);
+                    PlantHarvester(ref state, harvesterEntity);
 
                     float3 plantPosition = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position - new float3(0, 0.75f, 0);
                     harvesterTransformRW.ValueRW.Position = plantPosition;
@@ -169,5 +170,42 @@ partial struct HarvesterPlantingSystemServer : ISystem
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+
+    private void PlantHarvester(ref SystemState state, Entity harvester)
+    {
+        ChangeHarvesterOwner(ref state, harvester, Entity.Null);
+    }
+
+    private void ChangeHarvesterOwner(ref SystemState state, Entity harvesterEntity, Entity newOwner)
+    {
+        Entity oldOwner = SystemAPI.GetComponent<StuffDynamicData>(harvesterEntity).owner;
+        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+        if (oldOwner != Entity.Null)
+        {
+            DynamicBuffer<UnequipStuffQueue> unequipQueue = SystemAPI.GetSingletonBuffer<UnequipStuffQueue>();
+
+            var linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(oldOwner);
+            var ownerStuffList = SystemAPI.GetBuffer<CharacterStuffList>(oldOwner);
+
+            //Stuff
+            var stuffGhostOwnerRW = SystemAPI.GetComponentRW<GhostOwner>(harvesterEntity);
+            var stuffDynamicDataRW = SystemAPI.GetComponentRW<StuffDynamicData>(harvesterEntity);
+            ref var stuffData = ref SystemAPI.GetComponentRO<StuffDatabaseAccess>(harvesterEntity).ValueRO.GetData(ref database);
+
+            StuffUtils.Unequip(ref state, oldOwner, linkedEntityGroup, ownerStuffList,
+                harvesterEntity, stuffGhostOwnerRW, ref stuffData);
+            stuffDynamicDataRW.ValueRW.owner = Entity.Null;
+
+            //StuffUtils.UnequipNextFrame(unequipQueue, oldOwner, harvesterEntity);
+        }
+
+        if (newOwner != Entity.Null)
+        {
+            DynamicBuffer<EquipStuffQueue> equipQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+
+            StuffUtils.EquipNextFrame(equipQueue, newOwner, harvesterEntity, false);
+        }
     }
 }

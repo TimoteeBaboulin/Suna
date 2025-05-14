@@ -24,7 +24,7 @@ partial struct HarvesterDefuseSystemServer : ISystem
         state.RequireForUpdate(query);
     }
 
-    [BurstCompile]
+    //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -79,6 +79,18 @@ partial struct HarvesterDefuseSystemServer : ISystem
                 SystemAPI.SetComponentEnabled<HarvesterPlanted>(defusingHarvesterEntity, false);
                 SystemAPI.GetComponentRW<PlayerHarvesterActions>(defuserEntity).ValueRW.IsDefusing = false;
                 SystemAPI.SetComponentEnabled<HarvesterDefusing>(defusingHarvesterEntity, false);
+
+                RpcHarvesterDefused rpc = new RpcHarvesterDefused
+                {
+                    harvester = defusingHarvesterEntity
+                };
+
+                EntityQuery query = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+
+                foreach (var client in query.ToEntityArray(Allocator.Temp))
+                {
+                    RpcUtils.SendServerToClientRpc(ref rpc, client);
+                }
 
                 defusingHarvesterEntity = Entity.Null;
                 defuserEntity = Entity.Null;
