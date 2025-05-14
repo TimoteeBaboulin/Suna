@@ -8,6 +8,7 @@ public class RangedWeaponData : ScriptableObject
     [Header("Stuff infos")]
     public GameObject dropedEntityPrefab;
     public GameObject viewPrefab;
+    public GameObject viewPrefab_Baked;
     public Texture2D UIImage;
     public StuffSlot location;
     public StuffType type;
@@ -17,7 +18,8 @@ public class RangedWeaponData : ScriptableObject
     public float storageSpeed;
     public int price;
     public uint killGain = 300;
-    public Vector3 _stuffLocalOffsetView; //temp
+    public Vector3 _stuffLocalOffsetView;
+    public Vector3 _stuffLocalOffsetView_Baked;
 
 
     [Header("Ranged Weapon Data")]

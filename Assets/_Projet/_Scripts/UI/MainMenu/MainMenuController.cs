@@ -11,6 +11,7 @@ public class MainMenuController : MonoBehaviour
     [Header("Main Menu Component")]
     // Assets
     [SerializeField] private VisualTreeAsset _settingsMenuAsset;
+    [SerializeField] private GameManager _gameManager;
 
     // Main Elements
     private UIDocument _document;
@@ -89,7 +90,7 @@ public class MainMenuController : MonoBehaviour
     private async void OnPlayButton_Click()
     {
         _playButton.SetEnabled(false);
-        await GameManager.Instance.Play();
+        await _gameManager.Play();
         _playButton.SetEnabled(true);
 
         //Debug.Log("HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH");

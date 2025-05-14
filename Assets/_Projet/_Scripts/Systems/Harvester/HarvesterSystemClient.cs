@@ -201,20 +201,6 @@ partial class HarvesterSystemClient : SystemBase
             SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
             ChangeHarvesterOwner(rpc.harvester, Entity.Null);
 
-            //if (SystemAPI.HasComponent<StuffDynamicData>(rpc.harvester))
-            //{
-            //    StuffDynamicData stuffOwner = SystemAPI.GetComponent<StuffDynamicData>(rpc.harvester);
-
-            //    if (stuffOwner.owner != Entity.Null)
-            //    {
-            //        StuffUtils.UnequipNextFrame(unequipStuffQueu, stuffOwner.owner, rpc.harvester);
-            //    }
-            //    else
-            //    {
-            //        SystemAPI.GetComponentRW<LocalTransform>(rpc.harvester).ValueRW.Position = rpc.position;
-            //        EntityManager.GetComponentObject<StuffGameObjectRef>(rpc.harvester).Value.transform.position = rpc.position;
-            //    }
-            //}
         }
 
         ecb.Playback(EntityManager);

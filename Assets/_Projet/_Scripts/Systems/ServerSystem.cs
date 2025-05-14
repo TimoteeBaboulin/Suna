@@ -6,6 +6,7 @@ using Unity.Services.Multiplayer;
 using Unity.Transforms;
 using UnityEngine;
 using static PlayerHelpers;
+using static Unity.NetCode.ClientServerBootstrap;
 
 public struct ServerMessageRpcCommand : IRpcCommand
 {
@@ -28,10 +29,16 @@ public partial class ServerSystem : SystemBase
 {
     private ComponentLookup<NetworkId> _clients;
 
-    protected override void OnCreate()
+    protected async override void OnCreate()
     {
         _clients = GetComponentLookup<NetworkId>(true);
 
+        if (RequestedPlayType == PlayType.Server)
+        {
+            await ClientTransportHelper.StartServicesAsync();
+            Debug.Log($"Port in GameManager : {ClientServerBootstrap.AutoConnectPort}");
+            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
+        }
         RequireForUpdate<NetworkId>();
 
     }
@@ -116,7 +123,7 @@ public partial class ServerSystem : SystemBase
 #endif
         }
     }
-#endregion
+    #endregion
 }
 
 //#if UNITY_SERVER

@@ -36,4 +36,19 @@ public struct InstantiateStuffQueue : IBufferElementData
 public class GameResourcesViewPrefabs : IComponentData
 {
     public List<GameObject> List;
+    public List<GameObject> List_Baked;
+    public List<GameObject> GetPrefabsList(TeamSideType side)
+    {
+        switch (side)
+        {
+            case TeamSideType.Corpo:
+                return List_Baked;
+            case TeamSideType.Natif:
+                return List;
+            case TeamSideType.Neutre:
+                return null;
+            default:
+                return null;
+        }
+    }
 }
