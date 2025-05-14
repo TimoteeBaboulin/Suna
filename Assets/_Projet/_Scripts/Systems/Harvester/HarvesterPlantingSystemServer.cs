@@ -48,6 +48,8 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 NetworkTick plantStartTick = SystemAPI.GetComponentRO<HarvesterPlanting>(harvesterEntity).ValueRO.PlantStartedTick;
                 if (currentTick.TicksSince(plantStartTick) >= 60 * 4)
                 {
+                    Debug.Log("[Harvester] Server planted harvester");
+
                     SystemAPI.SetComponentEnabled<HarvesterPlanting>(harvesterEntity, false);
                     ecb.SetComponentEnabled<HarvesterPlanted>(harvesterEntity, true);
                     Entity characterEntity = ownerRW.ValueRO.owner;
