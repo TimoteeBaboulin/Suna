@@ -127,7 +127,7 @@ partial class HarvesterSystemClient : SystemBase
             }
 
             //Find a way to check whethere we're currently defusing
-            if (harvesterActions.Interact.WasReleasedThisFrame() || math.distance(harvesterPos, characterPos) >= 10)
+            if (harvesterActions.Interact.WasReleasedThisFrame())
             {
                 RpcHarvesterDefuseStop rpc = new RpcHarvesterDefuseStop
                 {
