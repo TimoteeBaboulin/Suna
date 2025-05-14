@@ -708,8 +708,8 @@ public class HUDController : MonoBehaviour
         // Set Position of the map element
         Vector2 firstRefWorld = new(-36, 6); // First point of reference in the world
         Vector2 secondRefWorld = new(21, 14); // Second point of reference in the world
-        Vector2 firstRefUI = new(-2, -43); // First point of reference in the UI
-        Vector2 secondRefUI = new(-221, -12); // Second point of reference in the UI
+        Vector2 firstRefUI = new(0, -44); // First point of reference in the UI
+        Vector2 secondRefUI = new(-220, -12); // Second point of reference in the UI
 
         Vector2 worldDelta = secondRefWorld - firstRefWorld; // World delta between the two points of reference
         Vector2 uiDelta = secondRefUI - firstRefUI; // UI delta between the two points of reference
