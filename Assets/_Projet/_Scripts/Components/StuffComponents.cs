@@ -215,11 +215,29 @@ public class StuffGameObjectRef : ICleanupComponentData
         {
             //Debug.Log("<color=red>SetParent : </color>" + View_Baked_.name + " <color=red>to</color> " + parent);
             View_Baked.transform.SetParent(parent);
+
+            if (parent == null)
+            {
+                SetLayerRecursively(View_Baked, 0);
+            }
+            else
+            {
+                SetLayerRecursively(View_Baked, 15);
+            }
         }
         if (View != null)
         {
             //Debug.Log("<color=red>SetParent : </color>" + View.name + " <color=red>to</color> " + parent);
             View.transform.SetParent(parent);
+
+            if (parent == null)
+            {
+                SetLayerRecursively(View, 0);
+            }
+            else
+            {
+                SetLayerRecursively(View, 15);
+            }
         }
     }
 
@@ -305,6 +323,18 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (View_Baked != null)
         {
             GameObject.Destroy(View_Baked);
+        }
+    }
+
+    private void SetLayerRecursively(GameObject obj, int newLayer)
+    {
+        if (obj == null) return;
+
+        obj.layer = newLayer;
+
+        foreach (Transform child in obj.transform)
+        {
+            SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 }
