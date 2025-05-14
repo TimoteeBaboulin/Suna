@@ -54,10 +54,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         LoadUtils.CreateEntityWorlds();
         if (RequestedPlayType == PlayType.ClientAndServer)
         {
-            sessionTransport = await ServerSessionFactory.CreateServerSession(
-                ClientTransportHelper.CurrentIP,
-                ClientTransportHelper.CurrentPort,
-                ClientTransportHelper.isClientLocal);
+            sessionTransport = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort);
         }
         else
         {

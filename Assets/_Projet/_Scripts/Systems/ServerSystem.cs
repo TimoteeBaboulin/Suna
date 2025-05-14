@@ -1,4 +1,6 @@
 ﻿using GameNetwork.Utils;
+using System;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -28,42 +30,67 @@ public struct ClientComponent : IComponentData
 public partial class ServerSystem : SystemBase
 {
     private ComponentLookup<NetworkId> _clients;
+    private bool _initialized = false;
 
-    protected async override void OnCreate()
+    protected override void OnCreate()
     {
+        Debug.Log("ServerSystem OnCreate called");
         _clients = GetComponentLookup<NetworkId>(true);
-
-        if (RequestedPlayType == PlayType.Server)
-        {
-            await ClientTransportHelper.StartServicesAsync();
-            Debug.Log($"Port in GameManager : {ClientServerBootstrap.AutoConnectPort}");
-            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
-        }
-        RequireForUpdate<NetworkId>();
-
     }
+
     protected override void OnUpdate()
     {
-        _clients.Update(this);
+        if (!_initialized && RequestedPlayType == PlayType.Server)
+        {
+            Debug.Log("ServerSystem OnUpdate (before init) called");
+            _initialized = true;
+            _ = InitializeAsync(); // Fire and forget
+            return;
+        }
 
+        // Now we can safely require NetworkId
+        if (!SystemAPI.HasSingleton<NetworkId>())
+        {
+            return; // still no clients, just wait
+        }
+
+        _clients.Update(this);
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
+        foreach (var (request, command, entity) in SystemAPI
+                     .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>()
+                     .WithEntityAccess())
         {
-            ServerConsole.Log(ServerConsole.LogType.Info, $"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}, version {request.ValueRO.SourceConnection.Version}");
             Debug.Log($"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}");
             commandBuffer.DestroyEntity(entity);
         }
 
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<ClientComponent>().WithEntityAccess())
+        foreach (var (id, entity) in SystemAPI
+                     .Query<RefRO<NetworkId>>()
+                     .WithNone<ClientComponent>()
+                     .WithEntityAccess())
         {
             InstantiateClient(entity, commandBuffer);
         }
 
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
+    }
 
-        Dependency.Complete();
+    private async Task InitializeAsync()
+    {
+        Debug.Log("ServerSystem InitializeAsync started");
+        try
+        {
+            await ClientTransportHelper.StartServicesAsync();
+            Debug.Log($"Port in GameManager : {AutoConnectPort}");
+            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort);
+            Debug.Log("Server session created");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"ServerSystem failed to initialize async logic: {ex}");
+        }
     }
 
     #region Public Methods

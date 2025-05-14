@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,28 +32,28 @@ namespace GameNetwork.Utils
                     ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
                     if (ClientTransportHelper.ServerWorld == null)
                     {
-                        Debug.LogError("Server world creation failed in ClientAndServer mode.");
+                        UnityEngine.Debug.LogError("Server world creation failed in ClientAndServer mode.");
                     }
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"Connection Request Type {RequestedPlayType}");
+                    UnityEngine.Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Server:
                     //role = NetworkRole.Server;
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"serverWorld in CreateEntityWorlds {ServerWorld}");
+                    UnityEngine.Debug.Log($"Connection Request Type {RequestedPlayType}");
+                    UnityEngine.Debug.Log($"serverWorld in CreateEntityWorlds {ServerWorld}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Client:
                     //role = NetworkRole.Client;
                     ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"Connection Request Type {RequestedPlayType}");
+                    UnityEngine.Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 default:
-                    Debug.LogError("ConnectionHandlerNew: No valid role specified.");
+                    UnityEngine.Debug.LogError("ConnectionHandlerNew: No valid role specified.");
                     break;
             }
         }
@@ -69,24 +70,24 @@ namespace GameNetwork.Utils
                     ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
                     ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"Connection Request Type {RequestedPlayType}");
+                    UnityEngine.Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Server:
                     //role = NetworkRole.Server;
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"Connection Request Type {RequestedPlayType}");
+                    UnityEngine.Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 case PlayType.Client:
                     //role = NetworkRole.Client;
                     ClientTransportHelper.ClientWorld = CreateClientWorld("ClientWorld");
                     ServerConsole.Log(ServerConsole.LogType.Info, $"Connection Request Type {RequestedPlayType}");
-                    Debug.Log($"Connection Request Type {RequestedPlayType}");
+                    UnityEngine.Debug.Log($"Connection Request Type {RequestedPlayType}");
                     //NetworkStreamReceiveSystem.DriverConstructor = new DriverConstructor(role);
                     break;
                 default:
-                    Debug.LogError("ConnectionHandlerNew: No valid role specified.");
+                    UnityEngine.Debug.LogError("ConnectionHandlerNew: No valid role specified.");
                     break;
             }
         }
@@ -106,7 +107,7 @@ namespace GameNetwork.Utils
         private static async Task SubScenesLoading(World world, SessionData.LoadingSteps step)
         {
             if (world == null) { return; }
-
+            UnityEngine.Debug.Log($"[SubScenesLoading] Querying SceneReferences in world: {world.Name}");
             SessionData.Instance.UpdateLoading(step);
 
             using var scenesQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<SceneReference>());
@@ -191,6 +192,7 @@ namespace GameNetwork.Utils
                 if (ClientTransportHelper.instance.Session.IsHost ||
                     RequestedPlayType == PlayType.ClientAndServer)
                 {
+                    UnityEngine.Debug.Log($"[LeaveSessionAsync] confirmation session deleted.");
                     await ClientTransportHelper.instance.Session.AsHost().DeleteAsync();
                 }
                 else
@@ -228,6 +230,26 @@ namespace GameNetwork.Utils
             await UnloadScenesAsync("MultiplayerTest");
         }
 
+        public static async Task LeaveSessionAndDestroyWorldsOnly()
+        {
+            ClientTransportHelper.State = ClientConnectionState.NotConnected;
+
+            foreach (var world in World.All)
+            {
+                if (world.IsClient())
+                {
+                    using var query = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<NetworkId>());
+                    if (query.TryGetSingletonEntity<NetworkId>(out var networkId))
+                    {
+                        world.EntityManager.AddComponentData(networkId, new NetworkStreamRequestDisconnect());
+                    }
+                }
+            }
+
+            await LeaveSessionAsync();               
+            await DestroyGameSessionWorlds();        
+        }
+
         public static Task QuitAsync() => DisconnectAndUnloadWorlds();
 
         private static void OnSessionLeft()
@@ -240,19 +262,18 @@ namespace GameNetwork.Utils
             var nets = new List<World>();
             for (int i = 0; i < World.All.Count; i++)
             {
-                var w = World.All[i];
-                if (w.IsClient() || w.IsServer())
-                    nets.Add(w);
+                var world = World.All[i];
+                if (world.IsClient() || world.IsServer())
+                    nets.Add(world);
             }
 
             if (nets.Count > 0)
             {
-                foreach (var w in nets)
-                    w.EntityManager.CompleteAllTrackedJobs();
-
-               // ResetAllCharacterComponents();
-                foreach (var w in nets)
-                    w.Dispose();
+                foreach (var world in nets)
+                {
+                    world.EntityManager.CompleteAllTrackedJobs();
+                    world.Dispose();
+                }
             }
 
             return Task.CompletedTask;
@@ -285,9 +306,26 @@ namespace GameNetwork.Utils
             var gameplay = SceneManager.GetSceneByName(sceneName);
             if (gameplay.IsValid() && gameplay != SceneManager.GetActiveScene())
             {
+                UnityEngine.Debug.Log($"Unloading Scene {sceneName}");
                 var unloadScene = SceneManager.UnloadSceneAsync(gameplay);
                 UpdateLoadingStateAsync(SessionData.LoadingSteps.UnloadingGameScene, unloadScene);
                 await unloadScene;
+            }
+        }
+
+        public static void RestartServer()
+        {
+            string exePath = Application.dataPath.Replace("_Data", ".exe");
+            UnityEngine.Debug.Log($"[ServerRestartHelper] Attempting to restart server using path: {exePath}");
+
+            try
+            {
+                Process.Start(exePath);
+                Application.Quit(); 
+            }
+            catch (System.Exception ex)
+            {
+                UnityEngine.Debug.LogError($"[ServerRestartHelper] Failed to restart server: {ex}");
             }
         }
     }
