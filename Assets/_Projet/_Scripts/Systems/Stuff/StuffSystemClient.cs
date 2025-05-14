@@ -52,7 +52,14 @@ partial struct StuffSystemClient : ISystem
                 {
                     ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
 
-                    goRef.SetParent(ownerView);
+                    if (state.EntityManager.HasComponent<CameraIsAtached>(dynDataRO.ValueRO.owner))
+                    {
+                        goRef.SetParent(ownerView, true);
+                    }
+                    else
+                    {
+                        goRef.SetParent(ownerView, false);
+                    }
 
                     var ownerGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
                     TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeam(ownerGhostOwner.NetworkId);
@@ -65,7 +72,7 @@ partial struct StuffSystemClient : ISystem
             }
             else
             {
-                goRef.SetParent(null);
+                goRef.SetParent(null, false);
             }
         }
 
