@@ -352,7 +352,7 @@ public partial struct ShootSystem : ISystem
                             {
                                 Position = shootStartpos,
                                 Rotation = shootRotation,
-                                Scale = 1.0f
+                                Scale = 2.0f
                             });
 
                             ecb.SetComponent(thrownGrenade, new PhysicsVelocity

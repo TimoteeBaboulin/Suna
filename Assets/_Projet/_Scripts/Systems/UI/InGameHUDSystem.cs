@@ -17,6 +17,7 @@ partial class InGameHUDSystem : SystemBase
     public class MoneyArgs : EventArgs { public uint money; }
     public class HitArgs : EventArgs { public bool headHit; }
     public class FlashGrenadeArgs : EventArgs { public float intensity; }
+    public class SmokeGrenadeArgs : EventArgs { public float intensity; public bool isSmoke; }
     public class PositionArgs : EventArgs { public float3 position; public float3 forward; }
     public class ADSArgs : EventArgs { public bool isAiming; }
 
@@ -25,6 +26,7 @@ partial class InGameHUDSystem : SystemBase
     public event EventHandler<AmmoArgs> AmmoChangeEvent;
     public event EventHandler<MoneyArgs> MoneyChangedEvent;
     public event EventHandler<FlashGrenadeArgs> FlashGrenadeEvent;
+    public event EventHandler<SmokeGrenadeArgs> SmokeGrenadeEvent;
     public event EventHandler<PositionArgs> PositionChangedEvent;
     public event EventHandler<ADSArgs> ADSChangedEvent;
 
@@ -62,7 +64,15 @@ partial class InGameHUDSystem : SystemBase
             FlashGrenadeEvent?.Invoke(this, new FlashGrenadeArgs { intensity = flashEffect.ValueRO.intensity });
         }
 
-        foreach(var (adsing, entity) in SystemAPI
+        foreach(var (smokeEffect, entity) in SystemAPI
+            .Query<RefRO<SmokeGrenadeEffect>>()
+            .WithAll<GhostOwnerIsLocal>()
+            .WithEntityAccess())
+        {
+            SmokeGrenadeEvent?.Invoke(this, new SmokeGrenadeArgs { intensity = smokeEffect.ValueRO.intensity, isSmoke = smokeEffect.ValueRO.isSmoke });
+        }
+
+        foreach (var (adsing, entity) in SystemAPI
             .Query<RefRO<CharacterComponent>>()
             .WithAll<GhostOwnerIsLocal>()
             .WithEntityAccess())

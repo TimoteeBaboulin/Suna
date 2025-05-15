@@ -42,6 +42,8 @@ public class NetcodePrefabsConverter : MonoBehaviour
 
     public GameObject heGrenadeExplosion = null;
     public GameObject flashbangExplosion = null;
+    public GameObject smokeGrenadeEffect = null;
+    public GameObject gasGrenadeEffect = null;
 }
 
 public struct ClientPrefabData : IComponentData
@@ -83,6 +85,9 @@ public struct VisualEffetPrefabData : IComponentData
 
     public Entity heGrenadeExplosion;
     public Entity flashbangExplosion;
+
+    public Entity smokeGrenadeEffect;
+    public Entity gasGrenadeEffect;
 }
 
 public struct VFXDurationData : IComponentData
@@ -92,6 +97,9 @@ public struct VFXDurationData : IComponentData
 
     public float heGrenadeExplosionDuration;
     public float flashbangExplosionDuration;
+
+    public float smokeGrenadeEffectDuration;
+    public float gasGrenadeEffectDuration;
 }
 
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
@@ -131,19 +139,22 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         Entity tracerEffect = default;
         Entity heGrenadeExplosion = default;
         Entity flashbangExplosion = default;
+        Entity smokeGrenadeEffect = default;
+        Entity gasGrenadeEffect = default;
         // VFX durations
         float hitDuration = 1.0f;
         float tracerDuration = 1.0f;
         float heGrenadeExplosionDuration = 1.0f;
         float flashbangExplosionDuration = 1.0f;
+        float smokeGrenadeEffectDuration = 1.0f;
+        float gasGrenadeEffectDuration = 1.0f;
 
         hitEffect = GetVFXEntityWithDuration(authoring.hitPrefab, TransformUsageFlags.Dynamic, out hitDuration);
         tracerEffect = GetVFXEntityWithDuration(authoring.tracerRoundVfxPrefab, TransformUsageFlags.Dynamic, out tracerDuration);
         heGrenadeExplosion = GetVFXEntityWithDuration(authoring.heGrenadeExplosion, TransformUsageFlags.Dynamic, out heGrenadeExplosionDuration);
         flashbangExplosion = GetVFXEntityWithDuration(authoring.flashbangExplosion, TransformUsageFlags.Dynamic, out flashbangExplosionDuration);
-
-        //Coucou ici Aurelien
-
+        smokeGrenadeEffect = GetVFXEntityWithDuration(authoring.smokeGrenadeEffect, TransformUsageFlags.Dynamic, out smokeGrenadeEffectDuration);
+        gasGrenadeEffect = GetVFXEntityWithDuration(authoring.gasGrenadeEffect, TransformUsageFlags.Dynamic, out gasGrenadeEffectDuration);
 
         if (authoring.hitPrefab != null)
         {
@@ -156,6 +167,18 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         if (authoring.heGrenadeExplosion != null)
         {
             heGrenadeExplosion = GetEntity(authoring.heGrenadeExplosion, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.flashbangExplosion != null)
+        {
+            flashbangExplosion = GetEntity(authoring.flashbangExplosion, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.smokeGrenadeEffect != null)
+        {
+            smokeGrenadeEffect = GetEntity(authoring.smokeGrenadeEffect, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.gasGrenadeEffect != null)
+        {
+            gasGrenadeEffect = GetEntity(authoring.gasGrenadeEffect, TransformUsageFlags.Dynamic);
         }
 
         if (authoring.Client != null)
@@ -292,7 +315,9 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             hitVisualEffect = hitEffect,
             tracerRoundVisualEffect = tracerEffect,
             heGrenadeExplosion = heGrenadeExplosion,
-            flashbangExplosion = flashbangExplosion
+            flashbangExplosion = flashbangExplosion,
+            smokeGrenadeEffect = smokeGrenadeEffect,
+            gasGrenadeEffect = gasGrenadeEffect
         });
 
         AddComponent(entity, new VFXDurationData
@@ -300,7 +325,9 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
             hitVFXDuration = hitDuration,
             tracerVFXDuration = tracerDuration,
             heGrenadeExplosionDuration = heGrenadeExplosionDuration,
-            flashbangExplosionDuration = flashbangExplosionDuration
+            flashbangExplosionDuration = flashbangExplosionDuration,
+            smokeGrenadeEffectDuration = smokeGrenadeEffectDuration,
+            gasGrenadeEffectDuration = gasGrenadeEffectDuration
         });
     }
 

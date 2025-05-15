@@ -154,10 +154,6 @@ public partial struct ApplyDamageSystem : ISystem
     {
         NetworkTick currentTick = SystemAPI.GetSingleton<NetworkTime>().ServerTick;
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
-        //ComponentLookup<CharacterMoney> moneyLookup = state.GetComponentLookup<CharacterMoney>();
-        //ComponentLookup<ClientCharacterAttached> ccacLookup = state.GetComponentLookup<ClientCharacterAttached>();
-        //BufferLookup<CharacterStuffList> stuffListLookup = state.GetBufferLookup<CharacterStuffList>();
-        //ComponentLookup<IsStuffInHand> inHandLookup = state.GetComponentLookup<IsStuffInHand>();
 
         EntityQuery query = state.GetEntityQuery(typeof(CharacterComponent));
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);

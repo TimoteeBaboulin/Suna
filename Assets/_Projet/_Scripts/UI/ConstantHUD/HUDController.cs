@@ -28,6 +28,8 @@ public class HUDController : MonoBehaviour
 
     //Grenade effects
     private VisualElement _flash;
+    private VisualElement _smokeEffect;
+    private VisualElement _gasEffect;
 
     private Label _health;
     //private Label _armor; // Should be uncommented when Armor in working
@@ -118,6 +120,8 @@ public class HUDController : MonoBehaviour
         _HUD = _HUDDocument.rootVisualElement;
 
         _flash = _HUD.Q<VisualElement>("Flash");
+        _smokeEffect = _HUD.Q<VisualElement>("SmokeHUD");
+        _gasEffect = _HUD.Q<VisualElement>("GasHUD");
         _sniperElement = _HUD.Q<VisualElement>("SniperCrosshair");
 
         _health = _HUD.Q<Label>("HealthLabel");
@@ -225,6 +229,7 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.FlashGrenadeEvent += System_OnFlashGrenade;
             _inGameHUDSystem.PositionChangedEvent += System_OnPositionChanged;
             _inGameHUDSystem.ADSChangedEvent += System_OnADSChange;
+            _inGameHUDSystem.SmokeGrenadeEvent += System_OnSmokeGrenade;
         }
 
         if (_roundManagerLinkSystem == null && world.Name == "ClientWorld")
@@ -348,6 +353,12 @@ public class HUDController : MonoBehaviour
                 _winLoseRoundElement.style.backgroundImage = null;
             }
         }
+    }
+
+    private void System_OnSmokeGrenade(object sender, InGameHUDSystem.SmokeGrenadeArgs e)
+    {
+        UI.SetOpacity(ref _smokeEffect, e.isSmoke ? e.intensity : 0);
+        UI.SetOpacity(ref _gasEffect, e.isSmoke ? 0 : e.intensity);
     }
 
     private void System_OnADSChange(object sender, InGameHUDSystem.ADSArgs e)

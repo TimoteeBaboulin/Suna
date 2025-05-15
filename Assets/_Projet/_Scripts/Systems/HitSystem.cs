@@ -63,16 +63,19 @@ public partial class HitSystem : SystemBase
                 {
                     Position = hitPosition,
                     Rotation = quaternion.identity,
-                    Scale = 1.0f
+                    Scale = 1.9f
                 });
 
 
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
+                commandBuffer.AddComponent<DestroyTag>(tracerEntity);
+
                 if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
                 {
                     commandBuffer.AddComponent(hitEffect, new Lifetime { RemainingTime = durationData.hitVFXDuration });
                     commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
                 }
+
                 commandBuffer.DestroyEntity(entity);
 
             }
