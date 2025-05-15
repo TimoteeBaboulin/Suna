@@ -22,6 +22,7 @@ public class HUDController : MonoBehaviour
     private VisualElement _HUD;
 
     // Main HUD
+    private bool _damageIndicatorSubscribed = false;
     private VisualElement _crosshairElement;
     private VisualElement _hitMarkerElement;
 
@@ -276,6 +277,11 @@ public class HUDController : MonoBehaviour
             MinimapTeamLinkSystem.OnMinimapTeamLinkEvent += System_OnPositionChanged;
             _minimapSubscribed = true;
         }
+        if (!_damageIndicatorSubscribed && world.Name == "ClientWorld")
+        {
+            DamageSourcePositionSystem.OnDamageIndicatorReceived += System_OnPositionChanged;
+            _damageIndicatorSubscribed = true;
+        }
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -324,6 +330,13 @@ public class HUDController : MonoBehaviour
         {
             OnWinLoseRoundUpdate();
         }
+    }
+
+    private void System_OnPositionChanged(object sender, DamageSourcePositionSystem.DamageIndicatorArgs args)
+    {
+        DamageIndicatorElement damageIndicator = new();
+        damageIndicator.transform.rotation = quaternion.Euler(0f, 0f, math.degrees(math.atan2(args.direction.x, args.direction.z)));
+        _crosshairElement.Add(damageIndicator);
     }
 
     private void System_OnPositionChanged(object sender, MinimapTeamLinkSystem.MinimapTeamArgs args)
