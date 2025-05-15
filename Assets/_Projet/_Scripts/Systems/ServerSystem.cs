@@ -47,17 +47,7 @@ public partial class ServerSystem : SystemBase
     }
 
     protected override void OnUpdate()
-    {
-       
-
-        //if (RequestedPlayType == PlayType.Server)
-        //{
-        //    if (!SystemAPI.HasSingleton<NetworkId>())
-        //    {
-        //        return;
-        //    }
-        //}
-
+    {     
         _clients.Update(this);
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
