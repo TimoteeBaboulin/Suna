@@ -39,6 +39,9 @@ public class NetcodePrefabsConverter : MonoBehaviour
     [Header("Visual Elements Prefabs")]
     public GameObject hitPrefab = null;
     public GameObject tracerRoundVfxPrefab = null;
+
+    public GameObject heGrenadeExplosion = null;
+    public GameObject flashbangExplosion = null;
 }
 
 public struct ClientPrefabData : IComponentData
@@ -77,12 +80,18 @@ public struct VisualEffetPrefabData : IComponentData
 {
     public Entity hitVisualEffect;
     public Entity tracerRoundVisualEffect;
+
+    public Entity heGrenadeExplosion;
+    public Entity flashbangExplosion;
 }
 
 public struct VFXDurationData : IComponentData
 {
     public float hitVFXDuration;
     public float tracerVFXDuration;
+
+    public float heGrenadeExplosionDuration;
+    public float flashbangExplosionDuration;
 }
 
 public class PrefabsBaker : Baker<NetcodePrefabsConverter>
@@ -120,12 +129,19 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
 
         Entity hitEffect = default;
         Entity tracerEffect = default;
+        Entity heGrenadeExplosion = default;
+        Entity flashbangExplosion = default;
         // VFX durations
         float hitDuration = 1.0f;
         float tracerDuration = 1.0f;
+        float heGrenadeExplosionDuration = 1.0f;
+        float flashbangExplosionDuration = 1.0f;
 
         hitEffect = GetVFXEntityWithDuration(authoring.hitPrefab, TransformUsageFlags.Dynamic, out hitDuration);
         tracerEffect = GetVFXEntityWithDuration(authoring.tracerRoundVfxPrefab, TransformUsageFlags.Dynamic, out tracerDuration);
+        heGrenadeExplosion = GetVFXEntityWithDuration(authoring.heGrenadeExplosion, TransformUsageFlags.Dynamic, out heGrenadeExplosionDuration);
+        flashbangExplosion = GetVFXEntityWithDuration(authoring.flashbangExplosion, TransformUsageFlags.Dynamic, out flashbangExplosionDuration);
+
         //Coucou ici Aurelien
 
 
@@ -136,6 +152,10 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         if (authoring.tracerRoundVfxPrefab != null)
         {
             tracerEffect = GetEntity(authoring.tracerRoundVfxPrefab, TransformUsageFlags.Dynamic);
+        }
+        if (authoring.heGrenadeExplosion != null)
+        {
+            heGrenadeExplosion = GetEntity(authoring.heGrenadeExplosion, TransformUsageFlags.Dynamic);
         }
 
         if (authoring.Client != null)
@@ -270,13 +290,17 @@ public class PrefabsBaker : Baker<NetcodePrefabsConverter>
         AddComponent(VisualEffectentity, new VisualEffetPrefabData
         {
             hitVisualEffect = hitEffect,
-            tracerRoundVisualEffect = tracerEffect
+            tracerRoundVisualEffect = tracerEffect,
+            heGrenadeExplosion = heGrenadeExplosion,
+            flashbangExplosion = flashbangExplosion
         });
 
         AddComponent(entity, new VFXDurationData
         {
             hitVFXDuration = hitDuration,
-            tracerVFXDuration = tracerDuration
+            tracerVFXDuration = tracerDuration,
+            heGrenadeExplosionDuration = heGrenadeExplosionDuration,
+            flashbangExplosionDuration = flashbangExplosionDuration
         });
     }
 

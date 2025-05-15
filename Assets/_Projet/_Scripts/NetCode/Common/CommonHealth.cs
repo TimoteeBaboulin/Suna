@@ -4,6 +4,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Networking.Transport;
 using Unity.Transforms;
 using UnityEngine;
 
@@ -187,6 +188,22 @@ public partial struct ApplyDamageSystem : ISystem
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+
+        ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
+        {
+            DamageIndicator damageIndicator = new DamageIndicator
+            {
+                damageSourcePosition = command.ValueRO.position
+            };
+
+            RpcUtils.SendServerToClientRpc(ref damageIndicator, command.ValueRO.target);
+            ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
+        }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }
 
@@ -208,6 +225,16 @@ public partial struct DamageSourceJob : IJobEntity
 
         targetHealth.Value -= damageComponent.ValueRO.damage;
         ecb.SetComponent(sortKey, target, targetHealth);
+
+        ApplyDamageCommand damageCommand = new ApplyDamageCommand
+        {
+            position = damageComponent.ValueRO.sourcePosition,
+            target = target
+        };
+
+        ecb.AddComponent(sortKey, entity, damageCommand);
+
+        //RpcUtils.SendServerToClientRpc(ref damageCommand, target);
 
         //DamageIndicator damageIndicator = new DamageIndicator
         //{
@@ -246,6 +273,35 @@ public partial struct DamageSourceJob : IJobEntity
             ecb.DestroyEntity(sortKey, damageComponent.ValueRO.grenade);
         }
 
-        ecb.DestroyEntity(sortKey, entity); //Destroying the DamageSource entity
+        ecb.RemoveComponent<ApplyDamage>(sortKey, entity);
+    }
+}
+
+[BurstCompile]
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+public partial struct DamageSourcePositionSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<NetworkId>();
+        state.RequireForUpdate<DamageIndicator>();
+    }
+
+    [BurstCompile]
+    public void OnUpdate(ref SystemState state)
+    {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach(var (damageIndicator, entity) in SystemAPI
+            .Query<RefRW<DamageIndicator>>()
+            .WithEntityAccess())
+        {
+            // Get the source position and show the damage indicator
+
+            ecb.DestroyEntity(entity); //Destroying the DamageIndicator entity
+        }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

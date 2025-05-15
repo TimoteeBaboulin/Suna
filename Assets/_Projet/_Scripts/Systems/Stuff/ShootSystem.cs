@@ -336,33 +336,34 @@ public partial struct ShootSystem : ISystem
 
                         //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
 
-                        Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
-                        ecb.SetName(thrownGrenade, "Thrown Grenade");
+                        if (state.World.IsServer())
+                        { 
+                            Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
+                            ecb.SetName(thrownGrenade, "Thrown Grenade");
 
-                        ecb.AddComponent(thrownGrenade, new StuffEntityInHandRef { Value = grenade });
+                            ecb.AddComponent(thrownGrenade, new StuffEntityInHandRef { Value = grenade });
 
-                        ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
+                            ecb.SetComponentEnabled<IsStuffInHand>(grenade, false);
 
-                        ecb.SetComponent(grenade, new ReleasedGrenade { thrower = owner });
-                        ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
+                            ecb.SetComponent(grenade, new ReleasedGrenade { thrower = owner });
+                            ecb.SetComponentEnabled<ReleasedGrenade>(grenade, true);
 
-                        //sddRW.ValueRW.owner = originalOwner;
+                            ecb.SetComponent(thrownGrenade, new LocalTransform
+                            {
+                                Position = shootStartpos,
+                                Rotation = shootRotation,
+                                Scale = 1.0f
+                            });
 
-                        ecb.SetComponent(thrownGrenade, new LocalTransform
-                        {
-                            Position = shootStartpos,
-                            Rotation = shootRotation,
-                            Scale = 1.0f
-                        });
+                            ecb.SetComponent(thrownGrenade, new PhysicsVelocity
+                            {
+                                Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
+                                Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
+                            });
 
-                        ecb.SetComponent(thrownGrenade, new PhysicsVelocity
-                        {
-                            Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
-                            Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
-                        });
-
-                        dynamicData.isCooking = false;
-                        dynamicData.cookingTime = 0.0f;
+                            dynamicData.isCooking = false;
+                            dynamicData.cookingTime = 0.0f;
+                        }
                     }
                 }
             }
