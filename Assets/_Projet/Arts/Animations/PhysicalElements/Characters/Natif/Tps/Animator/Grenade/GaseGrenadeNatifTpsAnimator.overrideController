@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: GaseGrenadeNatifTpsAnimator
+  m_Controller: {fileID: 9100000, guid: 51b367fec38ce6f428e737b49b4e0b33, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -4629071229978345764, guid: 97b878df1ccbf414594b582a4de6f0b3, type: 3}
+    m_OverrideClip: {fileID: -2292405966602756497, guid: c9708a7fafbf6b145b049205b227b855, type: 3}
+  - m_OriginalClip: {fileID: -4948171195641134883, guid: ea67a69ca39579d40bb1d5f94e821d14, type: 3}
+    m_OverrideClip: {fileID: 631962391189093777, guid: 85cf31c33ee81ff4a9f3e317f09614f3, type: 3}
+  - m_OriginalClip: {fileID: -9056571137303159771, guid: 0bedafc6d790eb4408bbe093907a0b30, type: 3}
+    m_OverrideClip: {fileID: 3307788861396708074, guid: f4c1f35b1b4343e49996d61cee0c29e9, type: 3}
+  - m_OriginalClip: {fileID: -3011295248254891401, guid: 54ad2d5a4693459468ecfabee8fe4bbe, type: 3}
+    m_OverrideClip: {fileID: 1252105058104523085, guid: 1384bef050f6ed2408505573b6d048a4, type: 3}
