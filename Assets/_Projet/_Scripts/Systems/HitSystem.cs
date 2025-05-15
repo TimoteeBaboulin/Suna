@@ -18,12 +18,14 @@ public struct Lifetime : IComponentData
 public partial class HitSystem : SystemBase
 {
     NetcodePrefabsConverter prefabConverter;
+    DecalManager decalManager;
 
     protected override void OnCreate()
     {
         RequireForUpdate<HitCommand>();
         RequireForUpdate<NetworkId>();
 
+        decalManager = DecalManager.Instance;
     }
 
     struct TracerData
@@ -66,6 +68,17 @@ public partial class HitSystem : SystemBase
                     Scale = 1.0f
                 });
 
+                if (decalManager is null)
+                {
+                    decalManager = DecalManager.Instance;
+                }
+                
+                if (decalManager is not null)
+                {
+                    Debug.Log("Trying to spawn shit");
+                    //decalManager.SpawnDecal(hitPosition, command.ValueRO.normal);
+                }
+                
 
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
                 if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
