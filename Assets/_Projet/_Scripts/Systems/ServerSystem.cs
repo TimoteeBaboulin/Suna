@@ -24,36 +24,30 @@ public struct ClientComponent : IComponentData
     public FixedString64Bytes playerID;
     [GhostField]
     public TeamSideType team;
+    [GhostField]
+    public FixedString64Bytes name;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 public partial class ServerSystem : SystemBase
 {
     private ComponentLookup<NetworkId> _clients;
-    private bool _initialized = false;
 
     protected override void OnCreate()
     {
         Debug.Log("ServerSystem OnCreate called");
         _clients = GetComponentLookup<NetworkId>(true);
+
+        if (RequestedPlayType == PlayType.Server)
+        {
+            Debug.Log("ServerSystem OnUpdate (before init) called");
+            _ = InitializeAsync();
+        }
+        RequireForUpdate<NetworkId>();
     }
 
     protected override void OnUpdate()
-    {
-        if (!_initialized && RequestedPlayType == PlayType.Server)
-        {
-            Debug.Log("ServerSystem OnUpdate (before init) called");
-            _initialized = true;
-            _ = InitializeAsync(); // Fire and forget
-            return;
-        }
-
-        // Now we can safely require NetworkId
-        if (!SystemAPI.HasSingleton<NetworkId>())
-        {
-            return; // still no clients, just wait
-        }
-
+    {     
         _clients.Update(this);
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
@@ -129,14 +123,16 @@ public partial class ServerSystem : SystemBase
             {
                 networkID = networkId.Value,
                 playerID = currentPlayer.Id,
-                team = assignedTeam
+                team = assignedTeam,
+                name = Environment.MachineName.ToString()
             });
 
             ecb.SetComponent(client, new ClientComponent
             {
                 networkID = networkId.Value,
                 playerID = currentPlayer.Id,
-                team = assignedTeam
+                team = assignedTeam,
+                name = Environment.MachineName.ToString()
             });
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +

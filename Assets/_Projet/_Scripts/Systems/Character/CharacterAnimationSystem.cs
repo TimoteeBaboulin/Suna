@@ -57,6 +57,31 @@ partial class ServerCharacterAnimationSystem : SystemBase
             SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString(), entity, ecb, ghostOwner.ValueRO.NetworkId);
         }
 
+        foreach (var (ghostOwner, entity) in SystemAPI
+            .Query<RefRO<GhostOwner>>()
+            .WithAll<CharacterComponent, GhostOwnerIsLocal>()
+            .WithEntityAccess())
+        {
+            ecb.SetComponentEnabled<CharacterIsDifusing>(entity, false);
+            AnimationUtils.AddBoolCommand("IsDifuse", false, entity, ecb, ghostOwner.ValueRO.NetworkId);
+        }
+
+        foreach (var defusing in SystemAPI
+            .Query<RefRO<HarvesterDefusing>>()
+            .WithAll<HarvesterComponent>())
+        {
+            if (defusing.ValueRO.Defuser == Entity.Null) continue;
+            if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(defusing.ValueRO.Defuser)) continue;
+
+            if (EntityManager.HasComponent<GhostOwner>(defusing.ValueRO.Defuser)
+                && EntityManager.HasComponent<CharacterIsDifusing>(defusing.ValueRO.Defuser))
+            {
+                ecb.SetComponentEnabled<CharacterIsDifusing>(defusing.ValueRO.Defuser, true);
+                int networkId = SystemAPI.GetComponentRO<GhostOwner>(defusing.ValueRO.Defuser).ValueRO.NetworkId;
+                AnimationUtils.AddBoolCommand("IsDifuse", true, defusing.ValueRO.Defuser, ecb, networkId);
+            }
+        }
+
         ecb.Playback(EntityManager);
         ecb.Dispose();
     }
