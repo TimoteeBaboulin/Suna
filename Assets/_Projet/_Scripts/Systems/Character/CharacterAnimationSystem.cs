@@ -35,7 +35,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
 
             FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
 
-            //SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString(), entity, ecb, ghostOwner.ValueRO.NetworkId);
+            SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString(), entity, ecb, ghostOwner.ValueRO.NetworkId);
         }
 
         // For TPS model animator
@@ -59,24 +59,26 @@ partial class ServerCharacterAnimationSystem : SystemBase
 
         foreach (var (ghostOwner, entity) in SystemAPI
             .Query<RefRO<GhostOwner>>()
-            .WithAll<CharacterComponent, AnimatorReference, GhostOwnerIsLocal>()
+            .WithAll<CharacterComponent, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
+            ecb.SetComponentEnabled<CharacterIsDifusing>(entity, false);
             AnimationUtils.AddBoolCommand("IsDifuse", false, entity, ecb, ghostOwner.ValueRO.NetworkId);
         }
 
-        foreach (var (defusing, entity) in SystemAPI
+        foreach (var defusing in SystemAPI
             .Query<RefRO<HarvesterDefusing>>()
-            .WithAll<HarvesterComponent>()
-            .WithEntityAccess())
+            .WithAll<HarvesterComponent>())
         {
             if (defusing.ValueRO.Defuser == Entity.Null) continue;
             if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(defusing.ValueRO.Defuser)) continue;
 
-            if (EntityManager.HasComponent<GhostOwner>(defusing.ValueRO.Defuser))
+            if (EntityManager.HasComponent<GhostOwner>(defusing.ValueRO.Defuser)
+                && EntityManager.HasComponent<CharacterIsDifusing>(defusing.ValueRO.Defuser))
             {
+                ecb.SetComponentEnabled<CharacterIsDifusing>(defusing.ValueRO.Defuser, true);
                 int networkId = SystemAPI.GetComponentRO<GhostOwner>(defusing.ValueRO.Defuser).ValueRO.NetworkId;
-                AnimationUtils.AddBoolCommand("IsDifuse", true, entity, ecb, networkId);
+                AnimationUtils.AddBoolCommand("IsDifuse", true, defusing.ValueRO.Defuser, ecb, networkId);
             }
         }
 

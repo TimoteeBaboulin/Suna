@@ -112,3 +112,5 @@ public struct SmoothInput : IComponentData
 {
     public float2 Current;
 }
+
+public struct CharacterIsDifusing : IComponentData, IEnableableComponent { }
