@@ -24,16 +24,9 @@ public partial struct RangedWeaponReloadSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        //Eviter répétition sur le serveur du a la différence de framerate avec le client
-        NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
         var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
 
-        if (!networkTime.IsFirstPredictionTick) return;
-
         float dt = SystemAPI.Time.DeltaTime;
-
-        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
-        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
 
         EntityCommandBuffer animationEcb = new EntityCommandBuffer(Allocator.Temp);
 
@@ -63,10 +56,13 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
+                    Debug.LogError($"Boom le reload Server: {state.World.IsServer()}");
+
                     if (state.EntityManager.HasComponent<GhostOwner>(owner))
                     {
                         int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
                         AnimationUtils.AddTriggerCommand("Reload", owner, animationEcb, networkId);
+                        Debug.LogError($"Reload c est cool Server: {state.World.IsServer()}");
                     }
 
                     if (state.World.IsServer())
@@ -99,7 +95,7 @@ public partial struct RangedWeaponReloadSystem : ISystem
                     }
 #endif
                 }
-            } 
+            }
         }
 
         animationEcb.Playback(state.EntityManager);

@@ -110,6 +110,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
             AddComponent<FlashGrenadeEffect>(entity);
 
             AddComponent(entity, new SmoothInput { Current = 0 });
+
+            AddComponent<CharacterIsDifusing>(entity);
+            SetComponentEnabled<CharacterIsDifusing>(entity, false);
         }
     }
 }
