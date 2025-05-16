@@ -238,6 +238,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: vfx_GrenadeLancer
       objectReference: {fileID: 0}
+    - target: {fileID: 1443431797912814519, guid: 9a7599e9c3b267149a2ed220a8a3d563, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8833437683074632436, guid: 9a7599e9c3b267149a2ed220a8a3d563, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
