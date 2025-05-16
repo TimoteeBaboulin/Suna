@@ -29,16 +29,6 @@ public class ThirdPersonCharacterModelUtils
             case TeamSideType.Natif:
                 animatorData = modelPrefab.NatifAnimatorData;
                 break;
-            case TeamSideType.Neutre:
-                if ((networkId % 2) == 0)
-                {
-                    animatorData = modelPrefab.CorpoAnimatorData;
-                }
-                else
-                {
-                    animatorData = modelPrefab.NatifAnimatorData;
-                }
-                break;
         }
 
         ecb.AddComponent(characterEntity, new ThirdPersonCharacterModelReference
@@ -71,16 +61,6 @@ public class ThirdPersonCharacterModelUtils
                 break;
             case TeamSideType.Natif:
                 bonesName = natifBones;
-                break;
-            case TeamSideType.Neutre:
-                if ((networkId % 2) == 0)
-                {
-                    bonesName = corpoBones;
-                }
-                else
-                {
-                    bonesName = natifBones;
-                }
                 break;
         }
 

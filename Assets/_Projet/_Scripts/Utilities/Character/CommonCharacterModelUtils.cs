@@ -40,16 +40,6 @@ public class CommonCharacterModelUtils
             case TeamSideType.Natif:
                 modelGameObject = Object.Instantiate(natifPrefab);
                 break;
-            case TeamSideType.Neutre:
-                if ((networkId % 2) == 0)
-                {
-                    modelGameObject = Object.Instantiate(corpoPrefab);
-                }
-                else
-                {
-                    modelGameObject = Object.Instantiate(natifPrefab);
-                }
-                break;
         }
 
         return modelGameObject;

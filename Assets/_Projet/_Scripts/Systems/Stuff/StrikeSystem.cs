@@ -75,11 +75,7 @@ public partial struct StrikeSystem : ISystem
                 {
                     dynamicData.strikeTimer += 1.0f / (commonData.strikeRate / 60f); //turns RPM into RPS
 
-                    if (state.EntityManager.HasComponent<GhostOwner>(owner))
-                    {
-                        int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
-                        AnimationUtils.AddTriggerCommand("Cut", owner, animationEcb, networkId);
-                    }
+                    AnimationUtils.AddTriggerCommand("Cut", owner, animationEcb);
 
                     SystemAPI.GetComponentRW<FPVVisualRecoil>(owner).ValueRW.timeSinceLastShoot = 0.0f;
 

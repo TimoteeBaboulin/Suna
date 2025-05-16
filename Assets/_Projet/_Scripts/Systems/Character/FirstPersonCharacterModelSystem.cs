@@ -17,6 +17,18 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             .WithNone<FirstPersonCharacterModelReference>()
             .WithEntityAccess())
         {
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
+
+            if (teamSide == TeamSideType.Neutre) continue;
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab, 
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
 

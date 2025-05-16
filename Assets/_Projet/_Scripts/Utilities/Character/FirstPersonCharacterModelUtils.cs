@@ -27,16 +27,6 @@ public class FirstPersonCharacterModelUtils
             case TeamSideType.Natif:
                 animatorData = modelPrefab.NatifAnimatorData;
                 break;
-            case TeamSideType.Neutre:
-                if ((networkId % 2) == 0)
-                {
-                    animatorData = modelPrefab.CorpoAnimatorData;
-                }
-                else
-                {
-                    animatorData = modelPrefab.NatifAnimatorData;
-                }
-                break;
         }
 
         ecb.AddComponent(characterEntity, new FirstPersonCharacterModelReference

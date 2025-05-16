@@ -18,6 +18,18 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
             .WithNone<ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
+
+            if (teamSide == TeamSideType.Neutre) continue;
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
 
@@ -81,30 +93,42 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
+
+            if (teamSide == TeamSideType.Neutre) continue;
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
 
             GameObject actualVisualGO = modelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
 
             // === Aurelien ===
-            if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
-            {
-                Debug.Log("Player in the same team, setting model to layer 13");
-                actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
+            //if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            //{
+            //    Debug.Log("Player in the same team, setting model to layer 13");
+            //    actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
 
-                //Removing the enemy outline
-                Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
-                for (int i = 0; i < newMat.Length; i++)
-                {
-                    newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
-                }
-                actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
-            }
-            else
-            {                 
-                Debug.Log("Player in different team, setting model to layer 14");
-                actualVisualGO.layer = 14;
-            }
+            //    //Removing the enemy outline
+            //    Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
+            //    for (int i = 0; i < newMat.Length; i++)
+            //    {
+            //        newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
+            //    }
+            //    actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
+            //}
+            //else
+            //{                 
+            //    Debug.Log("Player in different team, setting model to layer 14");
+            //    actualVisualGO.layer = 14;
+            //}
             // === Aurelien ===
 
             if (modelPrefab == null) continue;
