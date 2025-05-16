@@ -351,24 +351,10 @@ public partial class GrenadeSystem : SystemBase
 
                                     commandBuffer.SetComponent(entity, new SmokeGrenadeEffect
                                     {
-                                        intensity = math.max(currentEffect, effect),
+                                        intensity = effect,
                                         isSmoke = true
                                     });
                                 }
-
-                                Entity damageSource = commandBuffer.CreateEntity();
-                                commandBuffer.SetName(damageSource, "Damage Source");
-
-                                commandBuffer.AddComponent(damageSource, new ApplyDamage
-                                {
-                                    source = DamageSource.Gas,
-                                    grenade = Entity.Null,
-                                    playerSource = released.ValueRO.thrower,
-                                    targetEntity = entity,
-                                    killReward = stuffCommonData.killGain,
-                                    damage = grenadeCommonData.inflictedDamage * SystemAPI.Time.DeltaTime,
-                                    sourcePosition = grenadePos
-                                });
                             }
                         }
                     }
@@ -475,11 +461,11 @@ public partial struct GrenadeThrowSystem : ISystem
             RaycastInput input = new RaycastInput()
             {
                 Start = grenadePosition,
-                End = grenadePosition + (math.down() * .5f), // TODO : Check when all collisions will be set, half a meter is way much more than it should be
+                End = grenadePosition + (math.down() * .11f), // TODO : Check when all collisions will be set, half a meter is way much more than it should be
                 Filter = new CollisionFilter()
                 {
-                    BelongsTo = 0u,
-                    CollidesWith = (1u << 12),
+                    BelongsTo = 1u,
+                    CollidesWith = (1 << 12),
                 }
             };
 
@@ -514,7 +500,7 @@ public partial struct GrenadeThrowSystem : ISystem
             }
 
             if (!released.ValueRO.onGround)
-                physicsVelocity.ValueRW.Linear += math.down() * 7.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
+                physicsVelocity.ValueRW.Linear += math.down() * 3.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
 
             if (math.lengthsq(physicsVelocity.ValueRO.Linear) < 0.1f)
             {
