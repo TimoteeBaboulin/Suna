@@ -22,6 +22,7 @@ public class HUDController : MonoBehaviour
     private VisualElement _HUD;
 
     // Main HUD
+    private bool _damageIndicatorSubscribed = false;
     private VisualElement _crosshairElement;
     private VisualElement _hitMarkerElement;
 
@@ -93,6 +94,7 @@ public class HUDController : MonoBehaviour
 
     // KillFeed
     private VisualElement _killFeedContainer;
+    private bool _killFeedSubscribed = false;
 
     // WinLose
     private VisualElement _winLoseRoundElement;
@@ -276,6 +278,16 @@ public class HUDController : MonoBehaviour
             MinimapTeamLinkSystem.OnMinimapTeamLinkEvent += System_OnPositionChanged;
             _minimapSubscribed = true;
         }
+        if (!_damageIndicatorSubscribed && world.Name == "ClientWorld")
+        {
+            DamageSourcePositionSystem.OnDamageIndicatorReceived += System_OnDamageTaken;
+            _damageIndicatorSubscribed = true;
+        }
+        if (!_killFeedSubscribed && world.Name == "ClientWorld")
+        {
+            KillFeedRPCSystem.OnKillDamageIndicatorReceived += InitializeNewKillFeed;
+            _killFeedSubscribed = true;
+        }
         //---------- End of System Registering
 
         if (_hitRegistered)
@@ -324,6 +336,17 @@ public class HUDController : MonoBehaviour
         {
             OnWinLoseRoundUpdate();
         }
+    }
+
+    private void System_OnDamageTaken(object sender, DamageSourcePositionSystem.DamageIndicatorArgs args)
+    {
+        if (args.networkId == 0 || args.networkId != GetCurrentPlayerInfo().networkID)
+        {
+            return;
+        }
+        DamageIndicatorElement damageIndicator = new();
+        damageIndicator.transform.rotation = Quaternion.Euler(0f, 0f, args.angle);
+        _crosshairElement.Add(damageIndicator);
     }
 
     private void System_OnPositionChanged(object sender, MinimapTeamLinkSystem.MinimapTeamArgs args)
@@ -864,9 +887,19 @@ public class HUDController : MonoBehaviour
     //----------End of Player Icons Functions
 
     //----------Start of KillFeed Functions
-    private void InitializeNewKillFeed()
+    private void InitializeNewKillFeed(object sender, KillFeedRPCSystem.KillDamageIndicatorArgs args)
     {
-        KillFeedElement element = new();
+        KillFeedElement element = new()
+        {
+            KillerTeamSide = args.killer.team,
+            KillerName = args.killer.name.ToString(),
+            VictimTeamSide = args.target.team,
+            VictimName = args.target.name.ToString()
+        };
+        element.Refresh();
+        _killFeedContainer.Insert(0, element);
+
+        Debug.Log($"{args.killer.name} killed {args.target.name}");
     }
     //----------End of KillFeed Functions
 }
