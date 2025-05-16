@@ -185,6 +185,7 @@ public partial struct ApplyDamageSystem : ISystem
             CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
             MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
             GhostOwnerLookup = state.GetComponentLookup<GhostOwner>(),
+            CharacterClientAttachedComponentLookup = state.GetComponentLookup<CharacterClientAttachedComponent>(),
             ClientComponentLookup = state.GetComponentLookup<ClientComponent>(),
             entityTeamTable = entityTeamTable,
             ecb = ecb.AsParallelWriter()
@@ -237,7 +238,7 @@ public partial struct ApplyDamageSystem : ISystem
                 RpcUtils.SendServerToClientRpc(ref killIndicator, client);
             }
         }
-        
+
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -250,6 +251,7 @@ public partial struct DamageSourceJob : IJobEntity
     [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<GhostOwner> GhostOwnerLookup;
+    [ReadOnly] public ComponentLookup<CharacterClientAttachedComponent> CharacterClientAttachedComponentLookup;
     [ReadOnly] public ComponentLookup<ClientComponent> ClientComponentLookup;
     [ReadOnly] public NativeHashMap<Entity, TeamSideType> entityTeamTable;
 
@@ -280,13 +282,19 @@ public partial struct DamageSourceJob : IJobEntity
             Entity source = damageComponent.ValueRO.playerSource;
 
             KillDamageCommand killDamageCommand = new();
-            if (ClientComponentLookup.TryGetComponent(source, out var clientSource))
+            if (CharacterClientAttachedComponentLookup.TryGetComponent(source, out var characterClientSource))
             {
-                killDamageCommand.killer = clientSource;
+                if (ClientComponentLookup.TryGetComponent(characterClientSource.ClientEntity, out var clientSource))
+                {
+                    killDamageCommand.killer = clientSource;
+                }
             }
-            if (ClientComponentLookup.TryGetComponent(target, out var clientTarget))
+            if (CharacterClientAttachedComponentLookup.TryGetComponent(target, out var characterClientTarget))
             {
-                killDamageCommand.target = clientTarget;
+                if (ClientComponentLookup.TryGetComponent(characterClientTarget.ClientEntity, out var clientTarget))
+                {
+                    killDamageCommand.target = clientTarget;
+                }
             }
             ecb.AddComponent(sortKey, entity, killDamageCommand);
 
