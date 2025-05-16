@@ -18,12 +18,14 @@ public struct Lifetime : IComponentData
 public partial class HitSystem : SystemBase
 {
     NetcodePrefabsConverter prefabConverter;
+    DecalManager decalManager;
 
     protected override void OnCreate()
     {
         RequireForUpdate<HitCommand>();
         RequireForUpdate<NetworkId>();
 
+        decalManager = DecalManager.Instance;
     }
 
     struct TracerData
@@ -44,21 +46,21 @@ public partial class HitSystem : SystemBase
 
                 float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
                 Entity hitEffect = commandBuffer.Instantiate(prefabManager.hitVisualEffect);
-                Entity tracerEntity = commandBuffer.Instantiate(prefabManager.tracerRoundVisualEffect);
-                float tracerSpeed = SystemAPI.GetComponentRO<TracerRoundComponent>(prefabManager.tracerRoundVisualEffect).ValueRO.speed;
+                //Entity tracerEntity = commandBuffer.Instantiate(prefabManager.tracerRoundVisualEffect);
+                //float tracerSpeed = SystemAPI.GetComponentRO<TracerRoundComponent>(prefabManager.tracerRoundVisualEffect).ValueRO.speed;
                 
-                commandBuffer.SetComponent(tracerEntity, new LocalTransform
-                {
-                    Position = command.ValueRO.origin,
-                    Rotation = quaternion.identity,
-                    Scale = 1.0f
-                });
-                commandBuffer.SetComponent(tracerEntity, new TracerRoundComponent
-                {
-                    start = command.ValueRO.origin,
-                    end = command.ValueRO.position,
-                    speed = tracerSpeed
-                });
+                //commandBuffer.SetComponent(tracerEntity, new LocalTransform
+                //{
+                //    Position = command.ValueRO.origin,
+                //    Rotation = quaternion.identity,
+                //    Scale = 1.0f
+                //});
+                //commandBuffer.SetComponent(tracerEntity, new TracerRoundComponent
+                //{
+                //    start = command.ValueRO.origin,
+                //    end = command.ValueRO.position,
+                //    speed = tracerSpeed
+                //});
                 commandBuffer.SetComponent(hitEffect, new LocalTransform
                 {
                     Position = hitPosition,
@@ -66,12 +68,23 @@ public partial class HitSystem : SystemBase
                     Scale = 1.0f
                 });
 
+                if (decalManager is null)
+                {
+                    decalManager = DecalManager.Instance;
+                }
+                
+                if (decalManager is not null)
+                {
+                    Debug.Log("Trying to spawn shit");
+                    //decalManager.SpawnDecal(hitPosition, command.ValueRO.normal);
+                }
+                
 
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
                 if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
                 {
                     commandBuffer.AddComponent(hitEffect, new Lifetime { RemainingTime = durationData.hitVFXDuration });
-                    commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
+                    //commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
                 }
                 commandBuffer.DestroyEntity(entity);
 

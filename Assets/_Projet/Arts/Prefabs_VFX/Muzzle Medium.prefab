@@ -13,6 +13,9 @@ GameObject:
   - component: {fileID: 8935328948395716745}
   - component: {fileID: 4354618297287721626}
   - component: {fileID: 8345780034413022203}
+  - component: {fileID: 3363036329955355640}
+  - component: {fileID: 216782893666997164}
+  - component: {fileID: 369792534801432128}
   m_Layer: 0
   m_Name: Muzzle Medium
   m_TagString: Untagged
@@ -57,7 +60,16 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: -0, y: 0, z: 0}
+        m_Name: NT_angles
+        m_Overridden: 1
+      - m_Value: {x: 0, y: 0, z: 0}
+        m_Name: NT_position
+        m_Overridden: 1
+      - m_Value: {x: 1, y: 1, z: 1}
+        m_Name: NT_scale
+        m_Overridden: 1
     m_Vector4f:
       m_Array:
       - m_Value: {x: 0.74901956, y: 0.17739937, z: 0, w: 0}
@@ -211,6 +223,60 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+--- !u!114 &3363036329955355640
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615811182862070186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cafca86b4c5f9a94f818608e77e840a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  executeInEditor: 1
+  outputEvent:
+    m_Name: LightON
+  m_InstanceCount: 1
+  m_PrefabToSpawn: {fileID: 6073225489702718017, guid: aabfaf41b77d4454695db3950d1c6935, type: 3}
+  m_ParentInstances: 1
+  usePosition: 1
+  useAngle: 1
+  useScale: 1
+  useLifetime: 1
+--- !u!114 &216782893666997164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615811182862070186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 369792534801432128}
+  m_VisualEffect: {fileID: 376299854613946053}
+--- !u!114 &369792534801432128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 615811182862070186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fdfea1f838247c40921a07afedde962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 0
+  m_Property:
+    m_Name: NT
+  Target: {fileID: 6701577349358748746}
 --- !u!1 &3089018254137610346
 GameObject:
   m_ObjectHideFlags: 0
