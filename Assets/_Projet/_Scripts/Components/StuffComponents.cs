@@ -179,10 +179,10 @@ public class StuffGameObjectRef : ICleanupComponentData
                 {
                     View_Baked.SetActive(isActive);
                 }
-                if (View != null) View.SetActive(!isActive);
+                if (View != null) View.SetActive(false);
                 break;
             case TeamSideType.Natif:
-                if (View_Baked != null) View_Baked.SetActive(!isActive);
+                if (View_Baked != null) View_Baked.SetActive(false);
                 if (View != null) View.SetActive(isActive);
                 break;
             case TeamSideType.Neutre:

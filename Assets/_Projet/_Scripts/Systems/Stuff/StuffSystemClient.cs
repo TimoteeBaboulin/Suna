@@ -92,7 +92,6 @@ partial struct StuffSystemClient : ISystem
                     {
                         goRef.SetTransform(transformRO.ValueRO);
 
-
                         //////////////GRENADES//////////////
                         if (state.EntityManager.HasComponent<ReleasedGrenade>(inHandRefRO.ValueRO.Value))
                         {
@@ -112,7 +111,6 @@ partial struct StuffSystemClient : ISystem
         .WithPresent<IsStuffInHand>()
         .WithEntityAccess())
         {
-
             if (dynDataRO.ValueRO.owner != Entity.Null)
             {
 
@@ -121,7 +119,11 @@ partial struct StuffSystemClient : ISystem
                     var ownerGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
                     TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeam(ownerGhostOwner.NetworkId);
 
-                    goRef.SwitchSetActiveSide(ownerSide, true);
+                    if (state.EntityManager.HasComponent<CharacterIsDifusing>(dynDataRO.ValueRO.owner))
+                    {
+                        bool isDifusing = state.EntityManager.IsComponentEnabled<CharacterIsDifusing>(dynDataRO.ValueRO.owner);
+                        goRef.SwitchSetActiveSide(ownerSide, !isDifusing);
+                    }
                 }
                 else
                 {

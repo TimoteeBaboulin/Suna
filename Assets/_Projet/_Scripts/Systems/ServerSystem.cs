@@ -1,4 +1,6 @@
 ﻿using GameNetwork.Utils;
+using System;
+using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
@@ -22,6 +24,8 @@ public struct ClientComponent : IComponentData
     public FixedString64Bytes playerID;
     [GhostField]
     public TeamSideType team;
+    [GhostField]
+    public FixedString64Bytes name;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -29,41 +33,58 @@ public partial class ServerSystem : SystemBase
 {
     private ComponentLookup<NetworkId> _clients;
 
-    protected async override void OnCreate()
+    protected override void OnCreate()
     {
+        Debug.Log("ServerSystem OnCreate called");
         _clients = GetComponentLookup<NetworkId>(true);
 
         if (RequestedPlayType == PlayType.Server)
         {
-            await ClientTransportHelper.StartServicesAsync();
-            Debug.Log($"Port in GameManager : {ClientServerBootstrap.AutoConnectPort}");
-            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort, ClientTransportHelper.isClientLocal);
+            Debug.Log("ServerSystem OnUpdate (before init) called");
+            _ = InitializeAsync();
         }
         RequireForUpdate<NetworkId>();
-
     }
-    protected override void OnUpdate()
-    {
-        _clients.Update(this);
 
+    protected override void OnUpdate()
+    {     
+        _clients.Update(this);
         EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>().WithEntityAccess())
+        foreach (var (request, command, entity) in SystemAPI
+                     .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>()
+                     .WithEntityAccess())
         {
-            ServerConsole.Log(ServerConsole.LogType.Info, $"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}, version {request.ValueRO.SourceConnection.Version}");
             Debug.Log($"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}");
             commandBuffer.DestroyEntity(entity);
         }
 
-        foreach (var (id, entity) in SystemAPI.Query<RefRO<NetworkId>>().WithNone<ClientComponent>().WithEntityAccess())
+        foreach (var (id, entity) in SystemAPI
+                     .Query<RefRO<NetworkId>>()
+                     .WithNone<ClientComponent>()
+                     .WithEntityAccess())
         {
             InstantiateClient(entity, commandBuffer);
         }
 
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
+    }
 
-        Dependency.Complete();
+    private async Task InitializeAsync()
+    {
+        Debug.Log("ServerSystem InitializeAsync started");
+        try
+        {
+            await ClientTransportHelper.StartServicesAsync();
+            Debug.Log($"Port in GameManager : {AutoConnectPort}");
+            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort);
+            Debug.Log("Server session created");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"ServerSystem failed to initialize async logic: {ex}");
+        }
     }
 
     #region Public Methods
@@ -102,14 +123,16 @@ public partial class ServerSystem : SystemBase
             {
                 networkID = networkId.Value,
                 playerID = currentPlayer.Id,
-                team = assignedTeam
+                team = assignedTeam,
+                name = Environment.MachineName.ToString()
             });
 
             ecb.SetComponent(client, new ClientComponent
             {
                 networkID = networkId.Value,
                 playerID = currentPlayer.Id,
-                team = assignedTeam
+                team = assignedTeam,
+                name = Environment.MachineName.ToString()
             });
 
             ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +

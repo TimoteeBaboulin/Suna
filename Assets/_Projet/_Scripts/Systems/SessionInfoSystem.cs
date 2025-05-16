@@ -45,21 +45,21 @@ public partial class SessionInfoSystem : SystemBase
     //    Debug.Log($"QueryPort[{serverConfig.QueryPort}");
     //    Debug.Log($"LogDirectory[{serverConfig.ServerLogDirectory}]");
     //}
-    protected override async void OnUpdate()
+    protected override void OnUpdate()
     {
-        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientSessionCreationCommand>>().WithEntityAccess())
-        {
-            Debug.Log($"Command received value : {command.ValueRO.createNewSession}");
-            if (SystemAPI.HasSingleton<ConnectionInfo>())
-            {
-                ConnectionInfo connectionInfo = SystemAPI.GetSingleton<ConnectionInfo>();
-                Debug.Log($"connectionInfo : {connectionInfo.IP.ToString()} , {connectionInfo.Port} , {connectionInfo.IsClientLocal}");
-                if (command.ValueRO.createNewSession)
-                {
-                    Debug.Log(command.ValueRO.createNewSession);
-                    await ServerSessionFactory.CreateServerSession(connectionInfo.IP.ToString(), connectionInfo.Port, connectionInfo.IsClientLocal);
-                }
-            }
-        }
+        //    //foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientSessionCreationCommand>>().WithEntityAccess())
+        //    //{
+        //    //    Debug.Log($"Command received value : {command.ValueRO.createNewSession}");
+        //    //    if (SystemAPI.HasSingleton<ConnectionInfo>())
+        //    //    {
+        //    //        ConnectionInfo connectionInfo = SystemAPI.GetSingleton<ConnectionInfo>();
+        //    //        Debug.Log($"connectionInfo : {connectionInfo.IP.ToString()} , {connectionInfo.Port} , {connectionInfo.IsClientLocal}");
+        //    //        if (command.ValueRO.createNewSession)
+        //    //        {
+        //    //            Debug.Log(command.ValueRO.createNewSession);
+        //    //            await ServerSessionFactory.CreateServerSession(connectionInfo.IP.ToString(), connectionInfo.Port, connectionInfo.IsClientLocal);
+        //    //        }
+        //    //    }
+        //    //}
     }
 }

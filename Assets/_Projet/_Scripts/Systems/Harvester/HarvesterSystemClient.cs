@@ -224,6 +224,7 @@ partial class HarvesterSystemClient : SystemBase
 
         StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
         goRef.View.GetComponent<HarvesterVfxLink>().Play();
+        goRef.View_Baked.GetComponent<HarvesterVfxLink>().Play();
         StuffUtils.SetStuffViewTransform(goRef, harvesterTransform);
 
         SystemAPI.SetComponent(harvesterEntity, harvesterTransform);
@@ -235,6 +236,7 @@ partial class HarvesterSystemClient : SystemBase
     {
         StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
         goRef.View.GetComponent<HarvesterVfxLink>().Stop();
+        goRef.View_Baked.GetComponent<HarvesterVfxLink>().Stop();
 
         //Debug.Log("[Harvester] Client received defuse rpc");
     }

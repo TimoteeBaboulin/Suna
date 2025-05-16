@@ -1,8 +1,10 @@
-﻿using GameNetwork.Utils;
+﻿using GameNetwork;
+using GameNetwork.Utils;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.Entities;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using UnityEngine;
@@ -15,7 +17,7 @@ public class ServerSessionFactory
     private static IHostSession session;
     private ServerSessionFactory() { }
 
-    public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port, bool isClientLocal)
+    public static async Task<ClientTransportHelper> CreateServerSession(string ip, ushort port)
     {
         instance = new ServerSessionFactory();
         try
@@ -41,7 +43,7 @@ public class ServerSessionFactory
             session.Deleted += OnSessionDeleted;
 
             Debug.Log($"[SessionTransportHelper] Creating server session with options: MaxPlayers={options.MaxPlayers}");
-            Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}, IsClientLocal: {isClientLocal}");
+            Debug.Log($"[SessionTransportHelper] IP: {ip}, Port: {port}");
             Debug.Log($"[ServerSessionFactory] Created session with code: {session.Id}");
             Debug.Log($"[ServerSessionFactory] Created session with name: {session.Name}");
             Debug.Log($"[ServerSessionFactory] Created session with NB properties: {session.Properties.Count}");
@@ -72,8 +74,13 @@ public class ServerSessionFactory
 
     private static void OnSessionDeleted()
     {
-        Debug.Log($"[OnSessionDeleted] session deleted.");
+        Debug.Log("[OnSessionDeleted] session deleted.");
         PlayerHelpers.ClearTeams();
+
+        if (RequestedPlayType == PlayType.Server)
+        {
+            LoadUtils.RestartServer();
+        }
     }
 
     private static void OnPlayerJoined(string playerId)
@@ -83,7 +90,7 @@ public class ServerSessionFactory
         Debug.Log($"[SessionStatusSystem] → CountTeamCorpo roster size: {listCorpo.Count}");
         var listNatif = PlayerHelpers.GetPlayersByTeamOnServer(TeamSideType.Natif);
         Debug.Log($"[SessionStatusSystem] → CountTeamNatif roster size: {listNatif.Count}");
-        
+
         Debug.Log($"session.Players.Count {session.Players.Count}");
 
         for (int i = 0; i < session.Players.Count; i++)
@@ -180,6 +187,12 @@ public class ServerSessionFactory
         else
         {
             Debug.Log($"[SessionStatusSystem]   – No players in Natif to check");
+        }
+
+        Debug.Log($"[SessionStatusSystem] sessionPlayerCount {session.PlayerCount} ; sessionplayerCount - 1 {session.PlayerCount - 1}");
+        if (session.PlayerCount - 1 <= 0)
+        {
+            await session.DeleteAsync();
         }
     }
 
