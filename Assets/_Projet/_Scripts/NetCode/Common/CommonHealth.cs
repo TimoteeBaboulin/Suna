@@ -40,6 +40,11 @@ public struct DamageIndicator : IRpcCommand
     public int networkId;
     public float3 damageSourcePosition;
 }
+public struct KillDamageIndicator : IRpcCommand
+{
+    public ClientComponent killer;
+    public ClientComponent target;
+}
 
 public struct HasNoHealthTag : IComponentData { }
 
@@ -180,6 +185,7 @@ public partial struct ApplyDamageSystem : ISystem
             CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
             MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
             GhostOwnerLookup = state.GetComponentLookup<GhostOwner>(),
+            ClientComponentLookup = state.GetComponentLookup<ClientComponent>(),
             entityTeamTable = entityTeamTable,
             ecb = ecb.AsParallelWriter()
         };
@@ -195,6 +201,7 @@ public partial struct ApplyDamageSystem : ISystem
         ecb = new EntityCommandBuffer(Allocator.Temp);
 
         NativeList<DamageIndicator> damageIndicators = new NativeList<DamageIndicator>(Allocator.Temp);
+        NativeList<KillDamageIndicator> killIndicators = new NativeList<KillDamageIndicator>(Allocator.Temp);
 
         foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
         {
@@ -204,8 +211,16 @@ public partial struct ApplyDamageSystem : ISystem
                 damageSourcePosition = command.ValueRO.position,
                 networkId = state.EntityManager.GetComponentData<ClientComponent>(client).networkID
             });
+            if (state.EntityManager.HasComponent<KillDamageCommand>(entity))
+            {
+                var killCommand = state.EntityManager.GetComponentData<KillDamageCommand>(entity);
+                killIndicators.Add(new KillDamageIndicator
+                {
+                    killer = killCommand.killer,
+                    target = killCommand.target
+                });
+            }
             ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
-
         }
 
         EntityQuery queryDamage = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
@@ -216,7 +231,13 @@ public partial struct ApplyDamageSystem : ISystem
                 DamageIndicator damageIndicator = damageIndicators[i];
                 RpcUtils.SendServerToClientRpc(ref damageIndicator, client);
             }
+            for (int i = 0; i < killIndicators.Length; i++)
+            {
+                KillDamageIndicator killIndicator = killIndicators[i];
+                RpcUtils.SendServerToClientRpc(ref killIndicator, client);
+            }
         }
+        
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -229,6 +250,7 @@ public partial struct DamageSourceJob : IJobEntity
     [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<GhostOwner> GhostOwnerLookup;
+    [ReadOnly] public ComponentLookup<ClientComponent> ClientComponentLookup;
     [ReadOnly] public NativeHashMap<Entity, TeamSideType> entityTeamTable;
 
     public EntityCommandBuffer.ParallelWriter ecb;
@@ -257,6 +279,17 @@ public partial struct DamageSourceJob : IJobEntity
 
             Entity source = damageComponent.ValueRO.playerSource;
 
+            KillDamageCommand killDamageCommand = new();
+            if (ClientComponentLookup.TryGetComponent(source, out var clientSource))
+            {
+                killDamageCommand.killer = clientSource;
+            }
+            if (ClientComponentLookup.TryGetComponent(target, out var clientTarget))
+            {
+                killDamageCommand.target = clientTarget;
+            }
+            ecb.AddComponent(sortKey, entity, killDamageCommand);
+
             if (source != Entity.Null && source != target) //If the source is not null and if the source is the different than the target
             {
                 if (GhostOwnerLookup.TryGetComponent(source, out var ghostOwnerSource) &&
@@ -284,7 +317,6 @@ public partial struct DamageSourceJob : IJobEntity
     }
 }
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct DamageSourcePositionSystem : ISystem
 {
@@ -316,7 +348,7 @@ public partial struct DamageSourcePositionSystem : ISystem
         }
 
         foreach (var (damageIndicator, entity) in SystemAPI
-            .Query<RefRO <DamageIndicator>>()
+            .Query<RefRO<DamageIndicator>>()
             .WithEntityAccess())
         {
             // Get the source position and show the damage indicator
@@ -330,6 +362,39 @@ public partial struct DamageSourcePositionSystem : ISystem
             OnDamageIndicatorReceived?.Invoke(this, new DamageIndicatorArgs() { angle = angle, networkId = damageIndicator.ValueRO.networkId });
 
             ecb.DestroyEntity(entity); //Destroying the DamageIndicator entity
+        }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+    }
+}
+
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+public partial struct KillFeedRPCSystem : ISystem
+{
+    public class KillDamageIndicatorArgs : EventArgs
+    {
+        public ClientComponent killer;
+        public ClientComponent target;
+    }
+    public static EventHandler<KillDamageIndicatorArgs> OnKillDamageIndicatorReceived;
+
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<KillDamageIndicator>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (killDamageIndicator, entity) in SystemAPI
+            .Query<RefRO<KillDamageIndicator>>()
+            .WithEntityAccess())
+        {
+            OnKillDamageIndicatorReceived?.Invoke(this, new KillDamageIndicatorArgs() { killer = killDamageIndicator.ValueRO.killer, target = killDamageIndicator.ValueRO.target });
+
+            ecb.DestroyEntity(entity); //Destroying the KillDamageIndicator entity
         }
 
         ecb.Playback(state.EntityManager);

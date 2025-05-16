@@ -94,6 +94,7 @@ public class HUDController : MonoBehaviour
 
     // KillFeed
     private VisualElement _killFeedContainer;
+    private bool _killFeedSubscribed = false;
 
     // WinLose
     private VisualElement _winLoseRoundElement;
@@ -281,6 +282,11 @@ public class HUDController : MonoBehaviour
         {
             DamageSourcePositionSystem.OnDamageIndicatorReceived += System_OnDamageTaken;
             _damageIndicatorSubscribed = true;
+        }
+        if (!_killFeedSubscribed && world.Name == "ClientWorld")
+        {
+            KillFeedRPCSystem.OnKillDamageIndicatorReceived += InitializeNewKillFeed;
+            _killFeedSubscribed = true;
         }
         //---------- End of System Registering
 
@@ -881,9 +887,19 @@ public class HUDController : MonoBehaviour
     //----------End of Player Icons Functions
 
     //----------Start of KillFeed Functions
-    private void InitializeNewKillFeed()
+    private void InitializeNewKillFeed(object sender, KillFeedRPCSystem.KillDamageIndicatorArgs args)
     {
-        KillFeedElement element = new();
+        KillFeedElement element = new()
+        {
+            KillerTeamSide = args.killer.team,
+            KillerName = args.killer.name.ToString(),
+            VictimTeamSide = args.target.team,
+            VictimName = args.target.name.ToString()
+        };
+        element.Refresh();
+        _killFeedContainer.Insert(0, element);
+
+        Debug.Log($"{args.killer.name} killed {args.target.name}");
     }
     //----------End of KillFeed Functions
 }

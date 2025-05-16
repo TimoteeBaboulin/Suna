@@ -35,3 +35,9 @@ public struct ApplyDamageCommand : IComponentData
     public float3 position;
     public Entity target; //YOLO
 }
+
+public struct KillDamageCommand : IComponentData
+{
+    public ClientComponent target;
+    public ClientComponent killer;
+}
