@@ -37,6 +37,7 @@ public struct DamageThisTickCommand : ICommandData
 
 public struct DamageIndicator : IRpcCommand
 {
+    public int networkId;
     public float3 damageSourcePosition;
 }
 
@@ -193,27 +194,28 @@ public partial struct ApplyDamageSystem : ISystem
 
         ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        NativeList<Entity> entitiesDamageIndicator = new NativeList<Entity>(Allocator.Temp);
         NativeList<DamageIndicator> damageIndicators = new NativeList<DamageIndicator>(Allocator.Temp);
 
         foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
         {
-            Entity client = SystemAPI.GetComponent<CharacterClientAttachedComponent>(command.ValueRO.target).ClientEntity;
-            entitiesDamageIndicator.Add(client);
+            Entity client = state.EntityManager.GetComponentData<CharacterClientAttachedComponent>(command.ValueRO.target).ClientEntity;
             damageIndicators.Add(new DamageIndicator
             {
-                damageSourcePosition = command.ValueRO.position
+                damageSourcePosition = command.ValueRO.position,
+                networkId = state.EntityManager.GetComponentData<ClientComponent>(client).networkID
             });
             ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
 
         }
 
-
-        for (int i = 0; i < damageIndicators.Length; i++)
+        EntityQuery queryDamage = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+        foreach (var client in queryDamage.ToEntityArray(Allocator.Temp))
         {
-            Entity client = entitiesDamageIndicator[i];
-            DamageIndicator damageIndicator = damageIndicators[i];
-            RpcUtils.SendServerToClientRpc(ref damageIndicator, client);
+            for (int i = 0; i < damageIndicators.Length; i++)
+            {
+                DamageIndicator damageIndicator = damageIndicators[i];
+                RpcUtils.SendServerToClientRpc(ref damageIndicator, client);
+            }
         }
 
         ecb.Playback(state.EntityManager);
@@ -288,7 +290,8 @@ public partial struct DamageSourcePositionSystem : ISystem
 {
     public class DamageIndicatorArgs : EventArgs
     {
-        public float3 direction;
+        public int networkId;
+        public float angle;
     }
     public static EventHandler<DamageIndicatorArgs> OnDamageIndicatorReceived;
 
@@ -302,21 +305,29 @@ public partial struct DamageSourcePositionSystem : ISystem
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
         float3 playerPos = float3.zero;
+        float3 forward = float3.zero;
 
         foreach (var transform in SystemAPI
             .Query<RefRW<LocalTransform>>()
             .WithAll<GhostOwnerIsLocal, CharacterComponent>())
         {
             playerPos = transform.ValueRO.Position;
+            forward = transform.ValueRO.Forward();
         }
 
         foreach (var (damageIndicator, entity) in SystemAPI
-            .Query<RefRO<DamageIndicator>>()
+            .Query<RefRO <DamageIndicator>>()
             .WithEntityAccess())
         {
             // Get the source position and show the damage indicator
-            float3 damageDirectionFromPlayer = damageIndicator.ValueRO.damageSourcePosition - playerPos;
-            OnDamageIndicatorReceived?.Invoke(this, new DamageIndicatorArgs() { direction = damageDirectionFromPlayer });
+            float3 damageDirectionFromPlayer = math.normalize(damageIndicator.ValueRO.damageSourcePosition - playerPos);
+            float angle = math.degrees(math.acos(math.dot(forward, damageDirectionFromPlayer)));
+            if (math.cross(forward, damageDirectionFromPlayer).y < 0)
+            {
+                angle = 360 - angle;
+            }
+            angle = math.clamp(angle, 0, 360);
+            OnDamageIndicatorReceived?.Invoke(this, new DamageIndicatorArgs() { angle = angle, networkId = damageIndicator.ValueRO.networkId });
 
             ecb.DestroyEntity(entity); //Destroying the DamageIndicator entity
         }

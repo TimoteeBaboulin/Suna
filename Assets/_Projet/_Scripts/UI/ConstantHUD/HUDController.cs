@@ -279,7 +279,7 @@ public class HUDController : MonoBehaviour
         }
         if (!_damageIndicatorSubscribed && world.Name == "ClientWorld")
         {
-            DamageSourcePositionSystem.OnDamageIndicatorReceived += System_OnPositionChanged;
+            DamageSourcePositionSystem.OnDamageIndicatorReceived += System_OnDamageTaken;
             _damageIndicatorSubscribed = true;
         }
         //---------- End of System Registering
@@ -332,10 +332,14 @@ public class HUDController : MonoBehaviour
         }
     }
 
-    private void System_OnPositionChanged(object sender, DamageSourcePositionSystem.DamageIndicatorArgs args)
+    private void System_OnDamageTaken(object sender, DamageSourcePositionSystem.DamageIndicatorArgs args)
     {
+        if (args.networkId == 0 || args.networkId != GetCurrentPlayerInfo().networkID)
+        {
+            return;
+        }
         DamageIndicatorElement damageIndicator = new();
-        damageIndicator.transform.rotation = quaternion.Euler(0f, 0f, math.degrees(math.atan2(args.direction.x, args.direction.z)));
+        damageIndicator.transform.rotation = Quaternion.Euler(0f, 0f, args.angle);
         _crosshairElement.Add(damageIndicator);
     }
 

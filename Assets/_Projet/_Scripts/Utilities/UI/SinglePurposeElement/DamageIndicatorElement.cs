@@ -57,7 +57,7 @@ public partial class DamageIndicatorElement : SafeVisualElement
         {
             _timer += Time.deltaTime;
 
-            float t = _timer / _destroyEndTimer;
+            float t = 1 - _timer / _destroyEndTimer;
 
             style.opacity = t < 0 ? 0 : t;
 
