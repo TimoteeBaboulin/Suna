@@ -89,6 +89,7 @@ partial class ClientRpcAnimationSystem : SystemBase
 
         foreach (var (rpc, entity) in SystemAPI
             .Query<RefRO<FloatParameterRpc>>()
+            .WithAll<ReceiveRpcCommandRequest>()
             .WithEntityAccess())
         {
             foreach (var (animatorRef, ghostOwner) in SystemAPI
@@ -106,6 +107,7 @@ partial class ClientRpcAnimationSystem : SystemBase
 
         foreach (var (rpc, entity) in SystemAPI
             .Query<RefRO<IntParameterRpc>>()
+            .WithAll<ReceiveRpcCommandRequest>()
             .WithEntityAccess())
         {
             foreach (var (animatorRef, ghostOwner) in SystemAPI
@@ -123,6 +125,7 @@ partial class ClientRpcAnimationSystem : SystemBase
 
         foreach (var (rpc, entity) in SystemAPI
             .Query<RefRO<BoolParameterRpc>>()
+            .WithAll<ReceiveRpcCommandRequest>()
             .WithEntityAccess())
         {
             foreach (var (animatorRef, ghostOwner) in SystemAPI
@@ -140,6 +143,7 @@ partial class ClientRpcAnimationSystem : SystemBase
 
         foreach (var (rpc, entity) in SystemAPI
             .Query<RefRO<TriggerParameterRpc>>()
+            .WithAll<ReceiveRpcCommandRequest>()
             .WithEntityAccess())
         {
             foreach (var (animatorRef, ghostOwner) in SystemAPI
