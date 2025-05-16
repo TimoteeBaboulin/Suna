@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -13,7 +14,12 @@ public class WeaponVfxLink : MonoBehaviour
 
     public void Fire()
     {
-        _vfx.Play();
+        VisualEffect muzzle = Instantiate(_vfx, _vfx.transform);
+        DecalTimer timer = muzzle.AddComponent<DecalTimer>();
+        timer._timer = 0.1f;
+
+        muzzle.Play();
+        //_vfx.Play();
         Debug.Log("Fire");
     }
 }
