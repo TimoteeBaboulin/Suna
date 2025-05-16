@@ -15,8 +15,9 @@ public class WeaponVfxLink : MonoBehaviour
     public void Fire()
     {
         VisualEffect muzzle = Instantiate(_vfx, _vfx.transform);
+        muzzle.transform.localPosition = Vector3.zero;
         DecalTimer timer = muzzle.AddComponent<DecalTimer>();
-        timer._timer = 0.1f;
+        timer._timer = 1.0f;
 
         muzzle.Play();
         //_vfx.Play();
