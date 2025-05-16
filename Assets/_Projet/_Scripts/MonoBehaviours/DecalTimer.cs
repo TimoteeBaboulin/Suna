@@ -2,7 +2,7 @@
 
 public class DecalTimer : MonoBehaviour
 {
-    [SerializeField] private float _timer;
+    public float _timer;
 
     private void Update()
     {

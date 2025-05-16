@@ -395,7 +395,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b17c8e08b0b984646908250c4c7327e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vfx: {fileID: 0}
+  _vfx: {fileID: 4476143527649800091}
   _playSpeed: 1
 --- !u!1 &6895647087924684925
 GameObject:
@@ -485,6 +485,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
+--- !u!2083052967 &4476143527649800091 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
+  m_PrefabInstance: {fileID: 8690953809937762942}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6133427676937041776 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3279244537474235662, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}

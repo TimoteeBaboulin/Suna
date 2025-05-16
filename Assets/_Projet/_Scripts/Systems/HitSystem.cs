@@ -46,21 +46,21 @@ public partial class HitSystem : SystemBase
 
                 float3 hitPosition = command.ValueRO.position + command.ValueRO.normal * 0.1f;
                 Entity hitEffect = commandBuffer.Instantiate(prefabManager.hitVisualEffect);
-                Entity tracerEntity = commandBuffer.Instantiate(prefabManager.tracerRoundVisualEffect);
-                float tracerSpeed = SystemAPI.GetComponentRO<TracerRoundComponent>(prefabManager.tracerRoundVisualEffect).ValueRO.speed;
+                //Entity tracerEntity = commandBuffer.Instantiate(prefabManager.tracerRoundVisualEffect);
+                //float tracerSpeed = SystemAPI.GetComponentRO<TracerRoundComponent>(prefabManager.tracerRoundVisualEffect).ValueRO.speed;
                 
-                commandBuffer.SetComponent(tracerEntity, new LocalTransform
-                {
-                    Position = command.ValueRO.origin,
-                    Rotation = quaternion.identity,
-                    Scale = 1.0f
-                });
-                commandBuffer.SetComponent(tracerEntity, new TracerRoundComponent
-                {
-                    start = command.ValueRO.origin,
-                    end = command.ValueRO.position,
-                    speed = tracerSpeed
-                });
+                //commandBuffer.SetComponent(tracerEntity, new LocalTransform
+                //{
+                //    Position = command.ValueRO.origin,
+                //    Rotation = quaternion.identity,
+                //    Scale = 1.0f
+                //});
+                //commandBuffer.SetComponent(tracerEntity, new TracerRoundComponent
+                //{
+                //    start = command.ValueRO.origin,
+                //    end = command.ValueRO.position,
+                //    speed = tracerSpeed
+                //});
                 commandBuffer.SetComponent(hitEffect, new LocalTransform
                 {
                     Position = hitPosition,
@@ -84,7 +84,7 @@ public partial class HitSystem : SystemBase
                 if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
                 {
                     commandBuffer.AddComponent(hitEffect, new Lifetime { RemainingTime = durationData.hitVFXDuration });
-                    commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
+                    //commandBuffer.AddComponent(tracerEntity, new Lifetime { RemainingTime = durationData.tracerVFXDuration });
                 }
                 commandBuffer.DestroyEntity(entity);
 
