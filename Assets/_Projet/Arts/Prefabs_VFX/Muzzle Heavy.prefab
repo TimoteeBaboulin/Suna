@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1174206637206625699
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8338006531788901443}
+  m_Layer: 0
+  m_Name: NT
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8338006531788901443
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1174206637206625699}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8616232802058970466}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &9141882730166090814
 GameObject:
   m_ObjectHideFlags: 0
@@ -11,6 +42,9 @@ GameObject:
   - component: {fileID: 8616232802058970466}
   - component: {fileID: 1970880856867743923}
   - component: {fileID: 3277173124233619255}
+  - component: {fileID: 8525751359442394150}
+  - component: {fileID: 3846754847622849715}
+  - component: {fileID: 7336337393817560214}
   m_Layer: 0
   m_Name: Muzzle Heavy
   m_TagString: Untagged
@@ -30,7 +64,8 @@ Transform:
   m_LocalPosition: {x: -0.6359094, y: 0.07025789, z: -0.001198113}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 8338006531788901443}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!2083052967 &1970880856867743923
@@ -54,7 +89,16 @@ VisualEffect:
     m_Vector2f:
       m_Array: []
     m_Vector3f:
-      m_Array: []
+      m_Array:
+      - m_Value: {x: -0, y: 0, z: 0}
+        m_Name: NT_angles
+        m_Overridden: 1
+      - m_Value: {x: -6.4801498e-12, y: 0, z: 0.000000016344487}
+        m_Name: NT_position
+        m_Overridden: 1
+      - m_Value: {x: 1.0000002, y: 1, z: 1.0000002}
+        m_Name: NT_scale
+        m_Overridden: 1
     m_Vector4f:
       m_Array: []
     m_Uint:
@@ -114,3 +158,57 @@ VFXRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &8525751359442394150
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9141882730166090814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cafca86b4c5f9a94f818608e77e840a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  executeInEditor: 1
+  outputEvent:
+    m_Name: On Received Event
+  m_InstanceCount: 1
+  m_PrefabToSpawn: {fileID: 6073225489702718017, guid: aabfaf41b77d4454695db3950d1c6935, type: 3}
+  m_ParentInstances: 1
+  usePosition: 1
+  useAngle: 1
+  useScale: 1
+  useLifetime: 1
+--- !u!114 &3846754847622849715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9141882730166090814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdafc37f32b176349b1684c4455b98e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_ExecuteInEditor: 1
+  m_Bindings:
+  - {fileID: 7336337393817560214}
+  m_VisualEffect: {fileID: 1970880856867743923}
+--- !u!114 &7336337393817560214
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9141882730166090814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7fdfea1f838247c40921a07afedde962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Space: 0
+  m_Property:
+    m_Name: NT
+  Target: {fileID: 8338006531788901443}
