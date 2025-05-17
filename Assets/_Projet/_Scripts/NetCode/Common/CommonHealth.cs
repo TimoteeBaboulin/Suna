@@ -1,3 +1,4 @@
+using System;
 using System.Globalization;
 using Unity.Burst;
 using Unity.Collections;
@@ -36,7 +37,13 @@ public struct DamageThisTickCommand : ICommandData
 
 public struct DamageIndicator : IRpcCommand
 {
+    public int networkId;
     public float3 damageSourcePosition;
+}
+public struct KillDamageIndicator : IRpcCommand
+{
+    public ClientComponent killer;
+    public ClientComponent target;
 }
 
 public struct HasNoHealthTag : IComponentData { }
@@ -136,6 +143,7 @@ public partial struct CalculateFrameDamageJob : IJobEntity
 //[BurstCompile] Pas avec les RPC des sons :(
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup), OrderLast = true)]
 [UpdateAfter(typeof(CalculateFrameDamageSystem))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
 //[WithAll(typeof(Simulate))]
 public partial struct ApplyDamageSystem : ISystem
 {
@@ -163,7 +171,7 @@ public partial struct ApplyDamageSystem : ISystem
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
         NativeHashMap<Entity, TeamSideType> entityTeamTable = new NativeHashMap<Entity, TeamSideType>(entities.Length, Allocator.TempJob);
 
-        foreach(Entity entity in entities)
+        foreach (Entity entity in entities)
         {
             var ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(entity);
             var teamSideType = PlayerHelpers.GetPlayerInTeam(ghostOwner.NetworkId);
@@ -177,6 +185,8 @@ public partial struct ApplyDamageSystem : ISystem
             CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
             MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
             GhostOwnerLookup = state.GetComponentLookup<GhostOwner>(),
+            CharacterClientAttachedComponentLookup = state.GetComponentLookup<CharacterClientAttachedComponent>(),
+            ClientComponentLookup = state.GetComponentLookup<ClientComponent>(),
             entityTeamTable = entityTeamTable,
             ecb = ecb.AsParallelWriter()
         };
@@ -191,16 +201,44 @@ public partial struct ApplyDamageSystem : ISystem
 
         ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        NativeList<DamageIndicator> damageIndicators = new NativeList<DamageIndicator>(Allocator.Temp);
+        NativeList<KillDamageIndicator> killIndicators = new NativeList<KillDamageIndicator>(Allocator.Temp);
+
         foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
         {
-            DamageIndicator damageIndicator = new DamageIndicator
+            Entity client = state.EntityManager.GetComponentData<CharacterClientAttachedComponent>(command.ValueRO.target).ClientEntity;
+            damageIndicators.Add(new DamageIndicator
             {
-                damageSourcePosition = command.ValueRO.position
-            };
-
-            RpcUtils.SendServerToClientRpc(ref damageIndicator, command.ValueRO.target);
+                damageSourcePosition = command.ValueRO.position,
+                networkId = state.EntityManager.GetComponentData<ClientComponent>(client).networkID
+            });
+            if (state.EntityManager.HasComponent<KillDamageCommand>(entity))
+            {
+                var killCommand = state.EntityManager.GetComponentData<KillDamageCommand>(entity);
+                killIndicators.Add(new KillDamageIndicator
+                {
+                    killer = killCommand.killer,
+                    target = killCommand.target
+                });
+            }
             ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
         }
+
+        EntityQuery queryDamage = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+        foreach (var client in queryDamage.ToEntityArray(Allocator.Temp))
+        {
+            for (int i = 0; i < damageIndicators.Length; i++)
+            {
+                DamageIndicator damageIndicator = damageIndicators[i];
+                RpcUtils.SendServerToClientRpc(ref damageIndicator, client);
+            }
+            for (int i = 0; i < killIndicators.Length; i++)
+            {
+                KillDamageIndicator killIndicator = killIndicators[i];
+                RpcUtils.SendServerToClientRpc(ref killIndicator, client);
+            }
+        }
+
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
@@ -213,6 +251,8 @@ public partial struct DamageSourceJob : IJobEntity
     [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<GhostOwner> GhostOwnerLookup;
+    [ReadOnly] public ComponentLookup<CharacterClientAttachedComponent> CharacterClientAttachedComponentLookup;
+    [ReadOnly] public ComponentLookup<ClientComponent> ClientComponentLookup;
     [ReadOnly] public NativeHashMap<Entity, TeamSideType> entityTeamTable;
 
     public EntityCommandBuffer.ParallelWriter ecb;
@@ -234,21 +274,29 @@ public partial struct DamageSourceJob : IJobEntity
 
         ecb.AddComponent(sortKey, entity, damageCommand);
 
-        //RpcUtils.SendServerToClientRpc(ref damageCommand, target);
-
-        //DamageIndicator damageIndicator = new DamageIndicator
-        //{
-        //    damageSourcePosition = damageComponent.ValueRO.sourcePosition
-        //};
-
-        //RpcUtils.SendServerToClientRpc(ref damageIndicator, target);
-
         if (targetHealth.Value <= 0)
         {
             targetHealth.Value = 0;
             ecb.AddComponent<HasNoHealthTag>(sortKey, target);
 
             Entity source = damageComponent.ValueRO.playerSource;
+
+            KillDamageCommand killDamageCommand = new();
+            if (CharacterClientAttachedComponentLookup.TryGetComponent(source, out var characterClientSource))
+            {
+                if (ClientComponentLookup.TryGetComponent(characterClientSource.ClientEntity, out var clientSource))
+                {
+                    killDamageCommand.killer = clientSource;
+                }
+            }
+            if (CharacterClientAttachedComponentLookup.TryGetComponent(target, out var characterClientTarget))
+            {
+                if (ClientComponentLookup.TryGetComponent(characterClientTarget.ClientEntity, out var clientTarget))
+                {
+                    killDamageCommand.target = clientTarget;
+                }
+            }
+            ecb.AddComponent(sortKey, entity, killDamageCommand);
 
             if (source != Entity.Null && source != target) //If the source is not null and if the source is the different than the target
             {
@@ -277,28 +325,84 @@ public partial struct DamageSourceJob : IJobEntity
     }
 }
 
-[BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct DamageSourcePositionSystem : ISystem
 {
+    public class DamageIndicatorArgs : EventArgs
+    {
+        public int networkId;
+        public float angle;
+    }
+    public static EventHandler<DamageIndicatorArgs> OnDamageIndicatorReceived;
+
     public void OnCreate(ref SystemState state)
     {
-        state.RequireForUpdate<NetworkId>();
         state.RequireForUpdate<DamageIndicator>();
     }
 
-    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach(var (damageIndicator, entity) in SystemAPI
-            .Query<RefRW<DamageIndicator>>()
+        float3 playerPos = float3.zero;
+        float3 forward = float3.zero;
+
+        foreach (var transform in SystemAPI
+            .Query<RefRW<LocalTransform>>()
+            .WithAll<GhostOwnerIsLocal, CharacterComponent>())
+        {
+            playerPos = transform.ValueRO.Position;
+            forward = transform.ValueRO.Forward();
+        }
+
+        foreach (var (damageIndicator, entity) in SystemAPI
+            .Query<RefRO<DamageIndicator>>()
             .WithEntityAccess())
         {
             // Get the source position and show the damage indicator
+            float3 damageDirectionFromPlayer = math.normalize(damageIndicator.ValueRO.damageSourcePosition - playerPos);
+            float angle = math.degrees(math.acos(math.dot(forward, damageDirectionFromPlayer)));
+            if (math.cross(forward, damageDirectionFromPlayer).y < 0)
+            {
+                angle = 360 - angle;
+            }
+            angle = math.clamp(angle, 0, 360);
+            OnDamageIndicatorReceived?.Invoke(this, new DamageIndicatorArgs() { angle = angle, networkId = damageIndicator.ValueRO.networkId });
 
             ecb.DestroyEntity(entity); //Destroying the DamageIndicator entity
+        }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
+    }
+}
+
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+public partial struct KillFeedRPCSystem : ISystem
+{
+    public class KillDamageIndicatorArgs : EventArgs
+    {
+        public ClientComponent killer;
+        public ClientComponent target;
+    }
+    public static EventHandler<KillDamageIndicatorArgs> OnKillDamageIndicatorReceived;
+
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<KillDamageIndicator>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (killDamageIndicator, entity) in SystemAPI
+            .Query<RefRO<KillDamageIndicator>>()
+            .WithEntityAccess())
+        {
+            OnKillDamageIndicatorReceived?.Invoke(this, new KillDamageIndicatorArgs() { killer = killDamageIndicator.ValueRO.killer, target = killDamageIndicator.ValueRO.target });
+
+            ecb.DestroyEntity(entity); //Destroying the KillDamageIndicator entity
         }
 
         ecb.Playback(state.EntityManager);
