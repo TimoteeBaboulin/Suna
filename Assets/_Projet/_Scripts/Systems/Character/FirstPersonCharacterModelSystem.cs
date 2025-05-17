@@ -30,14 +30,14 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             if (teamSide == TeamSideType.Neutre) continue;
 
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab, 
-                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+                modelPrefab.NatifModelPrefab, teamSide);
 
             modelGameObject.layer = 15;
 
             if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
-            FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, teamSide);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI

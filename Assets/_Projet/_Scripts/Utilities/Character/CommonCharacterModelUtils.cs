@@ -18,19 +18,9 @@ public class CommonCharacterModelUtils
         return null;
     }
 
-    public static GameObject InstantiateModel(in GameObject corpoPrefab, in GameObject natifPrefab, in int networkId)
+    public static GameObject InstantiateModel(in GameObject corpoPrefab, in GameObject natifPrefab, TeamSideType teamSide)
     {
         GameObject modelGameObject = null;
-
-        TeamSideType teamSide;
-        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
-        }
-        else
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
-        }
 
         switch (teamSide)
         {

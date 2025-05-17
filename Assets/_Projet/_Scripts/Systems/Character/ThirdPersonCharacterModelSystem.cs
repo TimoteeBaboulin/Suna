@@ -31,16 +31,16 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
             if (teamSide == TeamSideType.Neutre) continue;
 
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
-                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+                modelPrefab.NatifModelPrefab, teamSide);
 
             if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.DisableModelRendering(modelGameObject);
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
-            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, teamSide);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones, 
-                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
+                modelPrefab.NatifColliderBones, teamSide, characterEntity, ecb);
 
             Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
             AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
@@ -106,38 +106,42 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
             if (teamSide == TeamSideType.Neutre) continue;
 
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
-                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+                modelPrefab.NatifModelPrefab, teamSide);
 
             GameObject actualVisualGO = modelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
 
             // === Aurelien ===
-            //if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
-            //{
-            //    Debug.Log("Player in the same team, setting model to layer 13");
-            //    actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
+            if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            {
+#if UNITY_EDITOR
+                Debug.Log("Player in the same team, setting model to layer 13");
+#endif
+                actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
 
-            //    //Removing the enemy outline
-            //    Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
-            //    for (int i = 0; i < newMat.Length; i++)
-            //    {
-            //        newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
-            //    }
-            //    actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
-            //}
-            //else
-            //{                 
-            //    Debug.Log("Player in different team, setting model to layer 14");
-            //    actualVisualGO.layer = 14;
-            //}
+                //Removing the enemy outline
+                Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
+                for (int i = 0; i < newMat.Length; i++)
+                {
+                    newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
+                }
+                actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
+            }
+            else
+            {
+#if UNITY_EDITOR
+                Debug.Log("Player in different team, setting model to layer 14");
+#endif
+                actualVisualGO.layer = 14;
+            }
             // === Aurelien ===
 
             if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
-            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, teamSide);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones,
-                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
+                modelPrefab.NatifColliderBones, teamSide, characterEntity, ecb);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI

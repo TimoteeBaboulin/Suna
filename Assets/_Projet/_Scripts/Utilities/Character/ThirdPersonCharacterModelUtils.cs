@@ -1,25 +1,12 @@
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.NetCode;
-using Unity.Transforms;
 using UnityEngine;
 
 public class ThirdPersonCharacterModelUtils
 {
     public static void AddReferenceComponent(in GameObject modelGameObject, ThirdPersonCharacterModelPrefab modelPrefab, 
-        in Entity characterEntity, in EntityCommandBuffer ecb, int networkId)
+        in Entity characterEntity, in EntityCommandBuffer ecb, TeamSideType teamSide)
     {
         ModelAnimatorData animatorData = null;
-
-        TeamSideType teamSide;
-        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
-        }
-        else
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
-        }
 
         switch (teamSide)
         {
@@ -40,19 +27,9 @@ public class ThirdPersonCharacterModelUtils
     }
 
     public static void AddModelBonesComponent(in Transform modelTransform, in CharacterColliderBones corpoBones, in CharacterColliderBones natifBones,
-        in int networkId, in Entity characterEntity, in EntityCommandBuffer ecb)
+        TeamSideType teamSide, in Entity characterEntity, in EntityCommandBuffer ecb)
     {
         CharacterColliderBones bonesName = null;
-
-        TeamSideType teamSide;
-        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
-        }
-        else
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
-        }
 
         switch (teamSide)
         {
