@@ -134,7 +134,7 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID] != null)
         {
             View_Baked = GameObject.Instantiate(grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID]);
-            View_Baked.name = grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID].name + "_Baked";
+            View_Baked.name = grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID].name;
         }
     }
 
