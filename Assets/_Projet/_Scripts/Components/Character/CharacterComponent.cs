@@ -113,4 +113,5 @@ public struct SmoothInput : IComponentData
     public float2 Current;
 }
 
+[GhostEnabledBit]
 public struct CharacterIsDifusing : IComponentData, IEnableableComponent { }
