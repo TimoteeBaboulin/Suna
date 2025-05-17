@@ -226,17 +226,13 @@ public class StuffGameObjectRef : ICleanupComponentData
 
     public void SetLayer(Entity owner, EntityManager entityManager)
     {
+        GameObject ViewBakedVisualGO = View_Baked.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
+        GameObject ViewVisualGO = View.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
+
         if (owner == Entity.Null)
         {
-            if (View_Baked != null)
-            {
-                SetLayerAllChild(View_Baked, 0);
-            }
-
-            if (View != null)
-            {
-                SetLayerAllChild(View, 0);
-            }
+            if (View_Baked != null) { ViewBakedVisualGO.layer = 0; }
+            if (View != null) { ViewVisualGO.layer = 0; }
 
             return;
         }
@@ -248,15 +244,8 @@ public class StuffGameObjectRef : ICleanupComponentData
 
         if (teamSide == TeamSideType.Neutre)
         {
-            if (View_Baked != null)
-            {
-                SetLayerAllChild(View_Baked, 0);
-            }
-
-            if (View != null)
-            {
-                SetLayerAllChild(View, 0);
-            }
+            if (View_Baked != null) { ViewBakedVisualGO.layer = 0; }
+            if (View != null) { ViewVisualGO.layer = 0; }
 
             return;
         }
@@ -264,30 +253,16 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (entityManager.HasComponent<GhostOwnerIsLocal>(owner)
             && entityManager.IsComponentEnabled<GhostOwnerIsLocal>(owner))
         {
-            if (View_Baked != null)
-            {
-                SetLayerAllChild(View_Baked, 15);
-            }
-
-            if (View != null)
-            {
-                SetLayerAllChild(View, 15);
-            }
+            if (View_Baked != null) { ViewBakedVisualGO.layer = 15; }
+            if (View != null) { ViewVisualGO.layer = 15; }
 
             return;
         }
 
         if (entityManager.HasComponent<CameraIsAtached>(owner))
         {
-            if (View_Baked != null)
-            {
-                SetLayerAllChild(View_Baked, 15);
-            }
-
-            if (View != null)
-            {
-                SetLayerAllChild(View, 15);
-            }
+            if (View_Baked != null) { ViewBakedVisualGO.layer = 15; }
+            if (View != null) { ViewVisualGO.layer = 15; }
 
             return;
         }
@@ -302,29 +277,15 @@ public class StuffGameObjectRef : ICleanupComponentData
 
         if (clientLocalTeamSide == teamSide)
         {
-            if (View_Baked != null)
-            {
-                SetLayerAllChild(View_Baked, 13);
-            }
-
-            if (View != null)
-            {
-                SetLayerAllChild(View, 13);
-            }
+            if (View_Baked != null) { ViewBakedVisualGO.layer = 13; }
+            if (View != null) { ViewVisualGO.layer = 13; }
 
             return;
         }
         else
         {
-            if (View_Baked != null)
-            {
-                SetLayerAllChild(View_Baked, 14);
-            }
-
-            if (View != null)
-            {
-                SetLayerAllChild(View, 14);
-            }
+            if (View_Baked != null) { ViewBakedVisualGO.layer = 14; }
+            if (View != null) { ViewVisualGO.layer = 14; }
 
             return;
         }
@@ -412,19 +373,6 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (View_Baked != null)
         {
             GameObject.Destroy(View_Baked);
-        }
-    }
-
-    private void SetLayerAllChild(GameObject obj, int newLayer)
-    {
-        if (obj == null) return;
-
-        obj.layer = newLayer;
-
-        Transform[] allChildren = obj.GetComponentsInChildren<Transform>();
-        foreach (Transform child in allChildren)
-        {
-            child.gameObject.layer = newLayer;
         }
     }
 }

@@ -75,19 +75,6 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        // === Aurelien ===
-        int localNetworkId = -1;
-
-        foreach(var (ghostOwner, ghostOwnerLocal, playerEntity) in SystemAPI
-            .Query<RefRO<GhostOwner>, RefRO<GhostOwnerIsLocal>>()
-            .WithNone<ThirdPersonCharacterModelReference>()
-            .WithEntityAccess())
-        {
-            localNetworkId = ghostOwner.ValueRO.NetworkId;
-            break;
-        }
-        // === Aurelien ===
-
         foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
@@ -105,13 +92,21 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
             if (teamSide == TeamSideType.Neutre) continue;
 
+            EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+            NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
+
+            if (entities.Length == 0) continue;
+
+            int OwnerLocalnetworkId = state.EntityManager.GetComponentData<GhostOwner>(entities[0]).NetworkId;
+            TeamSideType clientLocalTeamSide = PlayerHelpers.GetPlayerInTeam(OwnerLocalnetworkId);
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
                 modelPrefab.NatifModelPrefab, teamSide);
 
             GameObject actualVisualGO = modelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
 
             // === Aurelien ===
-            if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            if (clientLocalTeamSide == teamSide)
             {
 #if UNITY_EDITOR
                 Debug.Log("Player in the same team, setting model to layer 13");
