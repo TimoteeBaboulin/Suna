@@ -243,11 +243,14 @@ public class GameResourcesAuthoring : MonoBehaviour
                 List_Baked = viewPrefabs_Baked
             });
 
-            AddComponentObject(entity, SoundUtils.SetGroupRegister(soundGroupMapping));
+            AddComponentObject(entity, new SoundRegister
+            { 
+                bank = SoundUtils.SetGroupRegister(soundGroupMapping)
+            });
+
             AddBuffer<InstantiateStuffQueue>(entity);
             AddBuffer<EquipStuffQueue>(entity);
             AddBuffer<UnequipStuffQueue>(entity);
-            AddBuffer<SoundQueue>(entity);
         }
     }
 }

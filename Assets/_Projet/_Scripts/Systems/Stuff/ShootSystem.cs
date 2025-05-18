@@ -34,7 +34,6 @@ public partial struct ShootSystem : ISystem
     {
         // Avoid repetition on the server due to the difference in framerate with the client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
 
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 

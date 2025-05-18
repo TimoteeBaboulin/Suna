@@ -58,6 +58,7 @@ public partial struct CharacterMovementSystem : ISystem
 
                     if (isMoving)
                     {
+                        //UnityEngine.Debug.Log("<color=red>Footsteps</color>");
                         SoundUtils.PlayWithRPC(ref emitterRW.ValueRW, "Footsteps", transformRO.ValueRO.Position, cooldown, SystemAPI.Time.DeltaTime);
                     }
                     else
