@@ -183,7 +183,6 @@ partial class ServerCharacterAnimationSystem : SystemBase
             {
                 animator.runtimeAnimatorController = animatorData.LP17;
                 AnimationUtils.AddTriggerCommand("Change", entity, ecb);
-                Debug.LogError("LP17 in hand");
             }
         }
         else if (stuffName == "SKAR18")

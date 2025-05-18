@@ -2,6 +2,7 @@
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine.InputSystem;
 
 [UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -30,61 +31,15 @@ public partial struct SoundBankSystemClient : ISystem
             foreach (var pair in register.bank)
             {
                 if (!bank.ContainsKey(pair.Key))
+                {
+                    //UnityEngine.Debug.Log("<color=green>SoundBankSystemClient Add </color> " + pair.Key);
                     bank.Add(pair.Key, pair.Value);
+                }
             }
 
             register.bank.Clear();
 #endif
             ecb.RemoveComponent<SoundRegister>(entity);
-        }
-    }
-}
-
-[UpdateInGroup(typeof(SimulationSystemGroup), OrderFirst = true)]
-[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
-public partial struct ServerClearSoundBufferSystem : ISystem
-{
-    public void OnCreate(ref SystemState state)
-    {
-    }
-
-    public void OnUpdate(ref SystemState state)
-    {
-        foreach (var (soundQueue, entity) in SystemAPI
-            .Query<DynamicBuffer<SoundQueue>>()
-            .WithEntityAccess())
-        {
-            soundQueue.Clear();
-        }
-    }
-}
-
-[UpdateInGroup(typeof(LateSimulationSystemGroup))]
-[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-public partial struct SoundPlayQueueSystemClient : ISystem
-{
-    public void OnCreate(ref SystemState state)
-    {
-        EntityQuery query = state.GetEntityQuery(typeof(SoundQueue));
-        query.SetChangedVersionFilter(typeof(SoundQueue));
-        state.RequireForUpdate(query);
-    }
-
-    public void OnUpdate(ref SystemState state)
-    {
-        SoundManager soundManager = SoundManager.Instance;
-
-        foreach (var (soundQueue, entity) in SystemAPI
-            .Query<DynamicBuffer<SoundQueue>>()
-            .WithEntityAccess())
-        {
-            foreach (var soundInfos in soundQueue)
-            {
-#if !UNITY_SERVER
-                soundManager.Play(soundInfos.keyGroup.ToString(), soundInfos.keyAction.ToString(), soundInfos.pos);
-#endif
-            }
-            soundQueue.Clear();
         }
     }
 }
@@ -109,6 +64,8 @@ partial struct SoundPlayRPCSystemClient : ISystem
         {
             if (request.ValueRO.IsConsumed) continue;
 #if !UNITY_SERVER
+            //UnityEngine.Debug.Log("<color=green>SoundPlayRPCSystemClient Play </color> " + soundRpc.ValueRO.keyGroup.ToString() + soundRpc.ValueRO.keyAction.ToString());
+
             soundManager.Play(soundRpc.ValueRO.keyGroup.ToString(), soundRpc.ValueRO.keyAction.ToString(), soundRpc.ValueRO.pos);
 #endif
             ecb.DestroyEntity(entity);
@@ -139,26 +96,6 @@ partial struct SoundMainMenuVolumeSystemClient : ISystem
 #endif
     }
 }
-
-//[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-//partial struct SoundVolumeSystemClient : ISystem
-//{
-//    public void OnCreate(ref SystemState state)
-//    {
-//        state.RequireForUpdate<ClientSettingsComponent>();
-//    }
-
-//    public void OnUpdate(ref SystemState state)
-//    {
-//        SoundManager soundManager = SoundManager.Instance;
-//        float volume = SystemAPI.GetSingleton<ClientSettingsComponent>().Volume;
-//        //UnityEngine.Debug.Log("volume : " + volume);
-
-//#if !UNITY_SERVER
-//        soundManager.SetVolume(volume);
-//#endif
-//    }
-//}
 
 
 
