@@ -32,4 +32,9 @@ MonoBehaviour:
   range: 1.5
   strikeRate: 100
   strongStrikeRate: 60
-  soundList: []
+  soundList:
+  - keyAction: Swing
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: f54cda0b2c8b1eb498a829c716848e82, type: 2}

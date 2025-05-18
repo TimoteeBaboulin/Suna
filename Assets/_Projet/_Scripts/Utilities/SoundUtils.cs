@@ -122,6 +122,7 @@ public static class SoundUtils
         if (emitterRW.timer <= 0f)
         {
             emitterRW.timer = cooldown;
+
             PlayWithRPC(emitterRW.keyGroup, keyAction, pos);
         }
     }

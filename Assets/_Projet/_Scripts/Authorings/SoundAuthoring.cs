@@ -21,6 +21,5 @@ class SoundAuthoringBaker : Baker<SoundAuthoring>
         {
             keyGroup = authoring.soundMaping.keyGroup
         });
-        
     }
 }

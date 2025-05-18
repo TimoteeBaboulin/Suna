@@ -80,7 +80,7 @@ public partial struct StrikeSystem : ISystem
 
                     bool strikedPlayer = false;
 
-                    LocalTransform transform = new LocalTransform
+                    LocalTransform strikeTransform = new LocalTransform
                     {
                         Position = strikeStartpos,
                         Rotation = strikeRotation,
@@ -94,7 +94,7 @@ public partial struct StrikeSystem : ISystem
                     };
 
                     var hits = new NativeList<DistanceHit>(Allocator.Temp);
-                    if (SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(transform.Position + transform.Forward() * commonData.range, commonData.range, ref hits, filter))
+                    if (SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(strikeTransform.Position + strikeTransform.Forward() * commonData.range, commonData.range, ref hits, filter))
                     {
                         foreach (var hit in hits)
                         {
@@ -135,16 +135,8 @@ public partial struct StrikeSystem : ISystem
                             }
                             // === FIN VISUEL ===
 
-                            // === SON ===
-                            //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                            if (state.World.IsServer())
-                            {
-                                SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
-                            }
-                            // === FIN SON ===
-
 #if !UNITY_SERVER
-                            Debug.DrawRay(transform.Position + transform.Forward() * commonData.range, hit.Position - (transform.Position + transform.Forward() * commonData.range), Color.magenta, 0.5f);
+                            Debug.DrawRay(strikeTransform.Position + strikeTransform.Forward() * commonData.range, hit.Position - (strikeTransform.Position + strikeTransform.Forward() * commonData.range), Color.magenta, 0.5f);
 #endif
                             break;
                         }
@@ -152,7 +144,7 @@ public partial struct StrikeSystem : ISystem
 
                     if (!strikedPlayer)
                     {
-                        RaycastHit hit = ClosestRayCast(transform.Rotation, transform.Position, commonData.range * 2f, owner, state.EntityManager);
+                        RaycastHit hit = ClosestRayCast(strikeTransform.Rotation, strikeTransform.Position, commonData.range * 2f, owner, state.EntityManager);
 
                         if (hit.Entity != default)
                         {
@@ -170,15 +162,17 @@ public partial struct StrikeSystem : ISystem
                             }
                             // === FIN VISUEL ===
 
-                            // === SON ===
-                            //SoundUtils.PlayAtEmitterWithRPC(ref state, "Shoot", weapon);
-                            if (state.World.IsServer())
-                            {
-                                SoundUtils.PlayWithRPC("Hit", "Impact", hit.Position);
-                            }
-                            // === FIN SON ===
                         }
                     }
+
+                    // === SON ===
+                    if (state.World.IsServer())
+                    {
+                        SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(weapon);
+                        //LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(owner);
+                        SoundUtils.PlayWithRPC(ref emitter, "Swing", strikeTransform.Position);
+                    }
+                    // === FIN SON ===
                 }
                 else
                 {
