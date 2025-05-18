@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 11c7f2b244c66324dbedcfd7e11fa589
+guid: 4a77a9a62ec5ba64a995f5e28488b6ce
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,7 +31,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Decimator_WalkLeft
+      name: Decimator_WalkBackward
       takeName: Take 001
       internalID: 1827226128182048838
       firstFrame: 0
@@ -62,7 +62,7 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 10
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
@@ -117,7 +117,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 10
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
