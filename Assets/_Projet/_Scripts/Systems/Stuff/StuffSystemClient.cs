@@ -50,13 +50,13 @@ partial struct StuffSystemClient : ISystem
 
                 if (ownerView != goRef.GetOneTransform().parent)
                 {
+                    var ownerGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
+                    TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeam(ownerGhostOwner.NetworkId);
+                    if (ownerSide == TeamSideType.Neutre) continue;
+
                     ref StuffCommonData stuffData = ref stuffDataRO.ValueRO.GetData(ref database);
                     goRef.SetParent(ownerView);
                     goRef.SetLayer(dynDataRO.ValueRO.owner, state.EntityManager);
-
-
-                    var ownerGhostOwner = state.EntityManager.GetComponentData<GhostOwner>(dynDataRO.ValueRO.owner);
-                    TeamSideType ownerSide = PlayerHelpers.GetPlayerInTeam(ownerGhostOwner.NetworkId);
 
                     goRef.SetLocalTransform(stuffData.GetStuffLocalOffsetView(ownerSide), ownerView.rotation);
 

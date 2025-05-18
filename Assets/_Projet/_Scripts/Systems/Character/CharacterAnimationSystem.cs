@@ -3,6 +3,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
@@ -35,7 +36,6 @@ partial class ServerCharacterAnimationSystem : SystemBase
             if (!EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand)) continue;
 
             FixedString128Bytes stuffName = SystemAPI.GetComponent<StuffDatabaseAccess>(stuffInHand).NameInDatabase;
-
             SetAnimator(animatorRef.Animator, modelRef.AnimatorData, stuffName.ToString(), entity, ecb);
         }
 
@@ -66,6 +66,9 @@ partial class ServerCharacterAnimationSystem : SystemBase
         {
             ecb.SetComponentEnabled<CharacterIsDifusing>(entity, false);
             AnimationUtils.AddBoolCommand("IsDifuse", false, entity, ecb);
+
+            ecb.SetComponentEnabled<CharacterIsPlanting>(entity, false);
+            AnimationUtils.AddBoolCommand("IsPlant", false, entity, ecb);
         }
 
         foreach (var defusing in SystemAPI
@@ -79,6 +82,21 @@ partial class ServerCharacterAnimationSystem : SystemBase
             {
                 ecb.SetComponentEnabled<CharacterIsDifusing>(defusing.ValueRO.Defuser, true);
                 AnimationUtils.AddBoolCommand("IsDifuse", true, defusing.ValueRO.Defuser, ecb);
+            }
+        }
+
+        foreach (var (harvester, owner, entity) in SystemAPI
+            .Query<RefRO<HarvesterComponent>, RefRO<StuffDynamicData>>()
+            .WithAll<HarvesterPlanting>()
+            .WithEntityAccess())
+        {
+            if (owner.ValueRO.owner == Entity.Null) continue;
+            if (!EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(owner.ValueRO.owner)) continue;
+
+            if (EntityManager.HasComponent<CharacterIsPlanting>(owner.ValueRO.owner))
+            {
+                ecb.SetComponentEnabled<CharacterIsPlanting>(owner.ValueRO.owner, true);
+                AnimationUtils.AddBoolCommand("IsPlant", true, owner.ValueRO.owner, ecb);
             }
         }
 
@@ -183,7 +201,6 @@ partial class ServerCharacterAnimationSystem : SystemBase
             {
                 animator.runtimeAnimatorController = animatorData.LP17;
                 AnimationUtils.AddTriggerCommand("Change", entity, ecb);
-                Debug.LogError("LP17 in hand");
             }
         }
         else if (stuffName == "SKAR18")
