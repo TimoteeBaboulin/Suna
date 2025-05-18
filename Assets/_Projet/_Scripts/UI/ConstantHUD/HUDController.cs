@@ -33,7 +33,7 @@ public class HUDController : MonoBehaviour
     private VisualElement _gasEffect;
 
     private Label _health;
-    //private Label _armor; // Should be uncommented when Armor in working
+    private Label _armor;
     private Label _ammo;
     private Label _capacity;
     private Label _money;
@@ -128,7 +128,7 @@ public class HUDController : MonoBehaviour
         _sniperElement = _HUD.Q<VisualElement>("SniperCrosshair");
 
         _health = _HUD.Q<Label>("HealthLabel");
-        //_armor = _HUD.Q<Label>("ArmorLabel");
+        _armor = _HUD.Q<Label>("ArmorLabel");
 
         _ammo = _HUD.Q<Label>("AmmoLeftLabel");
         _capacity = _HUD.Q<Label>("AmmoCapacityLabel");
@@ -751,6 +751,7 @@ public class HUDController : MonoBehaviour
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
+        _armor.text = args.armorLevel.ToString();
     }
     private void System_OnArmorChange(object sender, EventArgs args)
     {

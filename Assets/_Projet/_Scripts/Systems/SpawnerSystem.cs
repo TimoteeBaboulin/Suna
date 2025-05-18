@@ -233,7 +233,7 @@ public partial struct RespawnSystem : ISystem
         bool[] teamSpawnsValid = { false, false, false };
         Entity[] teamSpawnsEntities = new Entity[3];
 
-        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+        bool databaseExists = SystemAPI.TryGetSingleton<GameResourcesDatabase>(out var database);
 
         foreach (var (spawner, entity) in SystemAPI.Query<RefRO<TeamSpawnComponent>>().WithEntityAccess())
         {
@@ -295,18 +295,21 @@ public partial struct RespawnSystem : ISystem
                 ecb.RemoveComponent<HasNoHealthTag>(characterEntity);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
 
-                var stuffBuffer = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
-                for (int i = 0; i < (int)StuffSlot.Melee; i++) //Only reset the main weapon and the secondary weapon
+                if(databaseExists)
                 {
-                    if (stuffBuffer[i].entity != Entity.Null)
+                    var stuffBuffer = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
+                    for (int i = 0; i < (int)StuffSlot.Melee; i++) //Only reset the main weapon and the secondary weapon
                     {
-                        var stuffDatabase = SystemAPI.GetComponentRO<RangedWeaponDatabaseAccess>(stuffBuffer[i].entity);
-                        var stuffDynamicData = SystemAPI.GetComponentRW<RangedWeaponDynamicData>(stuffBuffer[i].entity);
-                        ref RangedWeaponCommonData commonData = ref stuffDatabase.ValueRO.GetData(ref database);
+                        if (stuffBuffer[i].entity != Entity.Null)
+                        {
+                            var stuffDatabase = SystemAPI.GetComponentRO<RangedWeaponDatabaseAccess>(stuffBuffer[i].entity);
+                            var stuffDynamicData = SystemAPI.GetComponentRW<RangedWeaponDynamicData>(stuffBuffer[i].entity);
+                            ref RangedWeaponCommonData commonData = ref stuffDatabase.ValueRO.GetData(ref database);
 
-                        stuffDynamicData.ValueRW.currentAmmo = commonData.magazineCapacity + 1;
-                        stuffDynamicData.ValueRW.remainingAmmo = (commonData.nbMagazine - 1) * commonData.magazineCapacity;
-                        // Make sure to set the ammo to the max capacity
+                            stuffDynamicData.ValueRW.currentAmmo = commonData.magazineCapacity + 1;
+                            stuffDynamicData.ValueRW.remainingAmmo = (commonData.nbMagazine - 1) * commonData.magazineCapacity;
+                            // Make sure to set the ammo to the max capacity
+                        }
                     }
                 }
             }
