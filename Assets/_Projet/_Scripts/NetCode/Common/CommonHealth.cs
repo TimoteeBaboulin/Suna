@@ -17,6 +17,7 @@ public struct MaxHealthComponent : IComponentData
 public struct CurrentHealthComponent : IComponentData
 {
     [GhostField] public float Value;
+    [GhostField] public float armorLevel;
     [GhostField] public Entity lastDamager;
     [GhostField] public bool killSoundAlreadyPlayed;
 }
@@ -139,6 +140,10 @@ public partial struct CalculateFrameDamageJob : IJobEntity
 //[WithAll(typeof(Simulate))]
 public partial struct ApplyDamageSystem : ISystem
 {
+    ComponentLookup<CurrentHealthComponent> currentHealthLookup;
+    ComponentLookup<GhostOwner> ghostOwnerLookup;
+    ComponentLookup<CharacterMoney> moneyLookup;
+
     public void OnCreate(ref SystemState state)
     {
         EntityQueryBuilder builder = new EntityQueryBuilder(Allocator.Temp);
@@ -148,6 +153,10 @@ public partial struct ApplyDamageSystem : ISystem
         state.RequireForUpdate<NetworkTime>();
         state.RequireForUpdate<GameResourcesDatabase>();
         state.RequireForUpdate(state.GetEntityQuery(builder));
+
+        currentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>();
+        ghostOwnerLookup = state.GetComponentLookup<GhostOwner>();
+        moneyLookup = state.GetComponentLookup<CharacterMoney>();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -168,11 +177,15 @@ public partial struct ApplyDamageSystem : ISystem
 
         entities.Dispose();
 
+        currentHealthLookup.Update(ref state);
+        ghostOwnerLookup.Update(ref state);
+        moneyLookup.Update(ref state);
+
         DamageSourceJob damageSourceJob = new DamageSourceJob
         {
-            CurrentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>(),
-            MoneyLookup = state.GetComponentLookup<CharacterMoney>(),
-            GhostOwnerLookup = state.GetComponentLookup<GhostOwner>(),
+            CurrentHealthLookup =  currentHealthLookup,
+            MoneyLookup = moneyLookup,
+            GhostOwnerLookup = ghostOwnerLookup,
             entityTeamTable = entityTeamTable,
             ecb = ecb.AsParallelWriter()
         };
@@ -219,7 +232,12 @@ public partial struct DamageSourceJob : IJobEntity
 
         if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth)) return;
 
-        targetHealth.Value -= damageComponent.ValueRO.damage;
+        float damage = damageComponent.ValueRO.damage;
+        float finalDamage = damage * (0.8f + math.lerp(0.2f, 0f, targetHealth.armorLevel / 100f));
+        float delta = damage - finalDamage;
+
+        targetHealth.Value -= math.max(finalDamage, 0);
+        targetHealth.armorLevel -= math.max(delta, 0);
         ecb.SetComponent(sortKey, target, targetHealth);
 
         ApplyDamageCommand damageCommand = new ApplyDamageCommand
@@ -242,6 +260,7 @@ public partial struct DamageSourceJob : IJobEntity
         if (targetHealth.Value <= 0)
         {
             targetHealth.Value = 0;
+            ecb.SetComponent(sortKey, target, targetHealth);
             ecb.AddComponent<HasNoHealthTag>(sortKey, target);
 
             Entity source = damageComponent.ValueRO.playerSource;
@@ -258,6 +277,7 @@ public partial struct DamageSourceJob : IJobEntity
                     if (MoneyLookup.TryGetComponent(source, out var cm))
                     {
                         cm.money += damageComponent.ValueRO.killReward;
+                        cm.money = math.clamp(cm.money, 0, cm.maxMoney);
                         ecb.SetComponent(sortKey, source, cm);
                     }
                 }

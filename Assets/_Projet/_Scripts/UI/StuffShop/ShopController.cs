@@ -97,6 +97,21 @@ public class ShopController : MonoBehaviour
                 //btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
                 //btn.RegisterCallback<PointerLeaveEvent>(evt => OnShopButtonLeave());
             }
+            else
+            {
+                //That's when the player is buying an armor
+
+                btn.clicked += () =>
+                {
+                    ShopCommand sc = new ShopCommand
+                    {
+                        isArmor = true,
+                    };
+                    RpcUtils.SendClientToServerRpc(ref sc);
+                    UI.SetActive(ref root, false);
+                    ActivateUIInput(false);
+                };
+            }
         }
     }
 
