@@ -342,8 +342,8 @@ MonoBehaviour:
         guid: 9b328937a796d24fb9542e5b638b2771
       Path: Events\Default Work Unit\Character\Footstep
       maxAttenuation: 150
-      maxDuration: 0.5611338
-      minDuration: 0.5611338
+      maxDuration: 0.5790476
+      minDuration: 0.50575966
     - name: Headshot
       guid: 2a761a9a80f72149a25ae5eb8cf78ac4
       id: 2632074263
@@ -474,7 +474,7 @@ MonoBehaviour:
       Path: Events\Default Work Unit\Hit\Miss
       maxAttenuation: 150
       maxDuration: 1.6925397
-      minDuration: 1.6925397
+      minDuration: 0.76970524
     - name: Miss
       guid: b6a11cb79fc954428527a1aeaa5a936c
       id: 3062523241
@@ -1188,7 +1188,7 @@ MonoBehaviour:
     m_lastTime: -8584549679374128891
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 050000000f000000190000001a0000002300000024000000
+  ExpandedWaapiItemIds: 05000000060000000c000000190000001a00000023000000240000002600000030000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

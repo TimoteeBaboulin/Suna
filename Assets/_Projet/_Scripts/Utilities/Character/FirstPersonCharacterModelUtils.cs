@@ -5,19 +5,9 @@ using UnityEngine;
 public class FirstPersonCharacterModelUtils
 {
     public static void AddReferenceComponent(in GameObject modelGameObject, FirstPersonCharacterModelPrefab modelPrefab, 
-        in Entity characterEntity, in EntityCommandBuffer ecb, int networkId)
+        in Entity characterEntity, in EntityCommandBuffer ecb, TeamSideType teamSide)
     {
         ModelAnimatorData animatorData = null;
-
-        TeamSideType teamSide;
-        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(networkId);
-        }
-        else
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
-        }
 
         switch (teamSide)
         {
@@ -26,16 +16,6 @@ public class FirstPersonCharacterModelUtils
                 break;
             case TeamSideType.Natif:
                 animatorData = modelPrefab.NatifAnimatorData;
-                break;
-            case TeamSideType.Neutre:
-                if ((networkId % 2) == 0)
-                {
-                    animatorData = modelPrefab.CorpoAnimatorData;
-                }
-                else
-                {
-                    animatorData = modelPrefab.NatifAnimatorData;
-                }
                 break;
         }
 

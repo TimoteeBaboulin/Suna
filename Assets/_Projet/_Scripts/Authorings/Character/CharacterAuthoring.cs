@@ -114,6 +114,9 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent<CharacterIsDifusing>(entity);
             SetComponentEnabled<CharacterIsDifusing>(entity, false);
+
+            AddComponent<CharacterIsPlanting>(entity);
+            SetComponentEnabled<CharacterIsPlanting>(entity, false);
         }
     }
 }

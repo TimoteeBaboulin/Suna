@@ -34,7 +34,6 @@ public partial struct ShootSystem : ISystem
     {
         // Avoid repetition on the server due to the difference in framerate with the client
         NetworkTime networkTime = SystemAPI.GetSingleton<NetworkTime>();
-        var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
 
         if (!networkTime.IsFirstTimeFullyPredictingTick) return;
 
@@ -209,7 +208,7 @@ public partial struct ShootSystem : ISystem
 
                                 if (!hc.position.Equals(float3.zero)
                                     && state.World.IsServer()) // There is such a low chance this happens in game that it's okay to not send it if this happens
-                                                                      // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
+                                                               // It will prevent the client from trying to spawn a hit effect at 0,0,0 when the raycast fails to hit something
                                 {
                                     RpcUtils.SendServerToClientRpc(ref hc);
                                 }
@@ -260,7 +259,7 @@ public partial struct ShootSystem : ISystem
 
                     controller.ValueRW.isShooting = true;
                 }
-                else if(!input.attackStarted.IsSet && input.attackCanceled.IsSet)
+                else if (!input.attackStarted.IsSet && input.attackCanceled.IsSet)
                 {
                     dynamicData.shotFired = false;
                     controller.ValueRW.isShooting = false;
@@ -302,13 +301,9 @@ public partial struct ShootSystem : ISystem
             {
                 dynamicData.isCooking = true;
 
-                if (state.EntityManager.HasComponent<GhostOwner>(owner))
-                {
-                    int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
-                    AnimationUtils.AddTriggerCommand("Throw", owner, animationEcb, networkId);
-                }
+                AnimationUtils.AddTriggerCommand("Throw", owner, animationEcb);
             }
-            else if(!input.attackStarted.IsSet && input.attackCanceled.IsSet)
+            else if (!input.attackStarted.IsSet && input.attackCanceled.IsSet)
             {
                 if (dynamicData.isCooking)
                 {
@@ -337,7 +332,7 @@ public partial struct ShootSystem : ISystem
                         //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
 
                         if (state.World.IsServer())
-                        { 
+                        {
                             Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
                             ecb.SetName(thrownGrenade, "Thrown Grenade");
 

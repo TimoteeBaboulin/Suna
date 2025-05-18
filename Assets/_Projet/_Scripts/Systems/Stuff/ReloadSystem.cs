@@ -24,8 +24,6 @@ public partial struct RangedWeaponReloadSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
-        var soundQueue = SystemAPI.GetSingletonBuffer<SoundQueue>();
-
         float dt = SystemAPI.Time.DeltaTime;
 
         EntityCommandBuffer animationEcb = new EntityCommandBuffer(Allocator.Temp);
@@ -56,14 +54,8 @@ public partial struct RangedWeaponReloadSystem : ISystem
 #if UNITY_EDITOR
                     Debug.Log("Reload Start !");
 #endif
-                    Debug.LogError($"Boom le reload Server: {state.World.IsServer()}");
 
-                    if (state.EntityManager.HasComponent<GhostOwner>(owner))
-                    {
-                        int networkId = SystemAPI.GetComponentRO<GhostOwner>(owner).ValueRO.NetworkId;
-                        AnimationUtils.AddTriggerCommand("Reload", owner, animationEcb, networkId);
-                        Debug.LogError($"Reload c est cool Server: {state.World.IsServer()}");
-                    }
+                    AnimationUtils.AddTriggerCommand("Reload", owner, animationEcb);
 
                     if (state.World.IsServer())
                     {

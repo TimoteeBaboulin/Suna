@@ -18,17 +18,29 @@ partial struct ServerThirdPersonCharacterModelSystem : ISystem
             .WithNone<ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
+
+            if (teamSide == TeamSideType.Neutre) continue;
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
-                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+                modelPrefab.NatifModelPrefab, teamSide);
 
             if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.DisableModelRendering(modelGameObject);
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
-            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, teamSide);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones, 
-                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
+                modelPrefab.NatifColliderBones, teamSide, characterEntity, ecb);
 
             Animator animator = CommonCharacterModelUtils.GetAnimator(modelGameObject);
             AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
@@ -63,33 +75,42 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        // === Aurelien ===
-        int localNetworkId = -1;
-
-        foreach(var (ghostOwner, ghostOwnerLocal, playerEntity) in SystemAPI
-            .Query<RefRO<GhostOwner>, RefRO<GhostOwnerIsLocal>>()
-            .WithNone<ThirdPersonCharacterModelReference>()
-            .WithEntityAccess())
-        {
-            localNetworkId = ghostOwner.ValueRO.NetworkId;
-            break;
-        }
-        // === Aurelien ===
-
         foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
             .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
+
+            if (teamSide == TeamSideType.Neutre) continue;
+
+            EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+            NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
+
+            if (entities.Length == 0) continue;
+
+            int OwnerLocalnetworkId = state.EntityManager.GetComponentData<GhostOwner>(entities[0]).NetworkId;
+            TeamSideType clientLocalTeamSide = PlayerHelpers.GetPlayerInTeam(OwnerLocalnetworkId);
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab,
-                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+                modelPrefab.NatifModelPrefab, teamSide);
 
             GameObject actualVisualGO = modelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().gameObject;
 
             // === Aurelien ===
-            if (PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId) == PlayerHelpers.GetPlayerInTeam(localNetworkId))
+            if (clientLocalTeamSide == teamSide)
             {
+#if UNITY_EDITOR
                 Debug.Log("Player in the same team, setting model to layer 13");
+#endif
                 actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
 
                 //Removing the enemy outline
@@ -101,8 +122,10 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
                 actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
             }
             else
-            {                 
+            {
+#if UNITY_EDITOR
                 Debug.Log("Player in different team, setting model to layer 14");
+#endif
                 actualVisualGO.layer = 14;
             }
             // === Aurelien ===
@@ -111,9 +134,9 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
 
-            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            ThirdPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, teamSide);
             ThirdPersonCharacterModelUtils.AddModelBonesComponent(modelGameObject.transform, modelPrefab.CorpoColliderBones,
-                modelPrefab.NatifColliderBones, ghostOwner.ValueRO.NetworkId, characterEntity, ecb);
+                modelPrefab.NatifColliderBones, teamSide, characterEntity, ecb);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI

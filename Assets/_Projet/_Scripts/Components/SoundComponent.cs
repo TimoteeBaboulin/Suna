@@ -13,21 +13,14 @@ public struct SoundRpc : IRpcCommand
     public float3 pos;
 }
 
-[GhostComponent]
-public struct SoundQueue : IBufferElementData
-{
-    [GhostField] public FixedString32Bytes keyGroup;
-    [GhostField] public FixedString32Bytes keyAction;
-    [GhostField] public float3 pos;
-}
-
 public class SoundRegister : IComponentData
 {
 #if !UNITY_SERVER
-    public Dictionary<string, AK.Wwise.Event> bank = new();
+    public Dictionary<string, AK.Wwise.Event> bank;
 #endif
 
 }
+
 
 [GhostComponent]
 public struct SoundEmitter : IComponentData

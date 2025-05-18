@@ -8,56 +8,30 @@ public class AnimatorReference : IComponentData
     public Animator Animator;
 }
 
+[GhostComponent]
 public struct AnimationFloatBufferElement : IBufferElementData
 {
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-    public float Value;
+    [GhostField] public FixedString32Bytes Parameter;
+    [GhostField] public float Value;
 }
 
+[GhostComponent]
 public struct AnimationIntBufferElement : IBufferElementData
 {
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-    public int Value;
+    [GhostField] public FixedString32Bytes Parameter;
+    [GhostField] public int Value;
 }
 
+[GhostComponent]
 public struct AnimationBoolBufferElement : IBufferElementData
 {
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-    public bool Value;
+    [GhostField] public FixedString32Bytes Parameter;
+    [GhostField] public bool Value;
 }
 
+[GhostComponent]
 public struct AnimationTriggerBufferElement : IBufferElementData
 {
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-}
-
-public struct FloatParameterRpc : IRpcCommand
-{
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-    public float Value;
-}
-
-public struct IntParameterRpc : IRpcCommand
-{
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-    public int Value;
-}
-
-public struct BoolParameterRpc : IRpcCommand
-{
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
-    public bool Value;
-}
-
-public struct TriggerParameterRpc : IRpcCommand
-{
-    public int NetworkId;
-    public FixedString32Bytes Parameter;
+    [GhostField] public int NetworkId;
+    [GhostField] public FixedString32Bytes Parameter;
 }

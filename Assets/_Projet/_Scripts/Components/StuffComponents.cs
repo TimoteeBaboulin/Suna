@@ -4,6 +4,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public enum StuffSlot
 {
@@ -135,7 +136,7 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID] != null)
         {
             View_Baked = GameObject.Instantiate(grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID]);
-            View_Baked.name = grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID].name + "_Baked";
+            View_Baked.name = grViewPrefabs.List_Baked[stuffDataRef.ValueRO.ID].name;
         }
     }
 
@@ -211,35 +212,81 @@ public class StuffGameObjectRef : ICleanupComponentData
         }
     }
 
-    public void SetParent(Transform parent, bool isFps)
+    public void SetParent(Transform parent)
     {
         if (View_Baked != null)
         {
             //Debug.Log("<color=red>SetParent : </color>" + View_Baked_.name + " <color=red>to</color> " + parent);
             View_Baked.transform.SetParent(parent);
-
-            if (parent != null && isFps)
-            {
-                SetLayerRecursively(View_Baked, 15);
-            }
-            else
-            {
-                SetLayerRecursively(View_Baked, 0);
-            }
         }
         if (View != null)
         {
             //Debug.Log("<color=red>SetParent : </color>" + View.name + " <color=red>to</color> " + parent);
             View.transform.SetParent(parent);
+        }
+    }
 
-            if (parent != null && isFps)
-            {
-                SetLayerRecursively(View, 15);
-            }
-            else
-            {
-                SetLayerRecursively(View, 0);
-            }
+    public void SetLayer(Entity owner, EntityManager entityManager)
+    {
+        if (owner == Entity.Null)
+        {
+            if (View_Baked != null) { SetGoLayer(View_Baked, 0); }
+            if (View != null) { SetGoLayer(View, 0); }
+
+            return;
+        }
+
+        if (!entityManager.HasComponent<GhostOwner>(owner)) return;
+
+        int networkId = entityManager.GetComponentData<GhostOwner>(owner).NetworkId;
+        TeamSideType teamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+
+        if (teamSide == TeamSideType.Neutre)
+        {
+            if (View_Baked != null) { SetGoLayer(View_Baked, 0); }
+            if (View != null) { SetGoLayer(View, 0); }
+
+            return;
+        }
+
+        if (entityManager.HasComponent<GhostOwnerIsLocal>(owner)
+            && entityManager.IsComponentEnabled<GhostOwnerIsLocal>(owner))
+        {
+            if (View_Baked != null) { SetGoLayer(View_Baked, 15); }
+            if (View != null) { SetGoLayer(View, 15); }
+
+            return;
+        }
+
+        if (entityManager.HasComponent<CameraIsAtached>(owner))
+        {
+            if (View_Baked != null) { SetGoLayer(View_Baked, 15); }
+            if (View != null) { SetGoLayer(View, 15); }
+
+            return;
+        }
+
+        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+        NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
+
+        if (entities.Length == 0) return;
+
+        networkId = entityManager.GetComponentData<GhostOwner>(entities[0]).NetworkId;
+        TeamSideType clientLocalTeamSide = PlayerHelpers.GetPlayerInTeam(networkId);
+
+        if (clientLocalTeamSide == teamSide)
+        {
+            if (View_Baked != null) { SetGoLayer(View_Baked, 13); }
+            if (View != null) { SetGoLayer(View, 13); }
+
+            return;
+        }
+        else
+        {
+            if (View_Baked != null) { SetGoLayer(View_Baked, 14); }
+            if (View != null) { SetGoLayer(View, 14); }
+
+            return;
         }
     }
 
@@ -316,6 +363,17 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (View != null) View.transform.localScale = Vector3.one * scale;
     }
 
+    public static void SetGoLayer(in GameObject parent, int layer)
+    {
+        parent.layer = layer;
+
+        Transform[] allChildren = parent.GetComponentsInChildren<Transform>();
+        foreach (Transform child in allChildren)
+        {
+            child.gameObject.layer = layer;
+        }
+    }
+
     public void Destroy()
     {
         if (View != null)
@@ -325,18 +383,6 @@ public class StuffGameObjectRef : ICleanupComponentData
         if (View_Baked != null)
         {
             GameObject.Destroy(View_Baked);
-        }
-    }
-
-    private void SetLayerRecursively(GameObject obj, int newLayer)
-    {
-        if (obj == null) return;
-
-        obj.layer = newLayer;
-
-        foreach (Transform child in obj.transform)
-        {
-            SetLayerRecursively(child.gameObject, newLayer);
         }
     }
 }
