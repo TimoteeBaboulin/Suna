@@ -242,26 +242,29 @@ public partial struct RoundSystemServer : ISystem
     private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
     {
         Debug.Log($"Victory by {team}");
+        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+
         //Update the score and lossstreak of the correct teams
         if (team == TeamSideType.Corpo)
         {
+            SoundUtils.PlayWithRPC("Music", "Corpo", float3.zero);
+
             component.ValueRW.corporationScore++;
             component.ValueRW.corporationLossStreak = 0;
 
             if (component.ValueRW.nativeLossStreak < component.ValueRW.maxStreakCount)
                 component.ValueRW.nativeLossStreak++;
 
-            SoundUtils.PlayWithRPC("Music", "Corpo", float3.zero);
         }
         else if (team == TeamSideType.Natif)
         {
+            SoundUtils.PlayWithRPC("Music", "Natif", float3.zero);
+
             component.ValueRW.nativeScore++;
             component.ValueRW.nativeLossStreak = 0;
 
             if (component.ValueRW.corporationLossStreak < component.ValueRW.maxStreakCount)
                 component.ValueRW.corporationLossStreak++;
-
-            SoundUtils.PlayWithRPC("Music", "Natif", float3.zero);
         }
 
         foreach ((CharacterMoney moneyComponent, ClientComponent client, Entity clientEntity) in
@@ -370,6 +373,8 @@ public partial struct RoundSystemServer : ISystem
 
     private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
+        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+
         //Reset the phase and increase the round number
         SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb);
         _harvesterMusicClockWiseStarted = false;
@@ -425,11 +430,12 @@ public partial struct RoundSystemServer : ISystem
             }
         }
 
-        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
     }
 
     private void HarvesterDefused(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
+        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         component.ValueRW.currentPhase = RoundPhase.PostRoundPhase;
@@ -437,8 +443,6 @@ public partial struct RoundSystemServer : ISystem
 
         Victory(ref state, entity, component, TeamSideType.Natif, ecb);
         SendCurrentPhase(ref state, entity, component, ecb);
-
-        SoundUtils.PlayWithRPC("Music", "Harvester_Clockwise_Stop", float3.zero);
     }
 
     private void CollectorPlanted(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
