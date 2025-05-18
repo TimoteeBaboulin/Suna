@@ -115,3 +115,6 @@ public struct SmoothInput : IComponentData
 
 [GhostEnabledBit]
 public struct CharacterIsDifusing : IComponentData, IEnableableComponent { }
+
+[GhostEnabledBit]
+public struct CharacterIsPlanting : IComponentData, IEnableableComponent { }
