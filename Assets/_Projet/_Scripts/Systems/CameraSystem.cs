@@ -132,15 +132,18 @@ partial class CameraSystem : SystemBase
                     if (character.isAiming && WeaponCanADS(stuffEntity, out float adsFov))
                     {
                         Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, adsFov, 0.5f);
+                        Camera.main.transform.GetChild(0).gameObject.SetActive(false);
                     }
                     else
                     {
                         Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.5f);
+                        Camera.main.transform.GetChild(0).gameObject.SetActive(true);
                     }
                 }
                 else
                 {
                     Camera.main.fieldOfView = math.lerp(Camera.main.fieldOfView, defaultFov, 0.1f);
+                    Camera.main.transform.GetChild(0).gameObject.SetActive(true);
                 }
 
                 Camera.main.transform.position = localTransform.ValueRO.Position + fpsOffset;

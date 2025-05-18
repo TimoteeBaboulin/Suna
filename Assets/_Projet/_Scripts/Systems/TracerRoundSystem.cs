@@ -18,14 +18,13 @@ partial struct TracerRoundSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(allocator: Allocator.Temp);
 
-        foreach (var (tracerRoundRW, tracerRoundEntity) in 
-            SystemAPI.Query<RefRW<TracerRoundComponent>>()
-            .WithAll<LocalTransform>()
+        foreach (var (transformRW, tracerRoundRW, tracerRoundEntity) in 
+            SystemAPI.Query<RefRW<LocalTransform>, RefRW<TracerRoundComponent>>()
             .WithEntityAccess())
         {
             float3 direction = tracerRoundRW.ValueRO.end - tracerRoundRW.ValueRO.start;
             float3 velocity = math.normalize(direction) * (tracerRoundRW.ValueRO.speed * SystemAPI.Time.DeltaTime);
-            float3 tracerPosition = SystemAPI.GetComponentRO<LocalTransform>(tracerRoundEntity).ValueRO.Position;
+            float3 tracerPosition = transformRW.ValueRO.Position;
             float3 pathToEnd = tracerRoundRW.ValueRO.end - tracerPosition;
 
             if (math.lengthsq(pathToEnd) <= math.lengthsq(velocity))
@@ -35,8 +34,8 @@ partial struct TracerRoundSystem : ISystem
             else
             {
                 quaternion rotation = quaternion.LookRotation(pathToEnd, new float3(0, 1, 0));
-                SystemAPI.GetComponentRW<LocalTransform>(tracerRoundEntity).ValueRW.Position = tracerPosition + velocity;
-                SystemAPI.GetComponentRW<LocalTransform>(tracerRoundEntity).ValueRW.Rotation = rotation;
+                transformRW.ValueRW.Position = tracerPosition + velocity;
+                transformRW.ValueRW.Rotation = rotation;
                 tracerRoundRW.ValueRW.speed += SystemAPI.Time.DeltaTime * 1.5f;
             }
         }

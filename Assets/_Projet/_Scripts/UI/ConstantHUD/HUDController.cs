@@ -25,12 +25,15 @@ public class HUDController : MonoBehaviour
     private bool _damageIndicatorSubscribed = false;
     private VisualElement _crosshairElement;
     private VisualElement _hitMarkerElement;
+    private VisualElement _sniperElement;
 
     //Grenade effects
     private VisualElement _flash;
+    private VisualElement _smokeEffect;
+    private VisualElement _gasEffect;
 
     private Label _health;
-    //private Label _armor; // Should be uncommented when Armor in working
+    private Label _armor;
     private Label _ammo;
     private Label _capacity;
     private Label _money;
@@ -120,9 +123,12 @@ public class HUDController : MonoBehaviour
         _HUD = _HUDDocument.rootVisualElement;
 
         _flash = _HUD.Q<VisualElement>("Flash");
+        _smokeEffect = _HUD.Q<VisualElement>("SmokeHUD");
+        _gasEffect = _HUD.Q<VisualElement>("GasHUD");
+        _sniperElement = _HUD.Q<VisualElement>("SniperCrosshair");
 
         _health = _HUD.Q<Label>("HealthLabel");
-        //_armor = _HUD.Q<Label>("ArmorLabel");
+        _armor = _HUD.Q<Label>("ArmorLabel");
 
         _ammo = _HUD.Q<Label>("AmmoLeftLabel");
         _capacity = _HUD.Q<Label>("AmmoCapacityLabel");
@@ -232,6 +238,8 @@ public class HUDController : MonoBehaviour
             _inGameHUDSystem.MoneyChangedEvent += System_OnMoneyChange;
             _inGameHUDSystem.FlashGrenadeEvent += System_OnFlashGrenade;
             _inGameHUDSystem.PositionChangedEvent += System_OnPositionChanged;
+            _inGameHUDSystem.ADSChangedEvent += System_OnADSChange;
+            _inGameHUDSystem.SmokeGrenadeEvent += System_OnSmokeGrenade;
         }
 
         if (_roundManagerLinkSystem == null && world.Name == "ClientWorld")
@@ -338,12 +346,24 @@ public class HUDController : MonoBehaviour
         }
     }
 
+    private void System_OnSmokeGrenade(object sender, InGameHUDSystem.SmokeGrenadeArgs e)
+    {
+        UI.SetOpacity(ref _smokeEffect, e.isSmoke ? e.intensity : 0);
+        UI.SetOpacity(ref _gasEffect, e.isSmoke ? 0 : e.intensity);
+    }
+
+    private void System_OnADSChange(object sender, InGameHUDSystem.ADSArgs e)
+    {
+        UI.SetOpacity(ref _sniperElement, e.isAiming ? 1f : 0f);
+    }
+
     private void System_OnDamageTaken(object sender, DamageSourcePositionSystem.DamageIndicatorArgs args)
     {
         if (args.networkId == 0 || args.networkId != GetCurrentPlayerInfo().networkID)
         {
             return;
         }
+        
         DamageIndicatorElement damageIndicator = new();
         damageIndicator.transform.rotation = Quaternion.Euler(0f, 0f, args.angle);
         _crosshairElement.Add(damageIndicator);
@@ -401,6 +421,7 @@ public class HUDController : MonoBehaviour
             _winLoseRoundElement.style.backgroundImage = null;
         }
     }
+	
     private void OnTeamWinRound(object sender, RoundSystemClient.TeamWinRoundArgs args)
     {
         _winLoseRoundEngaged = true;
@@ -730,6 +751,7 @@ public class HUDController : MonoBehaviour
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
+        _armor.text = args.armorLevel.ToString();
     }
     private void System_OnArmorChange(object sender, EventArgs args)
     {

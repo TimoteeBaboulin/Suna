@@ -121,7 +121,9 @@ public partial struct OnDieJob : IJobEntity
                     });
                 }
 
-                if(StuffUtils.GetStuffInSlot(stuffList, StuffSlot.Harvester) != Entity.Null) //Drops the Harvester if player has it
+                commandBuffer.AddComponent<ShouldBeDestroyed>(sortKey, StuffUtils.GetStuffInSlot(stuffList, StuffSlot.Melee)); //We destroy the knife (so it doesn't get duplicated on respawn)
+
+                if (StuffUtils.GetStuffInSlot(stuffList, StuffSlot.Harvester) != Entity.Null) //Drops the Harvester if player has it
                 {
                     Entity stuff = StuffUtils.GetStuffInSlot(stuffList, StuffSlot.Harvester);
 
@@ -140,7 +142,6 @@ public partial struct OnDieJob : IJobEntity
                     {
                         if (!stuffDropped)
                         {
-
                             commandBuffer.AddComponent(sortKey, StuffUtils.GetStuffInSlot(stuffList, (StuffSlot)i), new ShouldBeDropped()
                             {
                                 position = playerPos,
@@ -232,6 +233,8 @@ public partial struct RespawnSystem : ISystem
         bool[] teamSpawnsValid = { false, false, false };
         Entity[] teamSpawnsEntities = new Entity[3];
 
+        bool databaseExists = SystemAPI.TryGetSingleton<GameResourcesDatabase>(out var database);
+
         foreach (var (spawner, entity) in SystemAPI.Query<RefRO<TeamSpawnComponent>>().WithEntityAccess())
         {
             teamSpawnsValid[(int)spawner.ValueRO.team] = true;
@@ -291,6 +294,24 @@ public partial struct RespawnSystem : ISystem
                 ecb.SetComponentEnabled<CharacterIsEnable>(characterEntity, true);
                 ecb.RemoveComponent<HasNoHealthTag>(characterEntity);
                 ecb.RemoveComponent<WaitForRespawnTag>(clientEntity);
+
+                if(databaseExists)
+                {
+                    var stuffBuffer = SystemAPI.GetBuffer<CharacterStuffList>(characterEntity);
+                    for (int i = 0; i < (int)StuffSlot.Melee; i++) //Only reset the main weapon and the secondary weapon
+                    {
+                        if (stuffBuffer[i].entity != Entity.Null)
+                        {
+                            var stuffDatabase = SystemAPI.GetComponentRO<RangedWeaponDatabaseAccess>(stuffBuffer[i].entity);
+                            var stuffDynamicData = SystemAPI.GetComponentRW<RangedWeaponDynamicData>(stuffBuffer[i].entity);
+                            ref RangedWeaponCommonData commonData = ref stuffDatabase.ValueRO.GetData(ref database);
+
+                            stuffDynamicData.ValueRW.currentAmmo = commonData.magazineCapacity + 1;
+                            stuffDynamicData.ValueRW.remainingAmmo = (commonData.nbMagazine - 1) * commonData.magazineCapacity;
+                            // Make sure to set the ammo to the max capacity
+                        }
+                    }
+                }
             }
         }
     }

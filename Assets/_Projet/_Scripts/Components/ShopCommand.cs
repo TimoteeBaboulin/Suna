@@ -6,4 +6,5 @@ using UnityEngine;
 public struct ShopCommand : IRpcCommand
 {
     public FixedString32Bytes weaponData;
+    public bool isArmor;
 }

@@ -350,6 +350,14 @@ public partial struct ShootSystem : ISystem
                                 Scale = 1.0f
                             });
 
+                            var grenadeTransform = SystemAPI.GetComponent<LocalTransform>(grenade);
+                            ecb.SetComponent(grenade, new LocalTransform
+                            {
+                                Position = grenadeTransform.Position,
+                                Rotation = grenadeTransform.Rotation,
+                                Scale = 1.0f
+                            });
+
                             ecb.SetComponent(thrownGrenade, new PhysicsVelocity
                             {
                                 Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),

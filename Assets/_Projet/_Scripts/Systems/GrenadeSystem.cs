@@ -10,7 +10,9 @@ using Unity.Transforms;
 public enum GrenadeVFXType
 {
     HE,
-    Flashbang
+    Flashbang,
+    Smoke,
+    Gas
 }
 
 public struct GrenadeVFXCommand : IRpcCommand
@@ -71,6 +73,34 @@ public partial class GrenadeVFXSystem : SystemBase
                     }
                 }
 
+                if (command.ValueRO.type == GrenadeVFXType.Smoke)
+                {
+                    if (prefabManager.smokeGrenadeEffect == null) { continue; }
+
+                    explosionEffect = commandBuffer.Instantiate(prefabManager.smokeGrenadeEffect);
+
+                    if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
+                    {
+                        commandBuffer.AddComponent(explosionEffect, new Lifetime
+                        {
+                            RemainingTime = 25f
+                        });
+                    }
+                }
+
+                if (command.ValueRO.type == GrenadeVFXType.Gas)
+                {
+                    if (prefabManager.gasGrenadeEffect == null) { continue; }
+                    explosionEffect = commandBuffer.Instantiate(prefabManager.gasGrenadeEffect);
+                    if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
+                    {
+                        commandBuffer.AddComponent(explosionEffect, new Lifetime
+                        {
+                            RemainingTime = 20f
+                        });
+                    }
+                }
+
                 commandBuffer.AddComponent<DestroyTag>(explosionEffect);
 
                 commandBuffer.SetComponent(explosionEffect, new LocalTransform
@@ -115,23 +145,24 @@ public partial class GrenadeSystem : SystemBase
             ref var grenadeCommonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
             ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref grd);
 
+            Entity thrownGrenade = Entity.Null;
+            foreach (var (inhand, thrownNade) in SystemAPI.Query<RefRO<StuffEntityInHandRef>>().WithEntityAccess())
+            {
+                if (inhand.ValueRO.Value == grenade)
+                {
+                    thrownGrenade = thrownNade;
+                }
+            }
+
+            float3 grenadePos = SystemAPI.GetComponent<LocalTransform>(thrownGrenade).Position;
+
             if (grenadeCommonData.triggerType == GrenadeTriggerType.Timer)
             {
                 if (dynamicDataRW.ValueRO.thrownForTime >= grenadeCommonData.timerTriggerDelay)
                 {
-                    Entity thrownGrenade = Entity.Null;
-                    foreach (var (inhand, thrownNade) in SystemAPI.Query<RefRO<StuffEntityInHandRef>>().WithEntityAccess())
-                    {
-                        if (inhand.ValueRO.Value == grenade)
-                        {
-                            thrownGrenade = thrownNade;
-                        }
-                    }
-
                     if (grenadeCommonData.grenadeType == GrenadeType.Frag)
                     {
                         var hits = new NativeList<DistanceHit>(Allocator.Temp);
-                        float3 grenadePos = SystemAPI.GetComponent<LocalTransform>(thrownGrenade).Position;
                         float radius = grenadeCommonData.impactRadius;
 
                         CollisionFilter filter = new CollisionFilter
@@ -179,7 +210,7 @@ public partial class GrenadeSystem : SystemBase
                     if (grenadeCommonData.grenadeType == GrenadeType.Flashbang)
                     {
                         var hits = new NativeList<DistanceHit>(Allocator.Temp);
-                        float3 grenadePos = SystemAPI.GetComponent<LocalTransform>(thrownGrenade).Position;
+                        
                         float radius = grenadeCommonData.impactRadius;
                         CollisionFilter filter = new CollisionFilter
                         {
@@ -245,6 +276,145 @@ public partial class GrenadeSystem : SystemBase
                     }
                 }
             }
+
+            if(grenadeCommonData.triggerType == GrenadeTriggerType.Still)
+            {
+                LocalTransform grenadeTransform = SystemAPI.GetComponent<LocalTransform>(thrownGrenade);
+                PhysicsVelocity physicsVelocity = SystemAPI.GetComponent<PhysicsVelocity>(thrownGrenade);
+
+                if(math.lengthsq(physicsVelocity.Linear) <= 0.25f)
+                {
+                    dynamicDataRW.ValueRW.wasStillForTime += SystemAPI.Time.DeltaTime;
+                }
+                else
+                {
+                    dynamicDataRW.ValueRW.wasStillForTime = 0f;
+                }
+
+                if(dynamicDataRW.ValueRW.wasStillForTime >= grenadeCommonData.stillTriggerDelay)
+                {
+                    physicsVelocity.Linear = float3.zero;
+                    commandBuffer.SetComponent(thrownGrenade, physicsVelocity);
+
+                    if (grenadeCommonData.grenadeType == GrenadeType.Smoke)
+                    {
+                        if (dynamicDataRW.ValueRO.stillGrenadeEffectTime <= 0) 
+                        {
+                            var command = new GrenadeVFXCommand
+                            {
+                                position = grenadePos,
+                                type = GrenadeVFXType.Smoke
+                            };
+
+                            RpcUtils.SendServerToClientRpc(ref command);
+                        }
+
+                        dynamicDataRW.ValueRW.stillGrenadeEffectTime += SystemAPI.Time.DeltaTime;
+
+                        var hits = new NativeList<DistanceHit>(Allocator.Temp);
+                        float radius = grenadeCommonData.impactRadius;
+                        CollisionFilter filter = new CollisionFilter
+                        {
+                            BelongsTo = ~0u,
+                            CollidesWith = (1u << 6)
+                        };
+
+                        var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+
+                        if (physicsWorld.OverlapSphere(grenadePos, radius, ref hits, filter))
+                        {
+                            foreach (var hit in hits)
+                            {
+                                var entity = hit.Entity;
+                                if (!SystemAPI.HasComponent<Damageable>(entity) || !SystemAPI.IsComponentEnabled<Damageable>(entity)) continue;
+
+                                if(SystemAPI.HasComponent<SmokeGrenadeEffect>(entity))
+                                {
+                                    var smokeEffect = SystemAPI.GetComponent<SmokeGrenadeEffect>(entity);
+                                    float currentEffect = smokeEffect.intensity;
+
+                                    float dist = math.distance(grenadePos, hit.Position);
+                                    float effect = 0;
+
+                                    if(dist < 1.5f)
+                                    {
+                                        effect = 1f;
+                                    }
+                                    else if (dist < 4f)
+                                    {
+                                        effect = math.saturate((4f - dist) / 1.5f);
+                                    }
+                                    else
+                                    {
+                                        effect = 0;
+                                    }
+
+                                    commandBuffer.SetComponent(entity, new SmokeGrenadeEffect
+                                    {
+                                        intensity = effect,
+                                        isSmoke = true
+                                    });
+                                }
+                            }
+                        }
+                    }
+
+                    if (grenadeCommonData.grenadeType == GrenadeType.Gas)
+                    {
+                        if (dynamicDataRW.ValueRO.stillGrenadeEffectTime <= 0)
+                        {
+                            var command = new GrenadeVFXCommand
+                            {
+                                position = grenadePos,
+                                type = GrenadeVFXType.Gas
+                            };
+
+                            RpcUtils.SendServerToClientRpc(ref command);
+                        }
+
+                        dynamicDataRW.ValueRW.stillGrenadeEffectTime += SystemAPI.Time.DeltaTime;
+
+                        var hits = new NativeList<DistanceHit>(Allocator.Temp);
+                        float radius = grenadeCommonData.impactRadius;
+                        CollisionFilter filter = new CollisionFilter
+                        {
+                            BelongsTo = ~0u,
+                            CollidesWith = (1u << 6)
+                        };
+
+                        var physicsWorld = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+
+                        if (physicsWorld.OverlapSphere(grenadePos, radius, ref hits, filter))
+                        {
+                            foreach (var hit in hits)
+                            {
+                                var entity = hit.Entity;
+                                if (!SystemAPI.HasComponent<Damageable>(entity) || !SystemAPI.IsComponentEnabled<Damageable>(entity)) continue;
+
+                                Entity damageSource = commandBuffer.CreateEntity();
+                                commandBuffer.SetName(damageSource, "Damage Source");
+
+                                commandBuffer.AddComponent(damageSource, new ApplyDamage
+                                {
+                                    source = DamageSource.Gas,
+                                    grenade = Entity.Null,
+                                    playerSource = released.ValueRO.thrower,
+                                    targetEntity = entity,
+                                    killReward = stuffCommonData.killGain,
+                                    damage = grenadeCommonData.inflictedDamage * SystemAPI.Time.DeltaTime,
+                                    sourcePosition = grenadePos
+                                });
+                            }
+                        }
+                    }
+
+                    if (dynamicDataRW.ValueRW.stillGrenadeEffectTime >= grenadeCommonData.timerTriggerDelay)
+                    {
+                        commandBuffer.DestroyEntity(thrownGrenade);
+                        commandBuffer.DestroyEntity(grenade);
+                    }
+                }
+            }    
         }
 
         commandBuffer.Playback(EntityManager);
@@ -291,13 +461,15 @@ public partial struct GrenadeThrowSystem : ISystem
             RaycastInput input = new RaycastInput()
             {
                 Start = grenadePosition,
-                End = grenadePosition + (math.down() * 0.11f),
+                End = grenadePosition + (math.down() * .11f), // TODO : Check when all collisions will be set, half a meter is way much more than it should be
                 Filter = new CollisionFilter()
                 {
-                    BelongsTo = ~0u,
-                    CollidesWith = (1u << 12),
+                    BelongsTo = 1u,
+                    CollidesWith = (1 << 12),
                 }
             };
+
+            UnityEngine.Debug.DrawLine(grenadePosition, grenadePosition + (math.down() * .5f), UnityEngine.Color.red, 0.1f);
 
             RaycastHit hit = new RaycastHit();
             bool didHit = collisionWorld.CastRay(input, out hit);
@@ -308,70 +480,10 @@ public partial struct GrenadeThrowSystem : ISystem
             {
                 float3 dir = physicsVelocity.ValueRO.Linear;
                 float3 grenadeDir = math.normalize(new float3(dir.x, 0, dir.z));
+                if (!math.all(math.isfinite(grenadeDir))) continue;
                 float3 slow = -grenadeDir * 10f;
                 physicsVelocity.ValueRW.Linear += slow * SystemAPI.Time.DeltaTime;
             }
-
-            //if (!SystemAPI.TryGetSingleton<SimulationSingleton>(out var simulationSingleton))
-            //{
-            //    UnityEngine.Debug.LogError("No physics found");
-            //    return;
-            //}
-
-            //if (simulationSingleton.Type == SimulationType.NoPhysics)
-            //{
-            //    UnityEngine.Debug.LogError("No physics type simulation");
-            //    return;
-            //}
-
-            //Simulation simulation = simulationSingleton.AsSimulation();
-
-            //state.Dependency.Complete();
-
-            //int count = 0;
-
-            //foreach(var c in simulation.CollisionEvents)
-            //{
-            //    count++;
-            //}
-
-            //UnityEngine.Debug.LogError($"{count} collisions detected this frame.");
-
-            //foreach (var collision in simulation.CollisionEvents)
-            //{
-            //    Entity a = collision.EntityA;
-            //    Entity b = collision.EntityB;
-
-            //    bool aIsGrenade = state.EntityManager.HasComponent<StuffEntityInHandRef>(a);
-            //    bool bIsGrenade = state.EntityManager.HasComponent<StuffEntityInHandRef>(b);
-
-            //    if ((aIsGrenade && bIsGrenade) || (!aIsGrenade && !bIsGrenade))
-            //    {
-            //        // Both are grenades or none is a grenade, do nothing
-            //        return;
-            //    }
-
-            //    Entity theGrenade = aIsGrenade ? a : b;
-
-            //    if (state.EntityManager.HasComponent<ReleasedGrenade>(state.EntityManager.GetComponentData<StuffEntityInHandRef>(theGrenade).Value))
-            //        // If the entity is not a grenade, skip it
-            //        return;
-
-            //    if (state.EntityManager.HasComponent<PhysicsVelocity>(theGrenade))
-            //    {
-            //        var physicsVelocityCopy = state.EntityManager.GetComponentData<PhysicsVelocity>(theGrenade);
-            //        UnityEngine.Debug.Log($"Grenade velocity before: {physicsVelocityCopy.Linear}");
-            //        physicsVelocityCopy.Linear *= 0.6f;
-            //        physicsVelocityCopy.Angular *= 0.5f;
-
-            //        float angle = math.acos(math.dot(collision.Normal, math.up()) / (math.length(collision.Normal) * math.length(math.up())));
-            //        float damp = math.saturate(1f - angle / 90f);
-            //        physicsVelocityCopy.Linear = new float3(damp * physicsVelocityCopy.Linear.x, 0.6f * physicsVelocityCopy.Linear.y, damp * physicsVelocityCopy.Linear.z);
-
-            //        commandBuffer.SetComponent(theGrenade, physicsVelocityCopy);
-            //        UnityEngine.Debug.Log($"Grenade velocity after: {physicsVelocityCopy}");
-            //    }
-            //}
 
             state.Dependency = new GrenadeCollisionJob
             {
@@ -388,7 +500,7 @@ public partial struct GrenadeThrowSystem : ISystem
             }
 
             if (!released.ValueRO.onGround)
-                physicsVelocity.ValueRW.Linear += math.down() * 7.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
+                physicsVelocity.ValueRW.Linear += math.down() * 3.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
 
             if (math.lengthsq(physicsVelocity.ValueRO.Linear) < 0.1f)
             {
@@ -427,17 +539,15 @@ public partial struct GrenadeThrowSystem : ISystem
 
             if (physicsVelocityLookup.HasComponent(grenade)/* && math.all(math.isfinite(physicsVelocityLookup[grenade].Linear))*/)
             {
-                UnityEngine.Debug.Log($"Grenade velocity before: {physicsVelocityLookup[grenade].Linear}");
                 var velocity = physicsVelocityLookup[grenade];
-                velocity.Linear *= 0.4f;
+                velocity.Linear *= 0.6f;
                 velocity.Angular *= 0.4f;
 
                 float angle = math.acos(math.dot(eventObj.Normal, math.up()) / (math.length(eventObj.Normal) * math.length(math.up())));
-                float damp = math.pow(math.saturate(angle / 90f), 2);
-                velocity.Linear = new float3(damp * velocity.Linear.x, 0.6f * velocity.Linear.y, damp * velocity.Linear.z);
+                float damp = math.saturate(math.saturate(1 - angle / 90f) + 0.25f);
+                velocity.Linear = new float3(damp * velocity.Linear.x, damp * velocity.Linear.y, damp * velocity.Linear.z);
 
                 physicsVelocityLookup[grenade] = velocity;
-                UnityEngine.Debug.Log($"Grenade velocity after: {physicsVelocityLookup[grenade].Linear}");
             }
         }
     }
