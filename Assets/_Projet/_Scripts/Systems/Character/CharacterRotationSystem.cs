@@ -25,6 +25,7 @@ public partial struct CommonCharacterRotationSystem : ISystem
 
         foreach (var (characterTransform, characterViewRotation, CharacterInput, characterEntity) in SystemAPI
             .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>>()
+            .WithAll<CharacterIsEnable>()
             .WithEntityAccess())
         {
             characterTransform.ValueRW.Rotation = quaternion.RotateY(CharacterInput.ValueRO.Yaw);

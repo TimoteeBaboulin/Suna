@@ -145,7 +145,13 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
             {
-                modelReference.ModelGameObject.SetActive(false);
+                modelReference.ModelGameObject.SetActive(true);
+                Transform weaponSlot = CommonCharacterModelUtils.FindBoneByName(modelReference.ModelGameObject.transform, "WeaponSlot");
+
+                if (weaponSlot.gameObject.activeSelf)
+                {
+                    weaponSlot.gameObject.SetActive(false);
+                }
             }
             else
             {
@@ -167,6 +173,13 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
                     {
                         modelReference.ModelGameObject.SetActive(false);
                     }
+                }
+
+                Transform weaponSlot = CommonCharacterModelUtils.FindBoneByName(modelReference.ModelGameObject.transform, "WeaponSlot");
+
+                if (!weaponSlot.gameObject.activeSelf)
+                {
+                    weaponSlot.gameObject.SetActive(true);
                 }
             }
 

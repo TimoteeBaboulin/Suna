@@ -100,6 +100,21 @@ partial class ServerCharacterAnimationSystem : SystemBase
             }
         }
 
+        foreach (var (character, entity) in SystemAPI
+            .Query<RefRO<CharacterComponent>>()
+            .WithAll<GhostOwnerIsLocal>()
+            .WithEntityAccess())
+        {
+            if (EntityManager.IsComponentEnabled<CharacterIsEnable>(entity))
+            {
+                AnimationUtils.AddBoolCommand("IsDead", false, entity, ecb);
+            }
+            else
+            {
+                AnimationUtils.AddBoolCommand("IsDead", true, entity, ecb);
+            }
+        }
+
         ecb.Playback(EntityManager);
         ecb.Dispose();
     }
