@@ -77,7 +77,7 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
         foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
-            .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
+            .WithNone<ThirdPersonCharacterModelReference>()
             .WithEntityAccess())
         {
             TeamSideType teamSide;
@@ -139,19 +139,19 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
                 modelPrefab.NatifColliderBones, teamSide, characterEntity, ecb);
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, commonBones, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>,
+            CommonCharacterModelBonesTransform>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
             {
-                modelReference.ModelGameObject.SetActive(true);
-                Transform weaponSlot = CommonCharacterModelUtils.FindBoneByName(modelReference.ModelGameObject.transform, "WeaponSlot");
+                CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
 
-                if (weaponSlot.gameObject.activeSelf)
-                {
-                    weaponSlot.gameObject.SetActive(false);
-                }
+                Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
+                AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
+
+                modelReference.ModelGameObject.SetActive(true);
             }
             else
             {
@@ -173,13 +173,6 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
                     {
                         modelReference.ModelGameObject.SetActive(false);
                     }
-                }
-
-                Transform weaponSlot = CommonCharacterModelUtils.FindBoneByName(modelReference.ModelGameObject.transform, "WeaponSlot");
-
-                if (!weaponSlot.gameObject.activeSelf)
-                {
-                    weaponSlot.gameObject.SetActive(true);
                 }
             }
 

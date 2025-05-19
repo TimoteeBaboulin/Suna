@@ -50,7 +50,13 @@ partial class ServerCharacterAnimationSystem : SystemBase
 
             Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
-            if (stuffInHand == Entity.Null) continue;
+            if (stuffInHand == Entity.Null)
+            {
+                if (animatorRef.Animator.runtimeAnimatorController != modelRef.AnimatorData.KnifeNeutral)
+                {
+                    animatorRef.Animator.runtimeAnimatorController = modelRef.AnimatorData.KnifeNeutral;
+                }
+            }
 
             if (!EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand)) continue;
 
