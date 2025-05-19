@@ -108,7 +108,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584549672315790036
+    m_lastTime: -8584540126345170151
     List:
     - name: Bullet
       guid: f31ddc298c55be49ad82765d29c29e87
@@ -382,6 +382,23 @@ MonoBehaviour:
       maxDuration: -1
       minDuration: -1
     - name: Kill
+      guid: fa68bd054ce809469dee31f8694942cb
+      id: 2030840469
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Kill
+        ObjectType: 4
+        guid: fa68bd054ce809469dee31f8694942cb
+      Path: Events\Default Work Unit\Kill
+      maxAttenuation: 150
+      maxDuration: 2.2553968
+      minDuration: 2.2553968
+    - name: Kill
       guid: 9e98fa6538e3dc4a8971344c56e1d173
       id: 2030840469
       PathAndIcons:
@@ -398,12 +415,12 @@ MonoBehaviour:
         ObjectType: 3
         guid: 9e98fa6538e3dc4a8971344c56e1d173
       Path: Events\Default Work Unit\Kill\Kill
-      maxAttenuation: 150
-      maxDuration: 2.2553968
-      minDuration: 2.2553968
-    - name: Kill
-      guid: fa68bd054ce809469dee31f8694942cb
-      id: 2030840469
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Knife
+      guid: 7af1eadfbd5d7443958e3b6d5f86d67d
+      id: 3312069844
       PathAndIcons:
       - ElementName: Events
         ObjectType: 5
@@ -411,13 +428,39 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Kill
+      - ElementName: Stuff
         ObjectType: 4
-        guid: fa68bd054ce809469dee31f8694942cb
-      Path: Events\Default Work Unit\Kill
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Knife
+        ObjectType: 4
+        guid: 7af1eadfbd5d7443958e3b6d5f86d67d
+      Path: Events\Default Work Unit\Stuff\Knife
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: Knife_Swing
+      guid: 1167a8f4d691b94ba23842df48dba6b3
+      id: 3430418271
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Knife
+        ObjectType: 4
+        guid: 7af1eadfbd5d7443958e3b6d5f86d67d
+      - ElementName: Knife_Swing
+        ObjectType: 3
+        guid: 1167a8f4d691b94ba23842df48dba6b3
+      Path: Events\Default Work Unit\Stuff\Knife\Knife_Swing
+      maxAttenuation: 150
+      maxDuration: 0.7019048
+      minDuration: 0.7019048
     - name: LP17
       guid: 79cba981a1aa2948a0cd724ec0459f51
       id: 1599998537
