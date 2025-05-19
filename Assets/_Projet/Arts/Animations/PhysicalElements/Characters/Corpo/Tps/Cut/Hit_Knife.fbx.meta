@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 252846f0b440d01419d90bd3a782d248
+guid: eddd3c20839b2ba4eaed89381c3dbc47
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -31,10 +31,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: JumpLand
-      takeName: Take 001
-      internalID: 1827226128182048838
-      firstFrame: 12
+      name: KnifeNeutral_Hit
+      takeName: Hit_Knife
+      internalID: -1618098119283816693
+      firstFrame: 1
       lastFrame: 15
       wrapMode: 0
       orientationOffsetY: 0
@@ -117,7 +117,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 10
+    globalScale: 0.099999994
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0
