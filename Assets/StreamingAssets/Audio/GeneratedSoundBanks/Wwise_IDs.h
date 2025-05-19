@@ -31,6 +31,7 @@ namespace AK
         static const AkUniqueID FOOTSTEP = 1866025847U;
         static const AkUniqueID HEADSHOT = 2632074263U;
         static const AkUniqueID KILL = 2030840469U;
+        static const AkUniqueID KNIFE_SWING = 3430418271U;
         static const AkUniqueID MISS = 3062523241U;
         static const AkUniqueID NEAR_BULLET = 2962560402U;
         static const AkUniqueID NO_BULLET = 3728918479U;

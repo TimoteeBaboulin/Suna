@@ -143,6 +143,23 @@ public partial class KillFeedElement : SafeVisualElement
 
         // Add Update function
         schedule.Execute(Update).Every(16);
+
+        Refresh();
+    }
+
+    public void Refresh()
+    {
+        if (_killerNameLabel != null)
+            _killerNameLabel.text = _killerName;
+
+        if (_victimNameLabel != null)
+            _victimNameLabel.text = _victimName;
+
+        if (_background != null)
+            _background.style.backgroundImage = texData.Textures.First(t => t.Name == "killfeed_" + _victimTeamSide.ToString().ToLower() + "_background").Texture;
+
+        if (_killerBackground != null)
+            _killerBackground.style.backgroundImage = texData.Textures.First(t => t.Name == "killfeed_" + _killerTeamSide.ToString().ToLower() + "_killer_background").Texture;
     }
 
     private void Update()
@@ -152,14 +169,14 @@ public partial class KillFeedElement : SafeVisualElement
         if (_timer < _destroyEndTimer)
         {
             _timer += Time.deltaTime;
-
+        
             if (_timer > _fadeStart)
             {
                 float timerFromFade = _timer - _fadeStart;
                 float timerRemainingBeforeDestroy = _destroyEndTimer - _fadeStart;
-                style.opacity = timerFromFade / timerRemainingBeforeDestroy;
+                style.opacity = 1 - timerFromFade / timerRemainingBeforeDestroy;
             }
-
+        
             if (_timer >= _destroyEndTimer)
             {
                 _timer = _destroyEndTimer;

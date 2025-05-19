@@ -5,7 +5,6 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
 
 [UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation | WorldSystemFilterFlags.ServerSimulation)]
@@ -24,8 +23,8 @@ public partial struct CommonCharacterRotationSystem : ISystem
     {
         EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        foreach (var (characterTransform, characterViewRotation, CharacterInput, ghostOwner, characterEntity) in SystemAPI
-            .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>, RefRO<GhostOwner>>()
+        foreach (var (characterTransform, characterViewRotation, CharacterInput, characterEntity) in SystemAPI
+            .Query<RefRW<LocalTransform>, RefRW<CharacterViewRotation>, RefRO<CharacterInput>>()
             .WithEntityAccess())
         {
             characterTransform.ValueRW.Rotation = quaternion.RotateY(CharacterInput.ValueRO.Yaw);
@@ -35,7 +34,7 @@ public partial struct CommonCharacterRotationSystem : ISystem
             float maxPitch = math.PI / 2;
             float RemappedValue = Mathf.Clamp((CharacterInput.ValueRO.Pitch - minPitch) / (maxPitch - minPitch), 0f, 1f);
 
-            AnimationUtils.AddFloatCommand("ViewRotation", RemappedValue, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            AnimationUtils.AddFloatCommand("ViewRotation", RemappedValue, characterEntity, ecb);
         }
 
         ecb.Playback(state.EntityManager);

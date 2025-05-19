@@ -295,7 +295,7 @@ public static class StuffUtils
     //Only if stuff is unequip before
     public static void SetStuffViewTransform(StuffGameObjectRef stuffView, LocalTransform transform)
     {
-        stuffView.SetParent(null, false);
+        stuffView.SetParent(null);
         stuffView.SetTransform(transform);
     }
 }

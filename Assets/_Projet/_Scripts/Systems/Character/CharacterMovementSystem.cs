@@ -58,6 +58,7 @@ public partial struct CharacterMovementSystem : ISystem
 
                     if (isMoving)
                     {
+                        //UnityEngine.Debug.Log("<color=red>Footsteps</color>");
                         SoundUtils.PlayWithRPC(ref emitterRW.ValueRW, "Footsteps", transformRO.ValueRO.Position, cooldown, SystemAPI.Time.DeltaTime);
                     }
                     else
@@ -140,7 +141,7 @@ public partial struct CharacterMovementJob : IJobEntity
     }
 
     public void Execute(Entity entity, [EntityIndexInQuery] int sortKey, ref CharacterInput input, RefRW<CharacterComponent> characterController,
-        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRO<GhostOwner> ghostOwner, RefRW<SmoothInput> smooth)
+        RefRW<LocalTransform> localTransform, RefRW<PhysicsVelocity> physicsVelocity, RefRW<SmoothInput> smooth)
     {
         ref CharacterComponent controller = ref characterController.ValueRW;
         ref LocalTransform characterTransform = ref localTransform.ValueRW;
@@ -158,12 +159,10 @@ public partial struct CharacterMovementJob : IJobEntity
 
         bool forwardHit = false;
 
-        int networkId = ghostOwner.ValueRO.NetworkId;
-
         float smoothingSpeed = 1f;
         smooth.ValueRW.Current = math.lerp(smooth.ValueRO.Current, input.move, smoothingSpeed * dt);
-        AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey, networkId);
-        AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey, networkId);
+        AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey);
+        AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey);
 
         if (isMoving)
         {
@@ -231,12 +230,12 @@ public partial struct CharacterMovementJob : IJobEntity
         if (controller.isAiming)
         {
             weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeedAiming : 1.0f;
-            AnimationUtils.AddBoolCommandJob("IsAiming", true, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsAiming", true, entity, ecb, sortKey);
         }
         else
         {
             weaponSpeedModifier = CommonDataMap.ContainsKey(entity) ? CommonDataMap[entity].coefModifMoveSpeed : 1.0f;
-            AnimationUtils.AddBoolCommandJob("IsAiming", false, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsAiming", false, entity, ecb, sortKey);
         }
 
         float decelerationFactor = math.dot(controller.direction, math.normalize(vel.Linear)) < 0.5f ? controller.decelerationFactor : 1.0f;
@@ -244,22 +243,22 @@ public partial struct CharacterMovementJob : IJobEntity
         if (!isMoving)
         {
             controller.currentSpeed = math.max(0, controller.currentSpeed - controller.deceleration * dt);
-            AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey, networkId);
-            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey);
+            AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey);
         }
         else
         {
             if (controller.isWalking)
             {
                 controller.currentSpeed = math.min(controller.maxWalkingSpeed, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
-                AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey, networkId);
-                AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey, networkId);
+                AnimationUtils.AddBoolCommandJob("IsWalking", true, entity, ecb, sortKey);
+                AnimationUtils.AddBoolCommandJob("IsMoving", false, entity, ecb, sortKey);
             }
             else
             {
                 controller.currentSpeed = math.min(controller.maxRunningSpeed * weaponSpeedModifier, controller.currentSpeed + controller.acceleration * decelerationFactor * dt);
-                AnimationUtils.AddBoolCommandJob("IsMoving", true, entity, ecb, sortKey, networkId);
-                AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey, networkId);
+                AnimationUtils.AddBoolCommandJob("IsMoving", true, entity, ecb, sortKey);
+                AnimationUtils.AddBoolCommandJob("IsWalking", false, entity, ecb, sortKey);
             }
         }
 
@@ -313,13 +312,13 @@ public partial struct CharacterMovementJob : IJobEntity
 
         if (controller.isGrounded)
         {
-            AnimationUtils.AddBoolCommandJob("IsGrounded", true, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsGrounded", true, entity, ecb, sortKey);
             controller.isJumping = false;
         }
 
         if (input.jump.IsSet && controller.isGrounded)
         {
-            AnimationUtils.AddBoolCommandJob("IsGrounded", false, entity, ecb, sortKey, networkId);
+            AnimationUtils.AddBoolCommandJob("IsGrounded", false, entity, ecb, sortKey);
             vel.Linear.y = characterController.ValueRW.jumpForce;
             controller.isGrounded = false;
             controller.isJumping = true;

@@ -17,15 +17,27 @@ partial struct ClientFirstPersonCharacterModelSystem : ISystem
             .WithNone<FirstPersonCharacterModelReference>()
             .WithEntityAccess())
         {
+            TeamSideType teamSide;
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
+            }
+            else
+            {
+                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
+            }
+
+            if (teamSide == TeamSideType.Neutre) continue;
+
             GameObject modelGameObject = CommonCharacterModelUtils.InstantiateModel(modelPrefab.CorpoModelPrefab, 
-                modelPrefab.NatifModelPrefab, ghostOwner.ValueRO.NetworkId);
+                modelPrefab.NatifModelPrefab, teamSide);
 
             modelGameObject.layer = 15;
 
             if (modelPrefab == null) continue;
 
             CommonCharacterModelUtils.AddCommonModelBonesComponent(modelGameObject.transform, commonBonesName, characterEntity, ecb);
-            FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, ghostOwner.ValueRO.NetworkId);
+            FirstPersonCharacterModelUtils.AddReferenceComponent(modelGameObject, modelPrefab, characterEntity, ecb, teamSide);
         }
 
         foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI

@@ -44,28 +44,25 @@ public static class SoundUtils
             maping = soundMaping
         });
     }
-    public static SoundRegister SetRegister(string keyGroup, List<SoundMapping> soundList)
+    public static Dictionary<string, AK.Wwise.Event> SetBankRegister(string keyGroup, List<SoundMapping> soundList)
     {
-
-        SoundRegister soundRegister = new SoundRegister();
 #if !UNITY_SERVER
-        Dictionary<string, AK.Wwise.Event> bank = soundRegister.bank;
+        Dictionary<string, AK.Wwise.Event> bank = new();
         foreach (var pair in soundList)
         {
             if (!bank.ContainsKey(keyGroup + pair.keyAction))
                 bank.Add(keyGroup + pair.keyAction, pair.sound);
         }
+        return bank;
 #endif
-        return soundRegister;
+        return default;
     }
 
-    public static SoundRegister SetGroupRegister(List<SoundGroupMapping> soundGroupList)
+    public static Dictionary<string, AK.Wwise.Event> SetGroupRegister(List<SoundGroupMapping> soundGroupList)
     {
-        SoundRegister soundRegister = new SoundRegister();
-
 #if !UNITY_SERVER
 
-        Dictionary<string, AK.Wwise.Event> bank = soundRegister.bank;
+        Dictionary<string, AK.Wwise.Event> bank = new();
         foreach (var soundList in soundGroupList)
         {
             foreach (var pair in soundList.maping)
@@ -74,8 +71,9 @@ public static class SoundUtils
                     bank.Add(soundList.keyGroup + pair.keyAction, pair.sound);
             }
         }
+        return bank;
 #endif
-        return soundRegister;
+        return default;
     }
 
     //The entity holding the soundBuffer must have SoundAuthoring attached
@@ -124,6 +122,7 @@ public static class SoundUtils
         if (emitterRW.timer <= 0f)
         {
             emitterRW.timer = cooldown;
+
             PlayWithRPC(emitterRW.keyGroup, keyAction, pos);
         }
     }

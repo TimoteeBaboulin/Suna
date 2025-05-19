@@ -18,5 +18,5 @@ public class ModelAnimatorData : ScriptableObject
     public AnimatorOverrideController Grenade_Smoke;
 
     public RuntimeAnimatorController KnifeNeutral;
-    public AnimatorOverrideController Harvester;
+    public RuntimeAnimatorController Harvester;
 }

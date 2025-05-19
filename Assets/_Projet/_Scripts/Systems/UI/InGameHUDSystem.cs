@@ -12,7 +12,7 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 partial class InGameHUDSystem : SystemBase
 {
-    public class HealthArgs : EventArgs { public int Health; }
+    public class HealthArgs : EventArgs { public int Health; public int armorLevel; }
     public class AmmoArgs : EventArgs { public int ammo; public int remainingAmmo; }
     public class MoneyArgs : EventArgs { public uint money; }
     public class HitArgs : EventArgs { public bool headHit; }
@@ -46,7 +46,11 @@ partial class InGameHUDSystem : SystemBase
             .Query<RefRO<CurrentHealthComponent>, RefRO<CharacterMoney>, RefRO<HasHitComponent>, DynamicBuffer<CharacterStuffList>>()
             .WithAll<GhostOwnerIsLocal>())
         {
-            HealthChangedEvent?.Invoke(this, new HealthArgs { Health = (int)currentHealth.ValueRO.Value });
+            HealthChangedEvent?.Invoke(this, new HealthArgs { 
+                Health = math.max((int)currentHealth.ValueRO.Value, 0),
+                armorLevel = math.max((int)currentHealth.ValueRO.armorLevel, 0) 
+            });
+
             uint money = charaMoney.ValueRO.money;
             MoneyChangedEvent?.Invoke(this, new MoneyArgs { money = money });
 

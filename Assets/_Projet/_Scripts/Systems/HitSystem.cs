@@ -81,7 +81,7 @@ public partial class HitSystem : SystemBase
                 
 
                 commandBuffer.AddComponent<DestroyTag>(hitEffect);
-                commandBuffer.AddComponent<DestroyTag>(tracerEntity);
+                //commandBuffer.AddComponent<DestroyTag>(tracerEntity);
 
                 if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
                 {
