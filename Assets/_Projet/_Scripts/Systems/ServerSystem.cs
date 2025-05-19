@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Multiplayer.Playmode;
 using Unity.NetCode;
 using Unity.Services.Multiplayer;
 using Unity.Transforms;
@@ -65,6 +66,44 @@ public partial class ServerSystem : SystemBase
                      .WithEntityAccess())
         {
             InstantiateClient(entity, commandBuffer);
+        }
+
+
+
+        foreach (var (request, command, rpcEntity) in SystemAPI
+                     .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<NameCommand>>().WithEntityAccess())
+        {
+            Entity cEntity = request.ValueRO.SourceConnection;
+            var client = SystemAPI.GetComponent<ClientComponent>(request.ValueRO.SourceConnection);
+
+            Debug.Log($"[name] Request Entity {cEntity} vs {request.ValueRO.SourceConnection}");
+            Debug.Log($"[name] Request Entity {client.playerID}, {client.networkID}");
+
+            foreach (var (currentClient, clientEntity) in SystemAPI
+                   .Query<RefRO<ClientComponent>>()
+                   .WithEntityAccess())
+            {
+                if (currentClient.ValueRO.networkID == client.networkID)
+                {
+                    commandBuffer.SetComponent(clientEntity, new ClientComponent
+                    {
+                        playerID = currentClient.ValueRO.playerID,
+                        team = currentClient.ValueRO.team,
+                        networkID = currentClient.ValueRO.networkID,
+                        name = command.ValueRO.name
+                    });
+                    Debug.Log($"[name] new client.name is {currentClient.ValueRO.name} vs {client.name}");
+                }
+                Debug.Log($"[name] client.name is {currentClient.ValueRO.name} vs {client.name}");
+            }
+            commandBuffer.DestroyEntity(rpcEntity);
+        }
+
+        foreach (var (id, entity) in SystemAPI
+            .Query<RefRO<ClientComponent>>()
+            .WithEntityAccess())
+        {
+            Debug.Log($"[name] Server Player '{id.ValueRO.networkID}' name is {id.ValueRO.name}");
         }
 
         commandBuffer.Playback(EntityManager);
