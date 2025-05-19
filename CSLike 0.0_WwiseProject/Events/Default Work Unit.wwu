@@ -10,7 +10,7 @@
 								<Action Name="" ID="{524EFAEA-EECF-48AB-BF78-669742CB9345}" ShortID="95373067">
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+											<ObjectRef Name="Random Concrete Footsteps" ID="{D68DFA41-49A4-4D40-A3E8-E48E322D2CD6}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -197,6 +197,21 @@
 								</Event>
 							</ChildrenList>
 						</Folder>
+						<Folder Name="Knife" ID="{DFEAF17A-5DBD-4374-958E-3B6D5F86D67D}" ShortID="770028335">
+							<ChildrenList>
+								<Event Name="Knife_Swing" ID="{F4A86711-91D6-4BB9-A238-42DF48DBA6B3}">
+									<ChildrenList>
+										<Action Name="" ID="{C258481F-08E8-44E9-9AAE-4D57B255693C}" ShortID="968827908">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Knife Swing" ID="{A65360FA-2B01-4A1A-A281-BF4739F93186}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Kill" ID="{05BD68FA-E84C-4609-9DEE-31F8694942CB}" ShortID="341589031">
@@ -223,7 +238,7 @@
 										<Action Name="" ID="{CCC9BABA-16CB-4308-B792-D0F0A2290186}" ShortID="721970838">
 											<ReferenceList>
 												<Reference Name="Target">
-													<ObjectRef Name="concrete_impact_bullet1" ID="{8E6F47B3-8E20-497E-87B3-B47D8198D25D}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+													<ObjectRef Name="Random Concrete Impact" ID="{676F6581-6DF1-46CF-AA26-C72EF8F929D7}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 												</Reference>
 											</ReferenceList>
 										</Action>
