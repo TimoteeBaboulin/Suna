@@ -44,9 +44,9 @@ public static class SoundUtils
             maping = soundMaping
         });
     }
+#if !UNITY_SERVER
     public static Dictionary<string, AK.Wwise.Event> SetBankRegister(string keyGroup, List<SoundMapping> soundList)
     {
-#if !UNITY_SERVER
         Dictionary<string, AK.Wwise.Event> bank = new();
         foreach (var pair in soundList)
         {
@@ -54,13 +54,13 @@ public static class SoundUtils
                 bank.Add(keyGroup + pair.keyAction, pair.sound);
         }
         return bank;
-#endif
-        return default;
+        //return default;
     }
+#endif
 
+#if !UNITY_SERVER
     public static Dictionary<string, AK.Wwise.Event> SetGroupRegister(List<SoundGroupMapping> soundGroupList)
     {
-#if !UNITY_SERVER
 
         Dictionary<string, AK.Wwise.Event> bank = new();
         foreach (var soundList in soundGroupList)
@@ -72,9 +72,9 @@ public static class SoundUtils
             }
         }
         return bank;
-#endif
-        return default;
+        //return default;
     }
+#endif
 
     //The entity holding the soundBuffer must have SoundAuthoring attached
     //public static void PlayWithSoundQueue(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
