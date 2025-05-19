@@ -7,6 +7,7 @@ public enum DamageSource
     Invalid,
     Weapon,
     Grenade,
+    Gas,
     Fall,
 }
 

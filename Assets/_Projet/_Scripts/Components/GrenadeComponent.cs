@@ -10,6 +10,8 @@ public struct GrenadeDynamicData : IComponentData
     public bool isCooking;
 
     public float thrownForTime;
+    public float wasStillForTime;
+    public float stillGrenadeEffectTime;
 }
 
 public struct GrenadeCommonData

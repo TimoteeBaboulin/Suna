@@ -14,6 +14,8 @@ public enum StuffSlot
     Harvester,
     HEGrenade,
     Flashbang,
+    SmokeGrenade,
+    GasGrenade,
 
     nbSlots
 }

@@ -34,26 +34,50 @@ partial class ShopSystem : SystemBase
             {
                 RefRO<NetworkId> requestNetworkId = SystemAPI.GetComponentRO<NetworkId>(request.ValueRO.SourceConnection);
 
-                uint dataReceived = FindPriceByName(command.ValueRO.weaponData.ToString());
-
-                foreach (var (characterAttached, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRO<GhostOwner>>())
+                if(command.ValueRO.isArmor)
                 {
-                    if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
+                    foreach (var (characterAttached, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRO<GhostOwner>>())
                     {
-                        continue;
+                        if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
+                        {
+                            continue;
+                        }
+
+                        Entity character = characterAttached.ValueRO.Value;
+                        CharacterMoney money = SystemAPI.GetComponent<CharacterMoney>(character);
+                        CurrentHealthComponent currentHealthComponent = SystemAPI.GetComponent<CurrentHealthComponent>(character);
+                        if (money.money >= 800)
+                        {
+                            currentHealthComponent.armorLevel = 100;
+                            money.money -= 800;
+                            commandBuffer.SetComponent(character, currentHealthComponent);
+                            commandBuffer.SetComponent(character, money);
+                        }
                     }
+                }
+                else
+                {
+                    uint dataReceived = FindPriceByName(command.ValueRO.weaponData.ToString());
 
-                    Entity character = characterAttached.ValueRO.Value;
-                    CharacterMoney money = SystemAPI.GetComponent<CharacterMoney>(character);
-
-                    if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.money >= dataReceived)
+                    foreach (var (characterAttached, ghostOwner) in SystemAPI.Query<RefRO<ClientCharacterAttached>, RefRO<GhostOwner>>())
                     {
-                        StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, character);
+                        if (ghostOwner.ValueRO.NetworkId != requestNetworkId.ValueRO.Value)
+                        {
+                            continue;
+                        }
 
-                        money.money -= dataReceived;
-                        commandBuffer.SetComponent(character, money);
+                        Entity character = characterAttached.ValueRO.Value;
+                        CharacterMoney money = SystemAPI.GetComponent<CharacterMoney>(character);
 
-                        break;
+                        if (SystemAPI.TryGetSingletonBuffer<InstantiateStuffQueue>(out var queue) && money.money >= dataReceived)
+                        {
+                            StuffUtils.InstantiateNextFrame(queue, command.ValueRO.weaponData, character);
+
+                            money.money -= dataReceived;
+                            commandBuffer.SetComponent(character, money);
+
+                            break;
+                        }
                     }
                 }
             }

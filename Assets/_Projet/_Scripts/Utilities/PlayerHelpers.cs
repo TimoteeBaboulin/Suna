@@ -433,4 +433,59 @@ public static class PlayerHelpers
 
         return TeamSideType.Neutre;
     }
+
+    public static void SetPlayerName(int networkId, string newName, EntityCommandBuffer ecb)
+    {
+        var world = ClientWorld;
+        if (world == null || !world.IsCreated)
+            return;
+        Debug.Log($"[name] networkId {networkId}, newName {newName}");
+        var em = world.EntityManager;
+
+        var query = em.CreateEntityQuery(
+            ComponentType.ReadOnly<GhostOwner>(),
+            ComponentType.ReadOnly<ClientComponent>()
+        );
+
+        using (var entities = query.ToEntityArray(Allocator.TempJob))
+        using (var owners = query.ToComponentDataArray<GhostOwner>(Allocator.TempJob))
+        {
+            for (int i = 0; i < owners.Length; i++)
+            {
+                if (owners[i].NetworkId == networkId)
+                {
+                    var client = em.GetComponentData<ClientComponent>(entities[i]);
+                    client.name = newName;
+                    ecb.SetComponent(entities[i], client);
+                    Debug.Log($"[name] new client.name is {client.name}");
+                }
+            }
+        }
+    }
+
+    public static ClientComponent GetPlayer(int networkId)
+    {
+        var world = ClientWorld;
+        if (world == null || !world.IsCreated)
+            return default;
+
+        var em = world.EntityManager;
+
+        var query = em.CreateEntityQuery(
+            ComponentType.ReadOnly<GhostOwner>(),
+            ComponentType.ReadOnly<ClientComponent>()
+        );
+
+        using (var owners = query.ToComponentDataArray<GhostOwner>(Allocator.TempJob))
+        using (var clients = query.ToComponentDataArray<ClientComponent>(Allocator.TempJob))
+        {
+            for (int i = 0; i < owners.Length; i++)
+            {
+                if (owners[i].NetworkId == networkId)
+                    return clients[i];
+            }
+        }
+
+        return default;
+    }
 }

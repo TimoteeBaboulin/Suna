@@ -1,7 +1,17 @@
+using Unity.Collections;
 using Unity.Entities;
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
+
+
+public struct NameCommand : IRpcCommand
+{
+    public FixedString32Bytes name;
+    public Entity clientEntity;
+}
 public class SettingsMenuController : MonoBehaviour
 {
     // Settings UI Elements
@@ -81,6 +91,9 @@ public class SettingsMenuController : MonoBehaviour
             clientSettings.Sensivity = _sensitivitySlider.value;
             clientSettings.Volume = _volumeSlider.value;
             clientSettings.Pseudo = _pseudoField.value;
+
+            NameCommand command = new NameCommand { name = clientSettings.Pseudo };
+            RpcUtils.SendClientToServerRpc(ref command);
             settingsLinkSystem.UpdateClientSettings(clientSettings);
         }
     }
