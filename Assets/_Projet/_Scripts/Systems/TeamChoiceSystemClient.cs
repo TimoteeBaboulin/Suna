@@ -3,6 +3,10 @@ using Unity.Entities;
 using Unity.NetCode;
 using UnityEngine;
 
+public struct TeamChoiceComponent : IComponentData
+{
+    public TeamSideType team;
+}
 
  public struct MessageToServer : IRpcCommand
 {
@@ -13,10 +17,21 @@ using UnityEngine;
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
 public partial struct TeamChoiceSystemClient : ISystem
 {
+    static public void SendTeamChoice(EntityManager entityManager, TeamSideType team)
+    {
+        EntityQuery entityQuery = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<ClientComponent, GhostOwnerIsLocal>()
+            .WithNone<TeamChoiceComponent>().Build(entityManager);
+        foreach (var entity in entityQuery.ToEntityArray(Allocator.Temp))
+        {
+            entityManager.AddComponentData(entity, new TeamChoiceComponent { team = team });
+        }
+        
+    }
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (client, clientEntity) in
-        SystemAPI.Query<ClientComponent>()
+        foreach (var (client, choiceTeam, clientEntity) in
+        SystemAPI.Query<ClientComponent, RefRO<TeamChoiceComponent>>()
         .WithEntityAccess())
         {
             if (!SystemAPI.HasComponent<GhostOwnerIsLocal>(clientEntity))
@@ -34,23 +49,8 @@ public partial struct TeamChoiceSystemClient : ISystem
             {
                 clientEntity = query.ToEntityArray(Allocator.Temp)[0]
             };
-
-            if (Input.GetKeyDown(KeyCode.C))
-            {
-                Debug.Log("Sending please make me a corpor rpc");
-                rpc.team = TeamSideType.Corpo;
-                RpcUtils.SendClientToServerRpc(ref rpc);
-
-                //TODO: Remove this if it works
-                //var command = new MessageToServer { word = "Corpo asked to spawn" };
-                //RpcUtils.SendClientToServerRpc(ref command);
-            }
-            else if (Input.GetKeyDown(KeyCode.N))
-            {
-                Debug.Log("Sending please make me a corpor rpc");
-                rpc.team = TeamSideType.Natif;
-                RpcUtils.SendClientToServerRpc(ref rpc);
-            }
+            rpc.team = choiceTeam.ValueRO.team;
+            RpcUtils.SendClientToServerRpc(ref rpc);
         }
     }
 }
