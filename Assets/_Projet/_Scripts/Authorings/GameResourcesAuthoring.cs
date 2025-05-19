@@ -244,8 +244,10 @@ public class GameResourcesAuthoring : MonoBehaviour
             });
 
             AddComponentObject(entity, new SoundRegister
-            { 
+            {
+#if !UNITY_SERVER
                 bank = SoundUtils.SetGroupRegister(soundGroupMapping)
+#endif
             });
 
             AddBuffer<InstantiateStuffQueue>(entity);

@@ -380,13 +380,9 @@
 								</Sound>
 							</ChildrenList>
 						</Folder>
-					</ChildrenList>
-				</Folder>
-				<Folder Name="Character" ID="{A804849E-5943-4C1C-A54D-2575440F7A08}" ShortID="245852294">
-					<ChildrenList>
-						<Folder Name="Steps" ID="{F351DBA8-265F-4E23-96C4-4CE7FC4DD32B}" ShortID="716844232">
+						<Folder Name="Knife" ID="{3B01F6D6-513F-47D3-994E-05EE4D593549}" ShortID="346872588">
 							<ChildrenList>
-								<Sound Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" ShortID="244587320">
+								<Sound Name="Knife Swing" ID="{A65360FA-2B01-4A1A-A281-BF4739F93186}" ShortID="378258874">
 									<PropertyList>
 										<Property Name="3DSpatialization" Type="int16" Value="1"/>
 									</PropertyList>
@@ -402,18 +398,132 @@
 										</Reference>
 									</ReferenceList>
 									<ChildrenList>
-										<AudioFileSource Name="concrete1" ID="{319482E4-1056-4884-B91A-0F22A6A6D4D4}">
+										<AudioFileSource Name="machete_swing" ID="{98BB1D59-F684-49C9-AE32-13AF1556C5C1}">
 											<Language>SFX</Language>
-											<AudioFile>SFX\concrete1.wav</AudioFile>
+											<AudioFile>machete_swing.wav</AudioFile>
 											<MediaIDList>
-												<MediaID ID="698735216"/>
+												<MediaID ID="844658888"/>
 											</MediaIDList>
 										</AudioFileSource>
 									</ChildrenList>
 									<ActiveSourceList>
-										<ActiveSource Name="concrete1" ID="{319482E4-1056-4884-B91A-0F22A6A6D4D4}" Platform="Linked"/>
+										<ActiveSource Name="machete_swing" ID="{98BB1D59-F684-49C9-AE32-13AF1556C5C1}" Platform="Linked"/>
 									</ActiveSourceList>
 								</Sound>
+							</ChildrenList>
+						</Folder>
+					</ChildrenList>
+				</Folder>
+				<Folder Name="Character" ID="{A804849E-5943-4C1C-A54D-2575440F7A08}" ShortID="245852294">
+					<ChildrenList>
+						<Folder Name="Steps" ID="{F351DBA8-265F-4E23-96C4-4CE7FC4DD32B}" ShortID="716844232">
+							<ChildrenList>
+								<RandomSequenceContainer Name="Random Concrete Footsteps" ID="{D68DFA41-49A4-4D40-A3E8-E48E322D2CD6}" ShortID="208530115">
+									<PropertyList>
+										<Property Name="3DSpatialization" Type="int16" Value="1"/>
+									</PropertyList>
+									<ReferenceList>
+										<Reference Name="Attenuation">
+											<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+										</Reference>
+										<Reference Name="Conversion">
+											<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+										</Reference>
+										<Reference Name="OutputBus">
+											<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+										</Reference>
+									</ReferenceList>
+									<ChildrenList>
+										<Sound Name="concrete1" ID="{5E9C7B35-B4F8-455F-9AA7-CC82A89FBE42}" ShortID="1033285957">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="concrete1" ID="{4635A6F6-0B9C-406D-A61F-7EE5DB02DD26}">
+													<Language>SFX</Language>
+													<AudioFile>concrete1.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="799736141"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="concrete1" ID="{4635A6F6-0B9C-406D-A61F-7EE5DB02DD26}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="concrete2" ID="{9C2ED0E3-A74A-426F-8A31-AEFBC5F2EE4D}" ShortID="153852282">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="concrete2" ID="{7BEFA6F2-CE53-46FC-8FD9-5701C6431ED7}">
+													<Language>SFX</Language>
+													<AudioFile>concrete2.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="586378031"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="concrete2" ID="{7BEFA6F2-CE53-46FC-8FD9-5701C6431ED7}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="concrete3" ID="{716ECED6-DCD8-4572-976E-8C756AF6765B}" ShortID="270987876">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="concrete3" ID="{A7097711-0952-4B96-BCF0-E6A796E0C646}">
+													<Language>SFX</Language>
+													<AudioFile>concrete3.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="876999076"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="concrete3" ID="{A7097711-0952-4B96-BCF0-E6A796E0C646}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+										<Sound Name="concrete4" ID="{A933B306-EB79-4A11-8E74-07463B8BBFB8}" ShortID="372730605">
+											<ReferenceList>
+												<Reference Name="Conversion">
+													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+												</Reference>
+												<Reference Name="OutputBus">
+													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+												</Reference>
+											</ReferenceList>
+											<ChildrenList>
+												<AudioFileSource Name="concrete4" ID="{205CD50E-EFBD-4B93-9E1B-DC165BE8F5C7}">
+													<Language>SFX</Language>
+													<AudioFile>concrete4.wav</AudioFile>
+													<MediaIDList>
+														<MediaID ID="1062476857"/>
+													</MediaIDList>
+												</AudioFileSource>
+											</ChildrenList>
+											<ActiveSourceList>
+												<ActiveSource Name="concrete4" ID="{205CD50E-EFBD-4B93-9E1B-DC165BE8F5C7}" Platform="Linked"/>
+											</ActiveSourceList>
+										</Sound>
+									</ChildrenList>
+								</RandomSequenceContainer>
 							</ChildrenList>
 						</Folder>
 					</ChildrenList>
@@ -584,7 +694,7 @@
 							<ChildrenList>
 								<Folder Name="concrete" ID="{2AD5804F-5542-47A4-8064-C869E3D20631}" ShortID="790617202">
 									<ChildrenList>
-										<Sound Name="concrete_impact_bullet1" ID="{8E6F47B3-8E20-497E-87B3-B47D8198D25D}" ShortID="179430286">
+										<RandomSequenceContainer Name="Random Concrete Impact" ID="{676F6581-6DF1-46CF-AA26-C72EF8F929D7}" ShortID="933466333">
 											<PropertyList>
 												<Property Name="3DSpatialization" Type="int16" Value="1"/>
 											</PropertyList>
@@ -600,102 +710,120 @@
 												</Reference>
 											</ReferenceList>
 											<ChildrenList>
-												<AudioFileSource Name="concrete_impact_bullet1" ID="{FB8FCFC2-85C8-438C-B7BE-AADE4C28CF9A}">
-													<Language>SFX</Language>
-													<AudioFile>concrete\concrete_impact_bullet1.wav</AudioFile>
-													<MediaIDList>
-														<MediaID ID="685160244"/>
-													</MediaIDList>
-												</AudioFileSource>
+												<Sound Name="concrete_impact_bullet1" ID="{8E6F47B3-8E20-497E-87B3-B47D8198D25D}" ShortID="179430286">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="concrete_impact_bullet1" ID="{FB8FCFC2-85C8-438C-B7BE-AADE4C28CF9A}">
+															<Language>SFX</Language>
+															<AudioFile>concrete\concrete_impact_bullet1.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="685160244"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="concrete_impact_bullet1" ID="{FB8FCFC2-85C8-438C-B7BE-AADE4C28CF9A}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="concrete_impact_bullet2" ID="{8CC9BEE0-E0B1-421A-9168-2542F4E79FD0}" ShortID="392254064">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="concrete_impact_bullet2" ID="{F6256E9C-5E60-4B45-AD79-1FE1C710FB54}">
+															<Language>SFX</Language>
+															<AudioFile>concrete\concrete_impact_bullet2.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="127476490"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="concrete_impact_bullet2" ID="{F6256E9C-5E60-4B45-AD79-1FE1C710FB54}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="concrete_impact_bullet3" ID="{D160E160-57CF-4875-9F27-6F7D7DC190A9}" ShortID="264216140">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="concrete_impact_bullet3" ID="{9F9168DE-502B-4655-A9C4-C059A6820CC8}">
+															<Language>SFX</Language>
+															<AudioFile>concrete\concrete_impact_bullet3.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="397019866"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="concrete_impact_bullet3" ID="{9F9168DE-502B-4655-A9C4-C059A6820CC8}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
+												<Sound Name="concrete_impact_bullet4" ID="{83311FA7-4DE2-4B23-8719-C78F49975118}" ShortID="188075633">
+													<PropertyList>
+														<Property Name="3DSpatialization" Type="int16" Value="1"/>
+													</PropertyList>
+													<ReferenceList>
+														<Reference Name="Attenuation">
+															<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
+														</Reference>
+														<Reference Name="Conversion">
+															<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
+														</Reference>
+														<Reference Name="OutputBus">
+															<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
+														</Reference>
+													</ReferenceList>
+													<ChildrenList>
+														<AudioFileSource Name="concrete_impact_bullet4" ID="{66B8AFC1-3CEA-48FE-9A02-C2B3A7E9EA9B}">
+															<Language>SFX</Language>
+															<AudioFile>concrete\concrete_impact_bullet4.wav</AudioFile>
+															<MediaIDList>
+																<MediaID ID="346583077"/>
+															</MediaIDList>
+														</AudioFileSource>
+													</ChildrenList>
+													<ActiveSourceList>
+														<ActiveSource Name="concrete_impact_bullet4" ID="{66B8AFC1-3CEA-48FE-9A02-C2B3A7E9EA9B}" Platform="Linked"/>
+													</ActiveSourceList>
+												</Sound>
 											</ChildrenList>
-											<ActiveSourceList>
-												<ActiveSource Name="concrete_impact_bullet1" ID="{FB8FCFC2-85C8-438C-B7BE-AADE4C28CF9A}" Platform="Linked"/>
-											</ActiveSourceList>
-										</Sound>
-										<Sound Name="concrete_impact_bullet2" ID="{8CC9BEE0-E0B1-421A-9168-2542F4E79FD0}" ShortID="392254064">
-											<PropertyList>
-												<Property Name="3DSpatialization" Type="int16" Value="1"/>
-											</PropertyList>
-											<ReferenceList>
-												<Reference Name="Attenuation">
-													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
-												</Reference>
-												<Reference Name="Conversion">
-													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
-												</Reference>
-												<Reference Name="OutputBus">
-													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
-												</Reference>
-											</ReferenceList>
-											<ChildrenList>
-												<AudioFileSource Name="concrete_impact_bullet2" ID="{F6256E9C-5E60-4B45-AD79-1FE1C710FB54}">
-													<Language>SFX</Language>
-													<AudioFile>concrete\concrete_impact_bullet2.wav</AudioFile>
-													<MediaIDList>
-														<MediaID ID="127476490"/>
-													</MediaIDList>
-												</AudioFileSource>
-											</ChildrenList>
-											<ActiveSourceList>
-												<ActiveSource Name="concrete_impact_bullet2" ID="{F6256E9C-5E60-4B45-AD79-1FE1C710FB54}" Platform="Linked"/>
-											</ActiveSourceList>
-										</Sound>
-										<Sound Name="concrete_impact_bullet3" ID="{D160E160-57CF-4875-9F27-6F7D7DC190A9}" ShortID="264216140">
-											<PropertyList>
-												<Property Name="3DSpatialization" Type="int16" Value="1"/>
-											</PropertyList>
-											<ReferenceList>
-												<Reference Name="Attenuation">
-													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
-												</Reference>
-												<Reference Name="Conversion">
-													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
-												</Reference>
-												<Reference Name="OutputBus">
-													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
-												</Reference>
-											</ReferenceList>
-											<ChildrenList>
-												<AudioFileSource Name="concrete_impact_bullet3" ID="{9F9168DE-502B-4655-A9C4-C059A6820CC8}">
-													<Language>SFX</Language>
-													<AudioFile>concrete\concrete_impact_bullet3.wav</AudioFile>
-													<MediaIDList>
-														<MediaID ID="397019866"/>
-													</MediaIDList>
-												</AudioFileSource>
-											</ChildrenList>
-											<ActiveSourceList>
-												<ActiveSource Name="concrete_impact_bullet3" ID="{9F9168DE-502B-4655-A9C4-C059A6820CC8}" Platform="Linked"/>
-											</ActiveSourceList>
-										</Sound>
-										<Sound Name="concrete_impact_bullet4" ID="{83311FA7-4DE2-4B23-8719-C78F49975118}" ShortID="188075633">
-											<PropertyList>
-												<Property Name="3DSpatialization" Type="int16" Value="1"/>
-											</PropertyList>
-											<ReferenceList>
-												<Reference Name="Attenuation">
-													<ObjectRef Name="Discrete Attenuation Distance" ID="{6B72A3CC-8CC8-448E-809D-7CD72EBF9E7D}" WorkUnitID="{029B5427-C430-4D4E-AC5F-EE935E5474DB}"/>
-												</Reference>
-												<Reference Name="Conversion">
-													<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{F777CEF4-7257-4A05-B80C-E4C7DF10EF70}"/>
-												</Reference>
-												<Reference Name="OutputBus">
-													<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{1AAD2469-8577-48A4-9344-F7EE45689393}"/>
-												</Reference>
-											</ReferenceList>
-											<ChildrenList>
-												<AudioFileSource Name="concrete_impact_bullet4" ID="{66B8AFC1-3CEA-48FE-9A02-C2B3A7E9EA9B}">
-													<Language>SFX</Language>
-													<AudioFile>concrete\concrete_impact_bullet4.wav</AudioFile>
-													<MediaIDList>
-														<MediaID ID="346583077"/>
-													</MediaIDList>
-												</AudioFileSource>
-											</ChildrenList>
-											<ActiveSourceList>
-												<ActiveSource Name="concrete_impact_bullet4" ID="{66B8AFC1-3CEA-48FE-9A02-C2B3A7E9EA9B}" Platform="Linked"/>
-											</ActiveSourceList>
-										</Sound>
+										</RandomSequenceContainer>
 									</ChildrenList>
 								</Folder>
 								<Folder Name="glass" ID="{94B699EE-91AE-4383-9BBE-6622299D424F}" ShortID="563137742">
