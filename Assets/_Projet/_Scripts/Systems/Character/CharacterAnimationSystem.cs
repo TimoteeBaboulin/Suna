@@ -155,7 +155,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
                 AnimationUtils.AddTriggerCommand("Change", entity, ecb);
             }
         }
-        else if (stuffName == "Grenade_Gas")
+        else if (stuffName == "Gas grenade")
         {
             if (animator.runtimeAnimatorController != animatorData.Grenade_Gas)
             {
@@ -163,7 +163,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
                 AnimationUtils.AddTriggerCommand("Change", entity, ecb);
             }
         }
-        else if (stuffName == "Grenade_Smoke")
+        else if (stuffName == "Smoke Grenade")
         {
             if (animator.runtimeAnimatorController != animatorData.Grenade_Smoke)
             {
