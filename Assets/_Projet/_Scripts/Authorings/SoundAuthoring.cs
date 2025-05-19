@@ -14,7 +14,9 @@ class SoundAuthoringBaker : Baker<SoundAuthoring>
 
         AddComponentObject(entity, new SoundRegister
         {
+#if !UNITY_SERVER
             bank = SoundUtils.SetBankRegister(authoring.soundMaping.keyGroup, authoring.soundMaping.maping)
+#endif
         });
 
         AddComponent(entity, new SoundEmitter
