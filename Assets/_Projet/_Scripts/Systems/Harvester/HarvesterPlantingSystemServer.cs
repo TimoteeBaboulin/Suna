@@ -128,13 +128,6 @@ partial struct HarvesterPlantingSystemServer : ISystem
                 continue;
             }
 
-            if (!SystemAPI.HasComponent<CorpoTeamTag>(rpc.character))
-            {
-                Debug.Log("[Server] A native is trying to plant the defuser");
-
-                continue;
-            }
-
             ecb.SetComponentEnabled<HarvesterPlanting>(rpc.harvester, true);
 
             if (currentTick.TicksSince(rpc.tick) > 10)
