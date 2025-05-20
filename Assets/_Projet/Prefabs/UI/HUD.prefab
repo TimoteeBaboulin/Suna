@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2642215316524588410}
   - component: {fileID: 879477122032621473}
   - component: {fileID: 1770968620400763954}
-  - component: {fileID: 3642552422161623342}
+  - component: {fileID: 6523444212775737414}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -94,7 +94,7 @@ MonoBehaviour:
   - Weapon: Fakir
     Tex: {fileID: 2800000, guid: 9d076c00ff6b0e94d862e903a834706e, type: 3}
   _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}
---- !u!1652712579 &3642552422161623342
+--- !u!1652712579 &6523444212775737414
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
