@@ -11,7 +11,9 @@
                 <engine:Label text="Sniper" name="LabelSniper" class="shop_label_indicator" style="top: 495px;" />
                 <engine:Button name="ButtonLaksya" icon-image="project://database/Assets/_Projet/Arts/HUD_General/SHOP/SNIPER.png?fileID=2800000&amp;guid=593c46e346b4ace45976f9f3a5901da7&amp;type=3#SNIPER" class="shop_buy_slot_button shop_buy_slot_weapon" style="top: 530px; left: auto;" />
                 <engine:Label text="Shield" name="LabelShield" class="shop_label_indicator" style="top: 735px;" />
-                <engine:Button name="ButtonShield" icon-image="project://database/Assets/_Projet/Arts/HUD_General/SHOP/Bouclier.png?fileID=2800000&amp;guid=3df3912542f12904c82b219baa0c18a1&amp;type=3#Bouclier" class="shop_buy_slot_button" style="top: 770px; left: auto;" />
+                <engine:Button name="ButtonShield" icon-image="project://database/Assets/_Projet/Arts/HUD_General/SHOP/Bouclier.png?fileID=2800000&amp;guid=3df3912542f12904c82b219baa0c18a1&amp;type=3#Bouclier" class="shop_buy_slot_button" style="top: 770px; left: auto;">
+                    <engine:Label text="800 $" class="shop_label_indicator" style="position: absolute; top: auto; left: auto; right: 10px; bottom: 10px; background-color: rgba(255, 255, 255, 0); font-size: 26px; -unity-font-style: normal;" />
+                </engine:Button>
             </engine:VisualElement>
             <engine:VisualElement name="ColumnCenter" style="flex-grow: 0; position: absolute; height: 100%; width: 400px; align-self: center; align-items: center; left: auto;">
                 <engine:Label text="Rifles" name="LabelRifle" class="shop_label_indicator" style="top: 20px;" />

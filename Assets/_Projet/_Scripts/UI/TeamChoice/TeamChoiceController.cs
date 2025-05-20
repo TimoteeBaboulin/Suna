@@ -40,13 +40,13 @@ public class TeamChoiceController : MonoBehaviour
 
     private void OnCorpoButtonClicked(ClickEvent evt)
     {
-        TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Corpo);
+       // TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Corpo);
         SetUIActive(false);
     }
 
     private void OnNatifButtonClicked(ClickEvent evt)
     {
-        TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Natif);
+      //  TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Natif);
         SetUIActive(false);
     }
 
