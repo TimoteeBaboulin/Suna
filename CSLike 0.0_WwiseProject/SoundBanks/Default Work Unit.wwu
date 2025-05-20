@@ -17,6 +17,13 @@
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>
 				</SoundBank>
+				<SoundBank Name="VoiceLines" ID="{8D5A68C2-DCBE-4E5F-A9AB-8A1FF10D5FDC}">
+					<ObjectInclusionList>
+						<ObjectRef Name="VoiceLines Work Unit" ID="{BDBE9050-7770-4141-8FC3-B98EA7BECF02}" WorkUnitID="{BDBE9050-7770-4141-8FC3-B98EA7BECF02}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
 			</ChildrenList>
 		</WorkUnit>
 	</SoundBanks>

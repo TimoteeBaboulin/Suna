@@ -50,7 +50,6 @@ namespace AK
         static const AkUniqueID HOLD_YOUR_GROUND_A = 3043506290U;
         static const AkUniqueID HOLD_YOUR_GROUND_B = 3043506289U;
         static const AkUniqueID I_SEE_MOVEMENT = 658043218U;
-        static const AkUniqueID INSECTS = 3833343604U;
         static const AkUniqueID INSIDE_GAS = 2201005391U;
         static const AkUniqueID KILL = 2030840469U;
         static const AkUniqueID KNIFE_DRAW = 3526212285U;
@@ -95,7 +94,6 @@ namespace AK
         static const AkUniqueID WATCH_FLANK = 316685025U;
         static const AkUniqueID WE_STAND = 16774024U;
         static const AkUniqueID WILL = 1570616273U;
-        static const AkUniqueID WIND = 1537061107U;
     } // namespace EVENTS
 
     namespace GAME_PARAMETERS
@@ -108,6 +106,7 @@ namespace AK
         static const AkUniqueID INIT = 1355168291U;
         static const AkUniqueID DEFAULTBANK = 187290962U;
         static const AkUniqueID MAINMENU = 3604647259U;
+        static const AkUniqueID VOICELINES = 2292057722U;
     } // namespace BANKS
 
     namespace BUSSES
