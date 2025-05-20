@@ -32,9 +32,6 @@ public class GameManager : MonoBehaviour
     {
         await ClientTransportHelper.StartServicesAsync();
         await connectionHandler.Connect(loadingToken.Token);
-
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
     }
 
 
