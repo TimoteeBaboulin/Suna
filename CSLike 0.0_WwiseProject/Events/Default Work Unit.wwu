@@ -248,6 +248,17 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="Blow" ID="{B564BE92-01D1-48C9-BEF6-0D141FED4EF7}">
+									<ChildrenList>
+										<Action Name="" ID="{48DD8E61-835F-41C1-A0A9-7A5A023467F0}" ShortID="764874517">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_GrenadeBase" ID="{1B8A3BE1-0D37-4C25-9EA3-1E5AF9DE8D55}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
 						<Folder Name="Harvester" ID="{3203EF69-4C85-46D1-9880-0DFD8BD404C7}" ShortID="892722945">
@@ -483,43 +494,7 @@
 						</Event>
 					</ChildrenList>
 				</Folder>
-				<Folder Name="Ambient" ID="{DE1B8ABA-280B-4D53-95DC-237CAD1FF92D}" ShortID="877924100">
-					<ChildrenList>
-						<Event Name="Wind" ID="{7EEC918D-1F4A-47F3-9B1C-129F50C95487}">
-							<ChildrenList>
-								<Action Name="" ID="{8F5CFE1F-4649-4FFB-B850-8A960B431720}" ShortID="581620009">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="SFX_Ambient_SoftWind" ID="{E6D4564F-AE47-4410-9817-93EF42996049}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="Insects" ID="{7D06ADF2-91F3-42BD-BED1-07978B682AAE}">
-							<ChildrenList>
-								<Action Name="" ID="{A38FAB7B-F98C-41ED-BB6F-6DAA9B2CB757}" ShortID="518497094">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="SFX_Ambient_Insects" ID="{C4213A17-96CD-43A7-B2F9-3FB98CC70347}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-					</ChildrenList>
-				</Folder>
 				<Folder Name="New Virtual Folder" ID="{530E2F91-5723-48D8-99B6-65CE5AC70D15}" ShortID="180889702"/>
-				<Folder Name="VoiceLines" ID="{47C88A9A-876E-412B-A957-1C55ACDE58B7}" ShortID="603116465">
-					<ChildrenList>
-						<Event Name="A_under_siege" ID="{8A7F118A-7620-4C3B-8CC3-F88946167ED1}"/>
-						<Event Name="B_under_seige" ID="{C4EF78AE-3F80-4409-A2DF-EF62F0C4BE28}"/>
-						<Event Name="blasphemous_ahead" ID="{286BB7FF-7B99-4BEB-83F7-EDAF8E54F893}"/>
-						<Event Name="clear_for_now" ID="{EC0B3352-38A1-4626-BC86-768503B478A0}"/>
-						<Event Name="corpo_dies" ID="{71CA2F0B-0DE0-4EC8-91FC-A27F20C14966}"/>
-						<Event Name="corpo_killed" ID="{0FBFE3A0-5B73-4EED-A9E3-3B827F74D99C}"/>
-					</ChildrenList>
-				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

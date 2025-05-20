@@ -129,6 +129,8 @@ public class GameResourcesAuthoring : MonoBehaviour
                 stuffs[i]._stuffLocalOffsetView_Baked = grenadeSO._stuffLocalOffsetView_Baked;
                 stuffs[i].killGain = grenadeSO.killGain;
                 stuffs[i].dataID = i - authoring.rangedWeaponList.Count - authoring.meleeWeaponList.Count;
+
+                SoundUtils.SetMappingList(grenadeSO.entityName, grenadeSO.soundList, soundGroupMapping);
             }
 
             {

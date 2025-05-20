@@ -45,6 +45,8 @@ public partial class GrenadeVFXSystem : SystemBase
 
                 if (command.ValueRO.type == GrenadeVFXType.HE)
                 {
+                    SoundManager.Instance.Play("HE Grenade", "Blow", command.ValueRO.position);
+
                     if (prefabManager.heGrenadeExplosion == null) { continue; }
 
                     explosionEffect = commandBuffer.Instantiate(prefabManager.heGrenadeExplosion);
@@ -55,11 +57,15 @@ public partial class GrenadeVFXSystem : SystemBase
                         {
                             RemainingTime = durationData.heGrenadeExplosionDuration
                         });
-                    }                   
+                    }
+
+
                 }
 
-                if(command.ValueRO.type == GrenadeVFXType.Flashbang)
+                if (command.ValueRO.type == GrenadeVFXType.Flashbang)
                 {
+                    SoundManager.Instance.Play("Flashbang", "Blow", command.ValueRO.position);
+
                     if (prefabManager.flashbangExplosion == null) { continue; }
 
                     explosionEffect = commandBuffer.Instantiate(prefabManager.flashbangExplosion);
@@ -75,6 +81,8 @@ public partial class GrenadeVFXSystem : SystemBase
 
                 if (command.ValueRO.type == GrenadeVFXType.Smoke)
                 {
+                    SoundManager.Instance.Play("Smoke Grenade", "Blow", command.ValueRO.position);
+
                     if (prefabManager.smokeGrenadeEffect == null) { continue; }
 
                     explosionEffect = commandBuffer.Instantiate(prefabManager.smokeGrenadeEffect);
@@ -90,6 +98,8 @@ public partial class GrenadeVFXSystem : SystemBase
 
                 if (command.ValueRO.type == GrenadeVFXType.Gas)
                 {
+                    SoundManager.Instance.Play("Gas grenade", "Blow", command.ValueRO.position);
+
                     if (prefabManager.gasGrenadeEffect == null) { continue; }
                     explosionEffect = commandBuffer.Instantiate(prefabManager.gasGrenadeEffect);
                     if (SystemAPI.TryGetSingleton(out VFXDurationData durationData))
@@ -171,7 +181,7 @@ public partial class GrenadeSystem : SystemBase
                             CollidesWith = (1u << 6)
                         };
 
-                        if(SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(grenadePos, radius, ref hits, filter))
+                        if (SystemAPI.GetSingleton<PhysicsWorldSingleton>().OverlapSphere(grenadePos, radius, ref hits, filter))
                         {
                             foreach (var hit in hits)
                             {
@@ -210,7 +220,7 @@ public partial class GrenadeSystem : SystemBase
                     if (grenadeCommonData.grenadeType == GrenadeType.Flashbang)
                     {
                         var hits = new NativeList<DistanceHit>(Allocator.Temp);
-                        
+
                         float radius = grenadeCommonData.impactRadius;
                         CollisionFilter filter = new CollisionFilter
                         {
@@ -245,10 +255,10 @@ public partial class GrenadeSystem : SystemBase
                                 bool didHit = physicsWorld.CastRay(input, out var directHit);
 
                                 if (didHit) continue; //There's no direct line of sight with the player, so we keep going without applying effect
-                                    
+
                                 float currentEffect = SystemAPI.GetComponent<FlashGrenadeEffect>(entity).intensity;
 
-                                if(!CharacterViewUtils.TryGetForward(entity, EntityManager, out float3 forward))
+                                if (!CharacterViewUtils.TryGetForward(entity, EntityManager, out float3 forward))
                                 {
                                     UnityEngine.Debug.LogError($"Unable to get forward for {entity}");
                                 }
@@ -277,12 +287,12 @@ public partial class GrenadeSystem : SystemBase
                 }
             }
 
-            if(grenadeCommonData.triggerType == GrenadeTriggerType.Still)
+            if (grenadeCommonData.triggerType == GrenadeTriggerType.Still)
             {
                 LocalTransform grenadeTransform = SystemAPI.GetComponent<LocalTransform>(thrownGrenade);
                 PhysicsVelocity physicsVelocity = SystemAPI.GetComponent<PhysicsVelocity>(thrownGrenade);
 
-                if(math.lengthsq(physicsVelocity.Linear) <= 0.25f)
+                if (math.lengthsq(physicsVelocity.Linear) <= 0.25f)
                 {
                     dynamicDataRW.ValueRW.wasStillForTime += SystemAPI.Time.DeltaTime;
                 }
@@ -291,14 +301,14 @@ public partial class GrenadeSystem : SystemBase
                     dynamicDataRW.ValueRW.wasStillForTime = 0f;
                 }
 
-                if(dynamicDataRW.ValueRW.wasStillForTime >= grenadeCommonData.stillTriggerDelay)
+                if (dynamicDataRW.ValueRW.wasStillForTime >= grenadeCommonData.stillTriggerDelay)
                 {
                     physicsVelocity.Linear = float3.zero;
                     commandBuffer.SetComponent(thrownGrenade, physicsVelocity);
 
                     if (grenadeCommonData.grenadeType == GrenadeType.Smoke)
                     {
-                        if (dynamicDataRW.ValueRO.stillGrenadeEffectTime <= 0) 
+                        if (dynamicDataRW.ValueRO.stillGrenadeEffectTime <= 0)
                         {
                             var command = new GrenadeVFXCommand
                             {
@@ -328,7 +338,7 @@ public partial class GrenadeSystem : SystemBase
                                 var entity = hit.Entity;
                                 if (!SystemAPI.HasComponent<Damageable>(entity) || !SystemAPI.IsComponentEnabled<Damageable>(entity)) continue;
 
-                                if(SystemAPI.HasComponent<SmokeGrenadeEffect>(entity))
+                                if (SystemAPI.HasComponent<SmokeGrenadeEffect>(entity))
                                 {
                                     var smokeEffect = SystemAPI.GetComponent<SmokeGrenadeEffect>(entity);
                                     float currentEffect = smokeEffect.intensity;
@@ -336,7 +346,7 @@ public partial class GrenadeSystem : SystemBase
                                     float dist = math.distance(grenadePos, hit.Position);
                                     float effect = 0;
 
-                                    if(dist < 1.5f)
+                                    if (dist < 1.5f)
                                     {
                                         effect = 1f;
                                     }
@@ -393,7 +403,6 @@ public partial class GrenadeSystem : SystemBase
 
                                 Entity damageSource = commandBuffer.CreateEntity();
                                 commandBuffer.SetName(damageSource, "Damage Source");
-
                                 commandBuffer.AddComponent(damageSource, new ApplyDamage
                                 {
                                     source = DamageSource.Gas,
@@ -414,7 +423,7 @@ public partial class GrenadeSystem : SystemBase
                         commandBuffer.DestroyEntity(grenade);
                     }
                 }
-            }    
+            }
         }
 
         commandBuffer.Playback(EntityManager);
@@ -452,7 +461,7 @@ public partial struct GrenadeThrowSystem : ISystem
 
             float3 grenadePosition = localTransform.ValueRO.Position;
 
-            if(!math.all(math.isfinite(grenadePosition)))
+            if (!math.all(math.isfinite(grenadePosition)))
             {
                 UnityEngine.Debug.LogWarning($"Grenade position is not finite: {grenadePosition}");
                 continue;
@@ -476,7 +485,7 @@ public partial struct GrenadeThrowSystem : ISystem
 
             released.ValueRW.onGround = didHit;
 
-            if(didHit)
+            if (didHit)
             {
                 float3 dir = physicsVelocity.ValueRO.Linear;
                 float3 grenadeDir = math.normalize(new float3(dir.x, 0, dir.z));

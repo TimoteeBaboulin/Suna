@@ -1,18 +1,23 @@
 Event	ID	Name			Wwise Object Path	Notes
-	267023757	CS_Like_Robots_Loop_STOP			\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop_STOP	
+	267023757	CS_Like_Robots_Loop_STOP			\Default Work Unit\Musics\CS_Like_Robots_Loop_STOP	
+	298712718	Native_BuyPhase			\Default Work Unit\Musics\Buy Phase\Native_BuyPhase	
+	579662033	Gaz			\Default Work Unit\Stuff\Grenades\Gaz	
 	1025907732	SMG_Shoot			\Default Work Unit\Stuff\SMG\SMG_Shoot	
 	1068215004	Pistol_Reload			\Default Work Unit\Stuff\LP17\Pistol_Reload	
 	1117295805	Rifle_Shoot			\Default Work Unit\Stuff\Rifle\Rifle_Shoot	
-	1531110987	CS_Like_Natives_Loop			\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop	
-	1779440320	CS_Like_Counter_Clockwise_STOP			\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise_STOP	
+	1359218976	Smoke			\Default Work Unit\Stuff\Grenades\Smoke	
+	1531110987	CS_Like_Natives_Loop			\Default Work Unit\Musics\CS_Like_Natives_Loop	
+	1556996917	Flash			\Default Work Unit\Stuff\Grenades\Flash	
+	1762045325	Blow			\Default Work Unit\Stuff\Grenades\Blow	
+	1779440320	CS_Like_Counter_Clockwise_STOP			\Default Work Unit\Musics\CS_Like_Counter_Clockwise_STOP	
 	1866025847	Footstep			\Default Work Unit\Character\Footstep	
 	2030840469	Kill			\Default Work Unit\Kill\Kill	
 	2040071657	Shotgun_Shoot			\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot	
 	2124970216	Pistol_Shoot			\Default Work Unit\Stuff\LP17\Pistol_Shoot	
-	2301338566	CS_Like_Natives_Loop_STOP			\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop_STOP	
+	2301338566	CS_Like_Natives_Loop_STOP			\Default Work Unit\Musics\CS_Like_Natives_Loop_STOP	
 	2494499361	Button_Clic			\Default Work Unit\UI\Button_Clic	
 	2515054376	Sniper_Reload			\Default Work Unit\Stuff\Sniper\Sniper_Reload	
-	2598419022	CS_Like_Robots_Loop			\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop	
+	2598419022	CS_Like_Robots_Loop			\Default Work Unit\Musics\CS_Like_Robots_Loop	
 	2632074263	Headshot			\Default Work Unit\Hit\Headshot	
 	2642532248	SMG_Reload			\Default Work Unit\Stuff\SMG\SMG_Reload	
 	2801873252	Sniper_Shoot			\Default Work Unit\Stuff\Sniper\Sniper_Shoot	
@@ -22,47 +27,55 @@ Event	ID	Name			Wwise Object Path	Notes
 	3086540886	StopAll			\Default Work Unit\Management\StopAll	
 	3214964847	Rifle_Reload			\Default Work Unit\Stuff\Rifle\Rifle_Reload	
 	3430418271	Knife_Swing			\Default Work Unit\Stuff\Knife\Knife_Swing	
+	3526212285	Knife_Draw			\Default Work Unit\Stuff\Knife\Knife_Draw	
 	3542188584	Shotgun_Shoot_Test			\Default Work Unit\Stuff\Shotgun\Shotgun_Shoot_Test	
 	3644104355	Button_Rollover			\Default Work Unit\UI\Button_Rollover	
 	3728918479	No_Bullet			\Default Work Unit\Bullet\No_Bullet	
 	3732113631	Button_Release			\Default Work Unit\UI\Button_Release	
 	3750486034	Shotgun_Cock_Back			\Default Work Unit\Stuff\Shotgun\Shotgun_Cock_Back	
-	4036144589	CS_Like_Counter_Clockwise			\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise	
+	3940682342	Harvester_Loop			\Default Work Unit\Stuff\Harvester\Harvester_Loop	
+	4036144589	CS_Like_Counter_Clockwise			\Default Work Unit\Musics\CS_Like_Counter_Clockwise	
 	4135087902	Ragdoll			\Default Work Unit\Character\Ragdoll	
 
 Game Parameter	ID	Name			Wwise Object Path	Notes
 	2415836739	Volume			\Default Work Unit\Volume	
 
 In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
-	22246498	CS_Like_Robots_Loop	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\FA\{FA7FB36C-625B-518A-547C-A4AF969CD40F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop		9961508
-	65711448	M16A4-MagSlideOutFoley	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F7\{F793E463-FB79-1503-1FCF-6C1E514F6E57}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Rifle\M16A4-MagSlideOutFoley		227824
-	91124830	M16A4-Fire	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\D9\{D99F125F-8E7D-C699-C34D-E4FE6FCFC770}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Rifle\M16A4-Fire		903540
-	127476490	concrete_impact_bullet2	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\89\{89265A94-A321-6CC2-4F7F-2964029E7B1B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet2		288092
-	184886433	shotgun_shoot	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\91\{918542E8-F8DB-79A5-5E1F-5DC9EAF09CEE}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_shoot		210968
-	194609693	sniper_railgun_single_01	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\55\{55BE0A38-1B1C-6F39-6A26-28D615B97BCB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Sniper\sniper_railgun_single_01		637612
-	222756833	sniper_railgun_world_reload	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\1A\{1A941AD3-7AD0-1A9D-454D-7755338B1B81}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Sniper\sniper_railgun_world_reload		163732
-	338526762	shotgun_cock_forward	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\98\{98F5EBE2-3340-60E9-D1E3-E98AB5A8F4D5}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_cock_forward		41440
-	346583077	concrete_impact_bullet4	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F9\{F9A688DB-A31D-8E8A-2462-EDD6A6EBDC12}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet4		227508
-	364483740	CS_Like_Counter_Clockwise	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F8\{F8539627-C8F8-5F09-9587-99F2FFE3B6A1}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise		2268100
-	397019866	concrete_impact_bullet3	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\52\{52B64AE9-71A6-06FF-794E-A885408E45DB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet3		135872
-	415998049	headshot2	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\71\{71E3E407-ECD7-2EBA-42A2-7C354C39C346}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Headshot\headshot2		688224
-	521724105	pistol_shoot	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\7B\{7B106A5E-73D1-0E6B-B22E-61158445DCF0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\LP17\pistol_shoot		357728
-	561448277	no_bullet	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\78\{78BEE144-50EB-9509-2777-BD1D51C54F7F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Bullet\no_bullet		16496
-	586378031	concrete2	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\BA\{BA102126-0938-BF02-91CC-91EEBDF8CBD7}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete2		51168
-	685160244	concrete_impact_bullet1	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\FA\{FA6C13EB-AC80-5F52-7E6E-2785D5A25597}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet1		298660
-	700034105	smg_shoot	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\61\{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\SMG\smg_shoot		524140
-	732396723	buttonclickrelease	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\8C\{8C65BC10-64A8-7225-B9E3-EE78D9484D89}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonclickrelease		350748
-	738294315	buttonrollover	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\A3\{A3B6DEA8-A011-8489-3DD7-26BCA584481A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonrollover		470156
-	799736141	concrete1	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\48\{485DDB6B-D44E-3A8E-99E3-81610FE88207}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete1		46048
-	826361697	body_medium_impact_hard13	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\DE\{DEC4000A-38BC-6C42-F11A-9DB6D49B8F33}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Ragdoll\body_medium_impact_hard13		60072
-	844658888	Knife Swing	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\9E\{9E5919A8-15D5-4D9C-57F7-FB1D53F5F85D}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Knife\Knife Swing		123912
-	876999076	concrete3	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\A9\{A9E059DA-6F01-BE86-8DFA-7248406F5572}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete3		44704
-	905442807	pistol_worldreload	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\99\{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\LP17\pistol_worldreload		122976
-	936370133	kill	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\01\{018994C1-ADCD-B823-D814-1E74BBD85B1F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Kill\kill		397948
-	960254442	buttonclick	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\5E\{5E8E9EC9-E7E9-07C1-4138-F1206D48DC5D}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonclick		100284
-	983858205	CS_Like_Natives_Loop	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\DF\{DFE8C3A5-6700-5F9B-8867-49732965FD47}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop		9961508
-	1005689479	shotgun_cock_back	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\67\{6744BC0C-B73A-2740-F014-4D4936BEB7D0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_cock_back		38608
-	1044764746	smg_clip_in	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\D7\{D7BD706A-BAC0-E190-6F84-13E4ADDCDD11}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\SMG\smg_clip_in		42136
-	1057270696	near_bullet	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\51\{513B484A-9363-5B78-148B-3A6F6C6BC205}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Bullet\near_bullet		152664
-	1062476857	concrete4	D:\SVN\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\91\{911D271C-AB8E-4629-4CF1-FD1849DF80E4}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete4		48288
+	22246498	CS_Like_Robots_Loop	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\FA\{FA7FB36C-625B-518A-547C-A4AF969CD40F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Musics\Old\CS_Like_Robots_Loop		9961508
+	65711448	M16A4-MagSlideOutFoley	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F7\{F793E463-FB79-1503-1FCF-6C1E514F6E57}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Rifle\M16A4-MagSlideOutFoley		227824
+	91124830	M16A4-Fire	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\D9\{D99F125F-8E7D-C699-C34D-E4FE6FCFC770}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Rifle\M16A4-Fire		903540
+	127476490	concrete_impact_bullet2	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\89\{89265A94-A321-6CC2-4F7F-2964029E7B1B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet2		288092
+	144703397	SFX_GrenadeFlash	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\CD\{CDB8E7C7-88AD-223E-EEFD-A0E9BFE7FB24}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Grenades\SFX_GrenadeFlash		1716292
+	184886433	shotgun_shoot	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\91\{918542E8-F8DB-79A5-5E1F-5DC9EAF09CEE}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_shoot		210968
+	194609693	sniper_railgun_single_01	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\55\{55BE0A38-1B1C-6F39-6A26-28D615B97BCB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Sniper\sniper_railgun_single_01		637612
+	222756833	sniper_railgun_world_reload	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\1A\{1A941AD3-7AD0-1A9D-454D-7755338B1B81}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Sniper\sniper_railgun_world_reload		163732
+	338526762	shotgun_cock_forward	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\98\{98F5EBE2-3340-60E9-D1E3-E98AB5A8F4D5}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_cock_forward		41440
+	346583077	concrete_impact_bullet4	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F9\{F9A688DB-A31D-8E8A-2462-EDD6A6EBDC12}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet4		227508
+	364483740	CS_Like_Counter_Clockwise	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\F8\{F8539627-C8F8-5F09-9587-99F2FFE3B6A1}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Musics\Old\CS_Like_Counter_Clockwise		2268100
+	397019866	concrete_impact_bullet3	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\52\{52B64AE9-71A6-06FF-794E-A885408E45DB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet3		135872
+	415998049	headshot2	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\71\{71E3E407-ECD7-2EBA-42A2-7C354C39C346}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Headshot\headshot2		688224
+	521724105	pistol_shoot	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\7B\{7B106A5E-73D1-0E6B-B22E-61158445DCF0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\LP17\pistol_shoot		357728
+	561448277	no_bullet	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\78\{78BEE144-50EB-9509-2777-BD1D51C54F7F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Bullet\no_bullet		16496
+	586378031	concrete2	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\BA\{BA102126-0938-BF02-91CC-91EEBDF8CBD7}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete2		51168
+	685160244	concrete_impact_bullet1	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\FA\{FA6C13EB-AC80-5F52-7E6E-2785D5A25597}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Hit\Miss\concrete\Random Concrete Impact\concrete_impact_bullet1		298660
+	700034105	smg_shoot	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\61\{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\SMG\smg_shoot		524140
+	701474240	SFX_HarvesterLoop	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\27\{27E4F39B-5FB1-B3F7-8567-B5D339CFC7A6}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Harvester\SFX_HarvesterLoop		8502228
+	732396723	buttonclickrelease	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\8C\{8C65BC10-64A8-7225-B9E3-EE78D9484D89}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonclickrelease		350748
+	738294315	buttonrollover	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\A3\{A3B6DEA8-A011-8489-3DD7-26BCA584481A}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonrollover		470156
+	750358419	SFX_GrenadeSmoke	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\AA\{AAD817B1-8EA2-058C-2226-A4A9BAC0AE9E}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Grenades\SFX_GrenadeSmoke		1815780
+	786397144	SFX_GrenadeBase	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\8F\{8F92EFA1-72AB-5127-8B6C-31F7D516797D}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Grenades\SFX_GrenadeBase		920376
+	799736141	concrete1	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\48\{485DDB6B-D44E-3A8E-99E3-81610FE88207}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete1		46048
+	826361697	body_medium_impact_hard13	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\DE\{DEC4000A-38BC-6C42-F11A-9DB6D49B8F33}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Ragdoll\body_medium_impact_hard13		60072
+	844658888	Knife Swing	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\9E\{9E5919A8-15D5-4D9C-57F7-FB1D53F5F85D}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Knife\Knife Swing		123912
+	858605613	Natives_BuyPhase_Music	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\05\{0564F579-1F2D-392D-8B69-E995F525B08B}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Musics\Buy phase\Natives_BuyPhase_Music		3676232
+	863846037	SFX_GrenadeGas	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\71\{71443143-92F3-DC32-B217-571B7C27E961}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Grenades\SFX_GrenadeGas		1318332
+	876999076	concrete3	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\A9\{A9E059DA-6F01-BE86-8DFA-7248406F5572}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete3		44704
+	905442807	pistol_worldreload	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\99\{9932C546-C8D1-76CA-81C8-786BCBA23CA7}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\LP17\pistol_worldreload		122976
+	936370133	kill	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\01\{018994C1-ADCD-B823-D814-1E74BBD85B1F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Kill\kill		397948
+	960254442	buttonclick	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\5E\{5E8E9EC9-E7E9-07C1-4138-F1206D48DC5D}.wem		\Actor-Mixer Hierarchy\Default Work Unit\UI\buttonclick		100284
+	983858205	CS_Like_Natives_Loop	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\DF\{DFE8C3A5-6700-5F9B-8867-49732965FD47}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Musics\Old\CS_Like_Natives_Loop		9961508
+	1005689479	shotgun_cock_back	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\67\{6744BC0C-B73A-2740-F014-4D4936BEB7D0}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\Shotgun\shotgun_cock_back		38608
+	1044764746	smg_clip_in	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\D7\{D7BD706A-BAC0-E190-6F84-13E4ADDCDD11}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Stuff\SMG\smg_clip_in		42136
+	1057270696	near_bullet	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\51\{513B484A-9363-5B78-148B-3A6F6C6BC205}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Bullet\near_bullet		152664
+	1062476857	concrete4	D:\SVN\Projets\ProjetAnnee3\CSLike\_Saves du projet Unity\CSLike 0.0\CSLike 0.0_WwiseProject\.cache\91\{911D271C-AB8E-4629-4CF1-FD1849DF80E4}.wem		\Actor-Mixer Hierarchy\Default Work Unit\Character\Steps\Random Concrete Footsteps\concrete4		48288
 

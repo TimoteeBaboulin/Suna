@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{3507A701-7B19-5C42-EBD3-F48AFCCDA080}",
+    "Hash": "{7A107170-A512-ED0B-E72A-8E5BDD9F2F34}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
@@ -46,6 +46,14 @@
       "Location": "Memory",
       "ShortName": "concrete\\concrete_impact_bullet2.wav",
       "CachePath": "89/{89265A94-A321-6CC2-4F7F-2964029E7B1B}.wem"
+     },
+     {
+      "Id": "144703397",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_GrenadeFlash.wav",
+      "CachePath": "CD/{CDB8E7C7-88AD-223E-EEFD-A0E9BFE7FB24}.wem"
      },
      {
       "Id": "184886433",
@@ -152,6 +160,14 @@
       "CachePath": "61/{6149D88E-0FEA-E7AC-AA16-908F17A8E6CB}.wem"
      },
      {
+      "Id": "701474240",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_HarvesterOn.wav",
+      "CachePath": "27/{27E4F39B-5FB1-B3F7-8567-B5D339CFC7A6}.wem"
+     },
+     {
       "Id": "732396723",
       "Language": "SFX",
       "Streaming": "false",
@@ -166,6 +182,22 @@
       "Location": "Memory",
       "ShortName": "ui\\buttonrollover.wav",
       "CachePath": "A3/{A3B6DEA8-A011-8489-3DD7-26BCA584481A}.wem"
+     },
+     {
+      "Id": "750358419",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_GrenadeSmoke.wav",
+      "CachePath": "AA/{AAD817B1-8EA2-058C-2226-A4A9BAC0AE9E}.wem"
+     },
+     {
+      "Id": "786397144",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_GrenadeBase.wav",
+      "CachePath": "8F/{8F92EFA1-72AB-5127-8B6C-31F7D516797D}.wem"
      },
      {
       "Id": "799736141",
@@ -190,6 +222,22 @@
       "Location": "Memory",
       "ShortName": "machete_swing.wav",
       "CachePath": "9E/{9E5919A8-15D5-4D9C-57F7-FB1D53F5F85D}.wem"
+     },
+     {
+      "Id": "858605613",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SUNA_Natives_Shop.wav",
+      "CachePath": "05/{0564F579-1F2D-392D-8B69-E995F525B08B}.wem"
+     },
+     {
+      "Id": "863846037",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_GrenadeGas.wav",
+      "CachePath": "71/{71443143-92F3-DC32-B217-571B7C27E961}.wem"
      },
      {
       "Id": "876999076",
@@ -266,6 +314,21 @@
     ],
     "Events": [
      {
+      "Id": "1762045325",
+      "Name": "Blow",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Grenades\\Blow",
+      "GUID": "{B564BE92-01D1-48C9-BEF6-0D141FED4EF7}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "5.2170067",
+      "DurationMax": "5.2170067",
+      "MediaRefs": [
+       {
+        "Id": "786397144"
+       }
+      ]
+     },
+     {
       "Id": "2494499361",
       "Name": "Button_Clic",
       "ObjectPath": "\\Events\\Default Work Unit\\UI\\Button_Clic",
@@ -310,7 +373,7 @@
      {
       "Id": "4036144589",
       "Name": "CS_Like_Counter_Clockwise",
-      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Counter_Clockwise",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\CS_Like_Counter_Clockwise",
       "GUID": "{C5FD91AC-A4D9-4C5D-A086-B29C57D6FEC3}",
       "DurationType": "OneShot",
       "DurationMin": "12.857165",
@@ -324,7 +387,7 @@
      {
       "Id": "1779440320",
       "Name": "CS_Like_Counter_Clockwise_STOP",
-      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Counter_Clockwise_STOP",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\CS_Like_Counter_Clockwise_STOP",
       "GUID": "{E4E41A6A-62C1-4EDE-ADE1-E8F2C0039726}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
@@ -334,7 +397,7 @@
      {
       "Id": "1531110987",
       "Name": "CS_Like_Natives_Loop",
-      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Natives_Loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\CS_Like_Natives_Loop",
       "GUID": "{2F7743A4-005E-4760-8F9A-A11F1CA04D94}",
       "DurationType": "OneShot",
       "DurationMin": "56.47059",
@@ -348,7 +411,7 @@
      {
       "Id": "2301338566",
       "Name": "CS_Like_Natives_Loop_STOP",
-      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Natives_Loop_STOP",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\CS_Like_Natives_Loop_STOP",
       "GUID": "{0B6710B3-206F-473D-ACB1-341A9042126A}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
@@ -358,7 +421,7 @@
      {
       "Id": "2598419022",
       "Name": "CS_Like_Robots_Loop",
-      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Robots_Loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\CS_Like_Robots_Loop",
       "GUID": "{5E0C9C6B-187A-487B-A3CC-DF6DD7D25436}",
       "DurationType": "OneShot",
       "DurationMin": "56.47059",
@@ -372,12 +435,27 @@
      {
       "Id": "267023757",
       "Name": "CS_Like_Robots_Loop_STOP",
-      "ObjectPath": "\\Events\\Default Work Unit\\Tom_Musics\\CS_Like_Robots_Loop_STOP",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\CS_Like_Robots_Loop_STOP",
       "GUID": "{75FA373C-A316-4AF7-A9BC-5AEE6B74524B}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
       "DurationMin": "0",
       "DurationMax": "0"
+     },
+     {
+      "Id": "1556996917",
+      "Name": "Flash",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Grenades\\Flash",
+      "GUID": "{A60431C9-83D3-4DE3-BC43-2F87162ADAC9}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "9.729002",
+      "DurationMax": "9.729002",
+      "MediaRefs": [
+       {
+        "Id": "144703397"
+       }
+      ]
      },
      {
       "Id": "1866025847",
@@ -400,6 +478,34 @@
        },
        {
         "Id": "1062476857"
+       }
+      ]
+     },
+     {
+      "Id": "579662033",
+      "Name": "Gaz",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Grenades\\Gaz",
+      "GUID": "{9EAD21F8-5985-4721-8CE4-A1D9B9579458}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "7.4729934",
+      "DurationMax": "7.4729934",
+      "MediaRefs": [
+       {
+        "Id": "863846037"
+       }
+      ]
+     },
+     {
+      "Id": "3940682342",
+      "Name": "Harvester_Loop",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Harvester\\Harvester_Loop",
+      "GUID": "{ED87A274-ED07-4A9F-8CE2-B4A0C7ED72E7}",
+      "MaxAttenuation": "150",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "701474240"
        }
       ]
      },
@@ -432,6 +538,16 @@
         "Id": "936370133"
        }
       ]
+     },
+     {
+      "Id": "3526212285",
+      "Name": "Knife_Draw",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Knife\\Knife_Draw",
+      "GUID": "{C49D2DB5-952E-4345-9A65-8139BBAE1D17}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
      },
      {
       "Id": "3430418271",
@@ -469,6 +585,20 @@
        },
        {
         "Id": "685160244"
+       }
+      ]
+     },
+     {
+      "Id": "298712718",
+      "Name": "Native_BuyPhase",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\Buy Phase\\Native_BuyPhase",
+      "GUID": "{CCF41A0E-CEF3-4D40-80E4-C9834CD69093}",
+      "DurationType": "OneShot",
+      "DurationMin": "20.839773",
+      "DurationMax": "20.839773",
+      "MediaRefs": [
+       {
+        "Id": "858605613"
        }
       ]
      },
@@ -674,6 +804,21 @@
       ]
      },
      {
+      "Id": "1359218976",
+      "Name": "Smoke",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Grenades\\Smoke",
+      "GUID": "{974ACD95-80A2-4BCC-BE55-4F06F0346FCD}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "10.292994",
+      "DurationMax": "10.292994",
+      "MediaRefs": [
+       {
+        "Id": "750358419"
+       }
+      ]
+     },
+     {
       "Id": "2515054376",
       "Name": "Sniper_Reload",
       "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Sniper\\Sniper_Reload",
@@ -724,6 +869,6 @@
     ]
    }
   ],
-  "FileHash": "{C60333CD-59EC-8956-28A5-B8DCA2E979C8}"
+  "FileHash": "{B9B84FD2-92B2-1FBA-2775-EF904685EAB3}"
  }
 }

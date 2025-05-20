@@ -13,6 +13,7 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID BLOW = 1762045325U;
         static const AkUniqueID BUTTON_CLIC = 2494499361U;
         static const AkUniqueID BUTTON_RELEASE = 3732113631U;
         static const AkUniqueID BUTTON_ROLLOVER = 3644104355U;
@@ -28,11 +29,19 @@ namespace AK
         static const AkUniqueID CS_LIKE_NATIVES_LOOP_STOP = 2301338566U;
         static const AkUniqueID CS_LIKE_ROBOTS_LOOP = 2598419022U;
         static const AkUniqueID CS_LIKE_ROBOTS_LOOP_STOP = 267023757U;
+        static const AkUniqueID FLASH = 1556996917U;
         static const AkUniqueID FOOTSTEP = 1866025847U;
+        static const AkUniqueID GAZ = 579662033U;
+        static const AkUniqueID HARVESTER_DEFUSED = 3131898918U;
+        static const AkUniqueID HARVESTER_LOOP = 3940682342U;
+        static const AkUniqueID HARVESTER_PLANT = 3382952939U;
         static const AkUniqueID HEADSHOT = 2632074263U;
         static const AkUniqueID KILL = 2030840469U;
+        static const AkUniqueID KILL_EVENT = 281209160U;
+        static const AkUniqueID KNIFE_DRAW = 3526212285U;
         static const AkUniqueID KNIFE_SWING = 3430418271U;
         static const AkUniqueID MISS = 3062523241U;
+        static const AkUniqueID NATIVE_BUYPHASE = 298712718U;
         static const AkUniqueID NEAR_BULLET = 2962560402U;
         static const AkUniqueID NO_BULLET = 3728918479U;
         static const AkUniqueID PISTOL_RELOAD = 1068215004U;
@@ -46,10 +55,13 @@ namespace AK
         static const AkUniqueID SHOTGUN_SHOOT_TEST = 3542188584U;
         static const AkUniqueID SMG_RELOAD = 2642532248U;
         static const AkUniqueID SMG_SHOOT = 1025907732U;
+        static const AkUniqueID SMOKE = 1359218976U;
         static const AkUniqueID SNIPER_RELOAD = 2515054376U;
         static const AkUniqueID SNIPER_SHOOT = 2801873252U;
         static const AkUniqueID STOPALL = 3086540886U;
         static const AkUniqueID STOPALL_01 = 4256069028U;
+        static const AkUniqueID THROWING_FLASH = 1781840702U;
+        static const AkUniqueID THROWING_SMOKE = 3127593203U;
     } // namespace EVENTS
 
     namespace GAME_PARAMETERS
@@ -62,6 +74,7 @@ namespace AK
         static const AkUniqueID INIT = 1355168291U;
         static const AkUniqueID DEFAULTBANK = 187290962U;
         static const AkUniqueID MAINMENU = 3604647259U;
+        static const AkUniqueID VOICELINES = 2292057722U;
     } // namespace BANKS
 
     namespace BUSSES

@@ -278,19 +278,19 @@ public partial struct ShootSystem : ISystem
         {
             ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
-            ref readonly Entity owner = ref sddRW.ValueRO.owner;
+            Entity owner = sddRW.ValueRO.owner;
 
             if (owner == Entity.Null) continue;
 
             RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
             // Retrieve player input
-            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) continue;
             ref CharacterInput input = ref inputRef.ValueRW;
 
-            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) continue;
 
-            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
+            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) continue;
 
             if (dynamicData.isCooking)
             {
@@ -313,8 +313,31 @@ public partial struct ShootSystem : ISystem
                         DynamicBuffer<LinkedEntityGroup> linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(owner);
                         DynamicBuffer<CharacterStuffList> characterStuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
                         RefRW<CharacterStuffInfos> characterStuffInfos = SystemAPI.GetComponentRW<CharacterStuffInfos>(owner);
-                        GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(grenade);
+                        GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(owner);
                         ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
+
+                        if (state.World.IsServer())
+                        {
+                            //===== SOUND VOICE LINES =====
+                            TeamSideType side = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
+
+                            switch (stuffCommonData.slot)
+                            {
+                                case StuffSlot.GasGrenade:
+                                    break;
+                                case StuffSlot.HEGrenade:
+                                    break;
+                                case StuffSlot.SmokeGrenade:
+                                    Debug.Log("<color=green>" + side.ToString());
+                                    SoundUtils.PlayWithRPC(side.ToString(), "throwing_smoke", shootStartpos);
+                                    break;
+                                case StuffSlot.Flashbang:
+                                    Debug.Log("<color=green>" + side.ToString());
+                                    SoundUtils.PlayWithRPC(side.ToString(), "throwing_flash", shootStartpos);
+                                    break;
+                            }
+                            //=============================
+                        }
 
                         //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
                         //StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
@@ -333,6 +356,8 @@ public partial struct ShootSystem : ISystem
 
                         if (state.World.IsServer())
                         {
+                        
+
                             Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
                             ecb.SetName(thrownGrenade, "Thrown Grenade");
 
@@ -349,6 +374,7 @@ public partial struct ShootSystem : ISystem
                                 Rotation = shootRotation,
                                 Scale = 1.0f
                             });
+
 
                             var grenadeTransform = SystemAPI.GetComponent<LocalTransform>(grenade);
                             ecb.SetComponent(grenade, new LocalTransform
