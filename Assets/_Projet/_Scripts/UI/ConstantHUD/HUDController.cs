@@ -1,19 +1,15 @@
 using GameNetwork.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
 
-public class HUDController : MonoBehaviour
+public class HUDController : MonoBehaviour, IUIController
 {
     private UITextureData texData;
 
@@ -121,6 +117,8 @@ public class HUDController : MonoBehaviour
     private bool _damageOverlayActive = false;
     private float _damageOverlayTimer = 0f;
     private readonly float _damageOverlayTime = 0.5f;
+
+    public UICentralController centralController { get => GetComponentInParent<UICentralController>(); }
 
     private void Awake()
     {
@@ -955,6 +953,21 @@ public class HUDController : MonoBehaviour
         _killFeedContainer.Insert(0, element);
 
         Debug.Log($"{args.killer.name} killed {args.target.name}");
+    }
+
+    public void SetUIActive(bool value)
+    {
+        UI.SetActive(ref _HUD, value);
+    }
+
+    public bool IsUIActive()
+    {
+        return UI.IsActive(ref _HUD);
+    }
+
+    public UICentralController.UIState GetUIState()
+    {
+        return UICentralController.UIState.HUD;
     }
     //----------End of KillFeed Functions
 }
