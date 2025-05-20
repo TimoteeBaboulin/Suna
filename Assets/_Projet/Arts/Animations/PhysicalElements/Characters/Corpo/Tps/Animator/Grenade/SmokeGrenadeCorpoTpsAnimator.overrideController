@@ -6,7 +6,7 @@ AnimatorOverrideController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TestSmokeGrenadeCorpo
+  m_Name: SmokeGrenadeCorpoTpsAnimator
   m_Controller: {fileID: 9100000, guid: ebc1f0207590de4448c476d3cf2cb1ba, type: 2}
   m_Clips:
   - m_OriginalClip: {fileID: -5025847440830747980, guid: ef8a938771d7aad4facd3512dbf93bc5, type: 3}
@@ -15,3 +15,7 @@ AnimatorOverrideController:
     m_OverrideClip: {fileID: 5401794403321650749, guid: 7a3fcbf4e50bd2c4f9071e9ab8b4bd55, type: 3}
   - m_OriginalClip: {fileID: -8336255549571060756, guid: ea65609f67ace8f41801328071ce462f, type: 3}
     m_OverrideClip: {fileID: 7649093416435315920, guid: 385ca206919baa146a04958166666ff1, type: 3}
+  - m_OriginalClip: {fileID: -8789842410498108307, guid: 1f3dca15175812a4382680d81cd9e0fc, type: 3}
+    m_OverrideClip: {fileID: 2429116732075815920, guid: 4b2a3848e1c89014780ba280674b9324, type: 3}
+  - m_OriginalClip: {fileID: -5193543675974477397, guid: 95539f03fd5f24b4688270c85d1ba754, type: 3}
+    m_OverrideClip: {fileID: 2515760875710438583, guid: e1dbe854c67b94041a6bca0b8dda6026, type: 3}
