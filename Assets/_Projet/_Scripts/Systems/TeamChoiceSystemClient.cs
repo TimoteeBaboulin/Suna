@@ -51,6 +51,8 @@ public partial struct TeamChoiceSystemClient : ISystem
             };
             rpc.team = choiceTeam.ValueRO.team;
             RpcUtils.SendClientToServerRpc(ref rpc);
+
+            state.EntityManager.RemoveComponent<TeamChoiceComponent>(clientEntity);
         }
     }
 }
