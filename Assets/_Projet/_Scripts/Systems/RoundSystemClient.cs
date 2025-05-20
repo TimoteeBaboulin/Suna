@@ -171,11 +171,13 @@ partial struct RoundSystemClient : ISystem
         }
 
         if (active)
+        {
             _matOverrideValue = 0;
 
-        foreach (RefRW<SpawnFenceMaterialOverride> matOverrideRW in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>())
-        {
-            matOverrideRW.ValueRW.Value = 0;
+            foreach (RefRW<SpawnFenceMaterialOverride> matOverrideRW in SystemAPI.Query<RefRW<SpawnFenceMaterialOverride>>())
+            {
+                matOverrideRW.ValueRW.Value = 0;
+            }
         }
     }
 

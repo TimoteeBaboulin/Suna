@@ -202,7 +202,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b17c8e08b0b984646908250c4c7327e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vfx: {fileID: 0}
+  _vfx: {fileID: 7230154338731293731}
   _playSpeed: 1
 --- !u!1 &4995683946474555330
 GameObject:
@@ -369,6 +369,11 @@ PrefabInstance:
 --- !u!4 &1105229341996393672 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3279244537474235662, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
+  m_PrefabInstance: {fileID: 2509815280914536902}
+  m_PrefabAsset: {fileID: 0}
+--- !u!2083052967 &7230154338731293731 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
   m_PrefabInstance: {fileID: 2509815280914536902}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8647073480947835490
