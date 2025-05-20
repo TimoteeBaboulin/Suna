@@ -100,7 +100,9 @@ public class ShopController : MonoBehaviour
             else
             {
                 //That's when the player is buying an armor
-
+                Button btnRef = btn;
+                AddProductLabelsToShopButton(ref btnRef, "Armor", "800 $");
+                AddLabelToShopButton(ref btnRef, "50", 40, TextAnchor.MiddleCenter, new(0, 0));
                 btn.clicked += () =>
                 {
                     ShopCommand sc = new ShopCommand

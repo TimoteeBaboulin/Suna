@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2642215316524588410}
   - component: {fileID: 879477122032621473}
   - component: {fileID: 1770968620400763954}
-  - component: {fileID: 6461208371077268186}
+  - component: {fileID: 3642552422161623342}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -67,15 +67,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponAsset: {fileID: 9197481963319205126, guid: 6bd4124618971034296a0ec34e5b3522, type: 3}
   _weaponMap:
-  - Weapon: SKAR-18
+  - Weapon: SKAR18
     Tex: {fileID: 2800000, guid: e2e1832659d81c44ba08a143e5421e9d, type: 3}
-  - Weapon: LP-17
+  - Weapon: LP17
     Tex: {fileID: 2800000, guid: 9d076c00ff6b0e94d862e903a834706e, type: 3}
   - Weapon: Banduka
     Tex: {fileID: 2800000, guid: 31be4f1881b8fe74ab1392a30014e25f, type: 3}
   - Weapon: KnifeNeutral
     Tex: {fileID: 2800000, guid: 054a0bb488ca6d046b34cb72836a576d, type: 3}
-  - Weapon: HEGrenade
+  - Weapon: HE Grenade
     Tex: {fileID: 2800000, guid: f9507442cc546b84095db68b49dac28e, type: 3}
   - Weapon: Harvester
     Tex: {fileID: 2800000, guid: deb69a190942ce2409dce4797a303eb9, type: 3}
@@ -85,8 +85,16 @@ MonoBehaviour:
     Tex: {fileID: 2800000, guid: ea18ecaefaa4ae948a60eb1e4c1a6f49, type: 3}
   - Weapon: Flashbang
     Tex: {fileID: 2800000, guid: cda047a761f3cb64ca43b9ca54de7ed2, type: 3}
+  - Weapon: Smoke Grenade
+    Tex: {fileID: 2800000, guid: c032f8ede36507346bbc2fca28910832, type: 3}
+  - Weapon: Gas grenade
+    Tex: {fileID: 2800000, guid: 6891bed3dfb555648a55fdada7223ad5, type: 3}
+  - Weapon: Decimator
+    Tex: {fileID: 2800000, guid: e2e1832659d81c44ba08a143e5421e9d, type: 3}
+  - Weapon: Fakir
+    Tex: {fileID: 2800000, guid: 9d076c00ff6b0e94d862e903a834706e, type: 3}
   _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}
---- !u!1652712579 &6461208371077268186
+--- !u!1652712579 &3642552422161623342
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
