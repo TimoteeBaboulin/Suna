@@ -110,6 +110,9 @@ partial class HarvesterSystemClient : SystemBase
                 continue;
             StuffGameObjectRef goRef = EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
 
+            goRef.View.transform.rotation = Quaternion.identity;
+            goRef.View_Baked.transform.rotation = Quaternion.identity;
+
             Entity characterEntity = SystemAPI.GetComponentRO<ClientCharacterAttached>(clientEntity).ValueRO.Value;
             float3 harvesterPos = harvesterTransform.Position;
             float3 characterPos = SystemAPI.GetComponentRO<LocalTransform>(characterEntity).ValueRO.Position;
@@ -223,8 +226,8 @@ partial class HarvesterSystemClient : SystemBase
         harvesterTransform.Rotation = quaternion.identity;
 
         StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
-        goRef.View.GetComponent<HarvesterVfxLink>().Play();
-        goRef.View_Baked.GetComponent<HarvesterVfxLink>().Play();
+        goRef.View.GetComponent<HarvesterVfxLink>().Play(plantPosition);
+        goRef.View_Baked.GetComponent<HarvesterVfxLink>().Play(plantPosition);
         StuffUtils.SetStuffViewTransform(goRef, harvesterTransform);
 
         SystemAPI.SetComponent(harvesterEntity, harvesterTransform);
