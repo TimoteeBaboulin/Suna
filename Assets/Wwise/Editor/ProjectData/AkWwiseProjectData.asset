@@ -38,7 +38,7 @@ MonoBehaviour:
     ParentPath: Master-Mixer Hierarchy\Default Work Unit
     guid: 6924ad1a7785a4489344f7ee45689393
     GuidInternal: 
-    m_lastTime: -8584549672300692957
+    m_lastTime: -8584539404962882552
     List:
     - name: Master Audio Bus
       guid: d8a41415a61d2a41a17e75ca0c2149f3
@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584549672287574381
+    m_lastTime: -8584538756168780951
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -96,7 +96,91 @@ MonoBehaviour:
         ObjectType: 7
         guid: 5e203f377d20ef45a994fd3faf1cae9e
       Path: SoundBanks\Default Work Unit\MainMenu
+    - name: VoiceLines
+      guid: c2685a8dbedc5f4ea9ab8a1ff10d5fdc
+      id: 2292057722
+      PathAndIcons:
+      - ElementName: SoundBanks
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: ba60688da2d0e14e9c2083f407a04640
+      - ElementName: VoiceLines
+        ObjectType: 7
+        guid: c2685a8dbedc5f4ea9ab8a1ff10d5fdc
+      Path: SoundBanks\Default Work Unit\VoiceLines
   EventWwu:
+  - PhysicalPath: Events\Ambiant.wwu
+    PathAndIcons:
+    - ElementName: Events
+      ObjectType: 5
+      guid: 00000000000000000000000000000000
+    - ElementName: Ambiant
+      ObjectType: 12
+      guid: e3f1ef69a3bd3f4b85359d69fe37f028
+    ParentPath: Events\Ambiant
+    guid: e3f1ef69a3bd3f4b85359d69fe37f028
+    GuidInternal: 
+    m_lastTime: -8584538758015756024
+    List:
+    - name: Ambient
+      guid: ba8a1bde0b28534d95dc237cad1ff92d
+      id: 77978275
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Ambiant
+        ObjectType: 12
+        guid: e3f1ef69a3bd3f4b85359d69fe37f028
+      - ElementName: Ambient
+        ObjectType: 4
+        guid: ba8a1bde0b28534d95dc237cad1ff92d
+      Path: Events\Ambiant\Ambient
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Insects
+      guid: f2ad067df391bd42bed107978b682aae
+      id: 3833343604
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Ambiant
+        ObjectType: 12
+        guid: e3f1ef69a3bd3f4b85359d69fe37f028
+      - ElementName: Ambient
+        ObjectType: 4
+        guid: ba8a1bde0b28534d95dc237cad1ff92d
+      - ElementName: Insects
+        ObjectType: 3
+        guid: f2ad067df391bd42bed107978b682aae
+      Path: Events\Ambiant\Ambient\Insects
+      maxAttenuation: 150
+      maxDuration: 0
+      minDuration: 0
+    - name: Wind
+      guid: 8d91ec7e4a1ff3479b1c129f50c95487
+      id: 1537061107
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Ambiant
+        ObjectType: 12
+        guid: e3f1ef69a3bd3f4b85359d69fe37f028
+      - ElementName: Ambient
+        ObjectType: 4
+        guid: ba8a1bde0b28534d95dc237cad1ff92d
+      - ElementName: Wind
+        ObjectType: 3
+        guid: 8d91ec7e4a1ff3479b1c129f50c95487
+      Path: Events\Ambiant\Ambient\Wind
+      maxAttenuation: 0
+      maxDuration: 299.67822
+      minDuration: 299.67822
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: Events
@@ -108,7 +192,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584540126345170151
+    m_lastTime: -8584538758448933222
     List:
     - name: Bullet
       guid: f31ddc298c55be49ad82765d29c29e87
@@ -187,6 +271,26 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 2.6647391
       minDuration: 2.6647391
+    - name: Buy Phase
+      guid: 82f251fc23828242b1df6b68461f067b
+      id: 3029782422
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: Buy Phase
+        ObjectType: 4
+        guid: 82f251fc23828242b1df6b68461f067b
+      Path: Events\Default Work Unit\Musics\Buy Phase
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Character
       guid: b02d4c429ef96448b30705fc5351842d
       id: 436743010
@@ -214,13 +318,13 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
+      - ElementName: Musics
         ObjectType: 4
         guid: 86eab33a5887404b8902de47d35940e6
       - ElementName: CS_Like_Counter_Clockwise
         ObjectType: 3
         guid: ac91fdc5d9a45d4ca086b29c57d6fec3
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise
+      Path: Events\Default Work Unit\Musics\CS_Like_Counter_Clockwise
       maxAttenuation: 0
       maxDuration: 12.857165
       minDuration: 12.857165
@@ -234,13 +338,13 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
+      - ElementName: Musics
         ObjectType: 4
         guid: 86eab33a5887404b8902de47d35940e6
       - ElementName: CS_Like_Counter_Clockwise_STOP
         ObjectType: 3
         guid: 6a1ae4e4c162de4eade1e8f2c0039726
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Counter_Clockwise_STOP
+      Path: Events\Default Work Unit\Musics\CS_Like_Counter_Clockwise_STOP
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
@@ -254,13 +358,13 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
+      - ElementName: Musics
         ObjectType: 4
         guid: 86eab33a5887404b8902de47d35940e6
       - ElementName: CS_Like_Natives_Loop
         ObjectType: 3
         guid: a443772f5e0060478f9aa11f1ca04d94
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop
+      Path: Events\Default Work Unit\Musics\CS_Like_Natives_Loop
       maxAttenuation: 0
       maxDuration: 56.47059
       minDuration: 56.47059
@@ -274,13 +378,13 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
+      - ElementName: Musics
         ObjectType: 4
         guid: 86eab33a5887404b8902de47d35940e6
       - ElementName: CS_Like_Natives_Loop_STOP
         ObjectType: 3
         guid: b310670b6f203d47acb1341a9042126a
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Natives_Loop_STOP
+      Path: Events\Default Work Unit\Musics\CS_Like_Natives_Loop_STOP
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
@@ -294,13 +398,13 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
+      - ElementName: Musics
         ObjectType: 4
         guid: 86eab33a5887404b8902de47d35940e6
       - ElementName: CS_Like_Robots_Loop
         ObjectType: 3
         guid: 6b9c0c5e7a187b48a3ccdf6dd7d25436
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop
+      Path: Events\Default Work Unit\Musics\CS_Like_Robots_Loop
       maxAttenuation: 0
       maxDuration: 56.47059
       minDuration: 56.47059
@@ -314,16 +418,39 @@ MonoBehaviour:
       - ElementName: Default Work Unit
         ObjectType: 12
         guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
+      - ElementName: Musics
         ObjectType: 4
         guid: 86eab33a5887404b8902de47d35940e6
       - ElementName: CS_Like_Robots_Loop_STOP
         ObjectType: 3
         guid: 3c37fa7516a3f74aa9bc5aee6b74524b
-      Path: Events\Default Work Unit\Tom_Musics\CS_Like_Robots_Loop_STOP
+      Path: Events\Default Work Unit\Musics\CS_Like_Robots_Loop_STOP
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
+    - name: Flash
+      guid: c93104a6d383e34dbc432f87162adac9
+      id: 1556996917
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Grenades
+        ObjectType: 4
+        guid: fd282cdfc0f531438463f904f862e20e
+      - ElementName: Flash
+        ObjectType: 3
+        guid: c93104a6d383e34dbc432f87162adac9
+      Path: Events\Default Work Unit\Stuff\Grenades\Flash
+      maxAttenuation: 150
+      maxDuration: 9.729002
+      minDuration: 9.729002
     - name: Footstep
       guid: 9b328937a796d24fb9542e5b638b2771
       id: 1866025847
@@ -344,6 +471,92 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 0.5790476
       minDuration: 0.50575966
+    - name: Gaz
+      guid: f821ad9e855921478ce4a1d9b9579458
+      id: 579662033
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Grenades
+        ObjectType: 4
+        guid: fd282cdfc0f531438463f904f862e20e
+      - ElementName: Gaz
+        ObjectType: 3
+        guid: f821ad9e855921478ce4a1d9b9579458
+      Path: Events\Default Work Unit\Stuff\Grenades\Gaz
+      maxAttenuation: 150
+      maxDuration: 7.4729934
+      minDuration: 7.4729934
+    - name: Grenades
+      guid: fd282cdfc0f531438463f904f862e20e
+      id: 2697262668
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Grenades
+        ObjectType: 4
+        guid: fd282cdfc0f531438463f904f862e20e
+      Path: Events\Default Work Unit\Stuff\Grenades
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Harvester
+      guid: 69ef0332854cd14698800dfd8bd404c7
+      id: 1433122617
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Harvester
+        ObjectType: 4
+        guid: 69ef0332854cd14698800dfd8bd404c7
+      Path: Events\Default Work Unit\Stuff\Harvester
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Harvester_Loop
+      guid: 74a287ed07ed9f4a8ce2b4a0c7ed72e7
+      id: 3940682342
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Harvester
+        ObjectType: 4
+        guid: 69ef0332854cd14698800dfd8bd404c7
+      - ElementName: Harvester_Loop
+        ObjectType: 3
+        guid: 74a287ed07ed9f4a8ce2b4a0c7ed72e7
+      Path: Events\Default Work Unit\Stuff\Harvester\Harvester_Loop
+      maxAttenuation: 150
+      maxDuration: 0
+      minDuration: 0
     - name: Headshot
       guid: 2a761a9a80f72149a25ae5eb8cf78ac4
       id: 2632074263
@@ -438,6 +651,29 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: Knife_Draw
+      guid: b52d9dc42e9545439a658139bbae1d17
+      id: 3526212285
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Knife
+        ObjectType: 4
+        guid: 7af1eadfbd5d7443958e3b6d5f86d67d
+      - ElementName: Knife_Draw
+        ObjectType: 3
+        guid: b52d9dc42e9545439a658139bbae1d17
+      Path: Events\Default Work Unit\Stuff\Knife\Knife_Draw
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
     - name: Knife_Swing
       guid: 1167a8f4d691b94ba23842df48dba6b3
       id: 3430418271
@@ -499,26 +735,6 @@ MonoBehaviour:
       maxDuration: -1
       minDuration: -1
     - name: Miss
-      guid: 67f25658d5142147ae79e516e88ffa3f
-      id: 3062523241
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Hit
-        ObjectType: 4
-        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
-      - ElementName: Miss
-        ObjectType: 4
-        guid: 67f25658d5142147ae79e516e88ffa3f
-      Path: Events\Default Work Unit\Hit\Miss
-      maxAttenuation: 150
-      maxDuration: 1.6925397
-      minDuration: 0.76970524
-    - name: Miss
       guid: b6a11cb79fc954428527a1aeaa5a936c
       id: 3062523241
       PathAndIcons:
@@ -538,9 +754,69 @@ MonoBehaviour:
         ObjectType: 3
         guid: b6a11cb79fc954428527a1aeaa5a936c
       Path: Events\Default Work Unit\Hit\Miss\Miss
+      maxAttenuation: 150
+      maxDuration: 1.6925397
+      minDuration: 0.76970524
+    - name: Miss
+      guid: 67f25658d5142147ae79e516e88ffa3f
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      Path: Events\Default Work Unit\Hit\Miss
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: Musics
+      guid: 86eab33a5887404b8902de47d35940e6
+      id: 1730564753
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      Path: Events\Default Work Unit\Musics
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Native_BuyPhase
+      guid: 0e1af4ccf3ce404d80e4c9834cd69093
+      id: 298712718
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: Buy Phase
+        ObjectType: 4
+        guid: 82f251fc23828242b1df6b68461f067b
+      - ElementName: Native_BuyPhase
+        ObjectType: 3
+        guid: 0e1af4ccf3ce404d80e4c9834cd69093
+      Path: Events\Default Work Unit\Musics\Buy Phase\Native_BuyPhase
+      maxAttenuation: 0
+      maxDuration: 20.839773
+      minDuration: 20.839773
     - name: Near_Bullet
       guid: b2afa0342dc680418ef8c51a15c84493
       id: 2962560402
@@ -561,6 +837,23 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 0.86489797
       minDuration: 0.86489797
+    - name: New Virtual Folder
+      guid: 912f0e532357d84899b665ce5ac70d15
+      id: 3208186232
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: New Virtual Folder
+        ObjectType: 4
+        guid: 912f0e532357d84899b665ce5ac70d15
+      Path: Events\Default Work Unit\New Virtual Folder
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: No_Bullet
       guid: 4670e409b9c0a244914dc4b3324edf42
       id: 3728918479
@@ -891,6 +1184,29 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 2.970771
       minDuration: 2.970771
+    - name: Smoke
+      guid: 95cd4a97a280cc4bbe554f06f0346fcd
+      id: 1359218976
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Stuff
+        ObjectType: 4
+        guid: 92a464832e1fee42bc8a9fc8ed7aa103
+      - ElementName: Grenades
+        ObjectType: 4
+        guid: fd282cdfc0f531438463f904f862e20e
+      - ElementName: Smoke
+        ObjectType: 3
+        guid: 95cd4a97a280cc4bbe554f06f0346fcd
+      Path: Events\Default Work Unit\Stuff\Grenades\Smoke
+      maxAttenuation: 150
+      maxDuration: 10.292994
+      minDuration: 10.292994
     - name: Sniper
       guid: 51a5568df7765a42bce0a5d108fe779c
       id: 2550763292
@@ -994,23 +1310,6 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
-    - name: Tom_Musics
-      guid: 86eab33a5887404b8902de47d35940e6
-      id: 756763670
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Tom_Musics
-        ObjectType: 4
-        guid: 86eab33a5887404b8902de47d35940e6
-      Path: Events\Default Work Unit\Tom_Musics
-      maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
     - name: UI
       guid: 6760bcf681159f4d9d7d162d41a0c076
       id: 1551306167
@@ -1039,7 +1338,7 @@ MonoBehaviour:
     ParentPath: Events\MainMenu
     guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
     GuidInternal: 
-    m_lastTime: -8584549672315790036
+    m_lastTime: -8584539404962982661
     List:
     - name: CS_Like_Main_Title_Loop
       guid: f5a8660a87212443a57b5fb3c3f3d40c
@@ -1160,6 +1459,796 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
+  - PhysicalPath: Events\VoiceLines Work Unit.wwu
+    PathAndIcons:
+    - ElementName: Events
+      ObjectType: 5
+      guid: 00000000000000000000000000000000
+    - ElementName: VoiceLines Work Unit
+      ObjectType: 12
+      guid: 5090bebd707741418fc3b98ea7becf02
+    ParentPath: Events\VoiceLines Work Unit
+    guid: 5090bebd707741418fc3b98ea7becf02
+    GuidInternal: 
+    m_lastTime: -8584538716094036365
+    List:
+    - name: A_under_siege
+      guid: 8a117f8a20763b4c8cc3f88946167ed1
+      id: 2712994321
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: A_under_siege
+        ObjectType: 3
+        guid: 8a117f8a20763b4c8cc3f88946167ed1
+      Path: Events\VoiceLines Work Unit\Natif\A_under_siege
+      maxAttenuation: 0
+      maxDuration: 2.0952153
+      minDuration: 1.6735828
+    - name: B_under_seige
+      guid: ae78efc4803f0944a2dfef62f0c4be28
+      id: 154822826
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: B_under_seige
+        ObjectType: 3
+        guid: ae78efc4803f0944a2dfef62f0c4be28
+      Path: Events\VoiceLines Work Unit\Natif\B_under_seige
+      maxAttenuation: 0
+      maxDuration: 2.3011565
+      minDuration: 1.4643764
+    - name: blasphemous_ahead
+      guid: ffb76b28997beb4b83f7edaf8e54f893
+      id: 1242455402
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: blasphemous_ahead
+        ObjectType: 3
+        guid: ffb76b28997beb4b83f7edaf8e54f893
+      Path: Events\VoiceLines Work Unit\Natif\blasphemous_ahead
+      maxAttenuation: 0
+      maxDuration: 1.8770522
+      minDuration: 1.6685034
+    - name: clear_for_now
+      guid: 52330beca1382646bc86768503b478a0
+      id: 199080381
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: clear_for_now
+        ObjectType: 3
+        guid: 52330beca1382646bc86768503b478a0
+      Path: Events\VoiceLines Work Unit\Natif\clear_for_now
+      maxAttenuation: 0
+      maxDuration: 1.8799093
+      minDuration: 1.7754875
+    - name: corpo_dies
+      guid: 0b2fca71e00dc84e91fca27f20c14966
+      id: 2606506286
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: corpo_dies
+        ObjectType: 3
+        guid: 0b2fca71e00dc84e91fca27f20c14966
+      Path: Events\VoiceLines Work Unit\Natif\corpo_dies
+      maxAttenuation: 0
+      maxDuration: 3.0587075
+      minDuration: 2.6508844
+    - name: corpo_killed
+      guid: a0e3bf0f735bed4ea9e33b827f74d99c
+      id: 2907384284
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: corpo_killed
+        ObjectType: 3
+        guid: a0e3bf0f735bed4ea9e33b827f74d99c
+      Path: Events\VoiceLines Work Unit\Natif\corpo_killed
+      maxAttenuation: 0
+      maxDuration: 2.8731294
+      minDuration: 1.8472562
+    - name: cut_retreat
+      guid: c84da4cf784c6a4ea9ef990f943557b5
+      id: 3713787143
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: cut_retreat
+        ObjectType: 3
+        guid: c84da4cf784c6a4ea9ef990f943557b5
+      Path: Events\VoiceLines Work Unit\Natif\cut_retreat
+      maxAttenuation: 0
+      maxDuration: 1.8597279
+      minDuration: 1.4464626
+    - name: dead_one
+      guid: 7311dfa138fb3f46a1c96afd86ede71e
+      id: 1848201790
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: dead_one
+        ObjectType: 3
+        guid: 7311dfa138fb3f46a1c96afd86ede71e
+      Path: Events\VoiceLines Work Unit\Natif\dead_one
+      maxAttenuation: 0
+      maxDuration: 2.2908843
+      minDuration: 1.9785033
+    - name: forward_cover
+      guid: 9eb42d0be22e624a8406ac5977b40d83
+      id: 2550757004
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: forward_cover
+        ObjectType: 3
+        guid: 9eb42d0be22e624a8406ac5977b40d83
+      Path: Events\VoiceLines Work Unit\Natif\forward_cover
+      maxAttenuation: 0
+      maxDuration: 2.4755783
+      minDuration: 2.2692971
+    - name: ground_help
+      guid: 8591734404aee74c9428c88c7f661043
+      id: 539155014
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: ground_help
+        ObjectType: 3
+        guid: 8591734404aee74c9428c88c7f661043
+      Path: Events\VoiceLines Work Unit\Natif\ground_help
+      maxAttenuation: 0
+      maxDuration: 3.6773922
+      minDuration: 2.8547845
+    - name: harvester_defused
+      guid: 427f218a1c4c204291e652ba52dd3ea8
+      id: 3131898918
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: harvester_defused
+        ObjectType: 3
+        guid: 427f218a1c4c204291e652ba52dd3ea8
+      Path: Events\VoiceLines Work Unit\Natif\harvester_defused
+      maxAttenuation: 0
+      maxDuration: 2.4863038
+      minDuration: 2.0719275
+    - name: harvester_plant
+      guid: c78d659e0b0d9045b5073515e78b5b8b
+      id: 3382952939
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: harvester_plant
+        ObjectType: 3
+        guid: c78d659e0b0d9045b5073515e78b5b8b
+      Path: Events\VoiceLines Work Unit\Natif\harvester_plant
+      maxAttenuation: 0
+      maxDuration: 1.968322
+      minDuration: 1.3467574
+    - name: HERETIC
+      guid: 5060b9f26eb9314daf2124d4e041a6be
+      id: 3254572857
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: HERETIC
+        ObjectType: 3
+        guid: 5060b9f26eb9314daf2124d4e041a6be
+      Path: Events\VoiceLines Work Unit\Natif\HERETIC
+      maxAttenuation: 0
+      maxDuration: 2.811542
+      minDuration: 1.7727891
+    - name: heretic_gathering
+      guid: 0e9a39fcf737f640b56a0e967d86a8ca
+      id: 925603791
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: heretic_gathering
+        ObjectType: 3
+        guid: 0e9a39fcf737f640b56a0e967d86a8ca
+      Path: Events\VoiceLines Work Unit\Natif\heretic_gathering
+      maxAttenuation: 0
+      maxDuration: 2.0856235
+      minDuration: 1.7737415
+    - name: Hold_your_ground_A
+      guid: 70ee04b6048d914ca3b5c12b310ebdef
+      id: 3043506290
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: Hold_your_ground_A
+        ObjectType: 3
+        guid: 70ee04b6048d914ca3b5c12b310ebdef
+      Path: Events\VoiceLines Work Unit\Natif\Hold_your_ground_A
+      maxAttenuation: 0
+      maxDuration: 1.725873
+      minDuration: 1.6212698
+    - name: Hold_your_ground_B
+      guid: 144ca869b449384aaa4de3bbc8e01e48
+      id: 3043506289
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: Hold_your_ground_B
+        ObjectType: 3
+        guid: 144ca869b449384aaa4de3bbc8e01e48
+      Path: Events\VoiceLines Work Unit\Natif\Hold_your_ground_B
+      maxAttenuation: 0
+      maxDuration: 1.9873697
+      minDuration: 1.6212698
+    - name: I_see_movement
+      guid: 585834245267684bbea2e3157b56773d
+      id: 658043218
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: I_see_movement
+        ObjectType: 3
+        guid: 585834245267684bbea2e3157b56773d
+      Path: Events\VoiceLines Work Unit\Natif\I_see_movement
+      maxAttenuation: 0
+      maxDuration: 3.8761225
+      minDuration: 1.2571201
+    - name: inside_gas
+      guid: 5fe4663e8bb31b468c54e3cb99f50bd5
+      id: 2201005391
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: inside_gas
+        ObjectType: 3
+        guid: 5fe4663e8bb31b468c54e3cb99f50bd5
+      Path: Events\VoiceLines Work Unit\Natif\inside_gas
+      maxAttenuation: 0
+      maxDuration: 3.6565533
+      minDuration: 3.6565533
+    - name: machine_broken
+      guid: ae2f1be016db49478ec1a9180ef9c05a
+      id: 3445137252
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: machine_broken
+        ObjectType: 3
+        guid: ae2f1be016db49478ec1a9180ef9c05a
+      Path: Events\VoiceLines Work Unit\Natif\machine_broken
+      maxAttenuation: 0
+      maxDuration: 2.0780725
+      minDuration: 1.8702494
+    - name: Natif
+      guid: 9a8ac8476e872b41a9571c55acde58b7
+      id: 3695231755
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      Path: Events\VoiceLines Work Unit\Natif
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: one_falls
+      guid: 091be9c029b903448172b14fd12fc1d3
+      id: 1421935024
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: one_falls
+        ObjectType: 3
+        guid: 091be9c029b903448172b14fd12fc1d3
+      Path: Events\VoiceLines Work Unit\Natif\one_falls
+      maxAttenuation: 0
+      maxDuration: 2.4991384
+      minDuration: 2.0826304
+    - name: path_clears
+      guid: fdeaf27ee6ea564b88cad07ca8a20ba8
+      id: 4283776977
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: path_clears
+        ObjectType: 3
+        guid: fdeaf27ee6ea564b88cad07ca8a20ba8
+      Path: Events\VoiceLines Work Unit\Natif\path_clears
+      maxAttenuation: 0
+      maxDuration: 1.3485941
+      minDuration: 1.2448527
+    - name: regroup
+      guid: 0cdd67afb95777439075bcfb4689f19f
+      id: 2072703347
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: regroup
+        ObjectType: 3
+        guid: 0cdd67afb95777439075bcfb4689f19f
+      Path: Events\VoiceLines Work Unit\Natif\regroup
+      maxAttenuation: 0
+      maxDuration: 1.6531066
+      minDuration: 1.4464626
+    - name: smoke_bliended
+      guid: 67c4b0d70c2a3f4fb6de6589c56ef325
+      id: 2121643326
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: smoke_bliended
+        ObjectType: 3
+        guid: 67c4b0d70c2a3f4fb6de6589c56ef325
+      Path: Events\VoiceLines Work Unit\Natif\smoke_bliended
+      maxAttenuation: 0
+      maxDuration: 2.6729932
+      minDuration: 1.6449434
+    - name: sniper
+      guid: fa0e6500533d5540b3e60015bb43ffb3
+      id: 2550763292
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: sniper
+        ObjectType: 3
+        guid: fa0e6500533d5540b3e60015bb43ffb3
+      Path: Events\VoiceLines Work Unit\Natif\sniper
+      maxAttenuation: 0
+      maxDuration: 2.1785035
+      minDuration: 1.76356
+    - name: split_strike
+      guid: 36504f6ae2875b4fa59846fe8c881746
+      id: 1275552404
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: split_strike
+        ObjectType: 3
+        guid: 36504f6ae2875b4fa59846fe8c881746
+      Path: Events\VoiceLines Work Unit\Natif\split_strike
+      maxAttenuation: 0
+      maxDuration: 2.1726985
+      minDuration: 1.9657823
+    - name: stay_patient
+      guid: e7b6fc389318734ab35124c9a9864cc2
+      id: 4176632124
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: stay_patient
+        ObjectType: 3
+        guid: e7b6fc389318734ab35124c9a9864cc2
+      Path: Events\VoiceLines Work Unit\Natif\stay_patient
+      maxAttenuation: 0
+      maxDuration: 3.7246485
+      minDuration: 2.6862812
+    - name: take_weapon
+      guid: eabe563bac269c45903f2984d99272b0
+      id: 3095820231
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: take_weapon
+        ObjectType: 3
+        guid: eabe563bac269c45903f2984d99272b0
+      Path: Events\VoiceLines Work Unit\Natif\take_weapon
+      maxAttenuation: 0
+      maxDuration: 3.268798
+      minDuration: 2.8601813
+    - name: the_wind_carries
+      guid: b27c0363bb97994d97a3605ac15b1a05
+      id: 2536847095
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: the_wind_carries
+        ObjectType: 3
+        guid: b27c0363bb97994d97a3605ac15b1a05
+      Path: Events\VoiceLines Work Unit\Natif\the_wind_carries
+      maxAttenuation: 0
+      maxDuration: 2.349864
+      minDuration: 1.9843538
+    - name: they_rush
+      guid: f475e67ac60e0140a39c52c5101c2a84
+      id: 2675578812
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: they_rush
+        ObjectType: 3
+        guid: f475e67ac60e0140a39c52c5101c2a84
+      Path: Events\VoiceLines Work Unit\Natif\they_rush
+      maxAttenuation: 0
+      maxDuration: 2.8734694
+      minDuration: 2.6729932
+    - name: theyre_coming
+      guid: 6cbd653d12ccd94f9502e648b183672f
+      id: 3995945122
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: theyre_coming
+        ObjectType: 3
+        guid: 6cbd653d12ccd94f9502e648b183672f
+      Path: Events\VoiceLines Work Unit\Natif\theyre_coming
+      maxAttenuation: 0
+      maxDuration: 2.3047392
+      minDuration: 1.466644
+    - name: throwing_flash
+      guid: f64262e1d0e80649b52a3a46ba8f41bc
+      id: 1781840702
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: throwing_flash
+        ObjectType: 3
+        guid: f64262e1d0e80649b52a3a46ba8f41bc
+      Path: Events\VoiceLines Work Unit\Natif\throwing_flash
+      maxAttenuation: 0
+      maxDuration: 2.059365
+      minDuration: 1.4523356
+    - name: throwing_smoke
+      guid: 5ddacf405321f94fad35c9c44ae4cba1
+      id: 3127593203
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: throwing_smoke
+        ObjectType: 3
+        guid: 5ddacf405321f94fad35c9c44ae4cba1
+      Path: Events\VoiceLines Work Unit\Natif\throwing_smoke
+      maxAttenuation: 0
+      maxDuration: 2.1755102
+      minDuration: 1.3467574
+    - name: together_we_push
+      guid: 24fd9610e3af514fa6e23a228c7235fd
+      id: 3490572673
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: together_we_push
+        ObjectType: 3
+        guid: 24fd9610e3af514fa6e23a228c7235fd
+      Path: Events\VoiceLines Work Unit\Natif\together_we_push
+      maxAttenuation: 0
+      maxDuration: 2.8649433
+      minDuration: 2.455669
+    - name: too_many
+      guid: ecb1fd1d9219594ab18f8f7d66724045
+      id: 1605848557
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: too_many
+        ObjectType: 3
+        guid: ecb1fd1d9219594ab18f8f7d66724045
+      Path: Events\VoiceLines Work Unit\Natif\too_many
+      maxAttenuation: 0
+      maxDuration: 1.8534241
+      minDuration: 1.6449434
+    - name: war_not_over
+      guid: 6624bee15fe9c44bb86acc4f09029589
+      id: 209399956
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: war_not_over
+        ObjectType: 3
+        guid: 6624bee15fe9c44bb86acc4f09029589
+      Path: Events\VoiceLines Work Unit\Natif\war_not_over
+      maxAttenuation: 0
+      maxDuration: 3.867551
+      minDuration: 3.0533333
+    - name: watch_flank
+      guid: 02052ec998bb894a90144de03e6cc353
+      id: 316685025
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: watch_flank
+        ObjectType: 3
+        guid: 02052ec998bb894a90144de03e6cc353
+      Path: Events\VoiceLines Work Unit\Natif\watch_flank
+      maxAttenuation: 0
+      maxDuration: 1.2398412
+      minDuration: 1.0331973
+    - name: we_stand
+      guid: b2327fa354c8f94ab3f8231ad920566b
+      id: 16774024
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: we_stand
+        ObjectType: 3
+        guid: b2327fa354c8f94ab3f8231ad920566b
+      Path: Events\VoiceLines Work Unit\Natif\we_stand
+      maxAttenuation: 0
+      maxDuration: 2.2537868
+      minDuration: 2.048889
+    - name: will
+      guid: 0a786f17edce9d4d80bddf5073d5f74f
+      id: 1570616273
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Natif
+        ObjectType: 4
+        guid: 9a8ac8476e872b41a9571c55acde58b7
+      - ElementName: will
+        ObjectType: 3
+        guid: 0a786f17edce9d4d80bddf5073d5f74f
+      Path: Events\VoiceLines Work Unit\Natif\will
+      maxAttenuation: 0
+      maxDuration: 3.2209978
+      minDuration: 2.7019274
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:
@@ -1172,7 +2261,7 @@ MonoBehaviour:
     ParentPath: Game Parameters\Default Work Unit
     guid: 68c92b51ba44254fa885c7d3ea087ecf
     GuidInternal: 
-    m_lastTime: -8584549672315774979
+    m_lastTime: -8584548319696845149
     List:
     - name: Volume
       guid: ebf286ad7c0fe14e91c388db707e5572
@@ -1231,7 +2320,7 @@ MonoBehaviour:
     m_lastTime: -8584549679374128891
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 05000000060000000c000000190000001a00000023000000240000002600000030000000
+  ExpandedWaapiItemIds: 050000000c0000000e000000190000001a0000001b0000001e0000001f000000230000002400000026000000270000002800000030000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0
