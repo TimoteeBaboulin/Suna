@@ -30,6 +30,8 @@ public partial struct TeamChoiceSystemClient : ISystem
     }
     public void OnUpdate(ref SystemState state)
     {
+        EntityCommandBuffer ecb = new EntityCommandBuffer(Allocator.TempJob);
+
         foreach (var (client, choiceTeam, clientEntity) in
         SystemAPI.Query<ClientComponent, RefRO<TeamChoiceComponent>>()
         .WithEntityAccess())
@@ -52,7 +54,10 @@ public partial struct TeamChoiceSystemClient : ISystem
             rpc.team = choiceTeam.ValueRO.team;
             RpcUtils.SendClientToServerRpc(ref rpc);
 
-            state.EntityManager.RemoveComponent<TeamChoiceComponent>(clientEntity);
+            ecb.RemoveComponent<TeamChoiceComponent>(clientEntity);
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }
