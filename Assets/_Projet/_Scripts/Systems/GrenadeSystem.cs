@@ -393,7 +393,6 @@ public partial class GrenadeSystem : SystemBase
 
                                 Entity damageSource = commandBuffer.CreateEntity();
                                 commandBuffer.SetName(damageSource, "Damage Source");
-
                                 commandBuffer.AddComponent(damageSource, new ApplyDamage
                                 {
                                     source = DamageSource.Gas,
