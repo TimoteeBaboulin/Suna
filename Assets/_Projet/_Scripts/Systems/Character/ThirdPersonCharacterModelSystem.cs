@@ -77,7 +77,7 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
         foreach (var (modelPrefab, commonBonesName, ghostOwner, characterEntity) in SystemAPI
             .Query<ThirdPersonCharacterModelPrefab, RefRO<CommonCharacterModelBonesName>, RefRO<GhostOwner>>()
-            .WithNone<ThirdPersonCharacterModelReference>()
+            .WithNone<ThirdPersonCharacterModelReference, GhostOwnerIsLocal>()
             .WithEntityAccess())
         {
             TeamSideType teamSide;
@@ -139,19 +139,13 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
                 modelPrefab.NatifColliderBones, teamSide, characterEntity, ecb);
         }
 
-        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, commonBones, characterEntity) in SystemAPI
-            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>,
-            CommonCharacterModelBonesTransform>()
+        foreach (var (characterTransform, modelReference, localViewRotation, commonBonesName, characterEntity) in SystemAPI
+            .Query<RefRO<LocalTransform>, ThirdPersonCharacterModelReference, RefRO<CharacterViewRotation>, RefRO<CommonCharacterModelBonesName>>()
             .WithEntityAccess())
         {
             if (!state.EntityManager.IsComponentEnabled<CharacterIsEnable>(characterEntity))
             {
-                CommonCharacterModelUtils.SetCommonModelBonesComponent(modelReference.ModelGameObject.transform, commonBonesName, characterEntity, ecb);
-
-                Animator animator = CommonCharacterModelUtils.GetAnimator(modelReference.ModelGameObject);
-                AnimationUtils.SetAnimator(animator, characterEntity, ecb, state.EntityManager);
-
-                modelReference.ModelGameObject.SetActive(true);
+                modelReference.ModelGameObject.SetActive(false);
             }
             else
             {

@@ -116,12 +116,6 @@ public class HUDController : MonoBehaviour
     private VisualElement _minimapMapElement;
     private VisualElement _minimapPlayerElement;
 
-    // Damage Overlay
-    private VisualElement _damageOverlay;
-    private bool _damageOverlayActive = false;
-    private float _damageOverlayTimer = 0f;
-    private readonly float _damageOverlayTime = 0.5f;
-
     private void Awake()
     {
         // Initialize all HUD elements
@@ -144,9 +138,6 @@ public class HUDController : MonoBehaviour
         _crosshairElement = _HUD.Q("Crosshair");
         _hitMarkerElement = _crosshairElement.Q("HitMarker");
         UI.SetOpacity(ref _hitMarkerElement, 0f);
-
-        _damageOverlay = _HUD.Q("DamageOverlay");
-        UI.SetOpacity(ref _damageOverlay, 0f);
 
         _corpoScore = _HUD.Q<Label>("CorpoScore");
         _natifScore = _HUD.Q<Label>("NatifScore");
@@ -353,26 +344,6 @@ public class HUDController : MonoBehaviour
         {
             OnWinLoseRoundUpdate();
         }
-
-        if (_damageOverlayActive)
-        {
-            _damageOverlayTimer -= Time.deltaTime;
-            if (_damageOverlayTimer < 0f)
-            {
-                _damageOverlayTimer = 0f;
-            }
-
-            float t = Mathf.Clamp01(_damageOverlayTimer / _damageOverlayTime);
-
-            UI.SetOpacity(ref _damageOverlay, t);
-
-            if (_damageOverlayTimer <= 0f)
-            {
-                _damageOverlayTimer = 0f;
-                _damageOverlayActive = false;
-                UI.SetOpacity(ref _damageOverlay, 0f);
-            }
-        }
     }
 
     private void System_OnSmokeGrenade(object sender, InGameHUDSystem.SmokeGrenadeArgs e)
@@ -392,10 +363,6 @@ public class HUDController : MonoBehaviour
         {
             return;
         }
-
-        _damageOverlayActive = true;
-        _damageOverlayTimer = _damageOverlayTime;
-        UI.SetOpacity(ref _damageOverlay, 1f);
         
         DamageIndicatorElement damageIndicator = new();
         damageIndicator.transform.rotation = Quaternion.Euler(0f, 0f, args.angle);
