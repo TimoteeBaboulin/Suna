@@ -50,13 +50,7 @@ partial class ServerCharacterAnimationSystem : SystemBase
 
             Entity stuffInHand = StuffUtils.GetStuffInHand(stuffList, stuffInfo.ValueRO);
 
-            if (stuffInHand == Entity.Null)
-            {
-                if (animatorRef.Animator.runtimeAnimatorController != modelRef.AnimatorData.KnifeNeutral)
-                {
-                    animatorRef.Animator.runtimeAnimatorController = modelRef.AnimatorData.KnifeNeutral;
-                }
-            }
+            if (stuffInHand == Entity.Null) continue;
 
             if (!EntityManager.HasComponent<StuffDatabaseAccess>(stuffInHand)) continue;
 
@@ -103,21 +97,6 @@ partial class ServerCharacterAnimationSystem : SystemBase
             {
                 ecb.SetComponentEnabled<CharacterIsPlanting>(owner.ValueRO.owner, true);
                 AnimationUtils.AddBoolCommand("IsPlant", true, owner.ValueRO.owner, ecb);
-            }
-        }
-
-        foreach (var (character, entity) in SystemAPI
-            .Query<RefRO<CharacterComponent>>()
-            .WithAll<GhostOwnerIsLocal>()
-            .WithEntityAccess())
-        {
-            if (EntityManager.IsComponentEnabled<CharacterIsEnable>(entity))
-            {
-                AnimationUtils.AddBoolCommand("IsDead", false, entity, ecb);
-            }
-            else
-            {
-                AnimationUtils.AddBoolCommand("IsDead", true, entity, ecb);
             }
         }
 
