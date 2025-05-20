@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public enum GrenadeTriggerType
@@ -55,4 +56,6 @@ public class GrenadeData : ScriptableObject
     // For the proximity trigger
     public float proximityTriggerDistance = 5f;
 
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
 }

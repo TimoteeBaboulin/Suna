@@ -13,6 +13,7 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID BLOW = 1762045325U;
         static const AkUniqueID BUTTON_CLIC = 2494499361U;
         static const AkUniqueID BUTTON_RELEASE = 3732113631U;
         static const AkUniqueID BUTTON_ROLLOVER = 3644104355U;

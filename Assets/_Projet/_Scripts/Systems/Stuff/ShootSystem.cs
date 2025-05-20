@@ -316,21 +316,6 @@ public partial struct ShootSystem : ISystem
                         GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(owner);
                         ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
 
-                        //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
-                        //StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
-                        StuffUtils.Throw(ref state, linkedEntityGroup, characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
-
-                        if (characterStuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
-                        {
-                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.MainWeapon);
-                        }
-                        else
-                        {
-                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.SecondaryWeapon);
-                        }
-
-                        //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
-
                         if (state.World.IsServer())
                         {
                             //===== SOUND VOICE LINES =====
@@ -352,6 +337,26 @@ public partial struct ShootSystem : ISystem
                                     break;
                             }
                             //=============================
+                        }
+
+                        //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
+                        //StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
+                        StuffUtils.Throw(ref state, linkedEntityGroup, characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
+
+                        if (characterStuffList.ElementAt((int)StuffSlot.MainWeapon).entity != Entity.Null)
+                        {
+                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.MainWeapon);
+                        }
+                        else
+                        {
+                            StuffUtils.SwitchTo(characterStuffList, characterStuffInfos, StuffSlot.SecondaryWeapon);
+                        }
+
+                        //StuffUtils.Destroy(ref state, grenade); //Thrown Grenade will be instanciated separatly, so we can destroy the grenade entity
+
+                        if (state.World.IsServer())
+                        {
+                        
 
                             Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
                             ecb.SetName(thrownGrenade, "Thrown Grenade");

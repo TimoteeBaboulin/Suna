@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{8D5A68C2-DCBE-4E5F-A9AB-8A1FF10D5FDC}",
     "Language": "SFX",
-    "Hash": "{11D0710C-158B-5AC8-1E70-9203BEB1C313}",
+    "Hash": "{5B9F98C9-6DBD-F8E5-AAF4-98757F2CEEAD}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\VoiceLines",
     "ShortName": "VoiceLines",
     "Path": "VoiceLines.bnk",
@@ -334,6 +334,7 @@
       "Name": "harvester_defused",
       "ObjectPath": "\\Events\\VoiceLines Work Unit\\Natif\\harvester_defused",
       "GUID": "{8A217F42-4C1C-4220-91E6-52BA52DD3EA8}",
+      "MaxAttenuation": "150",
       "DurationType": "OneShot",
       "DurationMin": "2.0719275",
       "DurationMax": "2.4863038",
@@ -374,6 +375,7 @@
       "Name": "kill_event",
       "ObjectPath": "\\Events\\VoiceLines Work Unit\\Natif\\kill_event",
       "GUID": "{0F354B60-DCF1-4D3F-810D-FF78ED03FD79}",
+      "MaxAttenuation": "150",
       "DurationType": "OneShot",
       "DurationMin": "1.2448527",
       "DurationMax": "3.2209978",
@@ -457,6 +459,7 @@
       "Name": "throwing_flash",
       "ObjectPath": "\\Events\\VoiceLines Work Unit\\Natif\\throwing_flash",
       "GUID": "{E16242F6-E8D0-4906-B52A-3A46BA8F41BC}",
+      "MaxAttenuation": "150",
       "DurationType": "OneShot",
       "DurationMin": "1.4523356",
       "DurationMax": "2.059365",
@@ -486,6 +489,7 @@
       "Name": "throwing_smoke",
       "ObjectPath": "\\Events\\VoiceLines Work Unit\\Natif\\throwing_smoke",
       "GUID": "{40CFDA5D-2153-4FF9-AD35-C9C44AE4CBA1}",
+      "MaxAttenuation": "150",
       "DurationType": "OneShot",
       "DurationMin": "1.3467574",
       "DurationMax": "2.1755102",
@@ -504,6 +508,6 @@
     ]
    }
   ],
-  "FileHash": "{27B31F85-C92C-3179-9362-51FBC03421AC}"
+  "FileHash": "{B1107AE5-A53E-6225-8329-61824520F23B}"
  }
 }

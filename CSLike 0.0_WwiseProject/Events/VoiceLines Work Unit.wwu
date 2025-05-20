@@ -47,48 +47,6 @@
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="clear_for_now" ID="{EC0B3352-38A1-4626-BC86-768503B478A0}">
-							<PropertyList>
-								<Property Name="Inclusion" Type="bool" Value="False"/>
-							</PropertyList>
-							<ChildrenList>
-								<Action Name="" ID="{8930E665-DA6E-4C56-90BC-D451A07B7016}" ShortID="782988504">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="clear_for_now" ID="{8E866655-2A2A-4C1D-AD2F-E7082606D21A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="corpo_dies" ID="{71CA2F0B-0DE0-4EC8-91FC-A27F20C14966}">
-							<PropertyList>
-								<Property Name="Inclusion" Type="bool" Value="False"/>
-							</PropertyList>
-							<ChildrenList>
-								<Action Name="" ID="{CFC27748-2BF9-45AD-9C22-0E0D7272E5FA}" ShortID="982929340">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="corpo_dies" ID="{40AEA6C8-B51C-4F5F-A1B9-7D5FAF844E7C}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="corpo_killed" ID="{0FBFE3A0-5B73-4EED-A9E3-3B827F74D99C}">
-							<PropertyList>
-								<Property Name="Inclusion" Type="bool" Value="False"/>
-							</PropertyList>
-							<ChildrenList>
-								<Action Name="" ID="{67028002-A31F-4A95-B776-AD8B83B4DEF8}" ShortID="364432376">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="corpo_killed" ID="{E3D991D9-5F0A-4B7C-BA48-E45224660B85}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Event Name="cut_retreat" ID="{CFA44DC8-4C78-4E6A-A9EF-990F943557B5}">
 							<PropertyList>
 								<Property Name="Inclusion" Type="bool" Value="False"/>
@@ -98,20 +56,6 @@
 									<ReferenceList>
 										<Reference Name="Target">
 											<ObjectRef Name="cut_retreat" ID="{5B9F0E89-A78C-47DB-B869-42740E1081FD}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="dead_one" ID="{A1DF1173-FB38-463F-A1C9-6AFD86EDE71E}">
-							<PropertyList>
-								<Property Name="Inclusion" Type="bool" Value="False"/>
-							</PropertyList>
-							<ChildrenList>
-								<Action Name="" ID="{6BBCB804-D5BC-45E8-B2D1-854E5A3B48A0}" ShortID="174898351">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="dead_one" ID="{5FC06FDD-68E2-40F0-B1B7-729EFE7B1A68}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -232,39 +176,6 @@
 									<ReferenceList>
 										<Reference Name="Target">
 											<ObjectRef Name="I_see_movement" ID="{EDD2F827-728C-43EC-97FC-2A3D1D1C0C1F}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="machine_broken" ID="{E01B2FAE-DB16-4749-8EC1-A9180EF9C05A}">
-							<ChildrenList>
-								<Action Name="" ID="{E024F429-3B33-4BC8-AE46-98B0E7DBF305}" ShortID="1062425050">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="machine_broken" ID="{6DE1C362-08B1-480D-B986-874B391B31CE}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="one_falls" ID="{C0E91B09-B929-4403-8172-B14FD12FC1D3}">
-							<ChildrenList>
-								<Action Name="" ID="{90C4E440-1F5E-4BC6-A30A-1EC78D0D7073}" ShortID="1005564545">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="one_falls" ID="{9B5E7A1E-1FE1-4205-B66B-91FE10B1ADD4}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="path_clears" ID="{7EF2EAFD-EAE6-4B56-88CA-D07CA8A20BA8}">
-							<ChildrenList>
-								<Action Name="" ID="{D667BFCE-B657-45B1-B302-265C48C8D14F}" ShortID="560414693">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="path_clears" ID="{7CD690BF-E8DF-4CA5-8A83-6DA493B396C9}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -488,17 +399,6 @@
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="will" ID="{176F780A-CEED-4D9D-80BD-DF5073D5F74F}">
-							<ChildrenList>
-								<Action Name="" ID="{DD30FB72-D23A-47CA-9B25-202484960CDF}" ShortID="801488959">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="will" ID="{D590B530-4209-41C6-BE2C-0132888665D4}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Event Name="inside_gas" ID="{3E66E45F-B38B-461B-8C54-E3CB99F50BD5}">
 							<PropertyList>
 								<Property Name="Inclusion" Type="bool" Value="False"/>
@@ -508,6 +408,17 @@
 									<ReferenceList>
 										<Reference Name="Target">
 											<ObjectRef Name="inside_gas" ID="{A7C12504-58C4-42FE-B1F6-3AF70713FF94}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="kill_event" ID="{0F354B60-DCF1-4D3F-810D-FF78ED03FD79}">
+							<ChildrenList>
+								<Action Name="" ID="{57C988EB-4C28-4595-B64D-1E26385D916D}" ShortID="513555762">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="kill" ID="{7BA264AE-8738-4098-89DB-8BFCEE7F65D8}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>

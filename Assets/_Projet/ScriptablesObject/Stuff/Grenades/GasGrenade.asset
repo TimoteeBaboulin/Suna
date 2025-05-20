@@ -35,3 +35,9 @@ MonoBehaviour:
   stillTriggerDelay: 0.8
   bounceTriggerCount: 3
   proximityTriggerDistance: 5
+  soundList:
+  - keyAction: Blow
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 66a943a7b26abd346891525fb2fa7f62, type: 2}

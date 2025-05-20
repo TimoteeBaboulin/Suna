@@ -237,6 +237,7 @@ partial class HarvesterSystemClient : SystemBase
         StuffGameObjectRef goRef = World.EntityManager.GetComponentObject<StuffGameObjectRef>(harvesterEntity);
         goRef.View.GetComponent<HarvesterVfxLink>().Stop();
         goRef.View_Baked.GetComponent<HarvesterVfxLink>().Stop();
+        SoundManager.Instance.Play("Natif", "harvester_defused", goRef.View.transform.position);
 
         //Debug.Log("[Harvester] Client received defuse rpc");
     }
