@@ -6,6 +6,7 @@ using Unity.NetCode;
 using Unity.Physics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
+using UnityEngine.Rendering;
 
 public enum GrenadeVFXType
 {
@@ -21,6 +22,32 @@ public struct GrenadeVFXCommand : IRpcCommand
     public GrenadeVFXType type;
 }
 
+public partial class GrenadeSmokeFade : SystemBase
+{
+    protected override void OnCreate()
+    {
+        RequireForUpdate<SmokeGrenadeEffect>();
+    }
+
+    protected override void OnUpdate()
+    {
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (smokeEffect, entity) in SystemAPI.Query<RefRW<SmokeGrenadeEffect>>().WithEntityAccess())
+        {
+            if (smokeEffect.ValueRO.intensity <= 0f)
+            {
+                continue;
+            }
+
+            UnityEngine.Debug.Log($"Smoke effect intensity: {smokeEffect.ValueRW.intensity}");
+            smokeEffect.ValueRW.intensity -= SystemAPI.Time.DeltaTime * 0.8f;
+        }
+
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
+    }
+}
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
