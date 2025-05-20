@@ -118,10 +118,10 @@ public partial struct ShootSystem : ISystem
                                 float2 recoil = default;
                                 float2 visualRecoil = default;
 
-                                if (stuffCommonData.Name.ToString() == "SKAR-18")
+                                if (stuffCommonData.Name.ToString() == "SKAR18" || stuffCommonData.Name.ToString() == "Decimator")
                                 {
-                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
+                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 5 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 6f;
                                 }
                                 else if (stuffCommonData.Name.ToString() == "Banduka")
                                 {

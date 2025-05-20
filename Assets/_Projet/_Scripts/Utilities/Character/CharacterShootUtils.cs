@@ -5,25 +5,31 @@ public class CharacterShootUtils
 {
     public static float2 SKAR18Pattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 1f, in float targetDistance = 0f)
     {
+        if(bulletIndex == 0) return new float2(0.0f, 0.0f);
+
         float y = 0;
-        if(bulletIndex < 3) 
-            y = math.log2(bulletIndex + 1) * 0.2f;
+        if (bulletIndex < 10)
+            y = 0.25f * bulletIndex;
+        else if (bulletIndex < 20)
+            y = 2.5f - (bulletIndex - 10) * 0.05f;
         else
-            y = 0.3f + (bulletIndex - 2) * 0.4f;
+            y = 2f - 0.1f * (bulletIndex - 20);
 
         float x = 0;
-        if (bulletIndex < 8)
-            x = -math.log2(bulletIndex + 1) * 0.1f;
-        else if (bulletIndex < 12)
-            x = -math.log2(8) * 0.1f;
-        else if(bulletIndex < 21)
-            x = -math.log2(8) * 0.1f + math.log2(bulletIndex - 11) * 0.3f;
+        if (bulletIndex < 10)
+            x = -math.log2(bulletIndex) / 22.5f;
+        else if (bulletIndex < 18)
+            x = -0.2f * (bulletIndex - 9);
+        else if (bulletIndex < 26)
+            x = -0.2f * (17 - 9) + 0.3f * (bulletIndex - 17);
         else
-            x = -math.log2(8) * 0.1f + math.log2(bulletIndex - 11) * 0.3f - math.log2(bulletIndex - 20) * .5f;
+            x = math.sin(bulletIndex) * 0.1f;
 
         // Amplifying the effect
-        x *= 100;
-        y *= 50;
+        x *= 180;
+        y *= 110;
+
+        UnityEngine.Debug.Log($"SKAR18Pattern: {bulletIndex} : {x};{y}");
 
         float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
         float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);
