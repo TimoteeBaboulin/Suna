@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2642215316524588410}
   - component: {fileID: 879477122032621473}
   - component: {fileID: 1770968620400763954}
-  - component: {fileID: 6461208371077268186}
+  - component: {fileID: 3642552422161623342}
   m_Layer: 0
   m_Name: HUD
   m_TagString: Untagged
@@ -86,7 +86,7 @@ MonoBehaviour:
   - Weapon: Flashbang
     Tex: {fileID: 2800000, guid: cda047a761f3cb64ca43b9ca54de7ed2, type: 3}
   _errorWindowPrefab: {fileID: 3370438824751177760, guid: 546334c1b568f67478ef168c24ee3a49, type: 3}
---- !u!1652712579 &6461208371077268186
+--- !u!1652712579 &3642552422161623342
 MultiplayerRolesData:
   m_ObjectHideFlags: 2
   m_CorrespondingSourceObject: {fileID: 0}
