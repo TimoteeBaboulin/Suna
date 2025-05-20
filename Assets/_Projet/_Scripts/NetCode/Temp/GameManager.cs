@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     private CancellationTokenSource loadingToken;
     private ConnectionHandlerNew connectionHandler;
 
+    private void Awake()
+    {
+        Cursor.visible = true;
+    }
     private void Start()
     {
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();

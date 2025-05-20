@@ -10,6 +10,7 @@ public class VideoPlayerSceneHandler : MonoBehaviour
 
     void Start()
     {
+        Cursor.visible = false;
         videoPlayer = GetComponent<VideoPlayer>();
 
         if (videoPlayer == null)
@@ -17,13 +18,12 @@ public class VideoPlayerSceneHandler : MonoBehaviour
             Debug.LogError("VideoPlayer component not found!");
             return;
         }
-
+        videoPlayer.audioOutputMode = VideoAudioOutputMode.None;
         videoPlayer.loopPointReached += OnVideoFinished;
     }
 
     void OnVideoFinished(VideoPlayer vp)
     {
-        Debug.LogError("in");
         LoadManager.Instance.LoadLevel(sceneToLoad);
     }
 }

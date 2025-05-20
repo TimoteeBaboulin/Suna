@@ -15,8 +15,8 @@ public class ConnectionSettings : MonoBehaviour
 {
     public enum SceneIDToLoad
     {
-        MultiplayerTest = 1,
-        GameplayTestScene = 2,
+        MultiplayerTest = 2,
+        GameplayTestScene = 3,
     }
 
     [Serializable]

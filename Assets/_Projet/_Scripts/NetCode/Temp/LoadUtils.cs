@@ -225,7 +225,10 @@ namespace GameNetwork.Utils
             //if (requestedDisconnect)
             //    await Awaitable.NextFrameAsync();
 
-            await LeaveSessionAsync();
+            if (ClientTransportHelper.instance.Session != null)
+            {
+                await LeaveSessionAsync();
+            }
             await DestroyGameSessionWorlds();
             await UnloadScenesAsync("MultiplayerTest");
         }
@@ -246,8 +249,8 @@ namespace GameNetwork.Utils
                 }
             }
 
-            await LeaveSessionAsync();               
-            await DestroyGameSessionWorlds();        
+            await LeaveSessionAsync();
+            await DestroyGameSessionWorlds();
         }
 
         public static Task QuitAsync() => DisconnectAndUnloadWorlds();
@@ -321,7 +324,7 @@ namespace GameNetwork.Utils
             try
             {
                 Process.Start(exePath);
-                Application.Quit(); 
+                Application.Quit();
             }
             catch (System.Exception ex)
             {

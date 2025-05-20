@@ -99,13 +99,6 @@ public partial class ServerSystem : SystemBase
             commandBuffer.DestroyEntity(rpcEntity);
         }
 
-        foreach (var (id, entity) in SystemAPI
-            .Query<RefRO<ClientComponent>>()
-            .WithEntityAccess())
-        {
-            Debug.Log($"[name] Server Player '{id.ValueRO.networkID}' name is {id.ValueRO.name}");
-        }
-
         commandBuffer.Playback(EntityManager);
         commandBuffer.Dispose();
     }
