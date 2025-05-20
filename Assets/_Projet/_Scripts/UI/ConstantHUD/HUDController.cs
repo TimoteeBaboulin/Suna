@@ -751,11 +751,7 @@ public class HUDController : MonoBehaviour
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
-        _armor.text = args.armorLevel.ToString();
-    }
-    private void System_OnArmorChange(object sender, EventArgs args)
-    {
-        //armor.text = args.Armor.ToString();
+        _armor.text = math.round(args.armorLevel / 2f).ToString();
     }
     private void System_OnAmmoChange(object sender, InGameHUDSystem.AmmoArgs args)
     {
