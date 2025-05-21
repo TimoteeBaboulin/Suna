@@ -192,4 +192,14 @@ public class UIDocumentUtils
             _ => FontStyle.Normal
         };
     }
+
+    static public void SetChildrenActive<T>(ref T element, bool value) where T : VisualElement
+    {
+        foreach (var child in element.Children())
+        {
+            VisualElement childRef = child;
+            SetActive(ref childRef, value);
+        }
+    }
+    
 }

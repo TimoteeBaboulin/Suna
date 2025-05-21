@@ -5,63 +5,94 @@ using UnityEngine.UIElements;
 
 using UI = UIDocumentUtils;
 
-public class TeamChoiceController : MonoBehaviour
+public class TeamChoiceController : MonoBehaviour, IUIController
 {
     private VisualElement root;
     private Button corpoButton;
     private Button natifButton;
+    private Button spectatorButton;
+
+    private Label corpoNumberLabel;
+    private Label natifNumberLabel;
+
+    public UICentralController centralController { get => transform.parent.GetComponent<UICentralController>(); }
 
     private void Awake()
     {
         root = GetComponent<UIDocument>().rootVisualElement;
         corpoButton = root.Q<Button>("Corpo");
         natifButton = root.Q<Button>("Natif");
+        spectatorButton = root.Q<Button>("Spectator");
+
+        corpoNumberLabel = corpoButton.Q<Label>("TeamCount");
+        natifNumberLabel = natifButton.Q<Label>("TeamCount");
     }
 
     private void Update()
     {
-        if (Keyboard.current.commaKey.wasPressedThisFrame)
-        {
-            SetUIActive(!UI.IsActive(ref root));
-        }
+        if (!IsUIActive()) { return; }
+
+        int natifCount = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).Count;
+        int corpoCount = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).Count;
+
+        corpoNumberLabel.text = $"{corpoCount} player(s)";
+        natifNumberLabel.text = $"{natifCount} player(s)";
     }
 
     private void OnEnable()
     {
         corpoButton.RegisterCallback<ClickEvent>(OnCorpoButtonClicked);
         natifButton.RegisterCallback<ClickEvent>(OnNatifButtonClicked);
+        spectatorButton.RegisterCallback<ClickEvent>(OnSpectatorButtonClicked);
     }
 
     private void OnDisable()
     {
         corpoButton.UnregisterCallback<ClickEvent>(OnCorpoButtonClicked);
         natifButton.UnregisterCallback<ClickEvent>(OnNatifButtonClicked);
+        spectatorButton.UnregisterCallback<ClickEvent>(OnSpectatorButtonClicked);
     }
 
     private void OnCorpoButtonClicked(ClickEvent evt)
     {
         TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Corpo);
-        SetUIActive(false);
+        centralController.SetUIActive(this, false);
+        centralController.SetCursorActive(false);
+        centralController.SetInputActive(true);
+        centralController.SetUIActive(UICentralController.UIState.HUD, true);
+        UI.SetActive(ref spectatorButton, false);
     }
 
     private void OnNatifButtonClicked(ClickEvent evt)
     {
         TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Natif);
-        SetUIActive(false);
+        centralController.SetUIActive(this, false);
+        centralController.SetCursorActive(false);
+        centralController.SetInputActive(true);
+        centralController.SetUIActive(UICentralController.UIState.HUD, true);
+        UI.SetActive(ref spectatorButton, false);
     }
 
-    private void SetUIActive(bool value)
+    private void OnSpectatorButtonClicked(ClickEvent evt)
+    {
+        centralController.SetUIActive(this, false);
+        centralController.SetCursorActive(false);
+        centralController.SetInputActive(true);
+        centralController.SetUIActive(UICentralController.UIState.HUD, false);
+    }
+
+    public void SetUIActive(bool value)
     {
         UI.SetActive(ref root, value);
-        if (value)
-        {
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
-            UnityEngine.Cursor.visible = true;
-        }
-        else
-        {
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-            UnityEngine.Cursor.visible = false;
-        }
+    }
+
+    public bool IsUIActive()
+    {
+        return UI.IsActive(ref root);
+    }
+
+    public UICentralController.UIState GetUIState()
+    {
+        return UICentralController.UIState.TEAM_CHOICE;
     }
 }

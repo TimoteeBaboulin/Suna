@@ -54,14 +54,7 @@ partial class CameraSystem : SystemBase
         }
 
         TeamSideType teamSide;
-        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(clientId);
-        }
-        else
-        {
-            teamSide = PlayerHelpers.GetPlayerInTeam(clientId);
-        }
+        teamSide = PlayerHelpers.GetPlayerInTeam(clientId);
 
         if (Input.GetKeyDown(KeyCode.E) && teamSide == TeamSideType.Neutre)
         {
