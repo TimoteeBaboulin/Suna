@@ -2,7 +2,6 @@ using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static ak.wwise;
 
 public interface IUIController
 {
