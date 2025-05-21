@@ -41,11 +41,17 @@ public class UICentralController : MonoBehaviour
         SHOP = 1 << 3,
         PAUSE_MENU = 1 << 4
     }
-    private int _uiState = (int)UIState.HUD | (int)UIState.TEAM_CHOICE;
+    private int _uiState = (int)UIState.NO_STATE;
 
-    private void Awake()
+    private void Start()
     {
-        UpdateAllUI();
+        _uiState |= (int)UIState.HUD; // Initialize with HUD active
+        _uiState |= (int)UIState.TEAM_CHOICE; // Initialize with Team Choice active
+
+        SetUIActive(_hudController, true);
+        SetUIActive(_teamChoiceController, true);
+        SetUIActive(_shopController, false);
+        SetUIActive(_pauseMenuController, false);
     }
 
     private void Update()
@@ -185,14 +191,6 @@ public class UICentralController : MonoBehaviour
         {
             input.Player.Disable();
         }
-    }
-
-    public void UpdateAllUI()
-    {
-        SetUIActive(_hudController, IsUIStateActive(UIState.HUD));
-        SetUIActive(_teamChoiceController, IsUIStateActive(UIState.TEAM_CHOICE));
-        SetUIActive(_shopController, IsUIStateActive(UIState.SHOP));
-        SetUIActive(_pauseMenuController, IsUIStateActive(UIState.PAUSE_MENU));
     }
 
     public bool IsUIStateActive(UIState state)
