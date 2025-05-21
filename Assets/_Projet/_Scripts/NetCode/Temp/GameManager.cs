@@ -56,6 +56,7 @@ public class GameManager : MonoBehaviour
 #if !UNITY_EDITOR && !UNITY_SERVER
     private async void OnApplicationQuit()
     {
+    loadingToken.Cancel();
         await LoadUtils.QuitAsync();
     }
 #endif
