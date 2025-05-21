@@ -30,8 +30,6 @@ public class TeamChoiceController : MonoBehaviour, IUIController
 
     private void Update()
     {
-        if (!IsUIActive()) { return; }
-
         int natifCount = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).Count;
         int corpoCount = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).Count;
 
