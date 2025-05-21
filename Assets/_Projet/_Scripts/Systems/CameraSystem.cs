@@ -17,6 +17,10 @@ partial class CameraSystem : SystemBase
     private static float3 fpsOffset = new float3(0f, 0.8f, 0f);
     public static int defaultFov = 60;
     private static int aimingFov = 50;
+    private static int clientId = -1;
+    private static CameraController cameraController = null;
+    private static bool isSpect = true;
+    private static int changeViewIndex = 0;
 
 
     [BurstCompile]
@@ -28,6 +32,97 @@ partial class CameraSystem : SystemBase
     [BurstCompile]
     protected override void OnUpdate()
     {
+        if (clientId == -1)
+        {
+            foreach (var ghostOwner in SystemAPI
+                .Query<GhostOwner>()
+                .WithAll<ClientComponent, GhostOwnerIsLocal>())
+            {
+                clientId = ghostOwner.NetworkId;
+                break;
+            }
+
+            if (clientId == -1)
+            {
+                return;
+            }
+        }
+
+        if (cameraController == null)
+        {
+            cameraController = Camera.main.GetComponent<CameraController>();
+        }
+
+        TeamSideType teamSide;
+        if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeamOnServer(clientId);
+        }
+        else
+        {
+            teamSide = PlayerHelpers.GetPlayerInTeam(clientId);
+        }
+
+        if (Input.GetKeyDown(KeyCode.E) && teamSide == TeamSideType.Neutre)
+        {
+            if (!isSpect)
+            {
+                isSpect = true;
+            }
+            else
+            {
+                isSpect = false;
+
+                if (currentTarget != Entity.Null
+                    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                {
+                    EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                }
+
+                currentTarget = Entity.Null;
+            }
+        }
+
+        if (teamSide == TeamSideType.Neutre && !isSpect)
+        {
+            if (cameraController != null)
+            {
+                float sensitivity = SystemAPI.GetSingleton<ClientSettingsComponent>().Sensivity;
+                cameraController.controllerEnabled = true;
+                cameraController.mouseSensitivity = sensitivity * 100;
+                Camera.main.fieldOfView = defaultFov;
+            }
+
+            return;
+        }
+        else
+        {
+            if (cameraController != null)
+            {
+                cameraController.controllerEnabled = false;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            changeViewIndex -= 1;
+
+            if (changeViewIndex < 0)
+            {
+                changeViewIndex = 20;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            changeViewIndex += 1;
+
+            if (changeViewIndex > 20)
+            {
+                changeViewIndex = 20;
+            }
+        }
+
         bool needNewTarget = true;
 
         if (currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
@@ -44,7 +139,7 @@ partial class CameraSystem : SystemBase
                         .Build()
                         .ToEntityArray(Allocator.Temp))
                     {
-                        if (currentTarget != Entity.Null 
+                        if (currentTarget != Entity.Null
                             && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
                         {
                             EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
@@ -68,7 +163,7 @@ partial class CameraSystem : SystemBase
                 .Build()
                 .ToEntityArray(Allocator.Temp))
             {
-                if (currentTarget != Entity.Null 
+                if (currentTarget != Entity.Null
                     && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
                 {
                     EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
@@ -82,6 +177,8 @@ partial class CameraSystem : SystemBase
 
         if (needNewTarget)
         {
+            NativeList<Entity> playerList = new NativeList<Entity>(Allocator.Temp);
+
             foreach (var entity in SystemAPI
                 .QueryBuilder()
                 .WithAll<CharacterTag, CharacterIsEnable>()
@@ -89,15 +186,36 @@ partial class CameraSystem : SystemBase
                 .Build()
                 .ToEntityArray(Allocator.Temp))
             {
-                if (currentTarget != Entity.Null
-                    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
-                {
-                    EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
-                }
+                playerList.Add(entity);
 
-                currentTarget = entity;
-                EntityManager.AddComponent<CameraIsAtached>(currentTarget);
-                needNewTarget = false;
+                //if (currentTarget != Entity.Null
+                //    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                //{
+                //    EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                //}
+
+                //currentTarget = entity;
+                //EntityManager.AddComponent<CameraIsAtached>(currentTarget);
+                //needNewTarget = false;
+            }
+
+            if (playerList.Length != 0)
+            {
+                Entity oldTarget = currentTarget;
+
+                currentTarget = playerList[changeViewIndex % playerList.Length];
+
+                if (oldTarget != currentTarget)
+                {
+                    if (currentTarget != Entity.Null
+                    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                    {
+                        EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                    }
+
+                    EntityManager.AddComponent<CameraIsAtached>(currentTarget);
+                    needNewTarget = false;
+                }
             }
         }
 
