@@ -20,6 +20,7 @@ partial class CameraSystem : SystemBase
     private static int clientId = -1;
     private static CameraController cameraController = null;
     private static bool isSpect = true;
+    private static bool updateSpecView = false;
     private static int changeViewIndex = 0;
 
 
@@ -96,27 +97,70 @@ partial class CameraSystem : SystemBase
             }
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            changeViewIndex -= 1;
-
-            if (changeViewIndex < 0)
-            {
-                changeViewIndex = 20;
-            }
-        }
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            changeViewIndex += 1;
-
-            if (changeViewIndex > 20)
-            {
-                changeViewIndex = 20;
-            }
-        }
-
         bool needNewTarget = true;
+
+        if (currentTarget != Entity.Null
+            && EntityManager.HasComponent<GhostOwnerIsLocal>(currentTarget)
+            && !EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(currentTarget))
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                changeViewIndex -= 1;
+                updateSpecView = true;
+
+                if (changeViewIndex < 0)
+                {
+                    changeViewIndex = 20;
+                }
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                changeViewIndex += 1;
+                updateSpecView = true;
+
+                if (changeViewIndex > 20)
+                {
+                    changeViewIndex = 20;
+                }
+            }
+
+            if (updateSpecView)
+            {
+                updateSpecView = false;
+
+                NativeList<Entity> playerList = new NativeList<Entity>(Allocator.Temp);
+
+                foreach (var entity in SystemAPI
+                    .QueryBuilder()
+                    .WithAll<CharacterTag, CharacterIsEnable>()
+                    .WithNone<GhostOwnerIsLocal>()
+                    .Build()
+                    .ToEntityArray(Allocator.Temp))
+                {
+                    playerList.Add(entity);
+                }
+
+                if (playerList.Length != 0)
+                {
+                    Entity oldTarget = currentTarget;
+
+                    currentTarget = playerList[changeViewIndex % playerList.Length];
+
+                    if (oldTarget != currentTarget)
+                    {
+                        if (currentTarget != Entity.Null
+                        && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                        {
+                            EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                        }
+
+                        EntityManager.AddComponent<CameraIsAtached>(currentTarget);
+                        needNewTarget = false;
+                    }
+                }
+            }
+        }
 
         if (currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
         {
@@ -180,16 +224,6 @@ partial class CameraSystem : SystemBase
                 .ToEntityArray(Allocator.Temp))
             {
                 playerList.Add(entity);
-
-                //if (currentTarget != Entity.Null
-                //    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
-                //{
-                //    EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
-                //}
-
-                //currentTarget = entity;
-                //EntityManager.AddComponent<CameraIsAtached>(currentTarget);
-                //needNewTarget = false;
             }
 
             if (playerList.Length != 0)

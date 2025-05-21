@@ -1,3 +1,4 @@
+using GameNetwork.Utils;
 using Unity.Entities;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -53,22 +54,28 @@ public class TeamChoiceController : MonoBehaviour, IUIController
 
     private void OnCorpoButtonClicked(ClickEvent evt)
     {
-        TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Corpo);
-        centralController.SetUIActive(this, false);
-        centralController.SetCursorActive(false);
-        centralController.SetInputActive(true);
-        centralController.SetUIActive(UICentralController.UIState.HUD, true);
-        UI.SetActive(ref spectatorButton, false);
+        if (ClientTransportHelper.ClientWorld != null)
+        {
+            TeamChoiceSystemClient.SendTeamChoice(ClientTransportHelper.ClientWorld.EntityManager, TeamSideType.Corpo);
+            centralController.SetUIActive(this, false);
+            centralController.SetCursorActive(false);
+            centralController.SetInputActive(true);
+            centralController.SetUIActive(UICentralController.UIState.HUD, true);
+            UI.SetActive(ref spectatorButton, false);
+        }
     }
 
     private void OnNatifButtonClicked(ClickEvent evt)
     {
-        TeamChoiceSystemClient.SendTeamChoice(World.DefaultGameObjectInjectionWorld.EntityManager, TeamSideType.Natif);
-        centralController.SetUIActive(this, false);
-        centralController.SetCursorActive(false);
-        centralController.SetInputActive(true);
-        centralController.SetUIActive(UICentralController.UIState.HUD, true);
-        UI.SetActive(ref spectatorButton, false);
+        if (ClientTransportHelper.ClientWorld != null)
+        {
+            TeamChoiceSystemClient.SendTeamChoice(ClientTransportHelper.ClientWorld.EntityManager, TeamSideType.Natif);
+            centralController.SetUIActive(this, false);
+            centralController.SetCursorActive(false);
+            centralController.SetInputActive(true);
+            centralController.SetUIActive(UICentralController.UIState.HUD, true);
+            UI.SetActive(ref spectatorButton, false);
+        }
     }
 
     private void OnSpectatorButtonClicked(ClickEvent evt)
