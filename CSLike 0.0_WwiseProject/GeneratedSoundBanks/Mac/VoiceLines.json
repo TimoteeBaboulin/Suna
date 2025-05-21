@@ -10,11 +10,19 @@
     "Type": "User",
     "GUID": "{8D5A68C2-DCBE-4E5F-A9AB-8A1FF10D5FDC}",
     "Language": "SFX",
-    "Hash": "{5B9F98C9-6DBD-F8E5-AAF4-98757F2CEEAD}",
+    "Hash": "{FC72D62E-08E9-4CF9-B5F6-81A6C6765BAA}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\VoiceLines",
     "ShortName": "VoiceLines",
     "Path": "VoiceLines.bnk",
     "Media": [
+     {
+      "Id": "1576968",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Neutralized_1.wav",
+      "CachePath": "45/{45A857B7-56D6-DAD5-D6B0-21464E394D8E}.wem"
+     },
      {
       "Id": "5608133",
       "Language": "SFX",
@@ -24,12 +32,36 @@
       "CachePath": "8C/{8CBAF646-394E-F28C-2996-38AF9CBFF126}.wem"
      },
      {
+      "Id": "42196580",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Neutralized_3.wav",
+      "CachePath": "AB/{AB0F9147-485B-88D1-1387-48DF4121B895}.wem"
+     },
+     {
+      "Id": "54834458",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "supression_sucessful_1.wav",
+      "CachePath": "27/{2766D3DD-640C-0209-7923-FF47E8D25DD1}.wem"
+     },
+     {
       "Id": "85952522",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
       "ShortName": "will_3.wav",
       "CachePath": "55/{5511C387-F558-DD5B-D3CD-19D66E923576}.wem"
+     },
+     {
+      "Id": "88999031",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "flashing_ahead_2.wav",
+      "CachePath": "1C/{1C849AC1-1D08-BBBA-6F0E-F0096622BA93}.wem"
      },
      {
       "Id": "99990364",
@@ -68,8 +100,8 @@
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "harvester_defused_1.wav",
-      "CachePath": "99/{99364958-5D9A-A3EA-3C17-7568334BBD72}.wem"
+      "ShortName": "Harvester_defused_1.wav",
+      "CachePath": "E5/{E56D8678-AE34-1EB5-35B1-B4C843A9DFFE}.wem"
      },
      {
       "Id": "253098792",
@@ -86,6 +118,14 @@
       "Location": "Memory",
       "ShortName": "will_2.wav",
       "CachePath": "F1/{F1AB8ED8-CD5D-92A5-D5E6-8810BC3D4E6D}.wem"
+     },
+     {
+      "Id": "265616928",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Target_down_3.wav",
+      "CachePath": "4C/{4C2D24E9-90CE-B5C6-8C6B-D86D74E1C217}.wem"
      },
      {
       "Id": "281305679",
@@ -112,12 +152,28 @@
       "CachePath": "E2/{E2CC0337-A25B-1B57-E854-6DD92690EBDB}.wem"
      },
      {
+      "Id": "317121682",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Eliminate_1.wav",
+      "CachePath": "B3/{B3F9C05B-E8DB-5F59-566F-2B600FA99D31}.wem"
+     },
+     {
       "Id": "324524628",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
       "ShortName": "corpo_dies_3.wav",
       "CachePath": "38/{38A4B0F8-90F0-2C0E-B290-6B8F10014174}.wem"
+     },
+     {
+      "Id": "325514668",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Harvester_deployed_3.wav",
+      "CachePath": "2D/{2DC2ACCC-9EFC-98D5-B873-E48771C34C37}.wem"
      },
      {
       "Id": "366617652",
@@ -128,6 +184,14 @@
       "CachePath": "4A/{4AC1F666-6EA1-A455-B673-5A40DBDD8011}.wem"
      },
      {
+      "Id": "392454871",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "supression_sucessful_2.wav",
+      "CachePath": "6F/{6F2E46C3-4ED8-CFC4-64FB-6E621BE4F9F6}.wem"
+     },
+     {
       "Id": "392488888",
       "Language": "SFX",
       "Streaming": "false",
@@ -136,12 +200,28 @@
       "CachePath": "70/{7064B6E7-3421-D100-7C3F-0BFD2ECF46F8}.wem"
      },
      {
+      "Id": "437090563",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "flashing_ahead_1.wav",
+      "CachePath": "D0/{D0F82D63-FF8D-1D7A-0C6D-A014807B3B14}.wem"
+     },
+     {
+      "Id": "437799473",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Neutralized_2.wav",
+      "CachePath": "85/{85C44B0E-A980-C317-30EF-D265C4BD606B}.wem"
+     },
+     {
       "Id": "498482594",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "harvester_defused_3.wav",
-      "CachePath": "B9/{B9F50B34-6517-B8F5-BDF1-B16960F19C24}.wem"
+      "ShortName": "Harvester_defused_3.wav",
+      "CachePath": "51/{51D07AC0-46DA-3ECA-1982-2E5ECB3D7CC1}.wem"
      },
      {
       "Id": "524497786",
@@ -166,6 +246,14 @@
       "Location": "Memory",
       "ShortName": "clear_for_now_1.wav",
       "CachePath": "F9/{F9B4AFA0-9830-548E-A605-C0E6F4DC9877}.wem"
+     },
+     {
+      "Id": "545262346",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Target_down_1.wav",
+      "CachePath": "CE/{CEF4631A-3CD3-60C2-00AD-3D0D0DC6C2E6}.wem"
      },
      {
       "Id": "546385548",
@@ -216,6 +304,14 @@
       "CachePath": "C6/{C65A19D8-8AC1-412F-29EC-F2955C23B03F}.wem"
      },
      {
+      "Id": "610705601",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Target_down_2.wav",
+      "CachePath": "FB/{FB8DB741-CB4F-10D8-07E5-0FA30277068B}.wem"
+     },
+     {
       "Id": "615958313",
       "Language": "SFX",
       "Streaming": "false",
@@ -240,6 +336,22 @@
       "CachePath": "A4/{A4CD600E-E2B2-66E4-46EE-D6E366FF3658}.wem"
      },
      {
+      "Id": "702985575",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "throwing_grenade_2.wav",
+      "CachePath": "A7/{A71D96B4-61F9-426F-161E-09EBAA7367A3}.wem"
+     },
+     {
+      "Id": "728724888",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Eliminate_3.wav",
+      "CachePath": "F8/{F8992F01-066F-CBAD-3A7C-4CE9FC3689E9}.wem"
+     },
+     {
       "Id": "735334528",
       "Language": "SFX",
       "Streaming": "false",
@@ -256,6 +368,14 @@
       "CachePath": "2D/{2D36E768-626F-2605-AF30-43030CDF55A7}.wem"
      },
      {
+      "Id": "788861997",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "throwing_grenade_3.wav",
+      "CachePath": "B0/{B08D8021-9148-FEA6-9721-5ECCE22399D7}.wem"
+     },
+     {
       "Id": "806569760",
       "Language": "SFX",
       "Streaming": "false",
@@ -264,12 +384,20 @@
       "CachePath": "00/{007ADBED-F814-2D9E-BCA9-E0F991C052FB}.wem"
      },
      {
+      "Id": "814760627",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "supression_sucessful_3.wav",
+      "CachePath": "AF/{AF83DF42-9403-CF96-8A33-482029F79FDB}.wem"
+     },
+     {
       "Id": "837741658",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
-      "ShortName": "harvester_defused_2.wav",
-      "CachePath": "BC/{BC2CBD24-E106-3492-F658-B9D1672FC224}.wem"
+      "ShortName": "Harvester_defused_2.wav",
+      "CachePath": "F0/{F0CCC3D4-4A86-4890-D91F-04EE6274C2D2}.wem"
      },
      {
       "Id": "837783963",
@@ -278,6 +406,14 @@
       "Location": "Memory",
       "ShortName": "corpo_killed_1.wav",
       "CachePath": "82/{822BECB5-03B1-0D6D-CFCD-E7BA2935FCE1}.wem"
+     },
+     {
+      "Id": "847047079",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Harvester_deployed_1.wav",
+      "CachePath": "B8/{B8A98CA1-CAD9-A705-3D32-A170E7196F80}.wem"
      },
      {
       "Id": "871012857",
@@ -296,6 +432,14 @@
       "CachePath": "A4/{A4057513-A7B4-D1EE-ACAF-BFAC6B87B4A0}.wem"
      },
      {
+      "Id": "911260677",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "throwing_grenade_1.wav",
+      "CachePath": "4C/{4CEE5834-3610-2423-981A-58DDCF1F22E5}.wem"
+     },
+     {
       "Id": "938426978",
       "Language": "SFX",
       "Streaming": "false",
@@ -312,12 +456,36 @@
       "CachePath": "B9/{B926EB1A-0344-D0D3-FA62-CBC842F7ECF4}.wem"
      },
      {
+      "Id": "962963493",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Eliminate_2.wav",
+      "CachePath": "00/{008C9852-65BA-DEDD-C619-BFC7C2451358}.wem"
+     },
+     {
       "Id": "966071570",
       "Language": "SFX",
       "Streaming": "false",
       "Location": "Memory",
       "ShortName": "dead_one_3.wav",
       "CachePath": "BE/{BE8E675A-CD53-1E89-D0DA-E6E9EDE364D5}.wem"
+     },
+     {
+      "Id": "971413308",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "Harvester_deployed_2.wav",
+      "CachePath": "39/{397C1AC9-3151-7107-38A5-8B37C6455B1E}.wem"
+     },
+     {
+      "Id": "972398800",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "flashing_ahead_3.wav",
+      "CachePath": "67/{674370E6-F56A-0F8C-12DD-D05C4F0DEF87}.wem"
      },
      {
       "Id": "1010275956",
@@ -336,8 +504,29 @@
       "GUID": "{8A217F42-4C1C-4220-91E6-52BA52DD3EA8}",
       "MaxAttenuation": "150",
       "DurationType": "OneShot",
-      "DurationMin": "2.0719275",
-      "DurationMax": "2.4863038",
+      "DurationMin": "1.3599774",
+      "DurationMax": "1.6578685",
+      "MediaRefs": [
+       {
+        "Id": "212527893"
+       },
+       {
+        "Id": "498482594"
+       },
+       {
+        "Id": "837741658"
+       }
+      ]
+     },
+     {
+      "Id": "4101318516",
+      "Name": "harvester_defused_01",
+      "ObjectPath": "\\Events\\VoiceLines Work Unit\\Corpo\\harvester_defused_01",
+      "GUID": "{4AD5CF7B-0FF8-45D4-89E0-EB4622929EBA}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "1.3599774",
+      "DurationMax": "1.6578685",
       "MediaRefs": [
        {
         "Id": "212527893"
@@ -367,6 +556,27 @@
        },
        {
         "Id": "938426978"
+       }
+      ]
+     },
+     {
+      "Id": "2171835423",
+      "Name": "harvester_plant_01",
+      "ObjectPath": "\\Events\\VoiceLines Work Unit\\Corpo\\harvester_plant_01",
+      "GUID": "{4546C8A3-0742-434B-AA21-A00C0CCAE652}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "1.7744898",
+      "DurationMax": "1.9546939",
+      "MediaRefs": [
+       {
+        "Id": "325514668"
+       },
+       {
+        "Id": "847047079"
+       },
+       {
+        "Id": "971413308"
        }
       ]
      },
@@ -455,6 +665,54 @@
       ]
      },
      {
+      "Id": "1646215262",
+      "Name": "kill_event_01",
+      "ObjectPath": "\\Events\\VoiceLines Work Unit\\Corpo\\kill_event_01",
+      "GUID": "{BE2CDC11-CE99-4D19-9014-56823088DFE2}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "1.0577778",
+      "DurationMax": "1.9466667",
+      "MediaRefs": [
+       {
+        "Id": "1576968"
+       },
+       {
+        "Id": "42196580"
+       },
+       {
+        "Id": "54834458"
+       },
+       {
+        "Id": "265616928"
+       },
+       {
+        "Id": "317121682"
+       },
+       {
+        "Id": "392454871"
+       },
+       {
+        "Id": "437799473"
+       },
+       {
+        "Id": "545262346"
+       },
+       {
+        "Id": "610705601"
+       },
+       {
+        "Id": "728724888"
+       },
+       {
+        "Id": "814760627"
+       },
+       {
+        "Id": "962963493"
+       }
+      ]
+     },
+     {
       "Id": "1781840702",
       "Name": "throwing_flash",
       "ObjectPath": "\\Events\\VoiceLines Work Unit\\Natif\\throwing_flash",
@@ -485,6 +743,27 @@
       ]
      },
      {
+      "Id": "2893929932",
+      "Name": "throwing_flash_01",
+      "ObjectPath": "\\Events\\VoiceLines Work Unit\\Corpo\\throwing_flash_01",
+      "GUID": "{E3135FAE-C3DB-4FEB-B958-06879E479339}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1206349",
+      "DurationMax": "1.3479139",
+      "MediaRefs": [
+       {
+        "Id": "88999031"
+       },
+       {
+        "Id": "437090563"
+       },
+       {
+        "Id": "972398800"
+       }
+      ]
+     },
+     {
       "Id": "3127593203",
       "Name": "throwing_smoke",
       "ObjectPath": "\\Events\\VoiceLines Work Unit\\Natif\\throwing_smoke",
@@ -504,10 +783,31 @@
         "Id": "871012857"
        }
       ]
+     },
+     {
+      "Id": "1686175911",
+      "Name": "throwing_smoke_01",
+      "ObjectPath": "\\Events\\VoiceLines Work Unit\\Corpo\\throwing_smoke_01",
+      "GUID": "{2BC049B3-9DAA-4FF5-AB14-8059208A15F4}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "1.1209071",
+      "DurationMax": "1.1251473",
+      "MediaRefs": [
+       {
+        "Id": "702985575"
+       },
+       {
+        "Id": "788861997"
+       },
+       {
+        "Id": "911260677"
+       }
+      ]
      }
     ]
    }
   ],
-  "FileHash": "{7C7B5097-BCD5-5B38-9E9A-38F424002B53}"
+  "FileHash": "{618236FB-D3D2-709C-E3D9-EBC162590884}"
  }
 }

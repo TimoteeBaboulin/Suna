@@ -88,6 +88,17 @@
 						</Action>
 					</ChildrenList>
 				</Event>
+				<Event Name="Main_Menu_Loop_New" ID="{590FE709-184A-4B61-947A-5733DDD80CAB}">
+					<ChildrenList>
+						<Action Name="" ID="{8021F0E5-1361-49C4-B318-A26EEBCA4203}" ShortID="966456770">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="CS_Like_Main_Menu_Launcher_Loop_V2" ID="{4E46A6AE-3041-4D34-B207-515DDF1773B7}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

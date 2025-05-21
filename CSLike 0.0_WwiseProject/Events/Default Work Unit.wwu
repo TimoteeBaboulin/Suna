@@ -476,6 +476,17 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="Corpo_BuyPhase" ID="{66A9887F-006C-4E53-BCBD-C01524BC254D}">
+									<ChildrenList>
+										<Action Name="" ID="{5D524422-3976-4AF6-96E5-0FC157C31E2A}" ShortID="810253962">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Corpos_BuyPhase_Music" ID="{B878A42A-B110-4BA0-AED4-19225489FD70}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
 					</ChildrenList>
@@ -494,7 +505,6 @@
 						</Event>
 					</ChildrenList>
 				</Folder>
-				<Folder Name="New Virtual Folder" ID="{530E2F91-5723-48D8-99B6-65CE5AC70D15}" ShortID="180889702"/>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>

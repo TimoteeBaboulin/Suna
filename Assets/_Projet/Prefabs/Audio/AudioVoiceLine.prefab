@@ -83,3 +83,15 @@ MonoBehaviour:
         idInternal: 0
         valueGuidInternal: 
         WwiseObjectReference: {fileID: 11400000, guid: 54b225375ce69544ca001e142c34920a, type: 2}
+  - keyGroup: Corpo
+    maping:
+    - keyAction: throwing_flash
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: b744c62b61fc29d4a834166cc43cf585, type: 2}
+    - keyAction: throwing_smoke
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 5f496d6718381614792e9868f2ec78d5, type: 2}

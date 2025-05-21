@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{373F205E-207D-45EF-A994-FD3FAF1CAE9E}",
     "Language": "SFX",
-    "Hash": "{9F861EE0-A6F2-1B4C-5687-87C00B48B84D}",
+    "Hash": "{A632EC29-3894-40BD-3F07-D3D3CF1EADDF}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\MainMenu",
     "ShortName": "MainMenu",
     "Path": "MainMenu.bnk",
@@ -38,6 +38,14 @@
       "Location": "Memory",
       "ShortName": "CS_Like_Main_Title_Loop.wav",
       "CachePath": "51/{5124A281-5031-6BB6-1A44-B87423EA73F9}.wem"
+     },
+     {
+      "Id": "858655539",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Main_Menu_Launcher_Loop_V2.wav",
+      "CachePath": "88/{885D6F5A-107B-5CED-3B3D-D1BACFA602A6}.wem"
      }
     ],
     "Events": [
@@ -114,6 +122,18 @@
       "DurationMax": "0"
      },
      {
+      "Id": "431042762",
+      "Name": "Main_Menu_Loop_New",
+      "ObjectPath": "\\Events\\MainMenu\\Main_Menu_Loop_New",
+      "GUID": "{590FE709-184A-4B61-947A-5733DDD80CAB}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "858655539"
+       }
+      ]
+     },
+     {
       "Id": "4256069028",
       "Name": "StopAll_01",
       "ObjectPath": "\\Events\\MainMenu\\StopAll_01",
@@ -126,6 +146,6 @@
     ]
    }
   ],
-  "FileHash": "{E6CB83E2-9D51-8187-F21F-0E3989BD2F56}"
+  "FileHash": "{0D6BACA5-7EA9-2B44-2858-418B4E0DA9D9}"
  }
 }

@@ -219,6 +219,12 @@ public partial struct RoundSystemServer : ISystem
 
     private void SetPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> componentRW, RoundPhase phase, EntityCommandBuffer ecb)
     {
+        if (phase == RoundPhase.BuyPhase)
+        {
+            SoundUtils.PlayWithRPC("Music", "NatifBuy", float3.zero, TeamSideType.Natif);
+            SoundUtils.PlayWithRPC("Music", "CorpoBuy", float3.zero, TeamSideType.Corpo);
+        }
+
         var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         componentRW.ValueRW.currentPhase = phase;
@@ -247,7 +253,7 @@ public partial struct RoundSystemServer : ISystem
         //Update the score and lossstreak of the correct teams
         if (team == TeamSideType.Corpo)
         {
-            SoundUtils.PlayWithRPC("Music", "Corpo", float3.zero);
+            SoundUtils.PlayWithRPC("Music", "CorpoWin", float3.zero);
 
             component.ValueRW.corporationScore++;
             component.ValueRW.corporationLossStreak = 0;
@@ -258,7 +264,7 @@ public partial struct RoundSystemServer : ISystem
         }
         else if (team == TeamSideType.Natif)
         {
-            SoundUtils.PlayWithRPC("Music", "Natif", float3.zero);
+            SoundUtils.PlayWithRPC("Music", "NatifWin", float3.zero);
 
             component.ValueRW.nativeScore++;
             component.ValueRW.nativeLossStreak = 0;
@@ -360,6 +366,7 @@ public partial struct RoundSystemServer : ISystem
 
     private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
+
         //Initialize the Round Component with the correct data
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
