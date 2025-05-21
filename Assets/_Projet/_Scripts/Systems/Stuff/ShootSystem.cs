@@ -360,7 +360,7 @@ public partial struct ShootSystem : ISystem
 
                             ecb.SetComponent(thrownGrenade, new PhysicsVelocity
                             {
-                                Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
+                                Linear = math.mul(shootRotation, new float3(0f, 0f, 22f)),
                                 Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
                             });
 

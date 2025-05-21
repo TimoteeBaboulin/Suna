@@ -526,8 +526,8 @@ public partial struct GrenadeThrowSystem : ISystem
                 continue;
             }
 
-            if (!released.ValueRO.onGround)
-                physicsVelocity.ValueRW.Linear += math.down() * 3.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
+            //if (!released.ValueRO.onGround)
+            //    physicsVelocity.ValueRW.Linear += math.down() * 3.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
 
             if (math.lengthsq(physicsVelocity.ValueRO.Linear) < 0.1f)
             {
