@@ -640,6 +640,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5ab704b4536c06478030f49690b0f13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InitializationSettings: {fileID: 11400000, guid: a33fd9d9c7c56424cbcbea0493620991, type: 2}
+  basePath: 
+  language: 
+  defaultPoolSize: 0
+  lowerPoolSize: 0
+  streamingPoolSize: 0
+  memoryCutoffThreshold: 0
+  monitorPoolSize: 0
+  monitorQueuePoolSize: 0
+  callbackManagerBufferSize: 0
+  spatialAudioPoolSize: 0
+  maxSoundPropagationDepth: 0
+  engineLogging: 0
 --- !u!4 &1236531778
 Transform:
   m_ObjectHideFlags: 0
@@ -949,6 +962,10 @@ PrefabInstance:
     - target: {fileID: 2866856152765975815, guid: 673a8c48e666b454b9dbbf606ea2d8b6, type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 4492641538385316260, guid: 673a8c48e666b454b9dbbf606ea2d8b6, type: 3}
+      propertyPath: m_VolumeLayerMask.m_Bits
+      value: 2097152
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
