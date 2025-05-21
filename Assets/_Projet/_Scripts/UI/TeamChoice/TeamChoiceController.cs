@@ -12,6 +12,9 @@ public class TeamChoiceController : MonoBehaviour, IUIController
     private Button natifButton;
     private Button spectatorButton;
 
+    private Label corpoNumberLabel;
+    private Label natifNumberLabel;
+
     public UICentralController centralController { get => transform.parent.GetComponent<UICentralController>(); }
 
     private void Awake()
@@ -20,6 +23,20 @@ public class TeamChoiceController : MonoBehaviour, IUIController
         corpoButton = root.Q<Button>("Corpo");
         natifButton = root.Q<Button>("Natif");
         spectatorButton = root.Q<Button>("Spectator");
+
+        corpoNumberLabel = corpoButton.Q<Label>("TeamCount");
+        natifNumberLabel = natifButton.Q<Label>("TeamCount");
+    }
+
+    private void Update()
+    {
+        if (!IsUIActive()) { return; }
+
+        int natifCount = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).Count;
+        int corpoCount = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).Count;
+
+        corpoNumberLabel.text = $"{corpoCount} player(s)";
+        natifNumberLabel.text = $"{natifCount} player(s)";
     }
 
     private void OnEnable()
