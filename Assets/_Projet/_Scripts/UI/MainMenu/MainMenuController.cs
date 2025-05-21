@@ -67,7 +67,7 @@ public class MainMenuController : MonoBehaviour
 
         if (SessionData.Instance != null)
         {
-            Debug.Log("SessionData.Instance found");
+            //Debug.Log("SessionData.Instance found");
             _sessionDataFound = true;
             _connectionFeedback.dataSource = SessionData.Instance;
             SessionData.Instance.propertyChanged += OnSessionDataPropertyChanged;
