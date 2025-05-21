@@ -57,10 +57,6 @@ public class HUDController : MonoBehaviour, IUIController
     [SerializeField] List<WeaponMap> _weaponMap;
     private WeaponListLinkSystem _weaponListLinkSystem;
 
-    // Message Box // Should be uncommented when Message Box is fully implemented
-    //private VisualElement _messageBox;
-    //private ScrollView _messageBoxScrollView;
-
     // ErrorWindow
     [SerializeField] private GameObject _errorWindowPrefab;
     private GameObject _errorWindowInstance;
@@ -118,6 +114,9 @@ public class HUDController : MonoBehaviour, IUIController
     private float _damageOverlayTimer = 0f;
     private readonly float _damageOverlayTime = 0.5f;
 
+    // Spectator Controls
+    private VisualElement _spectatorControlsElement;
+
     public UICentralController centralController { get => GetComponentInParent<UICentralController>(); }
 
     private void Awake()
@@ -154,9 +153,6 @@ public class HUDController : MonoBehaviour, IUIController
 
         _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
 
-        //_messageBox = _HUD.Q<VisualElement>("MessageBox");
-        //_messageBoxScrollView = _messageBox.Q<ScrollView>();
-
         _defuse = _HUD.Q<VisualElement>("Defuse");
         _defuseFill = _defuse.Q<VisualElement>("DefuseFill");
 
@@ -174,8 +170,7 @@ public class HUDController : MonoBehaviour, IUIController
         _minimapMapElement = _minimapElement.Q<VisualElement>("Map");
         _minimapPlayerElement = _minimapElement.Q<VisualElement>("Player");
 
-        // Hide Message Box element at start
-        //UI.SetActive(ref _messageBox, false);
+        _spectatorControlsElement = _HUD.Q<VisualElement>("SpectatorControls");
 
         // Hide Defuse and Plant elements at start
         UI.SetActive(ref _defuse, false);
@@ -228,9 +223,6 @@ public class HUDController : MonoBehaviour, IUIController
             UI.SetActive(ref visualElement, false);
             UI.SetOpacity(ref visualElement, 0f);
         }
-
-        // If too much message, delete previous ones
-        //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
         var world = World.DefaultGameObjectInjectionWorld;
         if (world == null)
@@ -957,7 +949,14 @@ public class HUDController : MonoBehaviour, IUIController
 
     public void SetUIActive(bool value)
     {
-        UI.SetActive(ref _HUD, value);
+        UI.SetChildrenActive(ref _HUD, value);
+        UI.SetActive(ref _spectatorControlsElement, !value);
+
+        UI.SetActive(ref _winLoseRoundElement, false);
+        UI.SetActive(ref _winLoseGameElement, false);
+        UI.SetActive(ref _defuse, false);
+        UI.SetActive(ref _plant, false);
+        UI.SetActive(ref _roundElement, false);
     }
 
     public bool IsUIActive()

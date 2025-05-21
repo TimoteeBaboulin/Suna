@@ -129,6 +129,28 @@ public class UICentralController : MonoBehaviour
         _uiState = value ? _uiState | (int)uiController.GetUIState() : _uiState & ~(int)uiController.GetUIState();
     }
 
+    public void SetUIActive(UIState state, bool value)
+    {
+        switch (state)
+        {
+            case UIState.HUD:
+                SetUIActive(_hudController, value);
+                break;
+            case UIState.TEAM_CHOICE:
+                SetUIActive(_teamChoiceController, value);
+                break;
+            case UIState.SHOP:
+                SetUIActive(_shopController, value);
+                break;
+            case UIState.PAUSE_MENU:
+                SetUIActive(_pauseMenuController, value);
+                break;
+            default:
+                Debug.LogError("Invalid UI state: " + state);
+                break;
+        }
+    }
+
     public void ToggleUIActive(IUIController uiController)
     {
         uiController.ToggleUIActive();

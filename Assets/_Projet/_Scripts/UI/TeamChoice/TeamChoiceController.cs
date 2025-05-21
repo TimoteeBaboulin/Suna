@@ -10,6 +10,7 @@ public class TeamChoiceController : MonoBehaviour, IUIController
     private VisualElement root;
     private Button corpoButton;
     private Button natifButton;
+    private Button spectatorButton;
 
     public UICentralController centralController { get => transform.parent.GetComponent<UICentralController>(); }
 
@@ -18,18 +19,21 @@ public class TeamChoiceController : MonoBehaviour, IUIController
         root = GetComponent<UIDocument>().rootVisualElement;
         corpoButton = root.Q<Button>("Corpo");
         natifButton = root.Q<Button>("Natif");
+        spectatorButton = root.Q<Button>("Spectator");
     }
 
     private void OnEnable()
     {
         corpoButton.RegisterCallback<ClickEvent>(OnCorpoButtonClicked);
         natifButton.RegisterCallback<ClickEvent>(OnNatifButtonClicked);
+        spectatorButton.RegisterCallback<ClickEvent>(OnSpectatorButtonClicked);
     }
 
     private void OnDisable()
     {
         corpoButton.UnregisterCallback<ClickEvent>(OnCorpoButtonClicked);
         natifButton.UnregisterCallback<ClickEvent>(OnNatifButtonClicked);
+        spectatorButton.UnregisterCallback<ClickEvent>(OnSpectatorButtonClicked);
     }
 
     private void OnCorpoButtonClicked(ClickEvent evt)
@@ -38,6 +42,8 @@ public class TeamChoiceController : MonoBehaviour, IUIController
         centralController.SetUIActive(this, false);
         centralController.SetCursorActive(false);
         centralController.SetInputActive(true);
+        centralController.SetUIActive(UICentralController.UIState.HUD, true);
+        UI.SetActive(ref spectatorButton, false);
     }
 
     private void OnNatifButtonClicked(ClickEvent evt)
@@ -46,6 +52,16 @@ public class TeamChoiceController : MonoBehaviour, IUIController
         centralController.SetUIActive(this, false);
         centralController.SetCursorActive(false);
         centralController.SetInputActive(true);
+        centralController.SetUIActive(UICentralController.UIState.HUD, true);
+        UI.SetActive(ref spectatorButton, false);
+    }
+
+    private void OnSpectatorButtonClicked(ClickEvent evt)
+    {
+        centralController.SetUIActive(this, false);
+        centralController.SetCursorActive(false);
+        centralController.SetInputActive(true);
+        centralController.SetUIActive(UICentralController.UIState.HUD, false);
     }
 
     public void SetUIActive(bool value)
