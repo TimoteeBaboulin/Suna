@@ -266,7 +266,7 @@ public class StuffGameObjectRef : ICleanupComponentData
             return;
         }
 
-        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+        EntityQuery query = entityManager.CreateEntityQuery(ComponentType.ReadOnly<ClientComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
 
         if (entities.Length == 0) return;
