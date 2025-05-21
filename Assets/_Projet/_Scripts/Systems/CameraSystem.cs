@@ -157,8 +157,9 @@ partial class CameraSystem : SystemBase
                         }
 
                         EntityManager.AddComponent<CameraIsAtached>(currentTarget);
-                        needNewTarget = false;
                     }
+
+                    needNewTarget = false;
                 }
             }
         }
