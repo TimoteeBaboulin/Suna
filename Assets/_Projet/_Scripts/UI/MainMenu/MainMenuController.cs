@@ -58,7 +58,6 @@ public class MainMenuController : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         UnityEngine.Cursor.visible = true;
 
-        SoundManager.Instance.Play("Music", "Stop", Vector3.zero);
         SoundManager.Instance.Play("Music", "MainMenu", Vector3.zero);
     }
 
@@ -89,6 +88,8 @@ public class MainMenuController : MonoBehaviour
 
     private async void OnPlayButton_Click()
     {
+        SoundManager.Instance.Play("Music", "Stop", Vector3.zero);
+
         _playButton.SetEnabled(false);
         await _gameManager.Play();
         _playButton.SetEnabled(true);

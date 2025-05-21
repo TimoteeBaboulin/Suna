@@ -186,8 +186,8 @@ public partial struct RoundSystemServer : ISystem
 
             if (roundComponent.ValueRO.timer <= 10f && roundComponent.ValueRO.currentPhase == RoundPhase.PostPlantPhase && !_harvesterMusicClockWiseStarted)
             {
-                SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
-                SoundUtils.PlayWithRPC("Music", "Harvester_Clockwise", float3.zero);
+                //SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+                //SoundUtils.PlayWithRPC("Music", "Harvester_Clockwise", float3.zero);
                 _harvesterMusicClockWiseStarted = true;
             }
         }
@@ -215,12 +215,12 @@ public partial struct RoundSystemServer : ISystem
 
     private void SetPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> componentRW, RoundPhase phase, EntityCommandBuffer ecb, bool sendPhase = true)
     {
-        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+        //SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
 
         if (phase == RoundPhase.BuyPhase)
         {
-            SoundUtils.PlayWithRPC("Music", "NatifBuy", float3.zero, TeamSideType.Natif);
-            SoundUtils.PlayWithRPC("Music", "CorpoBuy", float3.zero, TeamSideType.Corpo);
+            //SoundUtils.PlayWithRPC("Music", "NatifBuy", float3.zero, TeamSideType.Natif);
+            //SoundUtils.PlayWithRPC("Music", "CorpoBuy", float3.zero, TeamSideType.Corpo);
         }
 
         var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
@@ -245,13 +245,13 @@ public partial struct RoundSystemServer : ISystem
 
     private void Victory(ref SystemState state, Entity entity, RefRW<RoundComponent> component, TeamSideType team, EntityCommandBuffer ecb)
     {
-        Debug.Log($"Victory by {team}");
-        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+        //Debug.Log($"Victory by {team}");
+        //SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
 
         //Update the score and lossstreak of the correct teams
         if (team == TeamSideType.Corpo)
         {
-            SoundUtils.PlayWithRPC("Music", "CorpoWin", float3.zero);
+            //SoundUtils.PlayWithRPC("Music", "CorpoWin", float3.zero);
 
             component.ValueRW.corporationScore++;
             component.ValueRW.corporationLossStreak = 0;
@@ -262,7 +262,7 @@ public partial struct RoundSystemServer : ISystem
         }
         else if (team == TeamSideType.Natif)
         {
-            SoundUtils.PlayWithRPC("Music", "NatifWin", float3.zero);
+            //SoundUtils.PlayWithRPC("Music", "NatifWin", float3.zero);
 
             component.ValueRW.nativeScore++;
             component.ValueRW.nativeLossStreak = 0;
@@ -379,7 +379,7 @@ public partial struct RoundSystemServer : ISystem
 
     private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb, bool sendPhase = true)
     {
-        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+        //SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
 
         //Reset the phase and increase the round number
         SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb, sendPhase);
@@ -440,7 +440,7 @@ public partial struct RoundSystemServer : ISystem
 
     private void HarvesterDefused(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
-        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+        //SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
 
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
