@@ -581,6 +581,14 @@ public class HUDController : MonoBehaviour, IUIController
                 currentPlayer = firstNatifPlayer;
             }
         }
+        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).Count > 0)
+        {
+            ClientComponent firstNeutralPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).First();
+            if (firstNeutralPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            {
+                currentPlayer = firstNeutralPlayer;
+            }
+        }
         return currentPlayer;
     }
 

@@ -96,7 +96,7 @@ public class UICentralController : MonoBehaviour
                 SetInputActive(!IsUIActive(_pauseMenuController)); // Disable input if Pause Menu is open, otherwise enable it
             }
         }
-        else if (keyboard.bKey.wasPressedThisFrame)
+        else if (keyboard.bKey.wasPressedThisFrame && _hudController.GetCurrentPlayerInfo().team != TeamSideType.Neutre)
         {
             if (!IsUIStateActive(UIState.PAUSE_MENU) && !IsUIStateActive(UIState.TEAM_CHOICE)) // If Pause Menu or Team Choice is not open
             {
