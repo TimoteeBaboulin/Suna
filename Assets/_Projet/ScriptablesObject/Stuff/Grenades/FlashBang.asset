@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: FlashBang
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
-  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: fb05654db7c5b3841ab2021dcbe90b8e, type: 3}
   viewPrefab: {fileID: 2015320388049473441, guid: c36534739722ed14699e7cfc5dfe2515, type: 3}
   viewPrefab_Baked: {fileID: 9029199562972281976, guid: aeb2a2a9d94c96e498163b1c63740348, type: 3}
   UIImage: {fileID: 2800000, guid: 3bf107d4b83258940b56973fc07a2140, type: 3}
@@ -22,7 +22,7 @@ MonoBehaviour:
   grenadeType: 1
   side: 2
   entityName: Flashbang
-  price: 150
+  price: 100
   killGain: 0
   _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
   _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
@@ -30,7 +30,7 @@ MonoBehaviour:
   impactRadius: 50
   damageInflicted: 80
   triggerType: 0
-  timerTriggerDelay: 2.2
+  timerTriggerDelay: 2.8
   maxImpactAngle: 45
   stillTriggerDelay: 0.8
   bounceTriggerCount: 3

@@ -22,8 +22,8 @@ MonoBehaviour:
   entityName: Nelara
   deploymentSpeed: 0
   storageSpeed: 0
-  price: 1600
-  killGain: 400
+  price: 1400
+  killGain: 250
   _stuffLocalOffsetView: {x: 0, y: 1.648875, z: -0.1410743}
   _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
   recoil: {x: 2, y: 3}
@@ -32,7 +32,7 @@ MonoBehaviour:
   firerate: 1100
   isAutomatic: 1
   roundsPerShot: 1
-  spread: 5
+  spread: 3
   spreadAiming: 4.5
   coefSpray: 1
   coefSprayAiming: 0.9
@@ -53,10 +53,10 @@ MonoBehaviour:
   cross: {fileID: 0}
   silencer: {fileID: 0}
   magazine: {fileID: 0}
-  thorax: 16
-  stomach: 11
-  legs_Arms: 8
-  head: 49
+  thorax: 24
+  stomach: 20
+  legs_Arms: 11
+  head: 51
   ammoType: {fileID: 0}
   soundList:
   - keyAction: Shoot

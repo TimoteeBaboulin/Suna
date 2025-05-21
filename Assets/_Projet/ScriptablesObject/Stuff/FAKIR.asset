@@ -22,22 +22,22 @@ MonoBehaviour:
   entityName: Fakir
   deploymentSpeed: 0
   storageSpeed: 0
-  price: 800
-  killGain: 400
+  price: 900
+  killGain: 300
   _stuffLocalOffsetView: {x: 0, y: 1.623065, z: -0.01332624}
   _stuffLocalOffsetView_Baked: {x: 0, y: 1.623065, z: 0.01332624}
   recoil: {x: 0, y: 0}
   damage: 50
   range: 250
-  firerate: 600
+  firerate: 120
   isAutomatic: 0
   roundsPerShot: 1
-  spread: 0
-  spreadAiming: 0
-  coefSpray: 0
-  coefSprayAiming: 0
+  spread: 1
+  spreadAiming: 1
+  coefSpray: 1
+  coefSprayAiming: 1
   ergonomics: 0
-  dmgFallOff: 0
+  dmgFallOff: 0.1
   coefModifMoveSpeed: 0.92
   coefModifMoveSpeedAiming: 0.75
   reloadSpeed: 1
@@ -45,7 +45,7 @@ MonoBehaviour:
   knockbackForceOnKill: 0
   canADS: 0
   ADSFOV: 45
-  lastFireTimeMax: 0.7
+  lastFireTimeMax: 1.2
   nbMagazine: 6
   magazineCapacity: 6
   scope: {fileID: 0}
@@ -55,7 +55,7 @@ MonoBehaviour:
   magazine: {fileID: 0}
   thorax: 52
   stomach: 48
-  legs_Arms: 42
+  legs_Arms: 31
   head: 208
   ammoType: {fileID: 0}
   soundList:

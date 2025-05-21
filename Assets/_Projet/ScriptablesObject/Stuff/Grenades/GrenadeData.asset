@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GrenadeData
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
-  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: fb05654db7c5b3841ab2021dcbe90b8e, type: 3}
   viewPrefab: {fileID: 7600283182974311537, guid: 64b86a5083e827f4db74c885a3e9a7a3, type: 3}
   viewPrefab_Baked: {fileID: 5346707034945589943, guid: 32ee400da1c5de347b5400f713ec806c, type: 3}
   UIImage: {fileID: 2800000, guid: c15356af373738543b30eccdbd32b295, type: 3}
@@ -23,7 +23,7 @@ MonoBehaviour:
   side: 2
   entityName: HE Grenade
   price: 300
-  killGain: 300
+  killGain: 150
   _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
   _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
   cookingTime: 0.5

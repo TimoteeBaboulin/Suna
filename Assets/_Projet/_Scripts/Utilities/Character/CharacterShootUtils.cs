@@ -5,9 +5,6 @@ public class CharacterShootUtils
 {
     public static float2 SKAR18Pattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 1f, in float targetDistance = 0f)
     {
-        if(bulletIndex == 0) return new float2(0.0f, 0.0f);
-
-
         float y = 0;
         if (bulletIndex < 10)
             y = 0.25f * bulletIndex;
@@ -18,7 +15,7 @@ public class CharacterShootUtils
 
         float x = 0;
         if (bulletIndex < 10)
-            x = -math.log2(bulletIndex) / 22.5f;
+            x = -math.log2(bulletIndex + 0.001f) / 22.5f;
         else if (bulletIndex < 18)
             x = -0.2f * (bulletIndex - 9);
         else if (bulletIndex < 26)
@@ -29,6 +26,12 @@ public class CharacterShootUtils
         // Amplifying the effect
         x *= 180;
         y *= 110;
+
+        if (bulletIndex == 0)
+        {
+            x = 0;
+            y = 0;
+        }
 
         float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
         float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);
@@ -44,16 +47,30 @@ public class CharacterShootUtils
     public static float2 NelaraPattern(in int bulletIndex, in float accuracy = 0f, in float amplifier = 1f, in float targetDistance = 0f)
     {
         float y = 0;
-        if (bulletIndex < 3)
-            y = math.log2(bulletIndex + 1) * 0.2f;
+        if (bulletIndex < 10)
+            y = 0.15f * bulletIndex;
+        else if (bulletIndex < 20)
+            y = 1.5f + 0.05f * (bulletIndex - 10);
         else
-            y = 0.3f + (bulletIndex - 2) * 0.4f;
+            y = 2.0f - 0.1f * (bulletIndex - 20);
 
-        float x = math.sin(4 + (bulletIndex % 8 - 4) / 8f);
+        float x = 0;
+        if (bulletIndex < 10)
+            x = 0.05f * math.sin(bulletIndex);
+        else if (bulletIndex < 20)
+            x = 0.1f * math.sin(bulletIndex * 1.5f);
+        else
+            x = 0.05f * math.sin(bulletIndex * 2.5f);
 
         // Amplifying the effect
-        x *= 100;
-        y *= 50;
+        x *= 190;
+        y *= 110;
+
+        if (bulletIndex == 0)
+        {
+            x = 0;
+            y = 0;
+        }
 
         float randomTheta = UnityEngine.Random.Range(0, 2f) * Mathf.PI;
         float radius = UnityEngine.Random.Range(0, accuracy * targetDistance * 3f / 100f);

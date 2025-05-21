@@ -23,7 +23,7 @@ MonoBehaviour:
   deploymentSpeed: 0
   storageSpeed: 0
   price: 1200
-  killGain: 800
+  killGain: 600
   _stuffLocalOffsetView: {x: -0.0588395, y: 1.602301, z: 0.2145904}
   _stuffLocalOffsetView_Baked: {x: 0.0588395, y: 1.602301, z: -0.2145904}
   recoil: {x: 0, y: 0}
@@ -31,9 +31,9 @@ MonoBehaviour:
   range: 250
   firerate: 60
   isAutomatic: 0
-  roundsPerShot: 10
-  spread: 20
-  spreadAiming: 20
+  roundsPerShot: 8
+  spread: 8
+  spreadAiming: 8
   coefSpray: 1
   coefSprayAiming: 1
   ergonomics: 0

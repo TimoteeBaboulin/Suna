@@ -23,13 +23,13 @@ MonoBehaviour:
   deploymentSpeed: 0
   storageSpeed: 0
   price: 2200
-  killGain: 300
+  killGain: 200
   _stuffLocalOffsetView: {x: 0, y: 1.61766, z: 0.009111932}
   _stuffLocalOffsetView_Baked: {x: 0, y: 1.61766, z: -0.009111932}
   recoil: {x: 2, y: 3}
   damage: 30
   range: 250
-  firerate: 380
+  firerate: 420
   isAutomatic: 1
   roundsPerShot: 1
   spread: 1.2
@@ -53,10 +53,10 @@ MonoBehaviour:
   cross: {fileID: 0}
   silencer: {fileID: 0}
   magazine: {fileID: 0}
-  thorax: 31
-  stomach: 26
+  thorax: 48
+  stomach: 36
   legs_Arms: 21
-  head: 91
+  head: 164
   ammoType: {fileID: 0}
   soundList:
   - keyAction: Shoot

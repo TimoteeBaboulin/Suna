@@ -126,12 +126,18 @@ public partial struct ShootSystem : ISystem
                                 else if (stuffCommonData.Name.ToString() == "Banduka")
                                 {
                                     recoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
-                                    visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.TSprayPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 2f;
                                 }
                                 else if (stuffCommonData.Name.ToString() == "Nelara")
                                 {
                                     recoil = CharacterShootUtils.NelaraPattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                                    visualRecoil = CharacterShootUtils.NelaraPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
+                                    visualRecoil = CharacterShootUtils.NelaraPattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 8f;
+                                }
+                                else if (stuffCommonData.Name.ToString() == "Laksya")
+                                {
+                                    bool isAiming = SystemAPI.GetComponent<CharacterComponent>(owner).isAiming;
+                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving || !isAiming ? 8 : 1), commonData.coefSpray, commonData.range) * dt * 10;
+                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt * 10;
                                 }
                                 else
                                 {

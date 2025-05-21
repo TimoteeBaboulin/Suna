@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: GasGrenade
   m_EditorClassIdentifier: 
   dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
-  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: fb05654db7c5b3841ab2021dcbe90b8e, type: 3}
   viewPrefab: {fileID: 115276964224071627, guid: 6c92bd2872f949846a427e255f6795c3, type: 3}
   viewPrefab_Baked: {fileID: 6706159888002051882, guid: 23f1c3aa45a74eb44b51f945a4ce89a8, type: 3}
   UIImage: {fileID: 2800000, guid: 6891bed3dfb555648a55fdada7223ad5, type: 3}
@@ -22,13 +22,13 @@ MonoBehaviour:
   grenadeType: 3
   side: 2
   entityName: Gas grenade
-  price: 500
-  killGain: 150
+  price: 400
+  killGain: 300
   _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
   _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
   cookingTime: 0.6
   impactRadius: 5
-  damageInflicted: 20
+  damageInflicted: 28
   triggerType: 2
   timerTriggerDelay: 12
   maxImpactAngle: 45

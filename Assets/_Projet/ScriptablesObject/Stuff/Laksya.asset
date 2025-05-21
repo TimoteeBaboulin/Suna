@@ -46,16 +46,16 @@ MonoBehaviour:
   canADS: 1
   ADSFOV: 10
   lastFireTimeMax: 0
-  nbMagazine: 3
-  magazineCapacity: 6
+  nbMagazine: 5
+  magazineCapacity: 5
   scope: {fileID: 11400000, guid: ac57a884721ed974397b7c8a693cc1de, type: 2}
   handle: {fileID: 0}
   cross: {fileID: 0}
   silencer: {fileID: 0}
   magazine: {fileID: 0}
-  thorax: 121
-  stomach: 94
-  legs_Arms: 56
+  thorax: 210
+  stomach: 160
+  legs_Arms: 99
   head: 484
   ammoType: {fileID: 0}
   soundList:
