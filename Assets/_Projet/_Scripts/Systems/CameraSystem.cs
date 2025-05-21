@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.ProBuilder.MeshOperations;
 
 [BurstCompile]
@@ -57,7 +58,7 @@ partial class CameraSystem : SystemBase
         TeamSideType teamSide;
         teamSide = PlayerHelpers.GetPlayerInTeam(clientId);
 
-        if (Input.GetKeyDown(KeyCode.E) && teamSide == TeamSideType.Neutre)
+        if (Keyboard.current.eKey.wasPressedThisFrame && teamSide == TeamSideType.Neutre)
         {
             if (!isSpect)
             {
@@ -103,7 +104,7 @@ partial class CameraSystem : SystemBase
             && EntityManager.HasComponent<GhostOwnerIsLocal>(currentTarget)
             && !EntityManager.IsComponentEnabled<GhostOwnerIsLocal>(currentTarget))
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Mouse.current.leftButton.wasPressedThisFrame)
             {
                 changeViewIndex -= 1;
                 updateSpecView = true;
@@ -114,7 +115,7 @@ partial class CameraSystem : SystemBase
                 }
             }
 
-            if (Input.GetMouseButtonDown(1))
+            if (Mouse.current.rightButton.wasPressedThisFrame)
             {
                 changeViewIndex += 1;
                 updateSpecView = true;
@@ -149,10 +150,10 @@ partial class CameraSystem : SystemBase
 
                     if (oldTarget != currentTarget)
                     {
-                        if (currentTarget != Entity.Null
-                        && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                        if (oldTarget != Entity.Null
+                        && EntityManager.HasComponent<CameraIsAtached>(oldTarget))
                         {
-                            EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                            EntityManager.RemoveComponent<CameraIsAtached>(oldTarget);
                         }
 
                         EntityManager.AddComponent<CameraIsAtached>(currentTarget);
@@ -162,7 +163,7 @@ partial class CameraSystem : SystemBase
             }
         }
 
-        if (currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
+        if (needNewTarget && currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
         {
             if (EntityManager.HasComponent<CharacterIsEnable>(currentTarget)
                 && EntityManager.IsComponentEnabled<CharacterIsEnable>(currentTarget))
