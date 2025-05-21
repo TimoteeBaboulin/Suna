@@ -2,6 +2,10 @@
     background-color: rgba(0, 0, 0, 0);
     transition-property: background-color;
     transition-duration: 0.1s;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
 }
 
 .team_choice_large_button:hover {

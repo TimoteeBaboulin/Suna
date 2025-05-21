@@ -1,19 +1,15 @@
 using GameNetwork.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
 
-public class HUDController : MonoBehaviour
+public class HUDController : MonoBehaviour, IUIController
 {
     private UITextureData texData;
 
@@ -60,10 +56,6 @@ public class HUDController : MonoBehaviour
     [SerializeField] private VisualTreeAsset _weaponAsset;
     [SerializeField] List<WeaponMap> _weaponMap;
     private WeaponListLinkSystem _weaponListLinkSystem;
-
-    // Message Box // Should be uncommented when Message Box is fully implemented
-    //private VisualElement _messageBox;
-    //private ScrollView _messageBoxScrollView;
 
     // ErrorWindow
     [SerializeField] private GameObject _errorWindowPrefab;
@@ -122,6 +114,11 @@ public class HUDController : MonoBehaviour
     private float _damageOverlayTimer = 0f;
     private readonly float _damageOverlayTime = 0.5f;
 
+    // Spectator Controls
+    private VisualElement _spectatorControlsElement;
+
+    public UICentralController centralController { get => GetComponentInParent<UICentralController>(); }
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -156,9 +153,6 @@ public class HUDController : MonoBehaviour
 
         _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
 
-        //_messageBox = _HUD.Q<VisualElement>("MessageBox");
-        //_messageBoxScrollView = _messageBox.Q<ScrollView>();
-
         _defuse = _HUD.Q<VisualElement>("Defuse");
         _defuseFill = _defuse.Q<VisualElement>("DefuseFill");
 
@@ -176,8 +170,7 @@ public class HUDController : MonoBehaviour
         _minimapMapElement = _minimapElement.Q<VisualElement>("Map");
         _minimapPlayerElement = _minimapElement.Q<VisualElement>("Player");
 
-        // Hide Message Box element at start
-        //UI.SetActive(ref _messageBox, false);
+        _spectatorControlsElement = _HUD.Q<VisualElement>("SpectatorControls");
 
         // Hide Defuse and Plant elements at start
         UI.SetActive(ref _defuse, false);
@@ -230,9 +223,6 @@ public class HUDController : MonoBehaviour
             UI.SetActive(ref visualElement, false);
             UI.SetOpacity(ref visualElement, 0f);
         }
-
-        // If too much message, delete previous ones
-        //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
         var world = World.DefaultGameObjectInjectionWorld;
         if (world == null)
@@ -955,6 +945,28 @@ public class HUDController : MonoBehaviour
         _killFeedContainer.Insert(0, element);
 
         Debug.Log($"{args.killer.name} killed {args.target.name}");
+    }
+
+    public void SetUIActive(bool value)
+    {
+        UI.SetChildrenActive(ref _HUD, value);
+        UI.SetActive(ref _spectatorControlsElement, !value);
+
+        UI.SetActive(ref _winLoseRoundElement, false);
+        UI.SetActive(ref _winLoseGameElement, false);
+        UI.SetActive(ref _defuse, false);
+        UI.SetActive(ref _plant, false);
+        UI.SetActive(ref _roundElement, false);
+    }
+
+    public bool IsUIActive()
+    {
+        return UI.IsActive(ref _HUD);
+    }
+
+    public UICentralController.UIState GetUIState()
+    {
+        return UICentralController.UIState.HUD;
     }
     //----------End of KillFeed Functions
 }
