@@ -25,8 +25,8 @@ public partial struct TeamChoiceSystemClient : ISystem
         foreach (var entity in entityQuery.ToEntityArray(Allocator.Temp))
         {
             entityManager.AddComponentData(entity, new TeamChoiceComponent { team = team });
+            Debug.Log($"[ClientTeamChoice] team {team}");
         }
-        
     }
     public void OnUpdate(ref SystemState state)
     {
