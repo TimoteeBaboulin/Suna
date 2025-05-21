@@ -386,7 +386,7 @@ public class HUDController : MonoBehaviour, IUIController
         _damageOverlayActive = true;
         _damageOverlayTimer = _damageOverlayTime;
         UI.SetOpacity(ref _damageOverlay, 1f);
-        
+
         DamageIndicatorElement damageIndicator = new();
         damageIndicator.transform.rotation = Quaternion.Euler(0f, 0f, args.angle);
         _crosshairElement.Add(damageIndicator);
@@ -444,7 +444,7 @@ public class HUDController : MonoBehaviour, IUIController
             _winLoseRoundElement.style.backgroundImage = null;
         }
     }
-	
+
     private void OnTeamWinRound(object sender, RoundSystemClient.TeamWinRoundArgs args)
     {
         _winLoseRoundEngaged = true;
@@ -782,7 +782,7 @@ public class HUDController : MonoBehaviour, IUIController
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
-        _armor.text = args.armorLevel.ToString();
+        _armor.text = math.round(args.armorLevel / 2f).ToString();
     }
     private void System_OnArmorChange(object sender, EventArgs args)
     {

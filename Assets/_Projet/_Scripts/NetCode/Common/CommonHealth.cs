@@ -263,6 +263,7 @@ public partial struct ApplyDamageSystem : ISystem
 [WithNone(typeof(HasNoHealthTag))]
 public partial struct DamageSourceJob : IJobEntity
 {
+    [ReadOnly] public ComponentLookup<HasNoHealthTag> HasNoHealthTagLookup;
     [ReadOnly] public ComponentLookup<CurrentHealthComponent> CurrentHealthLookup;
     [ReadOnly] public ComponentLookup<CharacterMoney> MoneyLookup;
     [ReadOnly] public ComponentLookup<GhostOwner> GhostOwnerLookup;
@@ -276,10 +277,11 @@ public partial struct DamageSourceJob : IJobEntity
     {
         Entity target = damageComponent.ValueRO.targetEntity;
 
+        if (HasNoHealthTagLookup.HasComponent(target)) return;
         if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth)) return;
 
         float damage = damageComponent.ValueRO.damage;
-        float finalDamage = damage * (0.8f + math.lerp(0.2f, 0f, targetHealth.armorLevel / 100f));
+        float finalDamage = damage * (0.5f + math.lerp(0.5f, 0f, targetHealth.armorLevel / 100f));
         float delta = damage - finalDamage;
 
         targetHealth.Value -= math.max(finalDamage, 0);
@@ -297,6 +299,7 @@ public partial struct DamageSourceJob : IJobEntity
         if (targetHealth.Value <= 0)
         {
             targetHealth.Value = 0;
+            targetHealth.armorLevel = 0;
             ecb.SetComponent(sortKey, target, targetHealth);
             ecb.AddComponent<HasNoHealthTag>(sortKey, target);
 

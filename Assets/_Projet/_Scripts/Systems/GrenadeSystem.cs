@@ -21,6 +21,32 @@ public struct GrenadeVFXCommand : IRpcCommand
     public GrenadeVFXType type;
 }
 
+public partial class GrenadeSmokeFade : SystemBase
+{
+    protected override void OnCreate()
+    {
+        RequireForUpdate<SmokeGrenadeEffect>();
+    }
+
+    protected override void OnUpdate()
+    {
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (smokeEffect, entity) in SystemAPI.Query<RefRW<SmokeGrenadeEffect>>().WithEntityAccess())
+        {
+            if (smokeEffect.ValueRO.intensity <= 0f)
+            {
+                continue;
+            }
+
+            smokeEffect.ValueRW.intensity -= SystemAPI.Time.DeltaTime * 0.8f;
+        }
+
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
+    }
+}
+
 
 [BurstCompile]
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
@@ -508,8 +534,8 @@ public partial struct GrenadeThrowSystem : ISystem
                 continue;
             }
 
-            if (!released.ValueRO.onGround)
-                physicsVelocity.ValueRW.Linear += math.down() * 3.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
+            //if (!released.ValueRO.onGround)
+                //physicsVelocity.ValueRW.Linear += math.down() * 3.5f * SystemAPI.Time.DeltaTime; // Applying more gravity
 
             if (math.lengthsq(physicsVelocity.ValueRO.Linear) < 0.1f)
             {

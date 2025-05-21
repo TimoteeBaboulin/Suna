@@ -118,10 +118,10 @@ public partial struct ShootSystem : ISystem
                                 float2 recoil = default;
                                 float2 visualRecoil = default;
 
-                                if (stuffCommonData.Name.ToString() == "SKAR-18")
+                                if (stuffCommonData.Name.ToString() == "SKAR18" || stuffCommonData.Name.ToString() == "Decimator")
                                 {
-                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
-                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
+                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 5 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 6f;
                                 }
                                 else if (stuffCommonData.Name.ToString() == "Banduka")
                                 {
@@ -214,7 +214,7 @@ public partial struct ShootSystem : ISystem
                                 }
 
                                 //Muzzle Flash
-                                if (state.EntityManager.HasComponent<StuffGameObjectRef>(weapon))
+                                if (i == 0 && state.EntityManager.HasComponent<StuffGameObjectRef>(weapon))
                                 {
                                     StuffGameObjectRef goRef = state.EntityManager.GetComponentObject<StuffGameObjectRef>(weapon);
                                     WeaponVfxLink vfxLink;
@@ -384,7 +384,7 @@ public partial struct ShootSystem : ISystem
 
                             ecb.SetComponent(thrownGrenade, new PhysicsVelocity
                             {
-                                Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
+                                Linear = math.mul(shootRotation, new float3(0f, 0f, 22f)),
                                 Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
                             });
 

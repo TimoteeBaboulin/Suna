@@ -164,6 +164,12 @@ public partial struct CharacterMovementJob : IJobEntity
         AnimationUtils.AddFloatCommandJob("WalkY", smooth.ValueRO.Current.y, entity, ecb, sortKey);
         AnimationUtils.AddFloatCommandJob("WalkX", smooth.ValueRO.Current.x, entity, ecb, sortKey);
 
+        CollisionFilter noTriggerFilter = new CollisionFilter()
+        {
+            BelongsTo = ~0u,
+            CollidesWith = ~(1u << 30)
+        };
+
         if (isMoving)
         {
             float3 forwardHitEnd = feetPosition + (isMoving ? moveDir * 0.45f : viewForward * 0.45f);
@@ -172,7 +178,7 @@ public partial struct CharacterMovementJob : IJobEntity
             {
                 Start = feetPosition,
                 End = forwardHitEnd,
-                Filter = CollisionFilter.Default
+                Filter = noTriggerFilter
             };
 
             if (physicsWorld.CastRay(raycastInput, ref allHitsFront))
@@ -188,7 +194,7 @@ public partial struct CharacterMovementJob : IJobEntity
             }
         }
 
-        if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, CollisionFilter.Default))
+        if (physicsWorld.BoxCastAll(feetPosition, characterTransform.Rotation, new float3(.2f, .01f, .2f), math.down(), .05f, ref allHits, noTriggerFilter))
         {
             foreach (var hit in allHits)
             {
