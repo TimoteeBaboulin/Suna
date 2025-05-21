@@ -58,7 +58,7 @@ public class MainMenuController : MonoBehaviour
         UnityEngine.Cursor.lockState = CursorLockMode.None;
         UnityEngine.Cursor.visible = true;
 
-        //SoundManager.Instance.Play("Management", "StopAll", Vector3.zero);
+        SoundManager.Instance.Play("Music", "Stop", Vector3.zero);
         SoundManager.Instance.Play("Music", "MainMenu", Vector3.zero);
     }
 

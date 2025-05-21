@@ -1296,7 +1296,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: Port
-      value: 53970
+      value: 59557
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isRelease
@@ -1403,6 +1403,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3231184667773183887, guid: 8cde5203f6187fe4696f20bed40f32d9, type: 3}
+      propertyPath: soundGroupList.Array.data[1].maping.Array.data[0].sound.WwiseObjectReference
+      value: 
+      objectReference: {fileID: 11400000, guid: 2f9166542bc3b994da15ba00cf73f695, type: 2}
     - target: {fileID: 3351486466811909007, guid: 8cde5203f6187fe4696f20bed40f32d9, type: 3}
       propertyPath: m_Name
       value: SoundManager

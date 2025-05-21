@@ -1,13 +1,9 @@
 using GameNetwork.Utils;
-using System.Collections.Generic;
-using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
 using Unity.Physics;
-using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplayer;
 using UnityEngine;
 using static RoundSystemClient;
 
@@ -219,6 +215,8 @@ public partial struct RoundSystemServer : ISystem
 
     private void SetPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> componentRW, RoundPhase phase, EntityCommandBuffer ecb, bool sendPhase = true)
     {
+        SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
+
         if (phase == RoundPhase.BuyPhase)
         {
             SoundUtils.PlayWithRPC("Music", "NatifBuy", float3.zero, TeamSideType.Natif);
