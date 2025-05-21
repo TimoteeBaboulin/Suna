@@ -90,7 +90,8 @@ public class ConnectionHandlerNew : MonoBehaviour
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
         await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
-        await LoadUtils.LoadSceneAsync((int)connectionSettings.sceneToLoad, SessionData.LoadingSteps.LoadGameScene);
+        //await LoadUtils.LoadSceneAsync((int)connectionSettings.sceneToLoad, SessionData.LoadingSteps.LoadGameScene);
+        await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
         if (ClientTransportHelper.ServerWorld != null)
         {
             using var drvQuery = ClientTransportHelper.ServerWorld.EntityManager.CreateEntityQuery(ComponentType.ReadWrite<NetworkStreamDriver>());

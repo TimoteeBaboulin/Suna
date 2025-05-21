@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b17c8e08b0b984646908250c4c7327e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _vfx: {fileID: 0}
+  _vfx: {fileID: 4348104813626875350}
   _playSpeed: 1
 --- !u!1 &5612652086265717991
 GameObject:
@@ -565,15 +565,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.x
-      value: 0.74901956
+      value: 1.4980392
       objectReference: {fileID: 0}
     - target: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Value.y
-      value: 0.17739937
+      value: 0.12483661
       objectReference: {fileID: 0}
     - target: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
       propertyPath: m_PropertySheet.m_Vector4f.m_Array.Array.data[0].m_Overridden
@@ -588,6 +588,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
+--- !u!2083052967 &4348104813626875350 stripped
+VisualEffect:
+  m_CorrespondingSourceObject: {fileID: 5080637224543970789, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}
+  m_PrefabInstance: {fileID: 8851155367438366771}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6293685238824305981 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3279244537474235662, guid: 91fd849bfd3b2ed429874f5efa85771e, type: 3}

@@ -66,8 +66,8 @@ public partial struct CalculateFrameDamageSystem : ISystem
     {
         if (state.World.IsServer())
         {
-            foreach (var (healtRW, chara) in SystemAPI
-            .Query<RefRW<CurrentHealthComponent>>()
+            foreach (var (healtRW, ghostOwnerRO, chara) in SystemAPI
+            .Query<RefRW<CurrentHealthComponent>, RefRO<GhostOwner>>()
             .WithEntityAccess())
             {
                 if (healtRW.ValueRO.Value <= 0)
@@ -79,6 +79,12 @@ public partial struct CalculateFrameDamageSystem : ISystem
                         {
                             float3 pos = state.EntityManager.GetComponentData<LocalToWorld>(killer).Position;
                             SoundUtils.PlayWithRPC("Hit", "Kill", pos);
+
+                            //===== SOUND VOICE LINES =====
+                            TeamSideType side = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId);
+                            SoundUtils.PlayWithRPC(side.ToString(), "kill", pos);
+                            //=============================
+
                             healtRW.ValueRW.killSoundAlreadyPlayed = true;
                         }
                     }
@@ -191,7 +197,7 @@ public partial struct ApplyDamageSystem : ISystem
 
         DamageSourceJob damageSourceJob = new DamageSourceJob
         {
-            CurrentHealthLookup =  currentHealthLookup,
+            CurrentHealthLookup = currentHealthLookup,
             MoneyLookup = moneyLookup,
             GhostOwnerLookup = ghostOwnerLookup,
             CharacterClientAttachedComponentLookup = state.GetComponentLookup<CharacterClientAttachedComponent>(),

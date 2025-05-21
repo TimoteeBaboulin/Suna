@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{F24EC81D-24C1-D7C9-1569-817BDD5BBEB4}",
+    "Hash": "{7A107170-A512-ED0B-E72A-8E5BDD9F2F34}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
@@ -192,6 +192,14 @@
       "CachePath": "AA/{AAD817B1-8EA2-058C-2226-A4A9BAC0AE9E}.wem"
      },
      {
+      "Id": "786397144",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SFX_GrenadeBase.wav",
+      "CachePath": "8F/{8F92EFA1-72AB-5127-8B6C-31F7D516797D}.wem"
+     },
+     {
       "Id": "799736141",
       "Language": "SFX",
       "Streaming": "false",
@@ -305,6 +313,21 @@
      }
     ],
     "Events": [
+     {
+      "Id": "1762045325",
+      "Name": "Blow",
+      "ObjectPath": "\\Events\\Default Work Unit\\Stuff\\Grenades\\Blow",
+      "GUID": "{B564BE92-01D1-48C9-BEF6-0D141FED4EF7}",
+      "MaxAttenuation": "150",
+      "DurationType": "OneShot",
+      "DurationMin": "5.2170067",
+      "DurationMax": "5.2170067",
+      "MediaRefs": [
+       {
+        "Id": "786397144"
+       }
+      ]
+     },
      {
       "Id": "2494499361",
       "Name": "Button_Clic",
@@ -846,6 +869,6 @@
     ]
    }
   ],
-  "FileHash": "{7F961D69-1C82-CDE0-183D-EBEC17216712}"
+  "FileHash": "{B9B84FD2-92B2-1FBA-2775-EF904685EAB3}"
  }
 }

@@ -6,6 +6,9 @@
 				<Folder Name="Natif" ID="{47C88A9A-876E-412B-A957-1C55ACDE58B7}" ShortID="603116465">
 					<ChildrenList>
 						<Event Name="A_under_siege" ID="{8A7F118A-7620-4C3B-8CC3-F88946167ED1}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{8C820A39-02EE-41AE-AB16-9B6951E7975C}" ShortID="855411079">
 									<ReferenceList>
@@ -17,6 +20,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="B_under_seige" ID="{C4EF78AE-3F80-4409-A2DF-EF62F0C4BE28}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{222F33A7-B9E4-4D3B-AA5F-D5043E35EE39}" ShortID="554615791">
 									<ReferenceList>
@@ -28,6 +34,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="blasphemous_ahead" ID="{286BB7FF-7B99-4BEB-83F7-EDAF8E54F893}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{594EB9C3-D644-4207-90A4-2A1B67F88B8A}" ShortID="791683260">
 									<ReferenceList>
@@ -38,40 +47,10 @@
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="clear_for_now" ID="{EC0B3352-38A1-4626-BC86-768503B478A0}">
-							<ChildrenList>
-								<Action Name="" ID="{8930E665-DA6E-4C56-90BC-D451A07B7016}" ShortID="782988504">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="clear_for_now" ID="{8E866655-2A2A-4C1D-AD2F-E7082606D21A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="corpo_dies" ID="{71CA2F0B-0DE0-4EC8-91FC-A27F20C14966}">
-							<ChildrenList>
-								<Action Name="" ID="{CFC27748-2BF9-45AD-9C22-0E0D7272E5FA}" ShortID="982929340">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="corpo_dies" ID="{40AEA6C8-B51C-4F5F-A1B9-7D5FAF844E7C}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="corpo_killed" ID="{0FBFE3A0-5B73-4EED-A9E3-3B827F74D99C}">
-							<ChildrenList>
-								<Action Name="" ID="{67028002-A31F-4A95-B776-AD8B83B4DEF8}" ShortID="364432376">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="corpo_killed" ID="{E3D991D9-5F0A-4B7C-BA48-E45224660B85}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Event Name="cut_retreat" ID="{CFA44DC8-4C78-4E6A-A9EF-990F943557B5}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{F2A3D9C7-8FD2-4884-8DA6-52A6DCD71913}" ShortID="765016217">
 									<ReferenceList>
@@ -82,18 +61,10 @@
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="dead_one" ID="{A1DF1173-FB38-463F-A1C9-6AFD86EDE71E}">
-							<ChildrenList>
-								<Action Name="" ID="{6BBCB804-D5BC-45E8-B2D1-854E5A3B48A0}" ShortID="174898351">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="dead_one" ID="{5FC06FDD-68E2-40F0-B1B7-729EFE7B1A68}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Event Name="forward_cover" ID="{0B2DB49E-2EE2-4A62-8406-AC5977B40D83}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{80B339EC-1D5C-4DE6-957C-1B8B5BDA43CA}" ShortID="460389131">
 									<ReferenceList>
@@ -105,6 +76,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="ground_help" ID="{44739185-AE04-4CE7-9428-C88C7F661043}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{DA4B8D82-DF7E-4CDC-B7E4-B4F2CE0E4D13}" ShortID="746072805">
 									<ReferenceList>
@@ -138,6 +112,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="HERETIC" ID="{F2B96050-B96E-4D31-AF21-24D4E041A6BE}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{2E109169-366F-4946-BD70-CDDED968DA23}" ShortID="271937060">
 									<ReferenceList>
@@ -149,6 +126,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="heretic_gathering" ID="{FC399A0E-37F7-40F6-B56A-0E967D86A8CA}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{00440FC1-E123-4BF1-A2D9-B305ABF1416E}" ShortID="39054336">
 									<ReferenceList>
@@ -160,6 +140,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="Hold_your_ground_A" ID="{B604EE70-8D04-4C91-A3B5-C12B310EBDEF}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{21C6CF05-F964-4B74-B892-1CD06A4BFF5C}" ShortID="335582864">
 									<ReferenceList>
@@ -171,6 +154,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="Hold_your_ground_B" ID="{69A84C14-49B4-4A38-AA4D-E3BBC8E01E48}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{0DA3838E-D3B2-4826-AA35-400BBE632F28}" ShortID="121746182">
 									<ReferenceList>
@@ -182,6 +168,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="I_see_movement" ID="{24345858-6752-4B68-BEA2-E3157B56773D}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{470D048B-D324-499F-A533-405D37B1C598}" ShortID="381309414">
 									<ReferenceList>
@@ -192,40 +181,10 @@
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="machine_broken" ID="{E01B2FAE-DB16-4749-8EC1-A9180EF9C05A}">
-							<ChildrenList>
-								<Action Name="" ID="{E024F429-3B33-4BC8-AE46-98B0E7DBF305}" ShortID="1062425050">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="machine_broken" ID="{6DE1C362-08B1-480D-B986-874B391B31CE}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="one_falls" ID="{C0E91B09-B929-4403-8172-B14FD12FC1D3}">
-							<ChildrenList>
-								<Action Name="" ID="{90C4E440-1F5E-4BC6-A30A-1EC78D0D7073}" ShortID="1005564545">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="one_falls" ID="{9B5E7A1E-1FE1-4205-B66B-91FE10B1ADD4}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
-						<Event Name="path_clears" ID="{7EF2EAFD-EAE6-4B56-88CA-D07CA8A20BA8}">
-							<ChildrenList>
-								<Action Name="" ID="{D667BFCE-B657-45B1-B302-265C48C8D14F}" ShortID="560414693">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="path_clears" ID="{7CD690BF-E8DF-4CA5-8A83-6DA493B396C9}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Event Name="regroup" ID="{AF67DD0C-57B9-4377-9075-BCFB4689F19F}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{6B53CB6B-DBAE-4381-A93E-3382599405A0}" ShortID="563940888">
 									<ReferenceList>
@@ -237,6 +196,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="smoke_bliended" ID="{D7B0C467-2A0C-4F3F-B6DE-6589C56EF325}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{80D38FDD-10BC-4CC9-8DC2-AA17B3B03136}" ShortID="468616568">
 									<ReferenceList>
@@ -248,6 +210,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="sniper" ID="{00650EFA-3D53-4055-B3E6-0015BB43FFB3}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{867BDC69-61D1-4AA7-9169-8D7457C4C928}" ShortID="506763196">
 									<ReferenceList>
@@ -259,6 +224,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="split_strike" ID="{6A4F5036-87E2-4F5B-A598-46FE8C881746}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{1FA558C9-28BB-478A-A4A8-7702A6A7ADE4}" ShortID="252648897">
 									<ReferenceList>
@@ -270,6 +238,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="stay_patient" ID="{38FCB6E7-1893-4A73-B351-24C9A9864CC2}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{E41DB50B-9A62-46BD-A537-2378FFD4BC08}" ShortID="870784506">
 									<ReferenceList>
@@ -281,6 +252,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="take_weapon" ID="{3B56BEEA-26AC-459C-903F-2984D99272B0}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{E6C1B719-006F-4099-9D9B-2B49CAAB5A1E}" ShortID="794808995">
 									<ReferenceList>
@@ -292,6 +266,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="the_wind_carries" ID="{63037CB2-97BB-4D99-97A3-605AC15B1A05}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{D4EAC405-7C2B-4146-AF25-89A8051BF5D7}" ShortID="981908564">
 									<ReferenceList>
@@ -303,6 +280,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="they_rush" ID="{7AE675F4-0EC6-4001-A39C-52C5101C2A84}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{BA5E6A31-1CBC-4747-B7E7-93D1698BF668}" ShortID="374750805">
 									<ReferenceList>
@@ -314,6 +294,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="theyre_coming" ID="{3D65BD6C-CC12-4FD9-9502-E648B183672F}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{007DA226-8D8D-4988-8D11-F366C6FBC95A}" ShortID="999047298">
 									<ReferenceList>
@@ -347,6 +330,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="together_we_push" ID="{1096FD24-AFE3-4F51-A6E2-3A228C7235FD}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{2682843E-6350-4A26-9F97-86C1E2AAABD2}" ShortID="543011306">
 									<ReferenceList>
@@ -358,6 +344,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="too_many" ID="{1DFDB1EC-1992-4A59-B18F-8F7D66724045}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{3C254C3C-9239-49C7-A9FB-4A24107D4DF7}" ShortID="763214517">
 									<ReferenceList>
@@ -369,6 +358,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="war_not_over" ID="{E1BE2466-E95F-4BC4-B86A-CC4F09029589}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{120B42ED-126A-464C-8584-C684396E1032}" ShortID="519751123">
 									<ReferenceList>
@@ -380,6 +372,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="watch_flank" ID="{C92E0502-BB98-4A89-9014-4DE03E6CC353}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{5A5B0726-7876-4FF8-998E-145F4CD2237F}" ShortID="165925642">
 									<ReferenceList>
@@ -391,6 +386,9 @@
 							</ChildrenList>
 						</Event>
 						<Event Name="we_stand" ID="{A37F32B2-C854-4AF9-B3F8-231AD920566B}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{9357F297-386D-49A6-8468-6CBC8C6EB8A6}" ShortID="972280841">
 									<ReferenceList>
@@ -401,23 +399,26 @@
 								</Action>
 							</ChildrenList>
 						</Event>
-						<Event Name="will" ID="{176F780A-CEED-4D9D-80BD-DF5073D5F74F}">
-							<ChildrenList>
-								<Action Name="" ID="{DD30FB72-D23A-47CA-9B25-202484960CDF}" ShortID="801488959">
-									<ReferenceList>
-										<Reference Name="Target">
-											<ObjectRef Name="will" ID="{D590B530-4209-41C6-BE2C-0132888665D4}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
-										</Reference>
-									</ReferenceList>
-								</Action>
-							</ChildrenList>
-						</Event>
 						<Event Name="inside_gas" ID="{3E66E45F-B38B-461B-8C54-E3CB99F50BD5}">
+							<PropertyList>
+								<Property Name="Inclusion" Type="bool" Value="False"/>
+							</PropertyList>
 							<ChildrenList>
 								<Action Name="" ID="{8F33A8EE-E09E-4E1D-8755-F92BA5751DAE}" ShortID="595808904">
 									<ReferenceList>
 										<Reference Name="Target">
 											<ObjectRef Name="inside_gas" ID="{A7C12504-58C4-42FE-B1F6-3AF70713FF94}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="kill_event" ID="{0F354B60-DCF1-4D3F-810D-FF78ED03FD79}">
+							<ChildrenList>
+								<Action Name="" ID="{57C988EB-4C28-4595-B64D-1E26385D916D}" ShortID="513555762">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="kill" ID="{7BA264AE-8738-4098-89DB-8BFCEE7F65D8}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>

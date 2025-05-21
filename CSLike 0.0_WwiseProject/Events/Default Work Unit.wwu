@@ -248,6 +248,17 @@
 										</Action>
 									</ChildrenList>
 								</Event>
+								<Event Name="Blow" ID="{B564BE92-01D1-48C9-BEF6-0D141FED4EF7}">
+									<ChildrenList>
+										<Action Name="" ID="{48DD8E61-835F-41C1-A0A9-7A5A023467F0}" ShortID="764874517">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_GrenadeBase" ID="{1B8A3BE1-0D37-4C25-9EA3-1E5AF9DE8D55}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
 							</ChildrenList>
 						</Folder>
 						<Folder Name="Harvester" ID="{3203EF69-4C85-46D1-9880-0DFD8BD404C7}" ShortID="892722945">

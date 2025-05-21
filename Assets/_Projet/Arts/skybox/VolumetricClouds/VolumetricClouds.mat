@@ -113,17 +113,17 @@ Material:
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _AltitudeDistortion: 0.0625
-    - _AmbientProbeDimmer: 1
+    - _AmbientProbeDimmer: 0
     - _AtmosphereThickness: 1
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
-    - _CloudNearPlane: 1000.5925
+    - _CloudNearPlane: 1003.63336
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DensityMultiplier: 0.080000006
+    - _DensityMultiplier: 0.019208
     - _DetailAlbedoMapScale: 1
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
@@ -169,11 +169,11 @@ Material:
     - _SrcBlendAlpha: 1
     - _StepSize: 0.4
     - _SunDisk: 2
-    - _SunLightDimmer: 1
+    - _SunLightDimmer: 0.507
     - _SunSize: 0.04
     - _SunSizeConvergence: 5
     - _Surface: 0
-    - _VerticalErosionWindDisplacement: -5.1826863
+    - _VerticalErosionWindDisplacement: -0.16054484
     - _VerticalShapeNoiseOffset: 0
     - _VerticalShapeWindDisplacement: 0
     - _WorkflowMode: 1
@@ -183,12 +183,12 @@ Material:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GroundColor: {r: 0.36899996, g: 0.34899998, b: 0.34099993, a: 1}
-    - _ScatteringTint: {r: 0.6008366, g: 0.35364962, b: 0.26415092, a: 0.25}
+    - _ScatteringTint: {r: 0.3985849, g: 0.3985849, b: 0.3985849, a: 0.25}
     - _ShapeNoiseOffset: {r: 0, g: 0, b: 0, a: 0}
     - _SkyTint: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _WindDirection: {r: -0.70710677, g: -0.70710677, b: 0, a: 0}
-    - _WindVector: {r: -14658.791, g: -14658.791, b: 0, a: 0}
+    - _WindVector: {r: 99543.65, g: 99543.65, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &4204168956660823475

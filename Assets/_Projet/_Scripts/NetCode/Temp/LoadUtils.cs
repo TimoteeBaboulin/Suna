@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
+using Unity.Multiplayer.Playmode;
 using Unity.NetCode;
 using Unity.Scenes;
 using Unity.Services.Multiplayer;
@@ -197,7 +198,16 @@ namespace GameNetwork.Utils
                 }
                 else
                 {
-                    await ClientTransportHelper.instance.Session.LeaveAsync();
+                    var currentPlayer = ClientTransportHelper.instance.Session.CurrentPlayer;
+                    var players = ClientTransportHelper.instance.Session.Players;
+
+                    bool isPlayerInSession = players.Any(p => p.Id == currentPlayer.Id);
+
+                    if (isPlayerInSession)
+                    {
+                        UnityEngine.Debug.Log("[LeaveSessionAsync] player is in session, leaving...");
+                        await ClientTransportHelper.instance.Session.LeaveAsync();
+                    }
                 }
 
                 ClientTransportHelper.instance.Session = null;
@@ -225,7 +235,10 @@ namespace GameNetwork.Utils
             //if (requestedDisconnect)
             //    await Awaitable.NextFrameAsync();
 
-            await LeaveSessionAsync();
+            if (ClientTransportHelper.instance.Session != null)
+            {
+                await LeaveSessionAsync();
+            }
             await DestroyGameSessionWorlds();
             await UnloadScenesAsync("MultiplayerTest");
         }
@@ -246,8 +259,8 @@ namespace GameNetwork.Utils
                 }
             }
 
-            await LeaveSessionAsync();               
-            await DestroyGameSessionWorlds();        
+            await LeaveSessionAsync();
+            await DestroyGameSessionWorlds();
         }
 
         public static Task QuitAsync() => DisconnectAndUnloadWorlds();
@@ -321,7 +334,7 @@ namespace GameNetwork.Utils
             try
             {
                 Process.Start(exePath);
-                Application.Quit(); 
+                Application.Quit();
             }
             catch (System.Exception ex)
             {
