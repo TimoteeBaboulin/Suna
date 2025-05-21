@@ -21,6 +21,10 @@ public class GameManager : MonoBehaviour
     private CancellationTokenSource loadingToken;
     private ConnectionHandlerNew connectionHandler;
 
+    private void Awake()
+    {
+        Cursor.visible = true;
+    }
     private void Start()
     {
         connectionHandler = FindFirstObjectByType<ConnectionHandlerNew>();
@@ -55,6 +59,7 @@ public class GameManager : MonoBehaviour
 #if !UNITY_EDITOR && !UNITY_SERVER
     private async void OnApplicationQuit()
     {
+    loadingToken.Cancel();
         await LoadUtils.QuitAsync();
     }
 #endif

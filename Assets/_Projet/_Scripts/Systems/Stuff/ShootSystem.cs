@@ -118,10 +118,10 @@ public partial struct ShootSystem : ISystem
                                 float2 recoil = default;
                                 float2 visualRecoil = default;
 
-                                if (stuffCommonData.Name.ToString() == "SKAR18" || stuffCommonData.Name.ToString() == "Decimator")
+                                if (stuffCommonData.Name.ToString() == "SKAR-18")
                                 {
-                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 5 : 1), commonData.coefSpray, commonData.range) * dt;
-                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 6f;
+                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving ? 20 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt / 4f;
                                 }
                                 else if (stuffCommonData.Name.ToString() == "Banduka")
                                 {
@@ -214,7 +214,7 @@ public partial struct ShootSystem : ISystem
                                 }
 
                                 //Muzzle Flash
-                                if (i == 0 && state.EntityManager.HasComponent<StuffGameObjectRef>(weapon))
+                                if (state.EntityManager.HasComponent<StuffGameObjectRef>(weapon))
                                 {
                                     StuffGameObjectRef goRef = state.EntityManager.GetComponentObject<StuffGameObjectRef>(weapon);
                                     WeaponVfxLink vfxLink;
@@ -222,7 +222,7 @@ public partial struct ShootSystem : ISystem
                                         vfxLink = goRef.View_Baked.GetComponent<WeaponVfxLink>();
                                     else
                                         vfxLink = goRef.View.GetComponent<WeaponVfxLink>();
-                                    if (vfxLink != null)
+                                    if (vfxLink is not null)
                                         vfxLink.Fire();
                                 }
                                 // === FIN VISUEL ===
@@ -278,19 +278,19 @@ public partial struct ShootSystem : ISystem
         {
             ref GrenadeDynamicData dynamicData = ref dynamicDataRW.ValueRW;
             ref GrenadeCommonData commonData = ref databaseAccessRO.ValueRO.GetData(ref grd);
-            ref readonly Entity owner = ref sddRW.ValueRO.owner;
+            Entity owner = sddRW.ValueRO.owner;
 
             if (owner == Entity.Null) continue;
 
             RefRW<CharacterViewRotation> localView = SystemAPI.GetComponentRW<CharacterViewRotation>(owner);
 
             // Retrieve player input
-            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) return;
+            if (!TryGetOwnerInputRW(owner, ref state, out var inputRef)) continue;
             ref CharacterInput input = ref inputRef.ValueRW;
 
-            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) return;
+            if (!TryGetCharacterStartShootPos(owner, ref state, out var shootStartpos)) continue;
 
-            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) return;
+            if (!TryGetCharacterShootRotation(owner, ref state, out var shootRotation)) continue;
 
             if (dynamicData.isCooking)
             {
@@ -313,8 +313,29 @@ public partial struct ShootSystem : ISystem
                         DynamicBuffer<LinkedEntityGroup> linkedEntityGroup = SystemAPI.GetBuffer<LinkedEntityGroup>(owner);
                         DynamicBuffer<CharacterStuffList> characterStuffList = SystemAPI.GetBuffer<CharacterStuffList>(owner);
                         RefRW<CharacterStuffInfos> characterStuffInfos = SystemAPI.GetComponentRW<CharacterStuffInfos>(owner);
-                        GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(grenade);
+                        GhostOwner ghostOwner = SystemAPI.GetComponent<GhostOwner>(owner);
                         ref var stuffCommonData = ref SystemAPI.GetComponent<StuffDatabaseAccess>(grenade).GetData(ref database);
+
+                        if (state.World.IsServer())
+                        {
+                            //===== SOUND VOICE LINES =====
+                            TeamSideType side = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId);
+
+                            switch (stuffCommonData.slot)
+                            {
+                                case StuffSlot.GasGrenade:
+                                    break;
+                                case StuffSlot.HEGrenade:
+                                    break;
+                                case StuffSlot.SmokeGrenade:
+                                    SoundUtils.PlayWithRPC(side.ToString(), "throwing_smoke", shootStartpos);
+                                    break;
+                                case StuffSlot.Flashbang:
+                                    SoundUtils.PlayWithRPC(side.ToString(), "throwing_flash", shootStartpos);
+                                    break;
+                            }
+                            //=============================
+                        }
 
                         //StuffUtils.Unequip(linkedEntityGroup, ref characterStuffList, ref ghostOwner, ref sddRW.ValueRW, ref stuffCommonData, owner, grenade);
                         //StuffUtils.ThrowUnsafe(ref state, ref database, owner, grenade);
@@ -333,6 +354,8 @@ public partial struct ShootSystem : ISystem
 
                         if (state.World.IsServer())
                         {
+                        
+
                             Entity thrownGrenade = ecb.Instantiate(sddRW.ValueRW.grenadeThrownPrefab);
                             ecb.SetName(thrownGrenade, "Thrown Grenade");
 
@@ -350,6 +373,7 @@ public partial struct ShootSystem : ISystem
                                 Scale = 1.0f
                             });
 
+
                             var grenadeTransform = SystemAPI.GetComponent<LocalTransform>(grenade);
                             ecb.SetComponent(grenade, new LocalTransform
                             {
@@ -360,7 +384,7 @@ public partial struct ShootSystem : ISystem
 
                             ecb.SetComponent(thrownGrenade, new PhysicsVelocity
                             {
-                                Linear = math.mul(shootRotation, new float3(0f, 0f, 22f)),
+                                Linear = math.mul(shootRotation, new float3(0f, 0f, 30f)),
                                 Angular = math.mul(shootRotation, new float3(0f, 45f, 0f))
                             });
 

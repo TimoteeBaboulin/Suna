@@ -7,14 +7,11 @@ using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
 
 
-public class ShopController : MonoBehaviour
+public class ShopController : MonoBehaviour, IUIController
 {
     private UIDocument document;
     private VisualElement root;
     private VisualElement shopmenu;
-
-    [SerializeField] private DefaultInputSystem input;
-    bool inputFound = false;
 
     [SerializeField] private RangedWeaponData skar18;
     [SerializeField] private RangedWeaponData decimator;
@@ -30,12 +27,13 @@ public class ShopController : MonoBehaviour
     private Dictionary<Button, RangedWeaponData> weaponDict = new();
     private Dictionary<Button, GrenadeData> grenadeDict = new();
 
+    public UICentralController centralController { get => transform.parent.GetComponent<UICentralController>(); }
+
     private void Awake()
     {
         document = GetComponent<UIDocument>();
         root = document.rootVisualElement;
         shopmenu = root.Q<VisualElement>("ShopMenu");
-        UI.SetActive(ref root, false);
     }
 
     private void Start()
@@ -70,8 +68,9 @@ public class ShopController : MonoBehaviour
                     };
 
                     RpcUtils.SendClientToServerRpc(ref sc);
-                    UI.SetActive(ref root, false);
-                    ActivateUIInput(false);
+                    centralController.SetUIActive(this, false);
+                    centralController.SetCursorActive(false);
+                    centralController.SetInputActive(true);
                 };
 
                 // On hover Debug Log entity name
@@ -90,8 +89,9 @@ public class ShopController : MonoBehaviour
                         weaponData = grenadeDict[btn].entityName,
                     };
                     RpcUtils.SendClientToServerRpc(ref sc);
-                    UI.SetActive(ref root, false);
-                    ActivateUIInput(false);
+                    centralController.SetUIActive(this, false);
+                    centralController.SetCursorActive(false);
+                    centralController.SetInputActive(true);
                 };
                 // On hover Debug Log entity name
                 //btn.RegisterCallback<PointerEnterEvent>(evt => OnShopButtonEnter(btn));
@@ -108,48 +108,11 @@ public class ShopController : MonoBehaviour
                         isArmor = true,
                     };
                     RpcUtils.SendClientToServerRpc(ref sc);
-                    UI.SetActive(ref root, false);
-                    ActivateUIInput(false);
+                    centralController.SetUIActive(this, false);
+                    centralController.SetCursorActive(false);
+                    centralController.SetInputActive(true);
                 };
             }
-        }
-    }
-
-    private void Update()
-    {
-        var world = World.DefaultGameObjectInjectionWorld;
-        if (world == null)
-            return;
-        CharacterInputSystem system = world.GetExistingSystemManaged<CharacterInputSystem>();
-
-        if (system != null)
-        {
-            input = system.input;
-            inputFound = true;
-        }
-
-        if (Keyboard.current.bKey.wasPressedThisFrame)
-        {
-            if (!system.TryGetSingleton<RoundComponent>(out var roundData))
-            {
-                UI.ToggleActive(ref root);
-                ActivateUIInput(UI.IsActive(ref root));
-            }
-            else
-            {
-                if (roundData.currentPhase == RoundPhase.BuyPhase || !roundData.roundSystemActive)
-                {
-                    UI.ToggleActive(ref root);
-                    ActivateUIInput(UI.IsActive(ref root));
-                }
-            }
-            
-        }
-
-        if (UI.IsActive(ref root) && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            UI.SetActive(ref root, false);
-            ActivateUIInput(false);
         }
     }
 
@@ -191,24 +154,18 @@ public class ShopController : MonoBehaviour
         root.Q<VisualElement>("StatsElement")?.RemoveFromHierarchy();
     }
 
-    private void ActivateUIInput(bool value)
+    public void SetUIActive(bool value)
     {
-        if (value)
-        {
-            input.Player.Disable();
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
-            UnityEngine.Cursor.visible = true;
-        }
-        else
-        {
-            input.Player.Enable();
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-            UnityEngine.Cursor.visible = false;
-        }
+        UI.SetActive(ref root, value);
     }
 
-    public bool IsShopActive()
+    public bool IsUIActive()
     {
         return UI.IsActive(ref root);
+    }
+
+    public UICentralController.UIState GetUIState()
+    {
+        return UICentralController.UIState.SHOP;
     }
 }

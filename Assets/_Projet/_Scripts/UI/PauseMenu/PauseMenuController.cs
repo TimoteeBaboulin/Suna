@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 using UI = UIDocumentUtils;
 
-public class PauseMenuController : MonoBehaviour
+public class PauseMenuController : MonoBehaviour, IUIController
 {
     // Assets
     [SerializeField] private VisualTreeAsset _settingsMenuAsset;
@@ -22,11 +22,7 @@ public class PauseMenuController : MonoBehaviour
     private Button _playButton;
     private Button _settingsButton;
 
-    // Input enabling variables
-    [SerializeField] private DefaultInputSystem input;
-
-    // Shop Link for Escape Key
-    [SerializeField] private ShopController _shopController;
+    public UICentralController centralController { get => transform.parent.GetComponent<UICentralController>(); }
 
     private void Awake()
     {
@@ -39,29 +35,6 @@ public class PauseMenuController : MonoBehaviour
         _homeButton = _tabBar.Q<Button>("HomeButton");
         _playButton = _tabBar.Q<Button>("PlayButton");
         _settingsButton = _tabBar.Q<Button>("SettingsButton");
-
-        UI.SetActive(ref _root, false);
-    }
-
-    private void Update()
-    {
-        var world = World.DefaultGameObjectInjectionWorld;
-        if (world == null)
-            return;
-        // For now forced to search it every frame, apparently changes every frame
-        CharacterInputSystem system = world.GetExistingSystemManaged<CharacterInputSystem>();
-        if (system != null)
-        {
-            input = system.input;
-        }
-        if (Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            if ((_shopController != null && !_shopController.IsShopActive()) || _shopController == null)
-            {
-                UI.ToggleActive(ref _root);
-                ActivateUIInput(UI.IsActive(ref _root));
-            }
-        }
     }
 
     private void OnEnable()
@@ -109,22 +82,23 @@ public class PauseMenuController : MonoBehaviour
     private void OnPlayButtonClicked()
     {
         UI.SetActive(ref _root, false);
-        ActivateUIInput(false);
+        centralController.SetUIActive(this, false);
+        centralController.SetCursorActive(false);
+        centralController.SetInputActive(true);
     }
 
-    private void ActivateUIInput(bool value)
+    public void SetUIActive(bool value)
     {
-        if (value)
-        {
-            input.Player.Disable();
-            UnityEngine.Cursor.lockState = CursorLockMode.None;
-            UnityEngine.Cursor.visible = true;
-        }
-        else
-        {
-            input.Player.Enable();
-            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-            UnityEngine.Cursor.visible = false;
-        }
+        UI.SetActive(ref _root, value);
+    }
+
+    public bool IsUIActive()
+    {
+        return UI.IsActive(ref _root);
+    }
+
+    public UICentralController.UIState GetUIState()
+    {
+        return UICentralController.UIState.PAUSE_MENU;
     }
 }

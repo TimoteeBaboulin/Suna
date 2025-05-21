@@ -20,6 +20,5 @@ public class WeaponVfxLink : MonoBehaviour
         timer._timer = 0.2f;
 
         muzzle.Play();
-        //Debug.Log("Fire");
     }
 }

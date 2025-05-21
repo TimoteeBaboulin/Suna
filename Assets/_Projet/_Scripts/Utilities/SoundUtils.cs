@@ -105,13 +105,14 @@ public static class SoundUtils
     //    }
     //}
 
-    public static void PlayWithRPC(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos)
+    public static void PlayWithRPC(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos, TeamSideType side = TeamSideType.Neutre)
     {
         SoundRpc soundRpc = new SoundRpc()
         {
             keyGroup = keyGroup,
             keyAction = keyAction,
-            pos = pos
+            pos = pos,
+            side = side
         };
         RpcUtils.SendServerToClientRpc(ref soundRpc);
     }

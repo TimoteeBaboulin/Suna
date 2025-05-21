@@ -10,7 +10,7 @@
 								<Action Name="" ID="{524EFAEA-EECF-48AB-BF78-669742CB9345}" ShortID="95373067">
 									<ReferenceList>
 										<Reference Name="Target">
-											<ObjectRef Name="concrete1" ID="{CC3841A9-DEA9-475B-B0ED-0A396058A614}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+											<ObjectRef Name="Random Concrete Footsteps" ID="{D68DFA41-49A4-4D40-A3E8-E48E322D2CD6}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 										</Reference>
 									</ReferenceList>
 								</Action>
@@ -197,6 +197,85 @@
 								</Event>
 							</ChildrenList>
 						</Folder>
+						<Folder Name="Knife" ID="{DFEAF17A-5DBD-4374-958E-3B6D5F86D67D}" ShortID="770028335">
+							<ChildrenList>
+								<Event Name="Knife_Swing" ID="{F4A86711-91D6-4BB9-A238-42DF48DBA6B3}">
+									<ChildrenList>
+										<Action Name="" ID="{C258481F-08E8-44E9-9AAE-4D57B255693C}" ShortID="968827908">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Knife Swing" ID="{A65360FA-2B01-4A1A-A281-BF4739F93186}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Knife_Draw" ID="{C49D2DB5-952E-4345-9A65-8139BBAE1D17}"/>
+							</ChildrenList>
+						</Folder>
+						<Folder Name="Grenades" ID="{DF2C28FD-F5C0-4331-8463-F904F862E20E}" ShortID="329705442">
+							<ChildrenList>
+								<Event Name="Flash" ID="{A60431C9-83D3-4DE3-BC43-2F87162ADAC9}">
+									<ChildrenList>
+										<Action Name="" ID="{060E1499-73FD-4A6C-B618-33C549C8497D}" ShortID="705691401">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_GrenadeFlash" ID="{18118A9F-23F0-4E33-8F71-6C3CD8E32FEF}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Gaz" ID="{9EAD21F8-5985-4721-8CE4-A1D9B9579458}">
+									<ChildrenList>
+										<Action Name="" ID="{649CCEE4-44C9-49EB-AC86-D5442C781026}" ShortID="219416815">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_GrenadeGas" ID="{14AFBC1C-4704-494F-B2D4-1694B26C80B9}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Smoke" ID="{974ACD95-80A2-4BCC-BE55-4F06F0346FCD}">
+									<ChildrenList>
+										<Action Name="" ID="{A3388B97-95F2-4EDB-B99A-54AA4FC77C09}" ShortID="899686828">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_GrenadeSmoke" ID="{D331A976-E5D2-49EE-AA15-7AEE71AB6080}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Blow" ID="{B564BE92-01D1-48C9-BEF6-0D141FED4EF7}">
+									<ChildrenList>
+										<Action Name="" ID="{48DD8E61-835F-41C1-A0A9-7A5A023467F0}" ShortID="764874517">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_GrenadeBase" ID="{1B8A3BE1-0D37-4C25-9EA3-1E5AF9DE8D55}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
+						<Folder Name="Harvester" ID="{3203EF69-4C85-46D1-9880-0DFD8BD404C7}" ShortID="892722945">
+							<ChildrenList>
+								<Event Name="Harvester_Loop" ID="{ED87A274-ED07-4A9F-8CE2-B4A0C7ED72E7}">
+									<ChildrenList>
+										<Action Name="" ID="{64FC5DCF-FB2E-4E8D-9339-D1BA2B6F67B8}" ShortID="1003691073">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="SFX_HarvesterLoop" ID="{B5940E7A-0C46-44CD-8FF1-8A826E6A6AEF}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Kill" ID="{05BD68FA-E84C-4609-9DEE-31F8694942CB}" ShortID="341589031">
@@ -223,7 +302,7 @@
 										<Action Name="" ID="{CCC9BABA-16CB-4308-B792-D0F0A2290186}" ShortID="721970838">
 											<ReferenceList>
 												<Reference Name="Target">
-													<ObjectRef Name="concrete_impact_bullet1" ID="{8E6F47B3-8E20-497E-87B3-B47D8198D25D}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+													<ObjectRef Name="Random Concrete Impact" ID="{676F6581-6DF1-46CF-AA26-C72EF8F929D7}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
 												</Reference>
 											</ReferenceList>
 										</Action>
@@ -307,7 +386,7 @@
 						</Event>
 					</ChildrenList>
 				</Folder>
-				<Folder Name="Tom_Musics" ID="{3AB3EA86-8758-4B40-8902-DE47D35940E6}" ShortID="874391025">
+				<Folder Name="Musics" ID="{3AB3EA86-8758-4B40-8902-DE47D35940E6}" ShortID="874391025">
 					<ChildrenList>
 						<Event Name="CS_Like_Counter_Clockwise" ID="{C5FD91AC-A4D9-4C5D-A086-B29C57D6FEC3}">
 							<ChildrenList>
@@ -384,6 +463,32 @@
 								</Action>
 							</ChildrenList>
 						</Event>
+						<Folder Name="Buy Phase" ID="{FC51F282-8223-4282-B1DF-6B68461F067B}" ShortID="563148146">
+							<ChildrenList>
+								<Event Name="Native_BuyPhase" ID="{CCF41A0E-CEF3-4D40-80E4-C9834CD69093}">
+									<ChildrenList>
+										<Action Name="" ID="{CEE61E9C-8E4A-47E3-AF10-3369D797174E}" ShortID="403859834">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Natives_BuyPhase_Music" ID="{5B17684A-7DE7-4F59-ABF2-D6C8351D8B16}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+								<Event Name="Corpo_BuyPhase" ID="{66A9887F-006C-4E53-BCBD-C01524BC254D}">
+									<ChildrenList>
+										<Action Name="" ID="{5D524422-3976-4AF6-96E5-0FC157C31E2A}" ShortID="810253962">
+											<ReferenceList>
+												<Reference Name="Target">
+													<ObjectRef Name="Corpos_BuyPhase_Music" ID="{B878A42A-B110-4BA0-AED4-19225489FD70}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+												</Reference>
+											</ReferenceList>
+										</Action>
+									</ChildrenList>
+								</Event>
+							</ChildrenList>
+						</Folder>
 					</ChildrenList>
 				</Folder>
 				<Folder Name="Management" ID="{46EB3474-7CEE-4AC6-A242-00C8418B4AC1}" ShortID="212104173">

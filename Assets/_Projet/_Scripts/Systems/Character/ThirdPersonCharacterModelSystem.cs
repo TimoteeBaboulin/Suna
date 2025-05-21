@@ -92,7 +92,7 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
 
             if (teamSide == TeamSideType.Neutre) continue;
 
-            EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+            EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClientComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
             NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
 
             if (entities.Length == 0) continue;

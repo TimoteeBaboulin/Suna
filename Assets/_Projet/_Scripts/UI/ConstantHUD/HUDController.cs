@@ -1,19 +1,15 @@
 using GameNetwork.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Entities;
 using Unity.Mathematics;
-using Unity.Services.Matchmaker.Models;
-using Unity.Services.Multiplayer;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using UI = UIDocumentUtils;
 
-public class HUDController : MonoBehaviour
+public class HUDController : MonoBehaviour, IUIController
 {
     private UITextureData texData;
 
@@ -60,10 +56,6 @@ public class HUDController : MonoBehaviour
     [SerializeField] private VisualTreeAsset _weaponAsset;
     [SerializeField] List<WeaponMap> _weaponMap;
     private WeaponListLinkSystem _weaponListLinkSystem;
-
-    // Message Box // Should be uncommented when Message Box is fully implemented
-    //private VisualElement _messageBox;
-    //private ScrollView _messageBoxScrollView;
 
     // ErrorWindow
     [SerializeField] private GameObject _errorWindowPrefab;
@@ -116,6 +108,17 @@ public class HUDController : MonoBehaviour
     private VisualElement _minimapMapElement;
     private VisualElement _minimapPlayerElement;
 
+    // Damage Overlay
+    private VisualElement _damageOverlay;
+    private bool _damageOverlayActive = false;
+    private float _damageOverlayTimer = 0f;
+    private readonly float _damageOverlayTime = 0.5f;
+
+    // Spectator Controls
+    private VisualElement _spectatorControlsElement;
+
+    public UICentralController centralController { get => GetComponentInParent<UICentralController>(); }
+
     private void Awake()
     {
         // Initialize all HUD elements
@@ -139,6 +142,9 @@ public class HUDController : MonoBehaviour
         _hitMarkerElement = _crosshairElement.Q("HitMarker");
         UI.SetOpacity(ref _hitMarkerElement, 0f);
 
+        _damageOverlay = _HUD.Q("DamageOverlay");
+        UI.SetOpacity(ref _damageOverlay, 0f);
+
         _corpoScore = _HUD.Q<Label>("CorpoScore");
         _natifScore = _HUD.Q<Label>("NatifScore");
 
@@ -146,9 +152,6 @@ public class HUDController : MonoBehaviour
         _second = _HUD.Q<VisualElement>("Timer").Q<Label>("Second");
 
         _weaponContainer = _HUD.Q<VisualElement>("WeaponContainer");
-
-        //_messageBox = _HUD.Q<VisualElement>("MessageBox");
-        //_messageBoxScrollView = _messageBox.Q<ScrollView>();
 
         _defuse = _HUD.Q<VisualElement>("Defuse");
         _defuseFill = _defuse.Q<VisualElement>("DefuseFill");
@@ -167,8 +170,7 @@ public class HUDController : MonoBehaviour
         _minimapMapElement = _minimapElement.Q<VisualElement>("Map");
         _minimapPlayerElement = _minimapElement.Q<VisualElement>("Player");
 
-        // Hide Message Box element at start
-        //UI.SetActive(ref _messageBox, false);
+        _spectatorControlsElement = _HUD.Q<VisualElement>("SpectatorControls");
 
         // Hide Defuse and Plant elements at start
         UI.SetActive(ref _defuse, false);
@@ -221,9 +223,6 @@ public class HUDController : MonoBehaviour
             UI.SetActive(ref visualElement, false);
             UI.SetOpacity(ref visualElement, 0f);
         }
-
-        // If too much message, delete previous ones
-        //if (_messageBoxScrollView.contentContainer.childCount > 20) _messageBoxScrollView.contentContainer.RemoveAt(0);
 
         var world = World.DefaultGameObjectInjectionWorld;
         if (world == null)
@@ -344,6 +343,26 @@ public class HUDController : MonoBehaviour
         {
             OnWinLoseRoundUpdate();
         }
+
+        if (_damageOverlayActive)
+        {
+            _damageOverlayTimer -= Time.deltaTime;
+            if (_damageOverlayTimer < 0f)
+            {
+                _damageOverlayTimer = 0f;
+            }
+
+            float t = Mathf.Clamp01(_damageOverlayTimer / _damageOverlayTime);
+
+            UI.SetOpacity(ref _damageOverlay, t);
+
+            if (_damageOverlayTimer <= 0f)
+            {
+                _damageOverlayTimer = 0f;
+                _damageOverlayActive = false;
+                UI.SetOpacity(ref _damageOverlay, 0f);
+            }
+        }
     }
 
     private void System_OnSmokeGrenade(object sender, InGameHUDSystem.SmokeGrenadeArgs e)
@@ -363,6 +382,10 @@ public class HUDController : MonoBehaviour
         {
             return;
         }
+
+        _damageOverlayActive = true;
+        _damageOverlayTimer = _damageOverlayTime;
+        UI.SetOpacity(ref _damageOverlay, 1f);
         
         DamageIndicatorElement damageIndicator = new();
         damageIndicator.transform.rotation = Quaternion.Euler(0f, 0f, args.angle);
@@ -558,6 +581,14 @@ public class HUDController : MonoBehaviour
                 currentPlayer = firstNatifPlayer;
             }
         }
+        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).Count > 0)
+        {
+            ClientComponent firstNeutralPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).First();
+            if (firstNeutralPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            {
+                currentPlayer = firstNeutralPlayer;
+            }
+        }
         return currentPlayer;
     }
 
@@ -751,7 +782,11 @@ public class HUDController : MonoBehaviour
     private void System_OnHealthChange(object sender, InGameHUDSystem.HealthArgs args)
     {
         _health.text = args.Health.ToString();
-        _armor.text = math.round(args.armorLevel / 2f).ToString();
+        _armor.text = args.armorLevel.ToString();
+    }
+    private void System_OnArmorChange(object sender, EventArgs args)
+    {
+        //armor.text = args.Armor.ToString();
     }
     private void System_OnAmmoChange(object sender, InGameHUDSystem.AmmoArgs args)
     {
@@ -918,6 +953,28 @@ public class HUDController : MonoBehaviour
         _killFeedContainer.Insert(0, element);
 
         Debug.Log($"{args.killer.name} killed {args.target.name}");
+    }
+
+    public void SetUIActive(bool value)
+    {
+        UI.SetChildrenActive(ref _HUD, value);
+        UI.SetActive(ref _spectatorControlsElement, !value);
+
+        UI.SetActive(ref _winLoseRoundElement, false);
+        UI.SetActive(ref _winLoseGameElement, false);
+        UI.SetActive(ref _defuse, false);
+        UI.SetActive(ref _plant, false);
+        UI.SetActive(ref _roundElement, false);
+    }
+
+    public bool IsUIActive()
+    {
+        return UI.IsActive(ref _HUD);
+    }
+
+    public UICentralController.UIState GetUIState()
+    {
+        return UICentralController.UIState.HUD;
     }
     //----------End of KillFeed Functions
 }
