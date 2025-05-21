@@ -37,7 +37,7 @@ namespace GameNetwork.Utils
         public static ushort CurrentPort { get; set; } = 7979;
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-        public static int MaxNbOfPlayers = 2;
+        public static int MaxNbOfPlayers = 3;
         public static bool isRelease = true;
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;

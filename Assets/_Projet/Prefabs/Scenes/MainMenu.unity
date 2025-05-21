@@ -1300,7 +1300,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isRelease
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
+      propertyPath: sceneToLoad
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6707715421604416669, guid: ebdbd013bcccf5c4f897abbf71193c52, type: 3}
       propertyPath: isClientLocal
