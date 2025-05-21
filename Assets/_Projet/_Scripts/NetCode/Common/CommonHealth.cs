@@ -202,6 +202,7 @@ public partial struct ApplyDamageSystem : ISystem
             GhostOwnerLookup = ghostOwnerLookup,
             CharacterClientAttachedComponentLookup = state.GetComponentLookup<CharacterClientAttachedComponent>(),
             ClientComponentLookup = state.GetComponentLookup<ClientComponent>(),
+            HasNoHealthTagLookup = state.GetComponentLookup<HasNoHealthTag>(),
             entityTeamTable = entityTeamTable,
             ecb = ecb.AsParallelWriter()
         };

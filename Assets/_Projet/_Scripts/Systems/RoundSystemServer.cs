@@ -113,7 +113,7 @@ public partial struct RoundSystemServer : ISystem
 
         if (ClientTransportHelper.isRelease)
         {
-            if (ClientTransportHelper.instance.Session.AvailableSlots != 0 || PlayerHelpers.GetCurrentTeamCounts().neutralPlayersCount > 0)
+            if (ClientTransportHelper.instance.Session.AvailableSlots != 0 /*|| PlayerHelpers.GetCurrentTeamCounts().neutralPlayersCount > 0*/)
                 return;
         }
         else

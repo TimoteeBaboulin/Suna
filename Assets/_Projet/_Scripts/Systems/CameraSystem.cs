@@ -149,10 +149,10 @@ partial class CameraSystem : SystemBase
 
                     if (oldTarget != currentTarget)
                     {
-                        if (currentTarget != Entity.Null
-                        && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                        if (oldTarget != Entity.Null
+                        && EntityManager.HasComponent<CameraIsAtached>(oldTarget))
                         {
-                            EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                            EntityManager.RemoveComponent<CameraIsAtached>(oldTarget);
                         }
 
                         EntityManager.AddComponent<CameraIsAtached>(currentTarget);
@@ -162,7 +162,7 @@ partial class CameraSystem : SystemBase
             }
         }
 
-        if (currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
+        if (needNewTarget && currentTarget != Entity.Null && EntityManager.Exists(currentTarget))
         {
             if (EntityManager.HasComponent<CharacterIsEnable>(currentTarget)
                 && EntityManager.IsComponentEnabled<CharacterIsEnable>(currentTarget))
