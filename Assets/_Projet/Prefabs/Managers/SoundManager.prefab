@@ -156,12 +156,12 @@ MonoBehaviour:
         WwiseObjectReference: {fileID: 11400000, guid: 2f9166542bc3b994da15ba00cf73f695, type: 2}
   - keyGroup: Music
     maping:
-    - keyAction: Natif
+    - keyAction: NatifWin
       sound:
         idInternal: 0
         valueGuidInternal: 
         WwiseObjectReference: {fileID: 11400000, guid: 4faba9dd0249fb44aba51ec97b3469e1, type: 2}
-    - keyAction: Corpo
+    - keyAction: CorpoWin
       sound:
         idInternal: 0
         valueGuidInternal: 
@@ -171,6 +171,16 @@ MonoBehaviour:
         idInternal: 0
         valueGuidInternal: 
         WwiseObjectReference: {fileID: 11400000, guid: 9007dbb144fe4864dae95dea681c9473, type: 2}
+    - keyAction: NatifBuy
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 556eecd7a7a3cbe42a687fbb42789f20, type: 2}
+    - keyAction: CorpoBuy
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 558d2b45c2b5a83469c98defd7a25ac6, type: 2}
   - keyGroup: Bullet
     maping:
     - keyAction: NearBullet

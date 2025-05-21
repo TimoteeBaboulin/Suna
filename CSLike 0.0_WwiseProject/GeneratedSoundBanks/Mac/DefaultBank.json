@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}",
     "Language": "SFX",
-    "Hash": "{7A107170-A512-ED0B-E72A-8E5BDD9F2F34}",
+    "Hash": "{18EE623D-8855-D5BA-6677-5563171A3172}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\DefaultBank",
     "ShortName": "DefaultBank",
     "Path": "DefaultBank.bnk",
@@ -118,6 +118,14 @@
       "Location": "Memory",
       "ShortName": "headshot2.wav",
       "CachePath": "71/{71E3E407-ECD7-2EBA-42A2-7C354C39C346}.wem"
+     },
+     {
+      "Id": "481114191",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "SUNA_CorpoShop.wav",
+      "CachePath": "BC/{BC17B0D4-8950-08D1-888C-7CD65785B32A}.wem"
      },
      {
       "Id": "521724105",
@@ -367,6 +375,20 @@
       "MediaRefs": [
        {
         "Id": "738294315"
+       }
+      ]
+     },
+     {
+      "Id": "2586466302",
+      "Name": "Corpo_BuyPhase",
+      "ObjectPath": "\\Events\\Default Work Unit\\Musics\\Buy Phase\\Corpo_BuyPhase",
+      "GUID": "{66A9887F-006C-4E53-BCBD-C01524BC254D}",
+      "DurationType": "OneShot",
+      "DurationMin": "18.854218",
+      "DurationMax": "18.854218",
+      "MediaRefs": [
+       {
+        "Id": "481114191"
        }
       ]
      },
@@ -869,6 +891,6 @@
     ]
    }
   ],
-  "FileHash": "{B9B84FD2-92B2-1FBA-2775-EF904685EAB3}"
+  "FileHash": "{7BDED703-0891-4C4A-71AE-D71425E04BAA}"
  }
 }

@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584538756168780951
+    m_lastTime: -8584538496039325580
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -122,7 +122,7 @@ MonoBehaviour:
     ParentPath: Events\Ambiant
     guid: e3f1ef69a3bd3f4b85359d69fe37f028
     GuidInternal: 
-    m_lastTime: -8584538758015756024
+    m_lastTime: -8584537939347363317
     List:
     - name: Ambient
       guid: ba8a1bde0b28534d95dc237cad1ff92d
@@ -158,9 +158,9 @@ MonoBehaviour:
         ObjectType: 3
         guid: f2ad067df391bd42bed107978b682aae
       Path: Events\Ambiant\Ambient\Insects
-      maxAttenuation: 150
-      maxDuration: 0
-      minDuration: 0
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
     - name: Wind
       guid: 8d91ec7e4a1ff3479b1c129f50c95487
       id: 1537061107
@@ -179,8 +179,8 @@ MonoBehaviour:
         guid: 8d91ec7e4a1ff3479b1c129f50c95487
       Path: Events\Ambiant\Ambient\Wind
       maxAttenuation: 0
-      maxDuration: 299.67822
-      minDuration: 299.67822
+      maxDuration: -1
+      minDuration: -1
   - PhysicalPath: Events\Default Work Unit.wwu
     PathAndIcons:
     - ElementName: Events
@@ -192,7 +192,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584538526527492031
+    m_lastTime: -8584537891277692615
     List:
     - name: Blow
       guid: 92be64b5d101c948bef60d141fed4ef7
@@ -331,6 +331,29 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
+    - name: Corpo_BuyPhase
+      guid: 7f88a9666c00534ebcbdc01524bc254d
+      id: 2586466302
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Musics
+        ObjectType: 4
+        guid: 86eab33a5887404b8902de47d35940e6
+      - ElementName: Buy Phase
+        ObjectType: 4
+        guid: 82f251fc23828242b1df6b68461f067b
+      - ElementName: Corpo_BuyPhase
+        ObjectType: 3
+        guid: 7f88a9666c00534ebcbdc01524bc254d
+      Path: Events\Default Work Unit\Musics\Buy Phase\Corpo_BuyPhase
+      maxAttenuation: 0
+      maxDuration: 18.854218
+      minDuration: 18.854218
     - name: CS_Like_Counter_Clockwise
       guid: ac91fdc5d9a45d4ca086b29c57d6fec3
       id: 4036144589
@@ -758,26 +781,6 @@ MonoBehaviour:
       maxDuration: -1
       minDuration: -1
     - name: Miss
-      guid: 67f25658d5142147ae79e516e88ffa3f
-      id: 3062523241
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: Hit
-        ObjectType: 4
-        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
-      - ElementName: Miss
-        ObjectType: 4
-        guid: 67f25658d5142147ae79e516e88ffa3f
-      Path: Events\Default Work Unit\Hit\Miss
-      maxAttenuation: 150
-      maxDuration: 1.6925397
-      minDuration: 0.76970524
-    - name: Miss
       guid: b6a11cb79fc954428527a1aeaa5a936c
       id: 3062523241
       PathAndIcons:
@@ -797,6 +800,26 @@ MonoBehaviour:
         ObjectType: 3
         guid: b6a11cb79fc954428527a1aeaa5a936c
       Path: Events\Default Work Unit\Hit\Miss\Miss
+      maxAttenuation: 150
+      maxDuration: 1.6925397
+      minDuration: 0.76970524
+    - name: Miss
+      guid: 67f25658d5142147ae79e516e88ffa3f
+      id: 3062523241
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: Default Work Unit
+        ObjectType: 12
+        guid: 796a3769bf4c0c43b6db861a3b5a440a
+      - ElementName: Hit
+        ObjectType: 4
+        guid: cdf47e2d04437e4bbe88a4e41b14ccc6
+      - ElementName: Miss
+        ObjectType: 4
+        guid: 67f25658d5142147ae79e516e88ffa3f
+      Path: Events\Default Work Unit\Hit\Miss
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -860,23 +883,6 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 0.86489797
       minDuration: 0.86489797
-    - name: New Virtual Folder
-      guid: 912f0e532357d84899b665ce5ac70d15
-      id: 3208186232
-      PathAndIcons:
-      - ElementName: Events
-        ObjectType: 5
-        guid: 00000000000000000000000000000000
-      - ElementName: Default Work Unit
-        ObjectType: 12
-        guid: 796a3769bf4c0c43b6db861a3b5a440a
-      - ElementName: New Virtual Folder
-        ObjectType: 4
-        guid: 912f0e532357d84899b665ce5ac70d15
-      Path: Events\Default Work Unit\New Virtual Folder
-      maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
     - name: No_Bullet
       guid: 4670e409b9c0a244914dc4b3324edf42
       id: 3728918479
@@ -1361,7 +1367,7 @@ MonoBehaviour:
     ParentPath: Events\MainMenu
     guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
     GuidInternal: 
-    m_lastTime: -8584539404962982661
+    m_lastTime: -8584537924185469622
     List:
     - name: CS_Like_Main_Title_Loop
       guid: f5a8660a87212443a57b5fb3c3f3d40c
@@ -1465,6 +1471,23 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 0
       minDuration: 0
+    - name: Main_Menu_Loop_New
+      guid: 09e70f594a18614b947a5733ddd80cab
+      id: 431042762
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: MainMenu
+        ObjectType: 12
+        guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
+      - ElementName: Main_Menu_Loop_New
+        ObjectType: 3
+        guid: 09e70f594a18614b947a5733ddd80cab
+      Path: Events\MainMenu\Main_Menu_Loop_New
+      maxAttenuation: 0
+      maxDuration: 0
+      minDuration: 0
     - name: StopAll_01
       guid: d7d21ec239b7e644a0990d0a2da6222c
       id: 4256069028
@@ -1493,7 +1516,7 @@ MonoBehaviour:
     ParentPath: Events\VoiceLines Work Unit
     guid: 5090bebd707741418fc3b98ea7becf02
     GuidInternal: 
-    m_lastTime: -8584538526527043933
+    m_lastTime: -8584537872304600040
     List:
     - name: A_under_siege
       guid: 8a117f8a20763b4c8cc3f88946167ed1
@@ -1552,6 +1575,23 @@ MonoBehaviour:
         ObjectType: 3
         guid: ffb76b28997beb4b83f7edaf8e54f893
       Path: Events\VoiceLines Work Unit\Natif\blasphemous_ahead
+      maxAttenuation: 0
+      maxDuration: -1
+      minDuration: -1
+    - name: Corpo
+      guid: 943ca55d20d562429bfa33bb674d1335
+      id: 2737192660
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Corpo
+        ObjectType: 4
+        guid: 943ca55d20d562429bfa33bb674d1335
+      Path: Events\VoiceLines Work Unit\Corpo
       maxAttenuation: 0
       maxDuration: -1
       minDuration: -1
@@ -1633,8 +1673,28 @@ MonoBehaviour:
         guid: 427f218a1c4c204291e652ba52dd3ea8
       Path: Events\VoiceLines Work Unit\Natif\harvester_defused
       maxAttenuation: 150
-      maxDuration: 2.4863038
-      minDuration: 2.0719275
+      maxDuration: 1.6578685
+      minDuration: 1.3599774
+    - name: harvester_defused_01
+      guid: 7bcfd54af80fd44589e0eb4622929eba
+      id: 4101318516
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Corpo
+        ObjectType: 4
+        guid: 943ca55d20d562429bfa33bb674d1335
+      - ElementName: harvester_defused_01
+        ObjectType: 3
+        guid: 7bcfd54af80fd44589e0eb4622929eba
+      Path: Events\VoiceLines Work Unit\Corpo\harvester_defused_01
+      maxAttenuation: 150
+      maxDuration: 1.6578685
+      minDuration: 1.3599774
     - name: harvester_plant
       guid: c78d659e0b0d9045b5073515e78b5b8b
       id: 3382952939
@@ -1655,6 +1715,26 @@ MonoBehaviour:
       maxAttenuation: 0
       maxDuration: 1.968322
       minDuration: 1.3467574
+    - name: harvester_plant_01
+      guid: a3c8464542074b43aa21a00c0ccae652
+      id: 2171835423
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Corpo
+        ObjectType: 4
+        guid: 943ca55d20d562429bfa33bb674d1335
+      - ElementName: harvester_plant_01
+        ObjectType: 3
+        guid: a3c8464542074b43aa21a00c0ccae652
+      Path: Events\VoiceLines Work Unit\Corpo\harvester_plant_01
+      maxAttenuation: 150
+      maxDuration: 1.9546939
+      minDuration: 1.7744898
     - name: HERETIC
       guid: 5060b9f26eb9314daf2124d4e041a6be
       id: 3254572857
@@ -1795,6 +1875,26 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 3.2209978
       minDuration: 1.2448527
+    - name: kill_event_01
+      guid: 11dc2cbe99ce194d901456823088dfe2
+      id: 1646215262
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Corpo
+        ObjectType: 4
+        guid: 943ca55d20d562429bfa33bb674d1335
+      - ElementName: kill_event_01
+        ObjectType: 3
+        guid: 11dc2cbe99ce194d901456823088dfe2
+      Path: Events\VoiceLines Work Unit\Corpo\kill_event_01
+      maxAttenuation: 150
+      maxDuration: 1.9466667
+      minDuration: 1.0577778
     - name: Natif
       guid: 9a8ac8476e872b41a9571c55acde58b7
       id: 3695231755
@@ -2012,6 +2112,26 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 2.059365
       minDuration: 1.4523356
+    - name: throwing_flash_01
+      guid: ae5f13e3dbc3eb4fb95806879e479339
+      id: 2893929932
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Corpo
+        ObjectType: 4
+        guid: 943ca55d20d562429bfa33bb674d1335
+      - ElementName: throwing_flash_01
+        ObjectType: 3
+        guid: ae5f13e3dbc3eb4fb95806879e479339
+      Path: Events\VoiceLines Work Unit\Corpo\throwing_flash_01
+      maxAttenuation: 150
+      maxDuration: 1.3479139
+      minDuration: 1.1206349
     - name: throwing_smoke
       guid: 5ddacf405321f94fad35c9c44ae4cba1
       id: 3127593203
@@ -2032,6 +2152,26 @@ MonoBehaviour:
       maxAttenuation: 150
       maxDuration: 2.1755102
       minDuration: 1.3467574
+    - name: throwing_smoke_01
+      guid: b349c02baa9df54fab148059208a15f4
+      id: 1686175911
+      PathAndIcons:
+      - ElementName: Events
+        ObjectType: 5
+        guid: 00000000000000000000000000000000
+      - ElementName: VoiceLines Work Unit
+        ObjectType: 12
+        guid: 5090bebd707741418fc3b98ea7becf02
+      - ElementName: Corpo
+        ObjectType: 4
+        guid: 943ca55d20d562429bfa33bb674d1335
+      - ElementName: throwing_smoke_01
+        ObjectType: 3
+        guid: b349c02baa9df54fab148059208a15f4
+      Path: Events\VoiceLines Work Unit\Corpo\throwing_smoke_01
+      maxAttenuation: 150
+      maxDuration: 1.1251473
+      minDuration: 1.1209071
     - name: together_we_push
       guid: 24fd9610e3af514fa6e23a228c7235fd
       id: 3490572673
@@ -2203,7 +2343,7 @@ MonoBehaviour:
     m_lastTime: -8584549679374128891
     List: []
   ExpandedFileSystemItemIds: 
-  ExpandedWaapiItemIds: 01000000050000000800000010000000190000001b0000001e0000001f00000023000000240000002600000027000000280000003000000040000000
+  ExpandedWaapiItemIds: 01000000050000000e00000010000000190000001a0000001b0000001e0000001f0000002000000023000000240000002600000027000000280000002c000000300000003800000040000000
   AutoSyncSelection: 0
   autoPopulateEnabled: 1
   currentDataSource: 0

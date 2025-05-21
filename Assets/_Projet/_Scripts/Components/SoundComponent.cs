@@ -11,6 +11,7 @@ public struct SoundRpc : IRpcCommand
     public FixedString32Bytes keyGroup;
     public FixedString32Bytes keyAction;
     public float3 pos;
+    public TeamSideType side;
 }
 
 public class SoundRegister : IComponentData

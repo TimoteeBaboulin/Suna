@@ -217,13 +217,19 @@ public partial struct RoundSystemServer : ISystem
         //Debug: Allow to fake a collector plant
     }
 
-    private void SetPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> componentRW, RoundPhase phase, EntityCommandBuffer ecb)
+    private void SetPhase(ref SystemState state, Entity entity, RefRW<RoundComponent> componentRW, RoundPhase phase, EntityCommandBuffer ecb, bool sendPhase = true)
     {
+        if (phase == RoundPhase.BuyPhase)
+        {
+            SoundUtils.PlayWithRPC("Music", "NatifBuy", float3.zero, TeamSideType.Natif);
+            SoundUtils.PlayWithRPC("Music", "CorpoBuy", float3.zero, TeamSideType.Corpo);
+        }
+
         var timeBuffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
 
         componentRW.ValueRW.currentPhase = phase;
         componentRW.ValueRW.timer = timeBuffer[(int)phase];
-        SendCurrentPhase(ref state, entity, componentRW, ecb);
+        if (sendPhase) SendCurrentPhase(ref state, entity, componentRW, ecb);
 
         SetSpawnBarriersActive(ref state, phase == RoundPhase.BuyPhase);
     }
@@ -247,7 +253,7 @@ public partial struct RoundSystemServer : ISystem
         //Update the score and lossstreak of the correct teams
         if (team == TeamSideType.Corpo)
         {
-            SoundUtils.PlayWithRPC("Music", "Corpo", float3.zero);
+            SoundUtils.PlayWithRPC("Music", "CorpoWin", float3.zero);
 
             component.ValueRW.corporationScore++;
             component.ValueRW.corporationLossStreak = 0;
@@ -258,7 +264,7 @@ public partial struct RoundSystemServer : ISystem
         }
         else if (team == TeamSideType.Natif)
         {
-            SoundUtils.PlayWithRPC("Music", "Natif", float3.zero);
+            SoundUtils.PlayWithRPC("Music", "NatifWin", float3.zero);
 
             component.ValueRW.nativeScore++;
             component.ValueRW.nativeLossStreak = 0;
@@ -360,6 +366,7 @@ public partial struct RoundSystemServer : ISystem
 
     private void InitGame(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
     {
+
         //Initialize the Round Component with the correct data
         var buffer = SystemAPI.GetBuffer<PhaseTimesBuffer>(entity);
         component.ValueRW.currentPhase = RoundPhase.BuyPhase;
@@ -367,16 +374,17 @@ public partial struct RoundSystemServer : ISystem
         component.ValueRW.currentRound = 0;
         component.ValueRW.nativeScore = 0;
         component.ValueRW.corporationScore = 0;
-        InitRound(ref state, entity, component, ecb);
-        SendCurrentPhase(ref state, entity, component, ecb);
+        InitRound(ref state, entity, component, ecb, false);
+        SynchronizeRoundComponent(ref state, component.ValueRO);
+        //SendCurrentPhase(ref state, entity, component, ecb);
     }
 
-    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb)
+    private void InitRound(ref SystemState state, Entity entity, RefRW<RoundComponent> component, EntityCommandBuffer ecb, bool sendPhase = true)
     {
         SoundUtils.PlayWithRPC("Management", "StopAll", float3.zero);
 
         //Reset the phase and increase the round number
-        SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb);
+        SetPhase(ref state, entity, component, RoundPhase.BuyPhase, ecb, sendPhase);
         _harvesterMusicClockWiseStarted = false;
         component.ValueRW.currentRound++;
 
@@ -476,5 +484,15 @@ public partial struct RoundSystemServer : ISystem
                 TargetConnection = client
             });
         }
+    }
+
+    private void SynchronizeRoundComponent(ref SystemState state, RoundComponent roundComp, Entity target = default)
+    {
+        UpdateRoundDataRpcCommand rpc = new UpdateRoundDataRpcCommand
+        {
+            roundData = roundComp
+        };
+
+        RpcUtils.SendServerToClientRpc(ref rpc);
     }
 }

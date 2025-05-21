@@ -328,11 +328,9 @@ public partial struct ShootSystem : ISystem
                                 case StuffSlot.HEGrenade:
                                     break;
                                 case StuffSlot.SmokeGrenade:
-                                    Debug.Log("<color=green>" + side.ToString());
                                     SoundUtils.PlayWithRPC(side.ToString(), "throwing_smoke", shootStartpos);
                                     break;
                                 case StuffSlot.Flashbang:
-                                    Debug.Log("<color=green>" + side.ToString());
                                     SoundUtils.PlayWithRPC(side.ToString(), "throwing_flash", shootStartpos);
                                     break;
                             }

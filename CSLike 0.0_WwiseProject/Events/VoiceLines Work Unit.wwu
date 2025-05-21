@@ -426,6 +426,65 @@
 						</Event>
 					</ChildrenList>
 				</Folder>
+				<Folder Name="Corpo" ID="{5DA53C94-D520-4262-9BFA-33BB674D1335}" ShortID="227133362">
+					<ChildrenList>
+						<Event Name="harvester_defused_01" ID="{4AD5CF7B-0FF8-45D4-89E0-EB4622929EBA}">
+							<ChildrenList>
+								<Action Name="" ID="{37F912EF-F4C9-467A-A659-5D442BA048E9}" ShortID="46731622">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="harvester_defused" ID="{12512FFC-1452-4F3F-AB98-77A00EFA7202}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="harvester_plant_01" ID="{4546C8A3-0742-434B-AA21-A00C0CCAE652}">
+							<ChildrenList>
+								<Action Name="" ID="{1E0AC17B-A6ED-47C1-BEE1-F4C40B75B7E1}" ShortID="1058914385">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="harvester_deployed" ID="{5529498F-D06B-4284-AEC3-A458F1327431}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="kill_event_01" ID="{BE2CDC11-CE99-4D19-9014-56823088DFE2}">
+							<ChildrenList>
+								<Action Name="" ID="{31A74D1A-9689-4911-B163-480DDB930787}" ShortID="1047100981">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="kill" ID="{046E89EF-7D0C-451D-907D-819964BCF59A}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="throwing_flash_01" ID="{E3135FAE-C3DB-4FEB-B958-06879E479339}">
+							<ChildrenList>
+								<Action Name="" ID="{86C92D55-D5F8-4EBA-9815-6B0CEB0BCEB2}" ShortID="442818443">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="flash" ID="{4E5EF88D-89D6-4445-AA7F-87BFF115353F}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="throwing_smoke_01" ID="{2BC049B3-9DAA-4FF5-AB14-8059208A15F4}">
+							<ChildrenList>
+								<Action Name="" ID="{858EA8A0-2DBF-4ABF-B13A-16D1D1B0257B}" ShortID="563628002">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="throw_grenade" ID="{BC9C2E9A-1210-4333-99B4-0C1F2F10FCD0}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
 			</ChildrenList>
 		</WorkUnit>
 	</Events>
