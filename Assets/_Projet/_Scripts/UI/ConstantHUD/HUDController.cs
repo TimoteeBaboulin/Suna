@@ -2,8 +2,10 @@ using GameNetwork.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.NetCode;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UIElements;
@@ -565,29 +567,41 @@ public class HUDController : MonoBehaviour, IUIController
     public ClientComponent GetCurrentPlayerInfo()
     {
         ClientComponent currentPlayer = new();
-        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).Count > 0)
+        if (ClientTransportHelper.ClientWorld != null)
         {
-            ClientComponent firstCorpoPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).First();
-            if (firstCorpoPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            EntityQuery query = new EntityQueryBuilder(allocator: Allocator.Temp).WithAll<ClientComponent, GhostOwnerIsLocal>().Build(ClientTransportHelper.ClientWorld.EntityManager);
+            NativeArray<Entity> entities = query.ToEntityArray(Allocator.Temp);
+            if (entities.Length > 0)
             {
-                currentPlayer = firstCorpoPlayer;
+                Entity entity = entities[0];
+                ClientComponent clientComponent = ClientTransportHelper.ClientWorld.EntityManager.GetComponentData<ClientComponent>(entity);
+                currentPlayer = clientComponent;
+                return currentPlayer;
             }
-        }
-        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).Count > 0)
-        {
-            ClientComponent firstNatifPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).First();
-            if (firstNatifPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
-            {
-                currentPlayer = firstNatifPlayer;
-            }
-        }
-        if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).Count > 0)
-        {
-            ClientComponent firstNeutralPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).First();
-            if (firstNeutralPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
-            {
-                currentPlayer = firstNeutralPlayer;
-            }
+            //if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).Count > 0)
+            //{
+            //    ClientComponent firstCorpoPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Corpo).First();
+            //    if (firstCorpoPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            //    {
+            //        currentPlayer = firstCorpoPlayer;
+            //    }
+            //}
+            //if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).Count > 0)
+            //{
+            //    ClientComponent firstNatifPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Natif).First();
+            //    if (firstNatifPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            //    {
+            //        currentPlayer = firstNatifPlayer;
+            //    }
+            //}
+            //if (PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).Count > 0)
+            //{
+            //    ClientComponent firstNeutralPlayer = PlayerHelpers.GetClientPlayersByTeam(TeamSideType.Neutre).First();
+            //    if (firstNeutralPlayer.playerID == ClientTransportHelper.instance.Session.CurrentPlayer.Id)
+            //    {
+            //        currentPlayer = firstNeutralPlayer;
+            //    }
+            //}
         }
         return currentPlayer;
     }
