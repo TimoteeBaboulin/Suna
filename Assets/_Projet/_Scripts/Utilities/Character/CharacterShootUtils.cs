@@ -24,8 +24,8 @@ public class CharacterShootUtils
             x = math.sin(bulletIndex) * 0.1f;
 
         // Amplifying the effect
-        x *= 180;
-        y *= 110;
+        x *= 90;
+        y *= 80;
 
         if (bulletIndex == 0)
         {

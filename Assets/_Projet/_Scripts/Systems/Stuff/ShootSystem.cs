@@ -136,8 +136,8 @@ public partial struct ShootSystem : ISystem
                                 else if (stuffCommonData.Name.ToString() == "Laksya")
                                 {
                                     bool isAiming = SystemAPI.GetComponent<CharacterComponent>(owner).isAiming;
-                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving || !isAiming ? 8 : 1), commonData.coefSpray, commonData.range) * dt * 10;
-                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt * 10;
+                                    recoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread * (isShooterMoving || !isAiming ? 8 : 1), commonData.coefSpray, commonData.range) * dt;
+                                    visualRecoil = CharacterShootUtils.SKAR18Pattern(dynamicData.patternBulletIndex, commonData.spread, commonData.coefSpray, commonData.range) * dt * 20;
                                 }
                                 else
                                 {

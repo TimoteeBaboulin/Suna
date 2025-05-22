@@ -2,12 +2,11 @@ using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.NetCode;
+using UnityEngine;
 
 [WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
-//[BurstCompile]
 public partial struct EnemyOutlineSystem : ISystem
 {
-    //[BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClientComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
@@ -20,7 +19,7 @@ public partial struct EnemyOutlineSystem : ISystem
 
         Entity localEntity = entities[0];
 
-        foreach (var (outline, ghostOwner, entity) in SystemAPI.Query<RefRW<EnemyOutlineMaterialOverride>, RefRO<GhostOwner>>().WithEntityAccess())
+        foreach (var (outline, tpsModel, ghostOwner, entity) in SystemAPI.Query<RefRW<EnemyOutlineMaterialOverride>, ThirdPersonCharacterModelReference, RefRO<GhostOwner>>().WithEntityAccess())
         {
             if (entity == localEntity) continue;
 
@@ -38,11 +37,13 @@ public partial struct EnemyOutlineSystem : ISystem
 
             if (clientLocalTeamSide == teamSide)
             {
-                outline.ValueRW.Value = 0; // Removing the enemy outline
+                tpsModel.ModelGameObject.layer = 13; // Visibility through walls is managed just by using that layer
+                tpsModel.ModelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().materials[1].SetColor("_OutlineColor", Color.cyan);
             }
             else
             {
-                outline.ValueRW.Value = 1; // Adding the enemy outline
+                tpsModel.ModelGameObject.layer = 14; // Enemy outline layer
+                tpsModel.ModelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().materials[1].SetColor("_OutlineColor", Color.magenta);
             }
 
             query.Dispose();

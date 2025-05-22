@@ -27,14 +27,14 @@ MonoBehaviour:
   _stuffLocalOffsetView: {x: 0, y: 1.648875, z: -0.1410743}
   _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
   recoil: {x: 2, y: 3}
-  damage: 16
+  damage: 24
   range: 220
   firerate: 1100
   isAutomatic: 1
   roundsPerShot: 1
   spread: 3
   spreadAiming: 4.5
-  coefSpray: 1
+  coefSpray: 2
   coefSprayAiming: 0.9
   ergonomics: 0
   dmgFallOff: 0.02
@@ -45,9 +45,9 @@ MonoBehaviour:
   knockbackForceOnKill: 0
   canADS: 0
   ADSFOV: 50
-  lastFireTimeMax: 0.4
-  nbMagazine: 5
-  magazineCapacity: 35
+  lastFireTimeMax: 0.1
+  nbMagazine: 6
+  magazineCapacity: 25
   scope: {fileID: 0}
   handle: {fileID: 0}
   cross: {fileID: 0}

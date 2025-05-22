@@ -163,6 +163,10 @@ public partial struct ApplyDamageSystem : ISystem
     ComponentLookup<CurrentHealthComponent> currentHealthLookup;
     ComponentLookup<GhostOwner> ghostOwnerLookup;
     ComponentLookup<CharacterMoney> moneyLookup;
+    ComponentLookup<CharacterClientAttachedComponent> characterClientAttachedComponentLookup;
+    ComponentLookup<ClientComponent> clientComponentLookup;
+    ComponentLookup<HasNoHealthTag> hasNoHealthTagLookup;
+    EntityStorageInfoLookup entityStorageInfoLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -177,6 +181,10 @@ public partial struct ApplyDamageSystem : ISystem
         currentHealthLookup = state.GetComponentLookup<CurrentHealthComponent>();
         ghostOwnerLookup = state.GetComponentLookup<GhostOwner>();
         moneyLookup = state.GetComponentLookup<CharacterMoney>();
+        characterClientAttachedComponentLookup = state.GetComponentLookup<CharacterClientAttachedComponent>();
+        clientComponentLookup = state.GetComponentLookup<ClientComponent>();
+        hasNoHealthTagLookup = state.GetComponentLookup<HasNoHealthTag>();
+        entityStorageInfoLookup = state.GetEntityStorageInfoLookup();
     }
 
     public void OnUpdate(ref SystemState state)
@@ -200,16 +208,21 @@ public partial struct ApplyDamageSystem : ISystem
         currentHealthLookup.Update(ref state);
         ghostOwnerLookup.Update(ref state);
         moneyLookup.Update(ref state);
+        characterClientAttachedComponentLookup.Update(ref state);
+        clientComponentLookup.Update(ref state);
+        hasNoHealthTagLookup.Update(ref state);
+        entityStorageInfoLookup.Update(ref state);
 
         DamageSourceJob damageSourceJob = new DamageSourceJob
         {
             CurrentHealthLookup = currentHealthLookup,
             MoneyLookup = moneyLookup,
             GhostOwnerLookup = ghostOwnerLookup,
-            CharacterClientAttachedComponentLookup = state.GetComponentLookup<CharacterClientAttachedComponent>(),
-            ClientComponentLookup = state.GetComponentLookup<ClientComponent>(),
-            HasNoHealthTagLookup = state.GetComponentLookup<HasNoHealthTag>(),
+            CharacterClientAttachedComponentLookup = characterClientAttachedComponentLookup,
+            ClientComponentLookup = clientComponentLookup,
+            HasNoHealthTagLookup = hasNoHealthTagLookup,
             entityTeamTable = entityTeamTable,
+            entityStorageInfoLookup = entityStorageInfoLookup,
             ecb = ecb.AsParallelWriter()
         };
 
@@ -322,6 +335,7 @@ public partial struct DamageSourceJob : IJobEntity
     [ReadOnly] public ComponentLookup<CharacterClientAttachedComponent> CharacterClientAttachedComponentLookup;
     [ReadOnly] public ComponentLookup<ClientComponent> ClientComponentLookup;
     [ReadOnly] public NativeHashMap<Entity, TeamSideType> entityTeamTable;
+    [ReadOnly] public EntityStorageInfoLookup entityStorageInfoLookup;
 
     public EntityCommandBuffer.ParallelWriter ecb;
 
@@ -329,8 +343,23 @@ public partial struct DamageSourceJob : IJobEntity
     {
         Entity target = damageComponent.ValueRO.targetEntity;
 
-        if (HasNoHealthTagLookup.HasComponent(target)) return;
-        if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth)) return;
+        if (!entityStorageInfoLookup.Exists(target))
+        {
+            ecb.DestroyEntity(sortKey, entity);
+            return; // Check if the target entity still exists
+        }
+
+        if (HasNoHealthTagLookup.HasComponent(target))
+        {
+            ecb.DestroyEntity(sortKey, entity);
+            return;
+        }
+
+        if (!CurrentHealthLookup.TryGetComponent(target, out var targetHealth))
+        {
+            ecb.DestroyEntity(sortKey, entity);
+            return;
+        }
 
         float damage = damageComponent.ValueRO.damage;
         float finalDamage = damage * (0.5f + math.lerp(0.5f, 0f, targetHealth.armorLevel / 100f));

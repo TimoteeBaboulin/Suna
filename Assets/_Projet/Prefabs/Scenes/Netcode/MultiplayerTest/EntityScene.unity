@@ -573,7 +573,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &273525385
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1354,7 +1354,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1149339946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1920,7 +1920,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1706647346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2376,34 +2376,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Round Manager
       objectReference: {fileID: 0}
-    - target: {fileID: 3851361023541934524, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: _maxRounds
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: _roundSystemActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: '_phaseTimes.Array.data[0]'
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: '_phaseTimes.Array.data[1]'
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: '_phaseTimes.Array.data[2]'
-      value: 40
-      objectReference: {fileID: 0}
-    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
-      propertyPath: '_phaseTimes.Array.data[3]'
-      value: 18
-      objectReference: {fileID: 0}
     - target: {fileID: 8191335809467619837, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -2574,7 +2546,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2084329647
 MonoBehaviour:
   m_ObjectHideFlags: 0
