@@ -11,6 +11,7 @@ public class MainMenuController : MonoBehaviour
     [Header("Main Menu Component")]
     // Assets
     [SerializeField] private VisualTreeAsset _settingsMenuAsset;
+    [SerializeField] private VisualTreeAsset _creditsMenuAsset;
     [SerializeField] private GameManager _gameManager;
 
     // Main Elements
@@ -18,6 +19,7 @@ public class MainMenuController : MonoBehaviour
     private VisualElement _root;
     private Button _playButton;
     private Button _settingsButton;
+    private Button _creditsButton;
     private Button _quitButton;
     private VisualElement _container;
 
@@ -41,6 +43,9 @@ public class MainMenuController : MonoBehaviour
 
         _settingsButton = _root.Q<Button>("SettingsButton");
         _settingsButton.clicked += OnSettingsButton_Click;
+
+        _creditsButton = _root.Q<Button>("CreditsButton");
+        _creditsButton.clicked += OnCreditsButton_Click;
 
         _quitButton = _root.Q<Button>("QuitButton");
         _quitButton.clicked += OnQuitButton_Click;
@@ -98,6 +103,32 @@ public class MainMenuController : MonoBehaviour
         //SoundManager.Instance.Play("Management", "StopAll", Vector3.zero);
     }
 
+    private void EmptyContainer()
+    {
+        if (_container.childCount > 0)
+        {
+            // Destroy all children of the container
+            foreach (var child in _container.Children().ToList())
+            {
+                _container.Remove(child);
+            }
+        }
+    }
+
+    private void OnCreditsButton_Click()
+    {
+        // Save and Close Settings if Settings Menu was open
+        if (gameObject.TryGetComponent(out SettingsMenuController settingsMenuController))
+        {
+            SaveAndCloseSettings(settingsMenuController);
+        }
+        EmptyContainer();
+
+        // Instantiate Credits Menu
+        VisualElement creditsMenu = _creditsMenuAsset.Instantiate().Children().First();
+        _container.Add(creditsMenu);
+    }
+
     private void OnSettingsButton_Click()
     {
         // Save and Close Settings if Settings Menu was open
@@ -105,6 +136,7 @@ public class MainMenuController : MonoBehaviour
         {
             SaveAndCloseSettings(settingsMenuController);
         }
+        EmptyContainer();
 
         // Instantiate Settings Menu
         settingsMenuController = gameObject.AddComponent<SettingsMenuController>();
