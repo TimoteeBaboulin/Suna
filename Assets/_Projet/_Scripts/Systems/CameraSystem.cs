@@ -236,15 +236,16 @@ partial class CameraSystem : SystemBase
 
                 if (oldTarget != currentTarget)
                 {
-                    if (currentTarget != Entity.Null
-                    && EntityManager.HasComponent<CameraIsAtached>(currentTarget))
+                    if (oldTarget != Entity.Null
+                    && EntityManager.HasComponent<CameraIsAtached>(oldTarget))
                     {
-                        EntityManager.RemoveComponent<CameraIsAtached>(currentTarget);
+                        EntityManager.RemoveComponent<CameraIsAtached>(oldTarget);
                     }
 
                     EntityManager.AddComponent<CameraIsAtached>(currentTarget);
-                    needNewTarget = false;
                 }
+
+                needNewTarget = false;
             }
         }
 
