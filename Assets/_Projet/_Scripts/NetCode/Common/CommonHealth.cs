@@ -198,8 +198,12 @@ public partial struct ApplyDamageSystem : ISystem
 
         foreach (Entity entity in entities)
         {
+            if (!state.EntityManager.Exists(entity))
+            {
+                continue;
+            }
+
             var ghostOwner = state.EntityManager.GetComponentData<GhostOwner>(entity);
-            var teamSideType = PlayerHelpers.GetPlayerInTeam(ghostOwner.NetworkId);
             entityTeamTable.TryAdd(entity, PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.NetworkId));
         }
 
