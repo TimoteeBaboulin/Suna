@@ -11,11 +11,11 @@ public class ModelAnimatorData : ScriptableObject
     public AnimatorOverrideController SKAR18;
     public AnimatorOverrideController Nelara;
 
-    public AnimatorOverrideController Grenade_Base;
-    public AnimatorOverrideController Grenade_Fire;
-    public AnimatorOverrideController Grenade_Flash;
-    public AnimatorOverrideController Grenade_Gas;
-    public AnimatorOverrideController Grenade_Smoke;
+    public RuntimeAnimatorController Grenade_Base;
+    public RuntimeAnimatorController Grenade_Fire;
+    public RuntimeAnimatorController Grenade_Flash;
+    public RuntimeAnimatorController Grenade_Gas;
+    public RuntimeAnimatorController Grenade_Smoke;
 
     public RuntimeAnimatorController KnifeNeutral;
     public RuntimeAnimatorController Harvester;
