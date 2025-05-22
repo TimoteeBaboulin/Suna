@@ -217,17 +217,58 @@ public partial struct ApplyDamageSystem : ISystem
 
         ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        //NativeList<DamageIndicator> damageIndicators = new NativeList<DamageIndicator>(Allocator.Temp);
+        //NativeList<KillDamageIndicator> killIndicators = new NativeList<KillDamageIndicator>(Allocator.Temp);
+
+        //foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
+        //{
+        //    Entity client = state.EntityManager.GetComponentData<CharacterClientAttachedComponent>(command.ValueRO.target).ClientEntity;
+        //    damageIndicators.Add(new DamageIndicator
+        //    {
+        //        damageSourcePosition = command.ValueRO.position,
+        //        networkId = state.EntityManager.GetComponentData<ClientComponent>(client).networkID
+        //    });
+        //    if (state.EntityManager.HasComponent<KillDamageCommand>(entity))
+        //    {
+        //        var killCommand = state.EntityManager.GetComponentData<KillDamageCommand>(entity);
+        //        killIndicators.Add(new KillDamageIndicator
+        //        {
+        //            killer = killCommand.killer,
+        //            target = killCommand.target
+        //        });
+        //    }
+        //    ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
+        //}
+
+        //EntityQuery queryDamage = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
+        //foreach (var client in queryDamage.ToEntityArray(Allocator.Temp))
+        //{
+        //    for (int i = 0; i < damageIndicators.Length; i++)
+        //    {
+        //        DamageIndicator damageIndicator = damageIndicators[i];
+        //        RpcUtils.SendServerToClientRpc(ref damageIndicator, client);
+        //    }
+        //    for (int i = 0; i < killIndicators.Length; i++)
+        //    {
+        //        KillDamageIndicator killIndicator = killIndicators[i];
+        //        RpcUtils.SendServerToClientRpc(ref killIndicator, client);
+        //    }
+        //}
+
+
         NativeList<DamageIndicator> damageIndicators = new NativeList<DamageIndicator>(Allocator.Temp);
         NativeList<KillDamageIndicator> killIndicators = new NativeList<KillDamageIndicator>(Allocator.Temp);
 
         foreach (var (command, entity) in SystemAPI.Query<RefRO<ApplyDamageCommand>>().WithEntityAccess())
         {
             Entity client = state.EntityManager.GetComponentData<CharacterClientAttachedComponent>(command.ValueRO.target).ClientEntity;
+
             damageIndicators.Add(new DamageIndicator
             {
                 damageSourcePosition = command.ValueRO.position,
                 networkId = state.EntityManager.GetComponentData<ClientComponent>(client).networkID
             });
+
             if (state.EntityManager.HasComponent<KillDamageCommand>(entity))
             {
                 var killCommand = state.EntityManager.GetComponentData<KillDamageCommand>(entity);
@@ -237,24 +278,28 @@ public partial struct ApplyDamageSystem : ISystem
                     target = killCommand.target
                 });
             }
-            ecb.DestroyEntity(entity); //Destroying the ApplyDamageCommand entity
+
+            ecb.DestroyEntity(entity);
         }
 
-        EntityQuery queryDamage = new EntityQueryBuilder(Allocator.Temp).WithAll<ClientComponent>().Build(ref state);
-        foreach (var client in queryDamage.ToEntityArray(Allocator.Temp))
+        EntityQuery queryConnections = new EntityQueryBuilder(Allocator.Temp)
+            .WithAll<NetworkStreamConnection>()
+            .Build(ref state);
+
+        foreach (var client in queryConnections.ToEntityArray(Allocator.Temp))
         {
             for (int i = 0; i < damageIndicators.Length; i++)
             {
                 DamageIndicator damageIndicator = damageIndicators[i];
                 RpcUtils.SendServerToClientRpc(ref damageIndicator, client);
             }
+
             for (int i = 0; i < killIndicators.Length; i++)
             {
                 KillDamageIndicator killIndicator = killIndicators[i];
                 RpcUtils.SendServerToClientRpc(ref killIndicator, client);
             }
         }
-
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
