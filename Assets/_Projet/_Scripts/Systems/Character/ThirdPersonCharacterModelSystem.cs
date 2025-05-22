@@ -114,12 +114,12 @@ partial struct ClientThirdPersonCharacterModelSystem : ISystem
                 actualVisualGO.layer = 13; // Visibility through walls is managed just by using that layer
 
                 //Removing the enemy outline
-                Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
-                for (int i = 0; i < newMat.Length; i++)
-                {
-                    newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
-                }
-                actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
+                //Material[] newMat = new Material[actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials.Length - 1];
+                //for (int i = 0; i < newMat.Length; i++)
+                //{
+                //    newMat[i] = actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials[i];
+                //}
+                //actualVisualGO.GetComponent<SkinnedMeshRenderer>().materials = newMat;
             }
             else
             {

@@ -117,6 +117,8 @@ public sealed class CharacterAuthoring : MonoBehaviour
 
             AddComponent<CharacterIsPlanting>(entity);
             SetComponentEnabled<CharacterIsPlanting>(entity, false);
+
+            AddComponent<EnemyOutlineMaterialOverride>(entity);
         }
     }
 }

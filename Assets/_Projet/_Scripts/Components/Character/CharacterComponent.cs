@@ -2,6 +2,7 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.NetCode;
+using Unity.Rendering;
 
 public struct CharacterTag : IComponentData { }
 
@@ -9,6 +10,12 @@ public struct CharacterTag : IComponentData { }
 public struct CharacterIsEnable : IComponentData, IEnableableComponent { }
 
 public struct CharacterDeadColliderTag : IComponentData { }
+
+[MaterialProperty("_ShouldDisplay")]
+public struct EnemyOutlineMaterialOverride : IComponentData
+{
+    public float Value;
+}
 
 [GhostComponent]
 public struct CharacterComponent : IComponentData
