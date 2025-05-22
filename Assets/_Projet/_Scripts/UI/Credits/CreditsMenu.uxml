@@ -1,0 +1,42 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <engine:VisualElement name="Background" style="width: 1300px; height: 700px; position: absolute; flex-direction: row; top: -50px; left: 0;">
+        <engine:VisualElement name="Progs" style="flex-grow: 1; align-items: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); color: rgb(255, 255, 255); font-size: 45px; -unity-font-style: bold;">
+            <engine:Label text="Programmers" name="Title" style="margin-top: 20px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            <engine:Label text="CLAUDE Adrien" name="Adrien" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="ARCA Théo" name="Theo" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:VisualElement name="SEPARATOR" style="height: 40px;" />
+            <engine:Label text="REY Aurélien" name="Aurelien" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px; height: 50px;" />
+            <engine:Label text="BABOULIN Timotee" name="Timotee" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="COYNE Thomas" name="Thomas" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="HAMMEL Léonnel" name="Leonnel" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="Gameplay Programmer" name="AdrienTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 165px;" />
+            <engine:Label text="UI Programmer" name="TheoTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 250px;" />
+            <engine:Label text="Game Designer" name="AurelienTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 375px;" />
+            <engine:Label text="Lead Programmer" name="TimoteeTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 460px;" />
+            <engine:Label text="Co-Project Manager" name="ThomasTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 545px;" />
+            <engine:Label text="Co-Project Manager" name="LeonnelTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 630px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Artists" style="flex-grow: 1; align-items: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); color: rgb(255, 255, 255); font-size: 45px; -unity-font-style: bold;">
+            <engine:Label text="Artists" name="Title" style="margin-top: 20px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            <engine:Label text="CARPINTEIRO Brice" name="Brice" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="BAST Sarah" name="Sarah" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:VisualElement name="SEPARATOR" style="height: 40px;" />
+            <engine:Label text="GUINOT Camille" name="Camille" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px; height: 50px;" />
+            <engine:Label text="MENGUAL Sebastian" name="Sebastian" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="Lead Artist" name="CamilleTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 375px;" />
+            <engine:Label text="Art Director" name="SebastianTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 460px;" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Contibutors" style="flex-grow: 1; align-items: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;); color: rgb(255, 255, 255); font-size: 45px; -unity-font-style: bold;">
+            <engine:Label text="Contributors" name="Title" style="margin-top: 20px; margin-right: 20px; margin-bottom: 50px; margin-left: 20px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0;" />
+            <engine:Label text="MICHEL Keylian" name="Keylian" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="PARDINGON Vincent" name="Vincent" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:VisualElement name="SEPARATOR" style="height: 40px;" />
+            <engine:Label text="CASAMENTO Thomas" name="Tom" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px; height: 50px;" />
+            <engine:Label text="HOCTOR George Miller" name="George" style="margin-top: 10px; margin-right: 10px; margin-bottom: 30px; margin-left: 10px; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; -unity-font-style: normal; font-size: 35px;" />
+            <engine:Label text="Artist" name="KeylianTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 165px;" />
+            <engine:Label text="Artist" name="VincentTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 250px;" />
+            <engine:Label text="Music Composer" name="TomTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 375px;" />
+            <engine:Label text="Voice Actor" name="GeorgeTitle" style="position: absolute; color: rgb(226, 190, 54); -unity-font-style: normal; font-size: 25px; top: 460px;" />
+        </engine:VisualElement>
+    </engine:VisualElement>
+</engine:UXML>

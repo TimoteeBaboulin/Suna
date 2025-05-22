@@ -6,6 +6,7 @@
         <ui:VisualElement name="MainMenuElements" class="element-background" style="width: 600px; position: absolute; left: 50px; top: 400px;">
             <ui:Button text="   Play" name="PlayButton" class="main-menu-button" />
             <ui:Button text="   Settings" name="SettingsButton" class="main-menu-button" />
+            <ui:Button text="   Credits" name="CreditsButton" class="main-menu-button" />
             <ui:Button text="   Quit" name="QuitButton" class="main-menu-button" />
         </ui:VisualElement>
         <ui:VisualElement name="Container" style="flex-grow: 1; position: absolute; bottom: 100px; right: 100px; width: 1200px; height: 600px;" />
