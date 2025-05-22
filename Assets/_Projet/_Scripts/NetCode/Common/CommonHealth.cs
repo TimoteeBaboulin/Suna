@@ -66,8 +66,8 @@ public partial struct CalculateFrameDamageSystem : ISystem
     {
         if (state.World.IsServer())
         {
-            foreach (var (healtRW, ghostOwnerRO, chara) in SystemAPI
-            .Query<RefRW<CurrentHealthComponent>, RefRO<GhostOwner>>()
+            foreach (var (healtRW, ghostOwnerRO, transformRO, chara) in SystemAPI
+            .Query<RefRW<CurrentHealthComponent>, RefRO<GhostOwner>, RefRO<LocalTransform>>()
             .WithEntityAccess())
             {
                 if (healtRW.ValueRO.Value <= 0)
@@ -81,8 +81,14 @@ public partial struct CalculateFrameDamageSystem : ISystem
                             SoundUtils.PlayWithRPC("Hit", "Kill", pos);
 
                             //===== SOUND VOICE LINES =====
-                            TeamSideType side = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId);
-                            SoundUtils.PlayWithRPC(side.ToString(), "kill", pos);
+                            int killerNetworkID = state.EntityManager.GetComponentData<GhostOwner>(killer).NetworkId;
+                            TeamSideType killerSide = PlayerHelpers.GetPlayerInTeamOnServer(killerNetworkID);
+                            TeamSideType deadSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId);
+
+                            if (killerSide != deadSide)
+                            {
+                                SoundUtils.PlayWithRPC(killerSide.ToString(), "kill", transformRO.ValueRO.Position, killerSide);
+                            }
                             //=============================
 
                             healtRW.ValueRW.killSoundAlreadyPlayed = true;

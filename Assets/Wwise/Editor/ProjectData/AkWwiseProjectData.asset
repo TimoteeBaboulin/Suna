@@ -66,7 +66,7 @@ MonoBehaviour:
     ParentPath: SoundBanks\Default Work Unit
     guid: ba60688da2d0e14e9c2083f407a04640
     GuidInternal: 
-    m_lastTime: -8584538496039325580
+    m_lastTime: -8584538318887619776
     List:
     - name: DefaultBank
       guid: bc866bf90dfff1479f016a5a99d55c1e
@@ -192,7 +192,7 @@ MonoBehaviour:
     ParentPath: Events\Default Work Unit
     guid: 796a3769bf4c0c43b6db861a3b5a440a
     GuidInternal: 
-    m_lastTime: -8584537891277692615
+    m_lastTime: -8584537592137437507
     List:
     - name: Blow
       guid: 92be64b5d101c948bef60d141fed4ef7
@@ -1367,7 +1367,7 @@ MonoBehaviour:
     ParentPath: Events\MainMenu
     guid: 7c8b1ae29de3424f8b0c4b3b848edf5a
     GuidInternal: 
-    m_lastTime: -8584537924185469622
+    m_lastTime: -8584537592137427529
     List:
     - name: CS_Like_Main_Title_Loop
       guid: f5a8660a87212443a57b5fb3c3f3d40c
@@ -1516,7 +1516,7 @@ MonoBehaviour:
     ParentPath: Events\VoiceLines Work Unit
     guid: 5090bebd707741418fc3b98ea7becf02
     GuidInternal: 
-    m_lastTime: -8584537872304600040
+    m_lastTime: -8584537592137427529
     List:
     - name: A_under_siege
       guid: 8a117f8a20763b4c8cc3f88946167ed1
@@ -1536,8 +1536,8 @@ MonoBehaviour:
         guid: 8a117f8a20763b4c8cc3f88946167ed1
       Path: Events\VoiceLines Work Unit\Natif\A_under_siege
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.0952153
+      minDuration: 1.6735828
     - name: B_under_seige
       guid: ae78efc4803f0944a2dfef62f0c4be28
       id: 154822826
@@ -1556,8 +1556,8 @@ MonoBehaviour:
         guid: ae78efc4803f0944a2dfef62f0c4be28
       Path: Events\VoiceLines Work Unit\Natif\B_under_seige
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.3011565
+      minDuration: 1.4643764
     - name: blasphemous_ahead
       guid: ffb76b28997beb4b83f7edaf8e54f893
       id: 1242455402
@@ -1576,8 +1576,8 @@ MonoBehaviour:
         guid: ffb76b28997beb4b83f7edaf8e54f893
       Path: Events\VoiceLines Work Unit\Natif\blasphemous_ahead
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.8770522
+      minDuration: 1.6685034
     - name: Corpo
       guid: 943ca55d20d562429bfa33bb674d1335
       id: 2737192660
@@ -1613,8 +1613,8 @@ MonoBehaviour:
         guid: c84da4cf784c6a4ea9ef990f943557b5
       Path: Events\VoiceLines Work Unit\Natif\cut_retreat
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.8597279
+      minDuration: 1.4464626
     - name: forward_cover
       guid: 9eb42d0be22e624a8406ac5977b40d83
       id: 2550757004
@@ -1633,8 +1633,8 @@ MonoBehaviour:
         guid: 9eb42d0be22e624a8406ac5977b40d83
       Path: Events\VoiceLines Work Unit\Natif\forward_cover
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.4755783
+      minDuration: 2.2692971
     - name: ground_help
       guid: 8591734404aee74c9428c88c7f661043
       id: 539155014
@@ -1653,8 +1653,8 @@ MonoBehaviour:
         guid: 8591734404aee74c9428c88c7f661043
       Path: Events\VoiceLines Work Unit\Natif\ground_help
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 3.6773922
+      minDuration: 2.8547845
     - name: harvester_defused
       guid: 427f218a1c4c204291e652ba52dd3ea8
       id: 3131898918
@@ -1753,8 +1753,8 @@ MonoBehaviour:
         guid: 5060b9f26eb9314daf2124d4e041a6be
       Path: Events\VoiceLines Work Unit\Natif\HERETIC
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.811542
+      minDuration: 1.7727891
     - name: heretic_gathering
       guid: 0e9a39fcf737f640b56a0e967d86a8ca
       id: 925603791
@@ -1773,8 +1773,8 @@ MonoBehaviour:
         guid: 0e9a39fcf737f640b56a0e967d86a8ca
       Path: Events\VoiceLines Work Unit\Natif\heretic_gathering
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.0856235
+      minDuration: 1.7737415
     - name: Hold_your_ground_A
       guid: 70ee04b6048d914ca3b5c12b310ebdef
       id: 3043506290
@@ -1793,8 +1793,8 @@ MonoBehaviour:
         guid: 70ee04b6048d914ca3b5c12b310ebdef
       Path: Events\VoiceLines Work Unit\Natif\Hold_your_ground_A
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.725873
+      minDuration: 1.6212698
     - name: Hold_your_ground_B
       guid: 144ca869b449384aaa4de3bbc8e01e48
       id: 3043506289
@@ -1813,8 +1813,8 @@ MonoBehaviour:
         guid: 144ca869b449384aaa4de3bbc8e01e48
       Path: Events\VoiceLines Work Unit\Natif\Hold_your_ground_B
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.9873697
+      minDuration: 1.6212698
     - name: I_see_movement
       guid: 585834245267684bbea2e3157b56773d
       id: 658043218
@@ -1833,8 +1833,8 @@ MonoBehaviour:
         guid: 585834245267684bbea2e3157b56773d
       Path: Events\VoiceLines Work Unit\Natif\I_see_movement
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 3.8761225
+      minDuration: 1.2571201
     - name: inside_gas
       guid: 5fe4663e8bb31b468c54e3cb99f50bd5
       id: 2201005391
@@ -1853,8 +1853,8 @@ MonoBehaviour:
         guid: 5fe4663e8bb31b468c54e3cb99f50bd5
       Path: Events\VoiceLines Work Unit\Natif\inside_gas
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 3.6565533
+      minDuration: 3.6565533
     - name: kill_event
       guid: 604b350ff1dc3f4d810dff78ed03fd79
       id: 281209160
@@ -1930,8 +1930,8 @@ MonoBehaviour:
         guid: 0cdd67afb95777439075bcfb4689f19f
       Path: Events\VoiceLines Work Unit\Natif\regroup
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.6531066
+      minDuration: 1.4464626
     - name: smoke_bliended
       guid: 67c4b0d70c2a3f4fb6de6589c56ef325
       id: 2121643326
@@ -1950,8 +1950,8 @@ MonoBehaviour:
         guid: 67c4b0d70c2a3f4fb6de6589c56ef325
       Path: Events\VoiceLines Work Unit\Natif\smoke_bliended
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.6729932
+      minDuration: 1.6449434
     - name: sniper
       guid: fa0e6500533d5540b3e60015bb43ffb3
       id: 2550763292
@@ -1970,8 +1970,8 @@ MonoBehaviour:
         guid: fa0e6500533d5540b3e60015bb43ffb3
       Path: Events\VoiceLines Work Unit\Natif\sniper
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.1785035
+      minDuration: 1.76356
     - name: split_strike
       guid: 36504f6ae2875b4fa59846fe8c881746
       id: 1275552404
@@ -1990,8 +1990,8 @@ MonoBehaviour:
         guid: 36504f6ae2875b4fa59846fe8c881746
       Path: Events\VoiceLines Work Unit\Natif\split_strike
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.1726985
+      minDuration: 1.9657823
     - name: stay_patient
       guid: e7b6fc389318734ab35124c9a9864cc2
       id: 4176632124
@@ -2010,8 +2010,8 @@ MonoBehaviour:
         guid: e7b6fc389318734ab35124c9a9864cc2
       Path: Events\VoiceLines Work Unit\Natif\stay_patient
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 3.7246485
+      minDuration: 2.6862812
     - name: take_weapon
       guid: eabe563bac269c45903f2984d99272b0
       id: 3095820231
@@ -2030,8 +2030,8 @@ MonoBehaviour:
         guid: eabe563bac269c45903f2984d99272b0
       Path: Events\VoiceLines Work Unit\Natif\take_weapon
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 3.268798
+      minDuration: 2.8601813
     - name: the_wind_carries
       guid: b27c0363bb97994d97a3605ac15b1a05
       id: 2536847095
@@ -2050,8 +2050,8 @@ MonoBehaviour:
         guid: b27c0363bb97994d97a3605ac15b1a05
       Path: Events\VoiceLines Work Unit\Natif\the_wind_carries
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.349864
+      minDuration: 1.9843538
     - name: they_rush
       guid: f475e67ac60e0140a39c52c5101c2a84
       id: 2675578812
@@ -2070,8 +2070,8 @@ MonoBehaviour:
         guid: f475e67ac60e0140a39c52c5101c2a84
       Path: Events\VoiceLines Work Unit\Natif\they_rush
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.8734694
+      minDuration: 2.6729932
     - name: theyre_coming
       guid: 6cbd653d12ccd94f9502e648b183672f
       id: 3995945122
@@ -2090,8 +2090,8 @@ MonoBehaviour:
         guid: 6cbd653d12ccd94f9502e648b183672f
       Path: Events\VoiceLines Work Unit\Natif\theyre_coming
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.3047392
+      minDuration: 1.466644
     - name: throwing_flash
       guid: f64262e1d0e80649b52a3a46ba8f41bc
       id: 1781840702
@@ -2190,8 +2190,8 @@ MonoBehaviour:
         guid: 24fd9610e3af514fa6e23a228c7235fd
       Path: Events\VoiceLines Work Unit\Natif\together_we_push
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.8649433
+      minDuration: 2.455669
     - name: too_many
       guid: ecb1fd1d9219594ab18f8f7d66724045
       id: 1605848557
@@ -2210,8 +2210,8 @@ MonoBehaviour:
         guid: ecb1fd1d9219594ab18f8f7d66724045
       Path: Events\VoiceLines Work Unit\Natif\too_many
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.8534241
+      minDuration: 1.6449434
     - name: war_not_over
       guid: 6624bee15fe9c44bb86acc4f09029589
       id: 209399956
@@ -2230,8 +2230,8 @@ MonoBehaviour:
         guid: 6624bee15fe9c44bb86acc4f09029589
       Path: Events\VoiceLines Work Unit\Natif\war_not_over
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 3.867551
+      minDuration: 3.0533333
     - name: watch_flank
       guid: 02052ec998bb894a90144de03e6cc353
       id: 316685025
@@ -2250,8 +2250,8 @@ MonoBehaviour:
         guid: 02052ec998bb894a90144de03e6cc353
       Path: Events\VoiceLines Work Unit\Natif\watch_flank
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 1.2398412
+      minDuration: 1.0331973
     - name: we_stand
       guid: b2327fa354c8f94ab3f8231ad920566b
       id: 16774024
@@ -2270,8 +2270,8 @@ MonoBehaviour:
         guid: b2327fa354c8f94ab3f8231ad920566b
       Path: Events\VoiceLines Work Unit\Natif\we_stand
       maxAttenuation: 0
-      maxDuration: -1
-      minDuration: -1
+      maxDuration: 2.2537868
+      minDuration: 2.048889
   RtpcWwu:
   - PhysicalPath: Game Parameters\Default Work Unit.wwu
     PathAndIcons:

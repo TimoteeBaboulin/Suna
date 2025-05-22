@@ -83,6 +83,16 @@ MonoBehaviour:
         idInternal: 0
         valueGuidInternal: 
         WwiseObjectReference: {fileID: 11400000, guid: 54b225375ce69544ca001e142c34920a, type: 2}
+    - keyAction: kill
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 4a010e0e68ccea842a32d8f7bd30e30b, type: 2}
+    - keyAction: harvester_defused
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: 7c9b004546f61034f9b4fdbae28a0a03, type: 2}
   - keyGroup: Corpo
     maping:
     - keyAction: throwing_flash
@@ -95,3 +105,13 @@ MonoBehaviour:
         idInternal: 0
         valueGuidInternal: 
         WwiseObjectReference: {fileID: 11400000, guid: 5f496d6718381614792e9868f2ec78d5, type: 2}
+    - keyAction: kill
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: fbf05edf9c1860a41867e114764403fb, type: 2}
+    - keyAction: harvester_deployed
+      sound:
+        idInternal: 0
+        valueGuidInternal: 
+        WwiseObjectReference: {fileID: 11400000, guid: f3c42c683aa56dc43bffdd275c8ae741, type: 2}
