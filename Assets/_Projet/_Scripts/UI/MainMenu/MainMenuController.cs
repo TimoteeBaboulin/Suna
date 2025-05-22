@@ -18,6 +18,8 @@ public class MainMenuController : MonoBehaviour
     // Main Elements
     private UIDocument _document;
     private VisualElement _root;
+    private VisualElement _logo;
+    private VisualElement _mainMenuElements;
     private Button _playButton;
     private Button _settingsButton;
     private Button _creditsButton;
@@ -38,18 +40,20 @@ public class MainMenuController : MonoBehaviour
         // Get the root visual elements
         _root = _document.rootVisualElement;
         _container = _root.Q<VisualElement>("Container");
+        _mainMenuElements = _root.Q<VisualElement>("MainMenuElements");
+        _logo = _root.Q<VisualElement>("Logo");
 
         // Get the main menu elements
-        _playButton = _root.Q<Button>("PlayButton");
+        _playButton = _mainMenuElements.Q<Button>("PlayButton");
         _playButton.clicked += OnPlayButton_Click;
 
-        _settingsButton = _root.Q<Button>("SettingsButton");
+        _settingsButton = _mainMenuElements.Q<Button>("SettingsButton");
         _settingsButton.clicked += OnSettingsButton_Click;
 
-        _creditsButton = _root.Q<Button>("CreditsButton");
+        _creditsButton = _mainMenuElements.Q<Button>("CreditsButton");
         _creditsButton.clicked += OnCreditsButton_Click;
 
-        _quitButton = _root.Q<Button>("QuitButton");
+        _quitButton = _mainMenuElements.Q<Button>("QuitButton");
         _quitButton.clicked += OnQuitButton_Click;
 
         _connectionFeedback = _root.Q<VisualElement>("ConnectionFeedback");
@@ -74,6 +78,10 @@ public class MainMenuController : MonoBehaviour
         {
             creditsMenu.RemoveFromHierarchy();
             creditsMenu = null;
+
+            // Show Logo and Main Menu Elements
+            UIDocumentUtils.SetActive(ref _logo, true);
+            UIDocumentUtils.SetActive(ref _mainMenuElements, true);
         }
 
         if (_sessionDataFound) return;
@@ -128,6 +136,10 @@ public class MainMenuController : MonoBehaviour
         // Instantiate Credits Menu
         creditsMenu = _creditsMenuAsset.Instantiate().Children().First();
         _root.Add(creditsMenu);
+
+        // Hide Logo and Main Menu Elements
+        UIDocumentUtils.SetActive(ref _logo, false);
+        UIDocumentUtils.SetActive(ref _mainMenuElements, false);
     }
 
     private void OnSettingsButton_Click()
