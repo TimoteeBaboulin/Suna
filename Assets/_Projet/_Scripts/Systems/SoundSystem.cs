@@ -62,22 +62,26 @@ partial struct SoundPlayRPCSystemClient : ISystem
             .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<SoundRpc>>()
             .WithEntityAccess())
         {
+                //UnityEngine.Debug.Log("<color=blue>Play Rpc 0 </color>" + soundRpc.ValueRO.keyGroup.ToString()+soundRpc.ValueRO.keyAction.ToString());
             if (request.ValueRO.IsConsumed) continue;
+                //UnityEngine.Debug.Log("<color=blue>Play Rpc 1 </color>" + soundRpc.ValueRO.keyGroup.ToString()+soundRpc.ValueRO.keyAction.ToString());
 
             if (soundRpc.ValueRO.side != TeamSideType.Neutre)
             {
-                UnityEngine.Debug.Log("<color=red>InitGame </color>" + soundRpc.ValueRO.keyAction);
+                //UnityEngine.Debug.Log("<color=blue>Play Rpc 2 </color>" + soundRpc.ValueRO.keyGroup.ToString()+soundRpc.ValueRO.keyAction.ToString());
 
                 EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClientComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
                 NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
 
                 if (entities.Length == 0) continue;
+                //UnityEngine.Debug.Log("<color=blue>Play Rpc 3 </color>" + soundRpc.ValueRO.keyGroup.ToString()+soundRpc.ValueRO.keyAction.ToString());
 
                 int OwnerLocalnetworkId = state.EntityManager.GetComponentData<GhostOwner>(entities[0]).NetworkId;
                 TeamSideType side = PlayerHelpers.GetPlayerInTeam(OwnerLocalnetworkId);
 
                 if (side == soundRpc.ValueRO.side)
                 {
+                //UnityEngine.Debug.Log("<color=blue>Play Rpc 4 </color>" + soundRpc.ValueRO.keyGroup.ToString()+soundRpc.ValueRO.keyAction.ToString());
 #if !UNITY_SERVER
                     soundManager.Play(soundRpc.ValueRO.keyGroup.ToString(), soundRpc.ValueRO.keyAction.ToString(), soundRpc.ValueRO.pos);
 #endif
@@ -85,6 +89,7 @@ partial struct SoundPlayRPCSystemClient : ISystem
             }
             else
             {
+                //UnityEngine.Debug.Log("<color=blue>Play Rpc 5 </color>" + soundRpc.ValueRO.keyGroup.ToString()+soundRpc.ValueRO.keyAction.ToString());
 #if !UNITY_SERVER
                 soundManager.Play(soundRpc.ValueRO.keyGroup.ToString(), soundRpc.ValueRO.keyAction.ToString(), soundRpc.ValueRO.pos);
 #endif
