@@ -3,13 +3,13 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ModelAnimatorData", menuName = "Scriptable Objects/ModelAnimatorData")]
 public class ModelAnimatorData : ScriptableObject
 {
-    public AnimatorOverrideController Banduka;
-    public AnimatorOverrideController Decimator;
-    public AnimatorOverrideController Fakir;
-    public AnimatorOverrideController Laksya;
-    public AnimatorOverrideController LP17;
-    public AnimatorOverrideController SKAR18;
-    public AnimatorOverrideController Nelara;
+    public RuntimeAnimatorController Banduka;
+    public RuntimeAnimatorController Decimator;
+    public RuntimeAnimatorController Fakir;
+    public RuntimeAnimatorController Laksya;
+    public RuntimeAnimatorController LP17;
+    public RuntimeAnimatorController SKAR18;
+    public RuntimeAnimatorController Nelara;
 
     public RuntimeAnimatorController Grenade_Base;
     public RuntimeAnimatorController Grenade_Fire;
