@@ -3,6 +3,7 @@ using System.Linq;
 using Unity.Properties;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
@@ -22,6 +23,7 @@ public class MainMenuController : MonoBehaviour
     private Button _creditsButton;
     private Button _quitButton;
     private VisualElement _container;
+    private VisualElement creditsMenu;
 
     private VisualElement _connectionFeedback;
     private Label _connectionFeedbackLabel;
@@ -68,6 +70,12 @@ public class MainMenuController : MonoBehaviour
 
     private void Update()
     {
+        if (creditsMenu != null && Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            creditsMenu.RemoveFromHierarchy();
+            creditsMenu = null;
+        }
+
         if (_sessionDataFound) return;
 
         if (SessionData.Instance != null)
@@ -117,16 +125,9 @@ public class MainMenuController : MonoBehaviour
 
     private void OnCreditsButton_Click()
     {
-        // Save and Close Settings if Settings Menu was open
-        if (gameObject.TryGetComponent(out SettingsMenuController settingsMenuController))
-        {
-            SaveAndCloseSettings(settingsMenuController);
-        }
-        EmptyContainer();
-
         // Instantiate Credits Menu
-        VisualElement creditsMenu = _creditsMenuAsset.Instantiate().Children().First();
-        _container.Add(creditsMenu);
+        creditsMenu = _creditsMenuAsset.Instantiate().Children().First();
+        _root.Add(creditsMenu);
     }
 
     private void OnSettingsButton_Click()
