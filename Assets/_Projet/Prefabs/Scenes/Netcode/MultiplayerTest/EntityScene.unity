@@ -2376,6 +2376,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Round Manager
       objectReference: {fileID: 0}
+    - target: {fileID: 4959426633729781888, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
+      propertyPath: _maxRounds
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8191335809467619837, guid: 1cf4dd24157ee3742829a9c464329cd9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
