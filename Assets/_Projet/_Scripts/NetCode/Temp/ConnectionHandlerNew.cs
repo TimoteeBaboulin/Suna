@@ -1,7 +1,8 @@
-using GameNetwork;
+﻿using GameNetwork;
 using GameNetwork.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -27,22 +28,18 @@ using static Unity.NetCode.ClientServerBootstrap;
 
 public class ConnectionHandlerNew : MonoBehaviour
 {
-    private ushort _port = 7979;
-    private string _ip;
     private string _localIp = "127.0.0.1";
     private ConnectionSettings connectionSettings;
 
     private string sessionID = null;
     private ClientTransportHelper sessionTransport = null;
+    private DateTime earliestCreationTime;
 
-    private static readonly List<string> PlayerProcessingQueue = new List<string>();
-    private static bool processingQueue = false;
     protected void Awake()
     {
         connectionSettings = GetComponent<ConnectionSettings>();
         ClientTransportHelper.isClientLocal = connectionSettings.isClientLocal;
-        _ip = connectionSettings.IP;
-        ClientTransportHelper.CurrentIP = (RequestedPlayType == PlayType.ClientAndServer || ClientTransportHelper.isClientLocal) ? _localIp : _ip;
+        ClientTransportHelper.CurrentIP = (ClientTransportHelper.isClientLocal) ? _localIp : ClientTransportHelper.GetLocalIPAddress();
         ClientTransportHelper.CurrentPort = (ushort)connectionSettings.Port;
     }
 
@@ -54,7 +51,7 @@ public class ConnectionHandlerNew : MonoBehaviour
         LoadUtils.CreateEntityWorlds();
         if (RequestedPlayType == PlayType.ClientAndServer)
         {
-            sessionTransport = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort);
+            sessionTransport = await ServerSessionFactory.CreateServerSession(ClientTransportHelper.GetLocalIPAddress(), ClientTransportHelper.CurrentPort);
         }
         else
         {
@@ -90,7 +87,6 @@ public class ConnectionHandlerNew : MonoBehaviour
 
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
         await LoadUtils.LoadGameplayAsync(ClientTransportHelper.ServerWorld, ClientTransportHelper.ClientWorld);
-        //await LoadUtils.LoadSceneAsync((int)connectionSettings.sceneToLoad, SessionData.LoadingSteps.LoadGameScene);
         await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
         if (ClientTransportHelper.ServerWorld != null)
         {
@@ -120,14 +116,9 @@ public class ConnectionHandlerNew : MonoBehaviour
             }
         }
 
-        //await LoadUtils.LoadSceneAsync("MultiplayerTest", SessionData.LoadingSteps.LoadGameScene);
-
-        //await WaitUntilSessionIsFullAsync(token, clientWorld);
         if (ClientTransportHelper.ClientWorld != null)
         {
-            //await WaitForPlayerConnectionAsync(token);
             await WaitForGhostReplicationAsync(ClientTransportHelper.ClientWorld);
-            //await WaitForAttachedCameraAsync(clientWorld);
         }
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.LoadingDone);
         return sessionTransport;
@@ -144,85 +135,11 @@ public class ConnectionHandlerNew : MonoBehaviour
             }
             catch (Exception)
             {
-               //No need to catch the exception here
+                //No need to catch the exception here
             }
         }
     }
 
-    private async Task WaitUntilSessionIsFullAsync(CancellationToken token, World clientWorld)
-    {
-        string localPlayerId = sessionTransport.Session.CurrentPlayer.Id;
-
-        lock (PlayerProcessingQueue)
-        {
-            PlayerProcessingQueue.Add(localPlayerId);
-        }
-
-        while (!IsSessionFull(sessionTransport.Session))
-        {
-            if (token.IsCancellationRequested || !Application.isPlaying)
-            {
-                Debug.Log("WaitUntilSessionIsFullAsync: Cancelled or application is no longer playing.");
-                token.ThrowIfCancellationRequested();
-                return;
-            }
-
-            Debug.Log($"GameManager: Current player count: {sessionTransport.Session.PlayerCount}, " +
-                      $"available slots: {sessionTransport.Session.AvailableSlots}");
-
-            SessionData.Instance.UpdateSessionState(
-                sessionTransport.Session.PlayerCount,
-                sessionTransport.Session.AvailableSlots,
-                sessionTransport.Session);
-
-            await Task.Delay(16, token);
-        }
-
-        const int baseDelayMs = 50;
-        const int incrementMs = 25;
-
-        while (true)
-        {
-            int index;
-            lock (PlayerProcessingQueue)
-            {
-                index = PlayerProcessingQueue.IndexOf(localPlayerId);
-            }
-
-            if (index == 0)
-            {
-                break;
-            }
-
-            int dynamicDelay = baseDelayMs + (index * incrementMs);
-            Debug.Log($"Waiting for my turn... My index is {index}, delaying for {dynamicDelay} ms.");
-            await Task.Delay(dynamicDelay, token);
-        }
-
-        await Task.Delay(baseDelayMs, token);
-
-        try
-        {
-            if (IsSessionFull(sessionTransport.Session))
-            {
-                if (clientWorld != null)
-                {
-                    await WaitForGhostReplicationAsync(clientWorld);
-                    //await WaitForAttachedCameraAsync(clientWorld);
-                }
-            }
-        }
-        finally
-        {
-            lock (PlayerProcessingQueue)
-            {
-                if (PlayerProcessingQueue.Count > 0 && PlayerProcessingQueue[0] == localPlayerId)
-                {
-                    PlayerProcessingQueue.RemoveAt(0);
-                }
-            }
-        }
-    }
     private async Task WaitForGhostReplicationAsync(World world, CancellationToken cancellationToken = default)
     {
         SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WorldReplication);
@@ -245,33 +162,6 @@ public class ConnectionHandlerNew : MonoBehaviour
         }
     }
 
-    static async Task WaitForPlayerConnectionAsync(CancellationToken cancellationToken = default)
-    {
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingConnection);
-        // The GameManagerSystem is handling the connection/reconnection once the client world is created.
-        ClientTransportHelper.State = ClientConnectionState.Connecting;
-        while (ClientTransportHelper.State == ClientConnectionState.Connecting)
-        {
-            await Awaitable.NextFrameAsync(cancellationToken);
-        }
-    }
-
-    private async Task WaitForAttachedCameraAsync(World world, CancellationToken cancellationToken = default)
-    {
-        SessionData.Instance.UpdateLoading(SessionData.LoadingSteps.WaitingOnPlayer);
-        using var mainEntityCameraQuery = world.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<CharacterViewRotation>());
-        while (!mainEntityCameraQuery.HasSingleton<CharacterViewRotation>())
-        {
-            await Awaitable.NextFrameAsync(cancellationToken);
-        }
-        await Awaitable.NextFrameAsync(cancellationToken);
-    }
-
-    private bool IsSessionFull(ISession session)
-    {
-        return session.AvailableSlots == 0;
-    }
-
     private async Task QuerySessionsAsync()
     {
         var queryOptions = new QuerySessionsOptions
@@ -286,15 +176,40 @@ public class ConnectionHandlerNew : MonoBehaviour
             return;
         }
 
-        Debug.Log($"TOTAL Session count : {results.Sessions.Count}.");
-        foreach (var session in results.Sessions)
+        if (connectionSettings.isRelease)
         {
-            Debug.Log(session.Name);
-            if (session.Name == ClientTransportHelper.CurrentPort.ToString())
+            if (results.Sessions.Count == 1)
             {
-                Debug.Log($"Session match found {session.Name}.");
+                var session = results.Sessions[0];
                 sessionID = session.Id;
-                break;
+                Debug.Log($"Only one session: {session.Name} with Created Time: {session.Created}");
+            }
+            else
+            {
+                foreach (var session in results.Sessions.OrderBy(s => s.Created))
+                {
+                    Debug.Log($"Considering session {session.Name}, Created: {session.Created}, Slots: {session.AvailableSlots}");
+                    if (session.AvailableSlots > 0)
+                    {
+                        sessionID = session.Id;
+                        Debug.Log($"→ Selected session {session.Name} (Created: {session.Created}) and stopping search.");
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(sessionID))
+                    Debug.Log("No session found with available slots.");
+            }
+        }
+        else
+        {
+            foreach (var session in results.Sessions)
+            {
+                if (session.Name == connectionSettings.Port.ToString())
+                {
+                    sessionID = session.Id;
+                    break;
+                }
             }
         }
     }

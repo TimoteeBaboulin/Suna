@@ -7,6 +7,8 @@ using GameNetwork;
 using GameNetwork.Utils;
 using System.Net.Sockets;
 using System.Net;
+
+
 public class CommonAutoConnect : ClientServerBootstrap
 {
     public override bool Initialize(string defaultWorldName)
@@ -14,32 +16,19 @@ public class CommonAutoConnect : ClientServerBootstrap
         if (Application.isEditor || Application.platform == RuntimePlatform.WindowsPlayer
             || RequestedPlayType == PlayType.ClientAndServer)
         {
-              AutoConnectPort = 0;
+            AutoConnectPort = 0;
             return false;
         }
         else if (Application.platform == RuntimePlatform.WindowsServer)
         {
-			//Production : 7979
-            //Debug : 59692
-            //Thomas : 59557
-            //Aurélien : 52406
-            AutoConnectPort = 53970; //Votre port ici
-
+            AutoConnectPort = ClientTransportHelper.GetAvailablePort();
+            ClientTransportHelper.CurrentPort = AutoConnectPort;
             ClientTransportHelper.ServerWorld = CreateServerWorld("ServerWorld");
-
-            return true;
         }
         return true;
     }
-
-    public ushort GetAvailablePort()
-    {
-        TcpListener listener = new TcpListener(IPAddress.Any, 0);
-        listener.Start();
-        ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
-        listener.Stop();
-        return port;
-    }
 }
+
+
 
 

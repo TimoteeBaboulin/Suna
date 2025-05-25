@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Unity.Entities;
@@ -24,6 +26,14 @@ namespace GameNetwork.Utils
         Matchmaking,
     }
 
+    [System.Serializable]
+    public class SessionInfoData
+    {
+        public int Network;          
+        public string Ip;            
+        public int Port;            
+        public string RelayJoinCode; 
+    }
 
     public class ClientTransportHelper
     {
@@ -33,17 +43,26 @@ namespace GameNetwork.Utils
         public NetworkType SessionConnectionType { get; private set; }
 
         public static string SessionID { get; set; }
-        public static string CurrentIP { get; set; } /*= "51.210.222.138";*/
-        public static ushort CurrentPort { get; set; } = 7979;
+        public static string CurrentIP { get; set; } = GetLocalIPAddress();
+        public static ushort CurrentPort { get; set; }
         public static bool isClientLocal { get; set; } = false;
         public static ClientConnectionState State = ClientConnectionState.NotConnected;
-        public static int MaxNbOfPlayers = 3;
+        public static int MaxNbOfPlayers = 2;
         public static bool isRelease = true;
         public static World ClientWorld { get; set; } = null;
         public static World ServerWorld { get; set; } = null;
 
         public static ClientTransportHelper instance { get; set; }
 
+
+        public static ushort GetAvailablePort()
+        {
+            TcpListener listener = new TcpListener(IPAddress.Any, 0);
+            listener.Start();
+            ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
             //await StartServicesAsync();
@@ -68,7 +87,6 @@ namespace GameNetwork.Utils
             {
                 //await StartServicesAsync();
 #if UNITY_SERVER
-
                 Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {CurrentIP}, Port: {CurrentPort}");
 #endif
 
@@ -92,6 +110,9 @@ namespace GameNetwork.Utils
                     Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
 #endif
 
+                    var portProperty = new SessionProperty(AutoConnectPort.ToString(), VisibilityPropertyOptions.Public);
+                    Debug.Log($"[CreateSession] Port confirmation {AutoConnectPort}");
+                    hostSession.SetProperty("port", portProperty);
                     return instance;
                 }
 
@@ -124,15 +145,47 @@ namespace GameNetwork.Utils
         }
         public async Task<ClientTransportHelper> JoinSessionByIdAsync(string sessionID, CancellationToken cancellationToken)
         {
+            // Initialize the instance of ClientTransportHelper
             instance = new ClientTransportHelper();
+
+            // Start necessary services (assuming StartServicesAsync is a method to initialize services)
             await StartServicesAsync();
-            //gameConnection.State = ClientConnectionState.Matchmaking;
 
             var joinOptions = new JoinSessionOptions();
             var networkHandler = new NetworkHandler();
             joinOptions.WithNetworkHandler(networkHandler);
 
+            // Join the session by session ID
             instance.Session = await MultiplayerService.Instance.JoinSessionByIdAsync(sessionID, joinOptions);
+
+            //Debug.Log($"instance.Session.Properties.Count: {instance.Session.Properties.Count}");
+
+            //// Variable to hold the port to return
+            //int portToReturn = 0;
+
+            //// Iterate through session properties to check the port
+            //foreach (var property in instance.Session.Properties)
+            //{
+            //    Debug.Log($"item: {property.Value.Value}");
+            //    if (property.Value.Value is string jsonString)
+            //    {
+            //        SessionInfoData sessionData = JsonUtility.FromJson<SessionInfoData>(jsonString);
+            //        Debug.Log($"Port: {sessionData.Port}");
+
+            //        if (sessionData.Port.ToString() == instance.Session.Name)  
+            //        {
+            //            Debug.Log($"match Port: {sessionData.Port} vs {instance.Session.Name} ");
+            //            portToReturn = sessionData.Port;
+            //            break;  
+            //        }
+            //    }
+            //}
+
+            //if (portToReturn == 0)
+            //{
+            //    return null;
+            //}
+
             instance.ConnectEndpoint = await networkHandler.ConnectEndpoint;
             instance.ListenEndpoint = await networkHandler.ListenEndpoint;
             instance.SessionConnectionType = await networkHandler.SessionConnectionType;
@@ -263,9 +316,37 @@ namespace GameNetwork.Utils
             Debug.Log($"maxPlayerServer {maxPlayers}");
             var options = new SessionOptions
             {
-                MaxPlayers = maxPlayers
+                MaxPlayers = maxPlayers                               
             };
+            Debug.Log($"[CreateSession] Port confirmation currentPort {CurrentPort} vs {AutoConnectPort}");
             return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
+        }
+
+        public static string GetLocalIPAddress()
+        {
+            try
+            {
+                string localIP = null;
+
+                foreach (var ip in Dns.GetHostEntry(Dns.GetHostName()).AddressList)
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork) // IPv4
+                    {
+                        localIP = ip.ToString();
+                        break;
+                    }
+                }
+
+                if (string.IsNullOrEmpty(localIP))
+                    throw new Exception("No network adapters with an IPv4 address in the system!");
+
+                return localIP;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting local IP: {ex.Message}");
+                return "127.0.0.1"; // fallback
+            }
         }
     }
 }
