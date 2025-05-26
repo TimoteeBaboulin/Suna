@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876409719b0ba3e4c8adce711f5101fc, type: 3}
+  m_Name: FlashBang
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: fb05654db7c5b3841ab2021dcbe90b8e, type: 3}
+  viewPrefab: {fileID: 2015320388049473441, guid: c36534739722ed14699e7cfc5dfe2515, type: 3}
+  viewPrefab_Baked: {fileID: 9029199562972281976, guid: aeb2a2a9d94c96e498163b1c63740348, type: 3}
+  UIImage: {fileID: 2800000, guid: 3bf107d4b83258940b56973fc07a2140, type: 3}
+  location: 5
+  type: 2
+  grenadeType: 1
+  side: 2
+  entityName: Flashbang
+  price: 100
+  killGain: 0
+  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
+  cookingTime: 0.5
+  impactRadius: 50
+  damageInflicted: 80
+  triggerType: 0
+  timerTriggerDelay: 2.8
+  maxImpactAngle: 45
+  stillTriggerDelay: 0.8
+  bounceTriggerCount: 3
+  proximityTriggerDistance: 5
+  soundList:
+  - keyAction: Blow
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 6035c7f0949201b43b63aa181fe5428c, type: 2}

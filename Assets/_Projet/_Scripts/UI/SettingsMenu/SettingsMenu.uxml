@@ -1,0 +1,25 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Projet/_Scripts/UI/PauseMenu/pause-menu.uss?fileID=7433441132597879392&amp;guid=3eed4f54b20f08a4da6bc1bc1e3bff2e&amp;type=3#pause-menu" />
+    <engine:VisualElement name="Container" style="flex-grow: 0; width: 80%; height: 100%; flex-direction: column; position: relative; align-self: center; -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;);">
+        <engine:Button text="Save &amp; Close" name="SaveButton" class="pause-tab-bar-button" style="top: auto; margin-top: 20px;" />
+        <engine:ScrollView horizontal-scroller-visibility="Hidden" style="flex-grow: 1;">
+            <engine:VisualElement name="GameSettings" style="flex-grow: 1; flex-direction: column;">
+                <engine:Label text="Game Settings" name="CategoryTitle" style="top: auto; left: 50px; margin-top: 50px; margin-right: 0; margin-bottom: 50px; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; align-self: flex-start; font-size: 40px; -unity-font-style: bold; color: rgb(255, 255, 255);" />
+                <engine:VisualElement name="SensitivityContainer" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-direction: row; left: 100px;">
+                    <engine:Label text="Sensitivity" name="SensitivityLabel" style="font-size: 40px; -unity-text-align: middle-center; color: rgb(204, 204, 204);" />
+                    <engine:Slider value="1" high-value="10" fill="false" low-value="0.1" name="SensitivitySlider" inverted="false" style="width: 490px; justify-content: space-evenly; min-height: auto;" />
+                    <engine:FloatField value="1" name="SensitivityField" style="width: 125px; height: auto; font-size: 30px; -unity-text-align: upper-right; -unity-font-style: normal;" />
+                </engine:VisualElement>
+                <engine:VisualElement name="VolumeContainer" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-direction: row; left: 100px;">
+                    <engine:Label text="Volume" name="VolumeLabel" style="font-size: 40px; -unity-text-align: middle-center; color: rgb(204, 204, 204);" />
+                    <engine:Slider value="50" high-value="100" fill="false" low-value="0" name="VolumeSlider" inverted="false" style="width: 490px; justify-content: space-evenly; min-height: auto;" />
+                    <engine:FloatField value="50" name="VolumeField" style="width: 125px; height: auto; font-size: 30px; -unity-text-align: upper-right; -unity-font-style: normal;" />
+                </engine:VisualElement>
+                <engine:VisualElement name="PseudoContainer" style="margin-top: 10px; margin-bottom: 10px; margin-right: 10px; margin-left: 10px; flex-direction: row; left: 100px;">
+                    <engine:Label text="Pseudo" name="PseudoLabel" style="font-size: 40px; -unity-text-align: middle-center; color: rgb(204, 204, 204);" />
+                    <engine:TextField name="PseudoField" placeholder-text="UnnamedPlayer" max-length="15" style="font-size: 30px; width: 400px;" />
+                </engine:VisualElement>
+            </engine:VisualElement>
+        </engine:ScrollView>
+    </engine:VisualElement>
+</engine:UXML>

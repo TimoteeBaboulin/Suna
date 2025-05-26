@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27b8ae67507d0c94ebfd5fb3834b6f2d, type: 3}
+  m_Name: UITextureData
+  m_EditorClassIdentifier: 
+  DefaultFont: {fileID: 12800000, guid: 06393c2b6298fae42b401ef0082880d0, type: 3}
+  Textures:
+  - Name: killfeed_corpo_background
+    Texture: {fileID: 2800000, guid: d7109262f5194964faefea5da9b22a58, type: 3}
+  - Name: killfeed_corpo_killer_background
+    Texture: {fileID: 2800000, guid: a4e250792593aca4189f27415f3cc203, type: 3}
+  - Name: killfeed_natif_background
+    Texture: {fileID: 2800000, guid: 1865a34525aa4e847bc0e8d6da1489fa, type: 3}
+  - Name: killfeed_natif_killer_background
+    Texture: {fileID: 2800000, guid: 9cf74fb192fb0344997a0278dbb47020, type: 3}
+  - Name: killfeed_neutre_background
+    Texture: {fileID: 2800000, guid: 1865a34525aa4e847bc0e8d6da1489fa, type: 3}
+  - Name: killfeed_neutre_killer_background
+    Texture: {fileID: 2800000, guid: 9cf74fb192fb0344997a0278dbb47020, type: 3}
+  - Name: hud_round_win
+    Texture: {fileID: 2800000, guid: 293dd04f51209054fab51aefe7632ef3, type: 3}
+  - Name: hud_round_lose
+    Texture: {fileID: 2800000, guid: aef23d246d8975e4c99baf50c1411e7c, type: 3}
+  - Name: hud_game_win
+    Texture: {fileID: 2800000, guid: 69e04875d420297468f464ff829a1666, type: 3}
+  - Name: hud_game_lose
+    Texture: {fileID: 2800000, guid: 343e7c75ba49e35478a01c1c9dd8c6ed, type: 3}
+  - Name: hud_hit_body
+    Texture: {fileID: 2800000, guid: 09396398912f1bf4dbf19a3f810cc8d9, type: 3}
+  - Name: hud_hit_head
+    Texture: {fileID: 2800000, guid: 08d9259f482543547855b107c5031b85, type: 3}
+  - Name: hud_hit_marker
+    Texture: {fileID: 2800000, guid: cfe8947f150a26141b085cfe63d57ee1, type: 3}

@@ -1,0 +1,85 @@
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.NetCode;
+using Unity.Physics;
+using Unity.Transforms;
+
+[UpdateInGroup(typeof(PredictedSimulationSystemGroup))]
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial struct PickStuffSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate<CharacterStuffList>();
+        state.RequireForUpdate<CharacterInput>();
+        state.RequireForUpdate<EquipStuffQueue>();
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        // Get ECB
+        var ecbSingleton = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>();
+        EntityCommandBuffer ecb = ecbSingleton.CreateCommandBuffer(state.WorldUnmanaged);
+
+        var equipStuffQueue = SystemAPI.GetSingletonBuffer<EquipStuffQueue>();
+        var database = SystemAPI.GetSingleton<GameResourcesDatabase>();
+
+        //Pick stuff with interact input
+        foreach (var (inputRO, shootStartPosDeltaRO, transformRO, viewRO, ghostOwnerRO, chara) in SystemAPI
+                .Query<RefRO<CharacterInput>, RefRO<CharacterShootStartPositionDelta>, RefRO<LocalTransform>, RefRO<CharacterViewRotation>, RefRO<GhostOwner>>()
+                .WithEntityAccess())
+        {
+
+            ref readonly CharacterInput input = ref inputRO.ValueRO;
+            if (input.interact.IsSet)
+            {
+                float3 startPosition = shootStartPosDeltaRO.ValueRO.PositionDelta + transformRO.ValueRO.Position;
+                quaternion shootRotation = math.mul(transformRO.ValueRO.Rotation, viewRO.ValueRO.ViewRotation);
+                float3 forward = math.mul(shootRotation, math.forward());
+
+                RaycastHit hit = RayCast(startPosition, forward, 4, chara, state.EntityManager);
+                if (hit.Entity != Entity.Null)
+                {
+                    //Natif doesen't pick harvester
+                    StuffEntityInHandRef stuffInHandRef = state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity);
+                    StuffType stuffHitedType = state.EntityManager.GetComponentData<StuffDatabaseAccess>(stuffInHandRef.Value).GetData(ref database).type;
+                    if (PlayerHelpers.GetPlayerInTeamOnServer(ghostOwnerRO.ValueRO.NetworkId) == TeamSideType.Natif && stuffHitedType == StuffType.Harvester) continue;
+
+                    StuffUtils.EquipNextFrame(equipStuffQueue, chara, state.EntityManager.GetComponentData<StuffEntityInHandRef>(hit.Entity).Value, true);
+                    ecb.DestroyEntity(hit.Entity);
+                }
+            }
+        }
+    }
+
+    RaycastHit RayCast(float3 startPos, float3 direction, float range, Entity owner, in EntityManager entityManager)
+    {
+        PhysicsWorldSingleton physicsWorldSingleton = SystemAPI.GetSingleton<PhysicsWorldSingleton>();
+
+        RaycastInput raycastInput = new RaycastInput()
+        {
+            Start = startPos,
+            End = startPos + direction * range,
+            Filter = CollisionFilter.Default,
+        };
+
+#if !UNITY_SERVER
+        UnityEngine.Debug.DrawRay(raycastInput.Start, raycastInput.End - raycastInput.Start, UnityEngine.Color.cyan, 0.5f);
+#endif
+
+        NativeList<RaycastHit> allHits = new NativeList<RaycastHit>(Allocator.Temp);
+        if (physicsWorldSingleton.CastRay(raycastInput, ref allHits))
+        {
+            foreach (RaycastHit hit in allHits)
+            {
+                UnityEngine.Debug.Log("Hit: " + hit.Entity.Index);
+                if (entityManager.HasComponent<StuffEntityInHandRef>(hit.Entity))
+                {
+                    return hit;
+                }
+            }
+        }
+        return default;
+    }
+}

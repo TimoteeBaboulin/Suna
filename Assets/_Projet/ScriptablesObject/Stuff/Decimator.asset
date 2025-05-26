@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: Decimator
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 9077871864667713224, guid: 83eb2e7aabf39dc4b8bebc34d4d053f7, type: 3}
+  viewPrefab: {fileID: 1084224296991401035, guid: 16a2dc9d585decb479b1445b28b9ed89, type: 3}
+  viewPrefab_Baked: {fileID: 781389616634901949, guid: b21d5a5fa703fd14a8fb37e84cf091e0, type: 3}
+  UIImage: {fileID: 2800000, guid: c11863400add628488bd989c54a3b0a9, type: 3}
+  location: 0
+  type: 0
+  side: 1
+  entityName: Decimator
+  deploymentSpeed: 0
+  storageSpeed: 0
+  price: 2700
+  killGain: 200
+  _stuffLocalOffsetView: {x: 0, y: 1.61766, z: 0.009111932}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 1.61766, z: -0.009111932}
+  recoil: {x: 2, y: 3}
+  damage: 56
+  range: 250
+  firerate: 340
+  isAutomatic: 1
+  roundsPerShot: 1
+  spread: 1.5
+  spreadAiming: 1.3
+  coefSpray: 2.4
+  coefSprayAiming: 2.4
+  ergonomics: 10
+  dmgFallOff: 0.01
+  coefModifMoveSpeed: 0.82
+  coefModifMoveSpeedAiming: 0.6
+  reloadSpeed: 2
+  fastReloadSpeed: 1
+  knockbackForceOnKill: 17
+  canADS: 0
+  ADSFOV: 45
+  lastFireTimeMax: 0.2
+  nbMagazine: 5
+  magazineCapacity: 30
+  scope: {fileID: 0}
+  handle: {fileID: 0}
+  cross: {fileID: 0}
+  silencer: {fileID: 0}
+  magazine: {fileID: 0}
+  thorax: 56
+  stomach: 48
+  legs_Arms: 31
+  head: 220
+  ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 2594b6076a768c84a8a95fc3a1ab19de, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a7d3624565523084598f382cf6f6d9ea, type: 2}

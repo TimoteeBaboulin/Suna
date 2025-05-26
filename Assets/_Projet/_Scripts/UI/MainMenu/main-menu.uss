@@ -1,0 +1,53 @@
+.main-menu-button {
+    align-self: flex-start;
+    font-size: 45px;
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    width: 581px;
+    height: 86px;
+    margin-top: 20px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    background-image: url("project://database/Assets/_Projet/Arts/HUD_General/MENU/Rectangle_tint.png?fileID=2800000&guid=e88327408c844aa4a8e2f94a7847de73&type=3#Rectangle_tint");
+    justify-content: center;
+    align-items: flex-start;
+    -unity-font-definition: url("project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&guid=06393c2b6298fae42b401ef0082880d0&type=3#Nasalization Rg");
+    flex-direction: column;
+    -unity-text-align: middle-left;
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.15s;
+    -unity-background-image-tint-color: rgb(0, 0, 0);
+    transition-timing-function: ease;
+}
+
+.main-menu-button:hover {
+    left: auto;
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.15s;
+    -unity-background-image-tint-color: rgb(172, 172, 172);
+}
+
+.main-menu-button:active {
+    left: auto;
+    transition-property: -unity-background-image-tint-color;
+    transition-duration: 0.15s;
+    -unity-background-image-tint-color: rgb(233, 233, 233);
+}

@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: Nelara
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 7068153267853143302, guid: 9642f47db853010469daf0a2a90b0646, type: 3}
+  viewPrefab: {fileID: 4439481188322927315, guid: 1f680e3a67477234fbbffc8b17620817, type: 3}
+  viewPrefab_Baked: {fileID: 3800154039838073950, guid: 4a59b724ca500f940bb270ecdb95f495, type: 3}
+  UIImage: {fileID: 2800000, guid: ea18ecaefaa4ae948a60eb1e4c1a6f49, type: 3}
+  location: 0
+  type: 0
+  side: 2
+  entityName: Nelara
+  deploymentSpeed: 0
+  storageSpeed: 0
+  price: 1400
+  killGain: 250
+  _stuffLocalOffsetView: {x: 0, y: 1.648875, z: -0.1410743}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
+  recoil: {x: 2, y: 3}
+  damage: 24
+  range: 220
+  firerate: 1100
+  isAutomatic: 1
+  roundsPerShot: 1
+  spread: 3
+  spreadAiming: 4.5
+  coefSpray: 2
+  coefSprayAiming: 0.9
+  ergonomics: 0
+  dmgFallOff: 0.02
+  coefModifMoveSpeed: 0.92
+  coefModifMoveSpeedAiming: 0.78
+  reloadSpeed: 1.5
+  fastReloadSpeed: 1
+  knockbackForceOnKill: 0
+  canADS: 0
+  ADSFOV: 50
+  lastFireTimeMax: 0.1
+  nbMagazine: 6
+  magazineCapacity: 25
+  scope: {fileID: 0}
+  handle: {fileID: 0}
+  cross: {fileID: 0}
+  silencer: {fileID: 0}
+  magazine: {fileID: 0}
+  thorax: 24
+  stomach: 20
+  legs_Arms: 11
+  head: 51
+  ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 0d92adc9eae63eb4aa2b95167f95df37, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a0cab74b4a043fc429d7e3f82f042db4, type: 2}

@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876409719b0ba3e4c8adce711f5101fc, type: 3}
+  m_Name: GasGrenade
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: fb05654db7c5b3841ab2021dcbe90b8e, type: 3}
+  viewPrefab: {fileID: 115276964224071627, guid: 6c92bd2872f949846a427e255f6795c3, type: 3}
+  viewPrefab_Baked: {fileID: 6706159888002051882, guid: 23f1c3aa45a74eb44b51f945a4ce89a8, type: 3}
+  UIImage: {fileID: 2800000, guid: 6891bed3dfb555648a55fdada7223ad5, type: 3}
+  location: 7
+  type: 2
+  grenadeType: 3
+  side: 2
+  entityName: Gas grenade
+  price: 400
+  killGain: 300
+  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
+  cookingTime: 0.6
+  impactRadius: 5
+  damageInflicted: 28
+  triggerType: 2
+  timerTriggerDelay: 12
+  maxImpactAngle: 45
+  stillTriggerDelay: 0.8
+  bounceTriggerCount: 3
+  proximityTriggerDistance: 5
+  soundList:
+  - keyAction: Blow
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 66a943a7b26abd346891525fb2fa7f62, type: 2}

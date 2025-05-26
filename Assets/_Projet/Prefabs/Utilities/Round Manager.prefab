@@ -45,12 +45,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _phaseTimes:
-  - 5
-  - 5
-  - 5
-  - 5
-  _defaultCredits: 1000
-  _victoryCredits: 3400
-  _lossCredits: 750
-  _lossStreakBonus: 550
+  - 15
+  - 90
+  - 45
+  - 8
+  _maxRounds: 9
+  _defaultCredits: 0
+  _victoryCredits: 2400
+  _lossCredits: 800
+  _lossStreakBonus: 200
   _maxStreakCount: 5
+  _roundSystemActive: 1

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{69EFF1E3-BDA3-4B3F-8535-9D69FE37F028}" SchemaVersion="123">
+	<Events>
+		<WorkUnit Name="Ambiant" ID="{69EFF1E3-BDA3-4B3F-8535-9D69FE37F028}" PersistMode="Standalone">
+			<ChildrenList>
+				<Folder Name="Ambient" ID="{DE1B8ABA-280B-4D53-95DC-237CAD1FF92D}" ShortID="877924100">
+					<ChildrenList>
+						<Event Name="Wind" ID="{7EEC918D-1F4A-47F3-9B1C-129F50C95487}">
+							<ChildrenList>
+								<Action Name="" ID="{8F5CFE1F-4649-4FFB-B850-8A960B431720}" ShortID="581620009">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SFX_Ambient_SoftWind-1" ID="{DA072A3B-2B84-4E39-A631-84593CBFA957}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+						<Event Name="Insects" ID="{7D06ADF2-91F3-42BD-BED1-07978B682AAE}">
+							<ChildrenList>
+								<Action Name="" ID="{A38FAB7B-F98C-41ED-BB6F-6DAA9B2CB757}" ShortID="518497094">
+									<ReferenceList>
+										<Reference Name="Target">
+											<ObjectRef Name="SFX_Ambient_Insects" ID="{C4213A17-96CD-43A7-B2F9-3FB98CC70347}" WorkUnitID="{72E2A623-B6F9-4296-B670-EFAFB3A3B012}"/>
+										</Reference>
+									</ReferenceList>
+								</Action>
+							</ChildrenList>
+						</Event>
+					</ChildrenList>
+				</Folder>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

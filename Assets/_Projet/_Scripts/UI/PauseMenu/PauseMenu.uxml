@@ -1,0 +1,12 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../../../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/_Projet/_Scripts/UI/PauseMenu/pause-menu.uss?fileID=7433441132597879392&amp;guid=3eed4f54b20f08a4da6bc1bc1e3bff2e&amp;type=3#pause-menu" />
+    <engine:VisualElement name="Background" style="flex-grow: 1; visibility: visible; display: flex; background-image: url(&quot;project://database/Assets/_Projet/Arts/HUD_General/PauseMenu/Fond.png?fileID=2800000&amp;guid=378690c12f4d2ae46a506197121ac75d&amp;type=3#Fond&quot;); -unity-font-definition: url(&quot;project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&amp;guid=06393c2b6298fae42b401ef0082880d0&amp;type=3#Nasalization Rg&quot;);">
+        <engine:VisualElement name="TabBar" style="flex-grow: 0; width: 100%; flex-shrink: 0; height: 138px; flex-direction: row; position: absolute; top: 0; left: auto; justify-content: center; background-image: url(&quot;project://database/Assets/_Projet/Arts/HUD_General/PauseMenu/Fond_En_Haut.png?fileID=2800000&amp;guid=7cf7ea0eee3a9f94f88929f684403c22&amp;type=3#Fond_En_Haut&quot;);">
+            <engine:Button text="HOME" name="HomeButton" class="pause-tab-bar-button" />
+            <engine:Button text="PLAY" name="PlayButton" class="pause-tab-bar-button" />
+            <engine:Button text="SETTINGS" name="SettingsButton" class="pause-tab-bar-button" />
+        </engine:VisualElement>
+        <engine:VisualElement name="Bars" picking-mode="Ignore" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/_Projet/Arts/HUD_General/PauseMenu/Line.png?fileID=2800000&amp;guid=aebd574ac827e15469106d7f4d05af2f&amp;type=3#Line&quot;); position: absolute; top: 5px; width: 1920px; height: 52px;" />
+        <engine:VisualElement name="Container" style="flex-grow: 0; top: 100px; height: 980px; position: absolute; width: 100%;" />
+    </engine:VisualElement>
+</engine:UXML>

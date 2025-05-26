@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 876409719b0ba3e4c8adce711f5101fc, type: 3}
+  m_Name: Smoke
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 6035785811226571987, guid: 53b58694779c5a74cb41b8ca480ebbc9, type: 3}
+  grenadeThrownPrefab: {fileID: 6035785811226571987, guid: fb05654db7c5b3841ab2021dcbe90b8e, type: 3}
+  viewPrefab: {fileID: 7551343736542452544, guid: 777dc4b95bdb76c43a13e622c9c33b29, type: 3}
+  viewPrefab_Baked: {fileID: 1570039115210518571, guid: db7501d84349ffb4898e98b4b84012bb, type: 3}
+  UIImage: {fileID: 2800000, guid: 6443b435f173e9140baa4b8395256c97, type: 3}
+  location: 6
+  type: 2
+  grenadeType: 2
+  side: 2
+  entityName: Smoke Grenade
+  price: 350
+  killGain: 0
+  _stuffLocalOffsetView: {x: 0, y: 0, z: 0}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 0, z: 0}
+  cookingTime: 0.3
+  impactRadius: 5
+  damageInflicted: 80
+  triggerType: 2
+  timerTriggerDelay: 14
+  maxImpactAngle: 45
+  stillTriggerDelay: 0.8
+  bounceTriggerCount: 3
+  proximityTriggerDistance: 5
+  soundList:
+  - keyAction: Blow
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a54a106ebb8388c42bb6c95a8dd1a393, type: 2}

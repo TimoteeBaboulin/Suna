@@ -1,0 +1,119 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3093370179945693043
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7716254686635648755}
+  - component: {fileID: 985117995988363320}
+  - component: {fileID: -7839248459545790564}
+  - component: {fileID: 995166504868369785}
+  - component: {fileID: -6192364199682525236}
+  m_Layer: 0
+  m_Name: GameResources
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7716254686635648755
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093370179945693043}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &985117995988363320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093370179945693043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 909630785c4f3f54faa2ca90927c8c8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rangedWeaponEntityPrefab: {fileID: 3839436275311606518, guid: d9961665fe6bca943b80581dafa8bc5b, type: 3}
+  meleeWeaponEntityPrefab: {fileID: 7445839901049856988, guid: bc7527bf731f9554caa610efbb875a6f, type: 3}
+  grenadesEntityPrefab: {fileID: 1637427585106062149, guid: a5e53c827e652ef478c37c905310ef48, type: 3}
+  harvesterEntityPrefab: {fileID: 521297520866367205, guid: ac913237f98d66d4db5638adf2bba45a, type: 3}
+  rangedWeaponList:
+  - {fileID: 11400000, guid: 60085d48d9e1aa04ba3c5224c82ec710, type: 2}
+  - {fileID: 11400000, guid: 53672ea0d67e12b43b3e74c2931bf886, type: 2}
+  - {fileID: 11400000, guid: cc4ae2171c21bf044ad36dabf8fab7e1, type: 2}
+  - {fileID: 11400000, guid: 2f60df847c329d44ca926804f7680de2, type: 2}
+  - {fileID: 11400000, guid: 1dc1bc2c1a8340f4ba6cdd6f31c5bb09, type: 2}
+  - {fileID: 11400000, guid: f2477d3aa9ae6134a8c99d791df8ccb1, type: 2}
+  - {fileID: 11400000, guid: c5169048c8241b14e985c1031fca08c3, type: 2}
+  meleeWeaponList:
+  - {fileID: 11400000, guid: 28b203aba1a775547ac26e84c75c960b, type: 2}
+  grenadesList:
+  - {fileID: 11400000, guid: f397e26a4a1ccfe4aa4a10e733ccdbb9, type: 2}
+  - {fileID: 11400000, guid: c487fcea494c59f43a42fa0aa543a444, type: 2}
+  - {fileID: 11400000, guid: 42569cc84ce1b654e891fabf315ff93b, type: 2}
+  - {fileID: 11400000, guid: 02dbb04a1dd6dd345b2887345430e35b, type: 2}
+  harvester: {fileID: 11400000, guid: 8641a930c8507084caa6fd98c321c55d, type: 2}
+--- !u!114 &-7839248459545790564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093370179945693043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c16549610bfe4458aa9389201d072bb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &995166504868369785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093370179945693043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7c79d771cedb4794bf100ce60df5f764, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DefaultGhostMode: 0
+  SupportedGhostModes: 3
+  OptimizationMode: 0
+  Importance: 1
+  MaxSendRate: 0
+  prefabId: 0460548379cb339488d25d69e35ffc5d
+  HasOwner: 0
+  SupportAutoCommandTarget: 1
+  TrackInterpolationDelay: 0
+  GhostGroup: 0
+  UsePreSerialization: 0
+  RollbackPredictedSpawnedGhostState: 0
+  RollbackPredictionOnStructuralChanges: 1
+--- !u!114 &-6192364199682525236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3093370179945693043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfdaa6c06fe64fbda2b16e07a4ee0b25, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ComponentOverrides: []

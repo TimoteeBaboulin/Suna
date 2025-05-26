@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: SKAR18
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 9077871864667713224, guid: 83eb2e7aabf39dc4b8bebc34d4d053f7, type: 3}
+  viewPrefab: {fileID: 1084224296991401035, guid: b95c04dd279d4ae44b35d4ac65499928, type: 3}
+  viewPrefab_Baked: {fileID: 2184239061287298664, guid: 87357a639dc6ab840964458ecc264e07, type: 3}
+  UIImage: {fileID: 2800000, guid: e2e1832659d81c44ba08a143e5421e9d, type: 3}
+  location: 0
+  type: 0
+  side: 0
+  entityName: SKAR18
+  deploymentSpeed: 0
+  storageSpeed: 0
+  price: 2200
+  killGain: 200
+  _stuffLocalOffsetView: {x: 0, y: 1.61766, z: 0.009111932}
+  _stuffLocalOffsetView_Baked: {x: 0, y: 1.61766, z: -0.009111932}
+  recoil: {x: 2, y: 3}
+  damage: 48
+  range: 250
+  firerate: 420
+  isAutomatic: 1
+  roundsPerShot: 1
+  spread: 1.2
+  spreadAiming: 1
+  coefSpray: 2
+  coefSprayAiming: 1.2
+  ergonomics: 10
+  dmgFallOff: 0.01
+  coefModifMoveSpeed: 0.82
+  coefModifMoveSpeedAiming: 0.6
+  reloadSpeed: 2
+  fastReloadSpeed: 1
+  knockbackForceOnKill: 17
+  canADS: 0
+  ADSFOV: 45
+  lastFireTimeMax: 0.2
+  nbMagazine: 5
+  magazineCapacity: 30
+  scope: {fileID: 11400000, guid: 4ecbdcea80dbf3b4bbbc6e024e494c7d, type: 2}
+  handle: {fileID: 0}
+  cross: {fileID: 0}
+  silencer: {fileID: 0}
+  magazine: {fileID: 0}
+  thorax: 48
+  stomach: 36
+  legs_Arms: 21
+  head: 164
+  ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 2594b6076a768c84a8a95fc3a1ab19de, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: a7d3624565523084598f382cf6f6d9ea, type: 2}

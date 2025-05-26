@@ -5,9 +5,21 @@
 			<ChildrenList>
 				<SoundBank Name="DefaultBank" ID="{F96B86BC-FF0D-47F1-9F01-6A5A99D55C1E}">
 					<ObjectInclusionList>
-						<ObjectRef Name="Music_Play" ID="{3EBA5C8C-4553-482C-90E4-A03692DA77AE}" WorkUnitID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Sound_Play" ID="{6DA026ED-0C7F-4945-830C-DA3BDFF95CE3}" WorkUnitID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" Origin="Manual" Filter="7"/>
-						<ObjectRef Name="Music_Stop" ID="{ED12738B-57AB-4F92-9E1B-85F324984FA9}" WorkUnitID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" Origin="Manual" Filter="7"/>
+						<ObjectRef Name="Default Work Unit" ID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" WorkUnitID="{69376A79-4CBF-430C-B6DB-861A3B5A440A}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+				<SoundBank Name="MainMenu" ID="{373F205E-207D-45EF-A994-FD3FAF1CAE9E}">
+					<ObjectInclusionList>
+						<ObjectRef Name="MainMenu" ID="{E21A8B7C-E39D-4F42-8B0C-4B3B848EDF5A}" WorkUnitID="{E21A8B7C-E39D-4F42-8B0C-4B3B848EDF5A}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+				<SoundBank Name="VoiceLines" ID="{8D5A68C2-DCBE-4E5F-A9AB-8A1FF10D5FDC}">
+					<ObjectInclusionList>
+						<ObjectRef Name="VoiceLines Work Unit" ID="{BDBE9050-7770-4141-8FC3-B98EA7BECF02}" WorkUnitID="{BDBE9050-7770-4141-8FC3-B98EA7BECF02}" Origin="Manual" Filter="7"/>
 					</ObjectInclusionList>
 					<ObjectExclusionList/>
 					<GameSyncExclusionList/>

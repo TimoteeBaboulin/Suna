@@ -13,7 +13,7 @@ Licensees holding valid licenses to the AUDIOKINETIC Wwise Technology may use
 this file in accordance with the end user license agreement provided with the
 software or, alternatively, in accordance with the terms contained
 in a written agreement between you and Audiokinetic Inc.
-Copyright (c) 2024 Audiokinetic Inc.
+Copyright (c) 2025 Audiokinetic Inc.
 *******************************************************************************/
 
 /// <summary>
@@ -164,10 +164,11 @@ public class AkEvent : AkDragDropTriggerHandler
 
 		data.Post(gameObj);
 	}
-	
-	protected void OnDisable()
+
+	protected new void OnDestroy()
 	{
-		if (stopSoundOnDestroy)
+		var akGameObj = gameObject.GetComponent<AkGameObj>();
+		if (stopSoundOnDestroy && akGameObj != null && akGameObj.GameObjIsRegistered())
 		{
 			var gameObj = useOtherObject && otherGameObject != null ? otherGameObject : gameObject;
 			data.ExecuteAction(gameObj, AkActionOnEventType.AkActionOnEventType_Stop, (int)transitionDuration * 1000, curveInterpolation);

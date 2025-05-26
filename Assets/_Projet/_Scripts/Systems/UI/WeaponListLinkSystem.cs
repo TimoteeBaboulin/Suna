@@ -1,0 +1,64 @@
+using System;
+using System.Collections.Generic;
+using Unity.Entities;
+using Unity.NetCode;
+using UnityEngine;
+
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+partial class WeaponListLinkSystem : SystemBase
+{
+    public class StuffListChangeEventArgs : EventArgs
+    {
+        public List<string> StuffListNames;
+        public List<int> StuffListIds;
+    }
+
+    public class StuffIdEventArgs : EventArgs
+    {
+        public int StuffId;
+    }
+
+    public event EventHandler<StuffListChangeEventArgs> OnStuffListChange;
+    public event EventHandler<StuffIdEventArgs> OnStuffIdChange;
+
+    int stuffInHandIndex = -1;
+
+    protected override void OnUpdate()
+    {
+        if (SystemAPI.TryGetSingleton(out GameResourcesDatabase database))
+        {
+            foreach (var (stuffList, stuffInfosRO) in SystemAPI
+            .Query<DynamicBuffer<CharacterStuffList>, RefRO<CharacterStuffInfos>>()
+            .WithAll<GhostOwnerIsLocal>())
+            {
+                List<string> names = new();
+                List<int> ids = new();
+                foreach (var stuff in stuffList)
+                {
+                    if (stuff.entity != Entity.Null)
+                    {
+                        bool isValid = SystemAPI.HasComponent<StuffDatabaseAccess>(stuff.entity);
+                        if (!isValid) continue;
+                        StuffDatabaseAccess dbAccess = SystemAPI.GetComponent<StuffDatabaseAccess>(stuff.entity);
+                        names.Add(dbAccess.GetData(ref database).Name.ToString());
+                        ids.Add((int)dbAccess.GetData(ref database).slot);
+                    }
+                }
+                if (names.Count > 0)
+                {
+                    OnStuffListChange?.Invoke(this, new StuffListChangeEventArgs()
+                    {
+                        StuffListNames = names,
+                        StuffListIds = ids
+                    });
+                }
+
+                stuffInHandIndex = (int)stuffInfosRO.ValueRO.StuffInHandSlot;
+                OnStuffIdChange?.Invoke(this, new StuffIdEventArgs()
+                {
+                    StuffId = stuffInHandIndex
+                });
+            }
+        }
+    }
+}

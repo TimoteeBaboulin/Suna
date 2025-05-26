@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd05dd21177c76d4490d85cdb904823c, type: 3}
+  m_Name: Banduka
+  m_EditorClassIdentifier: 
+  dropedEntityPrefab: {fileID: 3839436275311606518, guid: 31896ef0d2741ef4cb21bd5acf87dc80, type: 3}
+  viewPrefab: {fileID: 3553133271784516926, guid: 245f51d0092ee9c47a2eb509512427b5, type: 3}
+  viewPrefab_Baked: {fileID: 5902808496342276213, guid: 96e6194146b97f14488b1468b8afbdec, type: 3}
+  UIImage: {fileID: 2800000, guid: 31be4f1881b8fe74ab1392a30014e25f, type: 3}
+  location: 0
+  type: 0
+  side: 2
+  entityName: Banduka
+  deploymentSpeed: 0
+  storageSpeed: 0
+  price: 1200
+  killGain: 600
+  _stuffLocalOffsetView: {x: -0.0588395, y: 1.602301, z: 0.2145904}
+  _stuffLocalOffsetView_Baked: {x: 0.0588395, y: 1.602301, z: -0.2145904}
+  recoil: {x: 0, y: 0}
+  damage: 16
+  range: 250
+  firerate: 60
+  isAutomatic: 0
+  roundsPerShot: 8
+  spread: 4
+  spreadAiming: 4
+  coefSpray: 1
+  coefSprayAiming: 1
+  ergonomics: 0
+  dmgFallOff: 0.05
+  coefModifMoveSpeed: 0.82
+  coefModifMoveSpeedAiming: 0.6
+  reloadSpeed: 1.5
+  fastReloadSpeed: 1
+  knockbackForceOnKill: 0
+  canADS: 0
+  ADSFOV: 45
+  lastFireTimeMax: 0
+  nbMagazine: 6
+  magazineCapacity: 4
+  scope: {fileID: 0}
+  handle: {fileID: 0}
+  cross: {fileID: 0}
+  silencer: {fileID: 0}
+  magazine: {fileID: 0}
+  thorax: 16
+  stomach: 9
+  legs_Arms: 5
+  head: 50
+  ammoType: {fileID: 0}
+  soundList:
+  - keyAction: Shoot
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 7f9debbd5ad8ce44baa40a5ac99c4986, type: 2}
+  - keyAction: Reload
+    sound:
+      idInternal: 0
+      valueGuidInternal: 
+      WwiseObjectReference: {fileID: 11400000, guid: 70aad2d4579c0264088e799075a9203b, type: 2}

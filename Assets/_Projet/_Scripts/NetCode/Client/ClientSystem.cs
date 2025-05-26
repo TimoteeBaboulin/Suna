@@ -1,0 +1,49 @@
+using UnityEngine;
+using Unity.Entities;
+using Unity.NetCode;
+using Unity.Collections;
+using UnityEngine.InputSystem;
+using Unity.Transforms;
+using Unity.Mathematics;
+using Unity.VisualScripting.Dependencies.NCalc;
+using Unity.Services.Multiplayer;
+using GameNetwork.Utils;
+
+public struct ClientMessageRpcCommand : IRpcCommand
+{
+    public FixedString64Bytes message;
+}
+
+public struct ClientSessionCreationCommand : IRpcCommand
+{
+    public bool createNewSession;
+}
+[WorldSystemFilter(WorldSystemFilterFlags.ClientSimulation)]
+public partial class ClientSystem : SystemBase
+{
+    protected override void OnCreate()
+    {
+        RequireForUpdate<NetworkId>();
+    }
+
+    protected override void OnUpdate()
+    {
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+        foreach (var (request, command, entity) in SystemAPI.Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ServerMessageRpcCommand>>().WithEntityAccess())
+        {
+            ServerConsole.Log(ServerConsole.LogType.Info, $"message to client {command.ValueRO.message}");
+            Debug.Log($"message to client {command.ValueRO.message}");
+            commandBuffer.DestroyEntity(entity);
+        }
+        if (Keyboard.current.vKey.wasPressedThisFrame)
+        {
+            var localPlayer = ClientTransportHelper.instance.Session.CurrentPlayer;
+            if (localPlayer.Properties.TryGetValue("team", out PlayerProperty localTeam))
+            {
+                Debug.Log($"[Play] Local player team: {localTeam.Value}");
+            }
+        }
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
+    }
+}

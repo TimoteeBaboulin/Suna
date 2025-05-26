@@ -1,0 +1,47 @@
+.shop_buy_slot_button {
+    background-color: rgba(148, 148, 148, 0.25);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+    position: absolute;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+    width: 445px;
+    height: 190px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.shop_buy_slot_button:hover {
+    background-color: rgba(172, 172, 172, 0.5);
+}
+
+.shop_buy_slot_button:active {
+    background-color: rgba(233, 233, 233, 0.5);
+}
+
+.shop_label_indicator {
+    position: absolute;
+    -unity-font-definition: url("project://database/Assets/_Projet/Arts/Fonts/Nasalization%20Rg.otf?fileID=12800000&guid=06393c2b6298fae42b401ef0082880d0&type=3#Nasalization Rg");
+    color: rgb(213, 213, 213);
+    -unity-font-style: bold;
+    font-size: 30px;
+    margin-top: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-left: 0;
+    padding-top: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    padding-left: 0;
+}

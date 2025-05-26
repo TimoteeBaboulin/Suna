@@ -1,0 +1,21 @@
+.team_choice_large_button {
+    background-color: rgba(0, 0, 0, 0);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
+    border-left-width: 0;
+}
+
+.team_choice_large_button:hover {
+    background-color: rgba(172, 172, 172, 0.2);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+}
+
+.team_choice_large_button:active {
+    background-color: rgba(233, 233, 233, 0.2);
+    transition-property: background-color;
+    transition-duration: 0.1s;
+}

@@ -1,0 +1,324 @@
+﻿using GameNetwork.Utils;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Multiplayer.Playmode;
+using Unity.NetCode;
+using Unity.Services.Multiplayer;
+using Unity.Transforms;
+using UnityEngine;
+using static PlayerHelpers;
+using static Unity.NetCode.ClientServerBootstrap;
+
+public struct ServerMessageRpcCommand : IRpcCommand
+{
+    public FixedString64Bytes message;
+}
+
+[GhostComponent]
+public struct ClientComponent : IComponentData
+{
+    [GhostField]
+    public int networkID;
+    [GhostField]
+    public FixedString64Bytes playerID;
+    [GhostField]
+    public TeamSideType team;
+    [GhostField]
+    public FixedString64Bytes name;
+}
+
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+public partial class ServerSystem : SystemBase
+{
+    private ComponentLookup<NetworkId> _clients;
+
+    protected override void OnCreate()
+    {
+        Debug.Log("ServerSystem OnCreate called");
+        _clients = GetComponentLookup<NetworkId>(true);
+
+        if (RequestedPlayType == PlayType.Server)
+        {
+            Debug.Log("ServerSystem OnUpdate (before init) called");
+            _ = InitializeAsync();
+        }
+        RequireForUpdate<NetworkId>();
+    }
+
+    protected override void OnUpdate()
+    {     
+        _clients.Update(this);
+        EntityCommandBuffer commandBuffer = new EntityCommandBuffer(Allocator.Temp);
+
+        foreach (var (request, command, entity) in SystemAPI
+                     .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<ClientMessageRpcCommand>>()
+                     .WithEntityAccess())
+        {
+            Debug.Log($"{command.ValueRO.message} from client index {request.ValueRO.SourceConnection.Index}");
+            commandBuffer.DestroyEntity(entity);
+        }
+
+        foreach (var (id, entity) in SystemAPI
+                     .Query<RefRO<NetworkId>>()
+                     .WithNone<ClientComponent>()
+                     .WithEntityAccess())
+        {
+            InstantiateClient(entity, commandBuffer);
+        }
+
+
+
+        foreach (var (request, command, rpcEntity) in SystemAPI
+                     .Query<RefRO<ReceiveRpcCommandRequest>, RefRO<NameCommand>>().WithEntityAccess())
+        {
+            Entity cEntity = request.ValueRO.SourceConnection;
+            var client = SystemAPI.GetComponent<ClientComponent>(request.ValueRO.SourceConnection);
+
+            Debug.Log($"[name] Request Entity {cEntity} vs {request.ValueRO.SourceConnection}");
+            Debug.Log($"[name] Request Entity {client.playerID}, {client.networkID}");
+
+            foreach (var (currentClient, clientEntity) in SystemAPI
+                   .Query<RefRO<ClientComponent>>()
+                   .WithEntityAccess())
+            {
+                if (currentClient.ValueRO.networkID == client.networkID)
+                {
+                    commandBuffer.SetComponent(clientEntity, new ClientComponent
+                    {
+                        playerID = currentClient.ValueRO.playerID,
+                        team = currentClient.ValueRO.team,
+                        networkID = currentClient.ValueRO.networkID,
+                        name = command.ValueRO.name
+                    });
+                    Debug.Log($"[name] new client.name is {currentClient.ValueRO.name} vs {client.name}");
+                }
+                Debug.Log($"[name] client.name is {currentClient.ValueRO.name} vs {client.name}");
+            }
+            commandBuffer.DestroyEntity(rpcEntity);
+        }
+
+        commandBuffer.Playback(EntityManager);
+        commandBuffer.Dispose();
+    }
+
+    private async Task InitializeAsync()
+    {
+        Debug.Log("ServerSystem InitializeAsync started");
+        string configFilePath = "config.txt";
+
+        if (!File.Exists(configFilePath))
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Enter the number of players you want to support (Max: 10): ");
+            Console.ResetColor();
+
+            string input = Console.ReadLine();
+
+            while (true)
+            {
+                if (!string.IsNullOrWhiteSpace(input) && input.All(char.IsDigit))
+                {
+                    int numberOfPlayers = int.Parse(input);
+
+                    if (numberOfPlayers > 0 && numberOfPlayers <= 10)
+                    {
+                        ClientTransportHelper.MaxNbOfPlayers = numberOfPlayers;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Max number of players set to: {ClientTransportHelper.MaxNbOfPlayers}");
+                        Console.ResetColor();
+
+                        File.WriteAllText(configFilePath, $"MaxPlayers: {numberOfPlayers}");
+                        break; 
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid input. The number of players must be between 1 and 10.");
+                        Console.ResetColor();
+                        input = Console.ReadLine(); 
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid input. Please enter only numbers (no spaces or special characters).");
+                    Console.ResetColor();
+                    input = Console.ReadLine();
+                }
+            }
+        }
+        else
+        {
+            string savedConfig = File.ReadAllText(configFilePath);
+
+            string[] configParts = savedConfig.Split(':');
+            if (configParts.Length == 2 && configParts[0].Trim() == "MaxPlayers")
+            {
+                string savedMaxPlayers = configParts[1].Trim();
+
+                if (int.TryParse(savedMaxPlayers, out int numberOfPlayers))
+                {
+                    if (numberOfPlayers > 0 && numberOfPlayers <= 10)
+                    {
+                        ClientTransportHelper.MaxNbOfPlayers = numberOfPlayers;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Max number of players set to: {ClientTransportHelper.MaxNbOfPlayers} (from saved config)");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid value in config file. The number of players must be between 1 and 10.");
+                        Console.ResetColor();
+                        return; // Exit as the config file has invalid data
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid data in config file. Defaulting to 2.");
+                    Console.ResetColor();
+                    ClientTransportHelper.MaxNbOfPlayers = 2;
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid configuration format in the file. Defaulting to 2.");
+                Console.ResetColor();
+                ClientTransportHelper.MaxNbOfPlayers = 2;
+            }
+        }
+
+        try
+        {
+            await ClientTransportHelper.StartServicesAsync();
+            Debug.Log($"Port in GameManager : {AutoConnectPort}");
+            await ServerSessionFactory.CreateServerSession(ClientTransportHelper.CurrentIP, ClientTransportHelper.CurrentPort);
+            Debug.Log("Server session created");
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError($"ServerSystem failed to initialize async logic: {ex}");
+        }
+    }
+    #region Public Methods
+
+    public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
+    {
+        if (SystemAPI.TryGetSingleton(out ClientPrefabData prefabManager))
+        {
+            if (prefabManager.Client == null)
+            {
+                return;
+            }
+
+            NetworkId networkId = SystemAPI.GetComponent<NetworkId>(ownerEntity);
+            FixedString128Bytes worldName = ClientServerBootstrap.ServerWorld.Name;
+
+            Entity client = ecb.Instantiate(prefabManager.Client);
+
+            ecb.SetComponent(client, new GhostOwner()
+            {
+                NetworkId = networkId.Value
+            });
+            ecb.AppendToBuffer(ownerEntity, new LinkedEntityGroup() { Value = client });
+            var hostSession = ClientTransportHelper.instance.Session as IServerSession;
+
+            IPlayer currentPlayer = PlayerHelpers.FindCurrentPlayerForNetworkId(networkId.Value);
+            if (currentPlayer == null)
+                return;
+
+            TeamSideType assignedTeam = AssignTeamToPlayer(currentPlayer);
+            Debug.Log($"[OnPlayerJoined] Player with id {currentPlayer.Id} created.");
+            hostSession.SavePlayerDataAsync(currentPlayer.Id);
+
+            //Do not remove this code, it's not nice, not ugly but it's fucks hard and if you remove it, it will fuck you
+            ecb.AddComponent(ownerEntity, new ClientComponent
+            {
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id,
+                team = assignedTeam,
+                name = Environment.MachineName.ToString()
+            });
+
+            ecb.SetComponent(client, new ClientComponent
+            {
+                networkID = networkId.Value,
+                playerID = currentPlayer.Id,
+                team = assignedTeam,
+                name = Environment.MachineName.ToString()
+            });
+
+            ServerConsole.Log(ServerConsole.LogType.Info, $"New Client : " +
+                $"NetworkId {networkId.Value} " +
+                $"currentPlayerID {currentPlayer.Id} " +
+                $"team {assignedTeam} " +
+                $"world {worldName}");
+
+#if UNITY_EDITOR
+            Debug.Log($"New Client : NetworkId {networkId.Value}  currentPlayerID {currentPlayer.Id} team {assignedTeam} world {worldName}");
+#endif
+        }
+    }
+    #endregion
+}
+
+//#if UNITY_SERVER
+[WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
+[UpdateAfter(typeof(CountPlayersSystemServer))]
+public partial class SessionStatusSystem : SystemBase
+{
+    private float logInterval = 5.0f;
+    private float timer;
+    private bool didSubscribe = false;
+    protected override void OnCreate()
+    {
+        var clients = GetComponentLookup<NetworkId>(true);
+
+        RequireForUpdate<NetworkId>();
+        Debug.Log("[SessionStatusSystem] Waiting for session to be created...");
+
+    }
+
+    protected override void OnUpdate()
+    {
+        float deltaTime = SystemAPI.Time.DeltaTime;
+        timer += deltaTime;
+
+        if (timer >= logInterval)
+        {
+            timer = 0f;
+
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session ID: {ClientTransportHelper.instance.Session.Id}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session Name: {ClientTransportHelper.instance.Session.Name}");
+            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+            {
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ClientTransportHelper.instance.Session.PlayerCount - 1}");//Minus the server, as it counts as player
+            }
+            else
+            {
+                Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Current Nb of player: {ClientTransportHelper.instance.Session.PlayerCount}");
+            }
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Session State: {ClientTransportHelper.instance.Session.State} "); ;
+            PlayerHelpers.AliveCounts currentCounts = PlayerHelpers.GetCurrentAliveCounts(World);
+
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native players alive: {currentCounts.natifPlayersAlive}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo players alive: {currentCounts.corpoPlayersAlive}");
+            PlayerHelpers.GlobalTeamCount teamCounts = PlayerHelpers.GetCurrentTeamCounts();
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamCounts: {teamCounts.natifPlayersCount}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamCounts: {teamCounts.corpoPlayersCount}");
+            Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated neutral teamCounts: {teamCounts.neutralPlayersCount}");
+
+            //PlayerHelpers.TeamList teamList = PlayerHelpers.GetTeamList();
+            //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated native teamList: {teamList.natifPlayers.Count}");
+            //Debug.Log($"[SessionStatusSystem :@ {System.DateTime.Now}] Calculated corpo teamList: {teamList.corpoPlayers.Count}");
+
+        }
+    }
+}
+//#endif

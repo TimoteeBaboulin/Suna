@@ -1,0 +1,31 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+[CreateAssetMenu(fileName = "Harvester Data", menuName = "Stuff Data/Harvester Data")]
+public class HarvesterData : ScriptableObject
+{
+    [Header("Stuff infos")]
+    public GameObject dropedEntityPrefab;
+    public GameObject viewPrefab;
+    public GameObject viewPrefab_Baked;
+    public Texture2D UIImage;
+    public StuffSlot location;
+    public StuffType type;
+    public TeamSideType side;
+    public string entityName;
+    public float deploymentSpeed;
+    public float storageSpeed;
+    public int price;
+    public uint killGain;
+    public Vector3 _stuffLocalOffsetView; //temp
+    public Vector3 _stuffLocalOffsetView_Baked;
+
+
+    [Header("Static Data")]
+    public float defuseRange;
+    public float pickupDistance;
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
+}

@@ -1,0 +1,145 @@
+using System;
+
+using System.Collections.Generic;
+using Unity.Burst;
+using Unity.Collections;
+using Unity.Entities;
+using Unity.Mathematics;
+using Unity.Transforms;
+
+[Serializable]
+public class SoundMapping
+{
+    public string keyAction;
+#if !UNITY_SERVER
+    public AK.Wwise.Event sound;
+#endif
+}
+
+[Serializable]
+public class SoundGroupMapping
+{
+    public string keyGroup;
+    public List<SoundMapping> maping = new();
+}
+public static class SoundUtils
+{
+    public static void SetMappingList(string keyGroup, in List<SoundMapping> soundList, List<SoundGroupMapping> soundGroupMapping)
+    {
+        List<SoundMapping> soundMaping = new List<SoundMapping>();
+        foreach (var sound in soundList)
+        {
+            soundMaping.Add(new SoundMapping
+            {
+                keyAction = sound.keyAction,
+#if !UNITY_SERVER
+                sound = sound.sound
+#endif
+            });
+        }
+
+        soundGroupMapping.Add(new SoundGroupMapping
+        {
+            keyGroup = keyGroup,
+            maping = soundMaping
+        });
+    }
+#if !UNITY_SERVER
+    public static Dictionary<string, AK.Wwise.Event> SetBankRegister(string keyGroup, List<SoundMapping> soundList)
+    {
+        Dictionary<string, AK.Wwise.Event> bank = new();
+        foreach (var pair in soundList)
+        {
+            if (!bank.ContainsKey(keyGroup + pair.keyAction))
+                bank.Add(keyGroup + pair.keyAction, pair.sound);
+        }
+        return bank;
+        //return default;
+    }
+#endif
+
+#if !UNITY_SERVER
+    public static Dictionary<string, AK.Wwise.Event> SetGroupRegister(List<SoundGroupMapping> soundGroupList)
+    {
+
+        Dictionary<string, AK.Wwise.Event> bank = new();
+        foreach (var soundList in soundGroupList)
+        {
+            foreach (var pair in soundList.maping)
+            {
+                if (!bank.ContainsKey(soundList.keyGroup + pair.keyAction))
+                    bank.Add(soundList.keyGroup + pair.keyAction, pair.sound);
+            }
+        }
+        return bank;
+        //return default;
+    }
+#endif
+
+    //The entity holding the soundBuffer must have SoundAuthoring attached
+    //public static void PlayWithSoundQueue(DynamicBuffer<SoundQueue> soundQueue, in SoundEmitter emitter, FixedString32Bytes keyAction, float3 pos)
+    //{
+    //    soundQueue.Add(new SoundQueue()
+    //    {
+    //        keyGroup = emitter.keyGroup,
+    //        keyAction = keyAction,
+    //        pos = pos
+    //    });
+
+    //}
+
+    //The entity holding the soundBuffer must have SoundAuthoring attached
+    //public static void PlayAtEmitterWithSoundQueue(ref SystemState state, DynamicBuffer<SoundQueue> soundQueue, Entity entity, FixedString32Bytes keyAction)
+    //{
+    //    if (state.EntityManager.HasComponent<SoundEmitter>(entity))
+    //    {
+
+    //        SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
+
+    //        if (state.EntityManager.HasComponent<LocalToWorld>(entity))
+    //        {
+    //            LocalToWorld transform = state.EntityManager.GetComponentData<LocalToWorld>(entity);
+    //            PlayWithSoundQueue(soundQueue, emitter, keyAction, transform.Position);
+
+    //        }
+    //    }
+    //}
+
+    public static void PlayWithRPC(FixedString32Bytes keyGroup, FixedString32Bytes keyAction, float3 pos, TeamSideType side = TeamSideType.Neutre)
+    {
+        SoundRpc soundRpc = new SoundRpc()
+        {
+            keyGroup = keyGroup,
+            keyAction = keyAction,
+            pos = pos,
+            side = side
+        };
+        RpcUtils.SendServerToClientRpc(ref soundRpc);
+    }
+
+    public static void PlayWithRPC(ref SoundEmitter emitterRW, FixedString32Bytes keyAction, float3 pos, float cooldown = 0f, float dt = 0f)
+    {
+        emitterRW.timer -= dt;
+        if (emitterRW.timer <= 0f)
+        {
+            emitterRW.timer = cooldown;
+
+            PlayWithRPC(emitterRW.keyGroup, keyAction, pos);
+        }
+    }
+
+    //public static void PlayAtEmitterWithRPC(ref SystemState state, FixedString32Bytes keyAction, Entity entity)
+    //{
+    //    if (state.EntityManager.HasComponent<SoundEmitter>(entity))
+    //    {
+    //        SoundEmitter emitter = state.EntityManager.GetComponentData<SoundEmitter>(entity);
+
+    //        if (state.EntityManager.HasComponent<LocalTransform>(entity))
+    //        {
+    //            LocalTransform transform = state.EntityManager.GetComponentData<LocalTransform>(entity);
+    //            UnityEngine.Debug.Log(transform.Position);
+    //            PlayWithRPC(emitter.keyGroup, keyAction, transform.Position);
+    //        }
+    //    }
+    //}
+}

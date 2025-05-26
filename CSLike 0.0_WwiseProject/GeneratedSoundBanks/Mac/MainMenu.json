@@ -1,0 +1,151 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "154",
+  "SoundBanks": [
+   {
+    "Id": "3604647259",
+    "Type": "User",
+    "GUID": "{373F205E-207D-45EF-A994-FD3FAF1CAE9E}",
+    "Language": "SFX",
+    "Hash": "{A632EC29-3894-40BD-3F07-D3D3CF1EADDF}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\MainMenu",
+    "ShortName": "MainMenu",
+    "Path": "MainMenu.bnk",
+    "Media": [
+     {
+      "Id": "135782287",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Menus_Launcher.wav",
+      "CachePath": "C5/{C57A28A8-DBE1-ECAF-80E7-6A60919A15A0}.wem"
+     },
+     {
+      "Id": "339548310",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Menus_Main_Loop.wav",
+      "CachePath": "13/{13B02EDB-18B6-974F-5083-4C000EF5F459}.wem"
+     },
+     {
+      "Id": "561488109",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Main_Title_Loop.wav",
+      "CachePath": "51/{5124A281-5031-6BB6-1A44-B87423EA73F9}.wem"
+     },
+     {
+      "Id": "858655539",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "CS_Like_Main_Menu_Launcher_Loop_V2.wav",
+      "CachePath": "88/{885D6F5A-107B-5CED-3B3D-D1BACFA602A6}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2735489995",
+      "Name": "CS_Like_Main_Title_Loop",
+      "ObjectPath": "\\Events\\MainMenu\\CS_Like_Main_Title_Loop",
+      "GUID": "{0A66A8F5-2187-4324-A57B-5FB3C3F3D40C}",
+      "DurationType": "OneShot",
+      "DurationMin": "28.235306",
+      "DurationMax": "28.235306",
+      "MediaRefs": [
+       {
+        "Id": "561488109"
+       }
+      ]
+     },
+     {
+      "Id": "251419718",
+      "Name": "CS_Like_Main_Title_Loop_STOP",
+      "ObjectPath": "\\Events\\MainMenu\\CS_Like_Main_Title_Loop_STOP",
+      "GUID": "{8E1FC384-7608-4537-92FE-4D5B3CC809C4}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "1901903297",
+      "Name": "CS_Like_Menus_Launcher",
+      "ObjectPath": "\\Events\\MainMenu\\CS_Like_Menus_Launcher",
+      "GUID": "{DD45F554-D0F8-4B39-BFD0-A819BBC1E4C2}",
+      "DurationType": "OneShot",
+      "DurationMin": "146.4706",
+      "DurationMax": "146.4706",
+      "MediaRefs": [
+       {
+        "Id": "135782287"
+       }
+      ]
+     },
+     {
+      "Id": "715144708",
+      "Name": "CS_Like_Menus_Launcher_STOP",
+      "ObjectPath": "\\Events\\MainMenu\\CS_Like_Menus_Launcher_STOP",
+      "GUID": "{60EA747E-5708-4958-9D9A-6DBEB0B645A0}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "947053159",
+      "Name": "CS_Like_Menus_Main_Loop",
+      "ObjectPath": "\\Events\\MainMenu\\CS_Like_Menus_Main_Loop",
+      "GUID": "{B4C65B99-F9C8-4D63-914C-34C343BF248C}",
+      "DurationType": "OneShot",
+      "DurationMin": "121.76472",
+      "DurationMax": "121.76472",
+      "MediaRefs": [
+       {
+        "Id": "339548310"
+       }
+      ]
+     },
+     {
+      "Id": "2164583458",
+      "Name": "CS_Like_Menus_Main_Loop_STOP",
+      "ObjectPath": "\\Events\\MainMenu\\CS_Like_Menus_Main_Loop_STOP",
+      "GUID": "{692B8D06-DA62-48B6-92F5-A452F743B162}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     },
+     {
+      "Id": "431042762",
+      "Name": "Main_Menu_Loop_New",
+      "ObjectPath": "\\Events\\MainMenu\\Main_Menu_Loop_New",
+      "GUID": "{590FE709-184A-4B61-947A-5733DDD80CAB}",
+      "DurationType": "Infinite",
+      "MediaRefs": [
+       {
+        "Id": "858655539"
+       }
+      ]
+     },
+     {
+      "Id": "4256069028",
+      "Name": "StopAll_01",
+      "ObjectPath": "\\Events\\MainMenu\\StopAll_01",
+      "GUID": "{C21ED2D7-B739-44E6-A099-0D0A2DA6222C}",
+      "MaxAttenuation": "0",
+      "DurationType": "OneShot",
+      "DurationMin": "0",
+      "DurationMax": "0"
+     }
+    ]
+   }
+  ],
+  "FileHash": "{F5555AD3-8688-BA22-DD46-A1A5EDDB76D9}"
+ }
+}

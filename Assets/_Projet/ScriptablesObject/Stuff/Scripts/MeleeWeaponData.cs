@@ -1,0 +1,34 @@
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+[CreateAssetMenu(fileName = "Stuff Data", menuName = "Stuff Data/Melee Weapon Data")]
+public class MeleeWeaponData : ScriptableObject
+{
+    [Header("Stuff infos")]
+    public GameObject dropedEntityPrefab;
+    public GameObject viewPrefab;
+    public GameObject viewPrefab_Baked;
+    public Texture2D UIImage;
+    public StuffSlot location;
+    public StuffType type;
+    public TeamSideType side;
+    public string entityName;
+    public float deploymentSpeed;
+    public float storageSpeed;
+    public int price;
+    public Vector3 _stuffLocalOffsetView; //temp
+    public Vector3 _stuffLocalOffsetView_Baked;
+    public uint killGain;
+
+    [Header("Attack")]
+    public float damage;
+    public float strongBlowDmg;
+    public float backStabDmg;
+    public float range;
+    public float strikeRate;
+    public float strongStrikeRate;
+
+    [Header("Sounds")]
+    public List<SoundMapping> soundList = new List<SoundMapping>();
+}
