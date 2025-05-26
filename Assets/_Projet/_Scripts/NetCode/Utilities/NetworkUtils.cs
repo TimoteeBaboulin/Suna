@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -57,11 +58,43 @@ namespace GameNetwork.Utils
 
         public static ushort GetAvailablePort()
         {
-            TcpListener listener = new TcpListener(IPAddress.Any, 0);
-            listener.Start();
-            ushort port = (ushort)((IPEndPoint)listener.LocalEndpoint).Port;
-            listener.Stop();
-            return port;
+            while (true)
+            {
+                TcpListener tcpListener = new TcpListener(IPAddress.Any, 0);
+                tcpListener.Start();
+                int port = ((IPEndPoint)tcpListener.LocalEndpoint).Port;
+
+                try
+                {
+                    using (UdpClient udpClient = new UdpClient(port))
+                    {
+                        tcpListener.Stop();
+
+                        string ruleName = $"Allow_Port_{port}";
+                        string command = $"netsh advfirewall firewall add rule name=\"{ruleName}\" dir=in action=allow protocol=TCP localport={port}";
+                        try
+                        {
+                            Process.Start(new ProcessStartInfo("cmd.exe", "/c " + command)
+                            {
+                                Verb = "runas", 
+                                CreateNoWindow = true,
+                                UseShellExecute = false
+                            });
+                            Console.WriteLine($"Firewall exception added for port {port}.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error adding firewall exception: {ex.Message}");
+                        }
+
+                        return (ushort)port;
+                    }
+                }
+                catch (SocketException)
+                {
+                    tcpListener.Stop();
+                }
+            }
         }
         public async Task<ClientTransportHelper> CreateOrJoinSessionAsync(string sessionId, CancellationToken cancellationToken)
         {
@@ -87,7 +120,7 @@ namespace GameNetwork.Utils
             {
                 //await StartServicesAsync();
 #if UNITY_SERVER
-                Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {CurrentIP}, Port: {CurrentPort}");
+                UnityEngine.Debug.Log($"[SessionTransportHelper] Starting CreateServerSessionAsync with IP: {CurrentIP}, Port: {CurrentPort}");
 #endif
 
                 instance = new ClientTransportHelper();
@@ -99,7 +132,7 @@ namespace GameNetwork.Utils
                 options.WithNetworkHandler(networkHandler);
 #if UNITY_SERVER
 
-                Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
+                UnityEngine.Debug.Log("[SessionTransportHelper] NetworkHandler attached to session options.");
 #endif
 
                 IHostSession hostSession = await MultiplayerService.Instance.CreateSessionAsync(options);
@@ -107,11 +140,11 @@ namespace GameNetwork.Utils
                 {
 #if UNITY_SERVER
 
-                    Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
+                    UnityEngine.Debug.LogError("[SessionTransportHelper] CreateSessionAsync returned null host session!");
 #endif
 
                     var portProperty = new SessionProperty(AutoConnectPort.ToString(), VisibilityPropertyOptions.Public);
-                    Debug.Log($"[CreateSession] Port confirmation {AutoConnectPort}");
+                    UnityEngine.Debug.Log($"[CreateSession] Port confirmation {AutoConnectPort}");
                     hostSession.SetProperty("port", portProperty);
                     return instance;
                 }
@@ -119,8 +152,8 @@ namespace GameNetwork.Utils
                 instance.Session = hostSession;
 #if UNITY_SERVER
 
-                Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
-                Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
+                UnityEngine.Debug.Log($"[SessionTransportHelper] Server created session with official ID: {hostSession.Id}");
+                UnityEngine.Debug.Log($"[SessionTransportHelper] MaxPlayer Host: {hostSession.MaxPlayers}, Max Player session Options {sessionOptions.MaxPlayers}");
 #endif
 
                 instance.ConnectEndpoint = await networkHandler.ConnectEndpoint;
@@ -128,7 +161,7 @@ namespace GameNetwork.Utils
                 instance.SessionConnectionType = await networkHandler.SessionConnectionType;
 #if UNITY_SERVER
 
-                Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
+                UnityEngine.Debug.Log($"[SessionTransportHelper] Endpoints retrieved: " +
                     $"ConnectEndpoint={instance.ConnectEndpoint}, " +
                     $"ListenEndpoint={instance.ListenEndpoint}, " +
                     $"SessionConnectionType={instance.SessionConnectionType}");
@@ -190,7 +223,7 @@ namespace GameNetwork.Utils
             instance.ListenEndpoint = await networkHandler.ListenEndpoint;
             instance.SessionConnectionType = await networkHandler.SessionConnectionType;
 
-            Debug.Log($"Client joined session with code: {instance.Session.Id}");
+            UnityEngine.Debug.Log($"Client joined session with code: {instance.Session.Id}");
             return instance;
         }
 
@@ -207,7 +240,7 @@ namespace GameNetwork.Utils
             gameConnection.ListenEndpoint = await networkHandler.ListenEndpoint;
             gameConnection.SessionConnectionType = await networkHandler.SessionConnectionType;
 
-            Debug.Log($"Client reconnected to session with id: {gameConnection.Session.Id}");
+            UnityEngine.Debug.Log($"Client reconnected to session with id: {gameConnection.Session.Id}");
             return gameConnection;
         }
 
@@ -241,23 +274,23 @@ namespace GameNetwork.Utils
         {
             try
             {
-                Debug.Log("[SessionTransportHelper] Starting matchmaking...");
+                UnityEngine.Debug.Log("[SessionTransportHelper] Starting matchmaking...");
 
                 Session = await MultiplayerService.Instance.MatchmakeSessionAsync(matchOptions, sessionOptions, token);
                 if (Session == null)
                 {
-                    Debug.LogError("[SessionTransportHelper] Matchmaking returned a null session.");
+                    UnityEngine.Debug.LogError("[SessionTransportHelper] Matchmaking returned a null session.");
                     return null;
                 }
 
                 SessionID = Session.Id;
-                Debug.Log($"[SessionTransportHelper] Matchmade session. Session ID: {Session.Id}, Code: {Session.Code}");
+                UnityEngine.Debug.Log($"[SessionTransportHelper] Matchmade session. Session ID: {Session.Id}, Code: {Session.Code}");
 
                 return this;
             }
             catch (SessionException ex)
             {
-                Debug.LogError($"[SessionTransportHelper] Error during matchmaking: {ex.Message}");
+                UnityEngine.Debug.LogError($"[SessionTransportHelper] Error during matchmaking: {ex.Message}");
                 return null;
             }
         }
@@ -267,24 +300,24 @@ namespace GameNetwork.Utils
         {
             try
             {
-                Debug.Log("[SessionTransportHelper] Starting quick join matchmaking...");
+                UnityEngine.Debug.Log("[SessionTransportHelper] Starting quick join matchmaking...");
                 Session = await MultiplayerService.Instance.MatchmakeSessionAsync(quickJoinOptions, sessionOptions);
 
                 if (Session == null)
                 {
-                    Debug.LogError("[SessionTransportHelper] Quick join returned a null session.");
+                    UnityEngine.Debug.LogError("[SessionTransportHelper] Quick join returned a null session.");
                     return null;
                 }
 
                 SessionID = Session.Id;
-                Debug.Log($"[SessionTransportHelper] Quick-joined session. Session ID: {Session.Id}, Code: {Session.Code}");
+                UnityEngine.Debug.Log($"[SessionTransportHelper] Quick-joined session. Session ID: {Session.Id}, Code: {Session.Code}");
 
 
                 return this;
             }
             catch (SessionException ex)
             {
-                Debug.LogError($"[SessionTransportHelper] Error during quick join: {ex.Message}");
+                UnityEngine.Debug.LogError($"[SessionTransportHelper] Error during quick join: {ex.Message}");
                 return null;
             }
         }
@@ -313,12 +346,12 @@ namespace GameNetwork.Utils
         public SessionOptions CreateSessionOptions()
         {
             int maxPlayers = RequestedPlayType == PlayType.Server ? MaxNbOfPlayers + 1 : MaxNbOfPlayers;
-            Debug.Log($"maxPlayerServer {maxPlayers}");
+            UnityEngine.Debug.Log($"maxPlayerServer {maxPlayers}");
             var options = new SessionOptions
             {
                 MaxPlayers = maxPlayers                               
             };
-            Debug.Log($"[CreateSession] Port confirmation currentPort {CurrentPort} vs {AutoConnectPort}");
+            UnityEngine.Debug.Log($"[CreateSession] Port confirmation currentPort {CurrentPort} vs {AutoConnectPort}");
             return options.WithDirectNetwork(CurrentIP, CurrentIP, CurrentPort);
         }
 
