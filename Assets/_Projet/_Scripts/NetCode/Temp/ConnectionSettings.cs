@@ -37,7 +37,7 @@ public class ConnectionSettings : MonoBehaviour
     public bool isClientLocal = false;
     public bool isRelease = false;
     [Tooltip("IP to reach/to connect on")]
-    public string IP = "51.210.222.138"; 
+    public string IP = ClientTransportHelper.GetLocalIPAddress(); 
     public PortToUse Port = PortToUse.Production;
     public SceneIDToLoad sceneToLoad = SceneIDToLoad.MultiplayerTest;
 }

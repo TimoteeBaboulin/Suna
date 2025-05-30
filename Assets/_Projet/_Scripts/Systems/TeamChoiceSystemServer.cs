@@ -9,7 +9,7 @@ using UnityEngine.Rendering;
 public struct ChooseTeamRpc : IRpcCommand
 {
     public TeamSideType team;
-    public Entity clientEntity;
+    public int networkID;
 }
 
 [WorldSystemFilter(WorldSystemFilterFlags.ServerSimulation)]
@@ -27,10 +27,30 @@ public partial struct TeamChoiceSystemServer : ISystem
 
             ecb.DestroyEntity(rpcEntity);
 
-            ClientComponent client = SystemAPI.GetComponent<ClientComponent>(rpc.clientEntity);
-            int networkId = client.networkID;
-           
-            TeamSideType team = PlayerHelpers.AssignTeamToPlayer(PlayerHelpers.FindCurrentPlayerForNetworkId(networkId), rpc.team);
+            Entity correctEntity = Entity.Null;
+            EntityQuery query = new EntityQueryBuilder(allocator: Allocator.Temp).WithAll<ClientComponent, GhostOwner>().Build(ref state);
+            var clients = query.ToEntityArray(Allocator.Temp);
+            var clientComponents = query.ToComponentDataArray<ClientComponent>(Allocator.Temp);
+
+            for (int i = 0; i < clients.Length; i++)
+            {
+                var ghostOwner = SystemAPI.GetComponent<GhostOwner>(clients[i]);
+                if (ghostOwner.NetworkId == rpc.networkID)
+                {
+                    correctEntity = clients[i];
+                    break;
+                }
+            }
+
+            if (correctEntity == Entity.Null)
+            {
+                Debug.LogWarning("No entity found matching the networkID.");
+                continue;
+            }
+
+            ClientComponent client = SystemAPI.GetComponent<ClientComponent>(correctEntity);
+
+            TeamSideType team = PlayerHelpers.AssignTeamToPlayer(PlayerHelpers.FindCurrentPlayerForNetworkId(client.networkID), rpc.team);
             if (team == TeamSideType.Neutre)
             {
                 Debug.Log("Couldn't change teams");
@@ -44,13 +64,13 @@ public partial struct TeamChoiceSystemServer : ISystem
 
             client.team = team;
 
-            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(rpc.clientEntity).Value;
+            Entity characterEntity = SystemAPI.GetComponent<ClientCharacterAttached>(correctEntity).Value;
             if (state.EntityManager.Exists(characterEntity))
             {
                 ecb.DestroyEntity(characterEntity);
-                ecb.AddComponent<WaitForRespawnTag>(rpc.clientEntity);
+                ecb.AddComponent<WaitForRespawnTag>(correctEntity);
             }
-            SystemAPI.SetComponent(rpc.clientEntity, client);
+            SystemAPI.SetComponent(correctEntity, client);
 
             var hostSession = ClientTransportHelper.instance.Session.AsHost();
             hostSession.SavePlayerDataAsync(client.playerID.ToString());

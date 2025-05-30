@@ -9,44 +9,51 @@ public partial struct EnemyOutlineSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        EntityQuery query = state.EntityManager.CreateEntityQuery(ComponentType.ReadOnly<ClientComponent>(), ComponentType.ReadOnly<GhostOwnerIsLocal>());
+        EntityQuery query = state.EntityManager.CreateEntityQuery(
+         ComponentType.ReadOnly<ClientComponent>(),
+         ComponentType.ReadOnly<GhostOwnerIsLocal>()
+     );
+
         NativeArray<Entity> entities = query.ToEntityArray(Allocator.TempJob);
 
-        if (entities.Length == 0) return;
+        if (entities.Length == 0)
+        {
+            entities.Dispose();
+            query.Dispose();
+            return;
+        }
 
         int OwnerLocalnetworkId = state.EntityManager.GetComponentData<GhostOwner>(entities[0]).NetworkId;
         TeamSideType clientLocalTeamSide = PlayerHelpers.GetPlayerInTeam(OwnerLocalnetworkId);
 
         Entity localEntity = entities[0];
 
-        foreach (var (outline, tpsModel, ghostOwner, entity) in SystemAPI.Query<RefRW<EnemyOutlineMaterialOverride>, ThirdPersonCharacterModelReference, RefRO<GhostOwner>>().WithEntityAccess())
+        foreach (var (outline, tpsModel, ghostOwner, entity) in SystemAPI.Query<
+            RefRW<EnemyOutlineMaterialOverride>,
+            ThirdPersonCharacterModelReference,
+            RefRO<GhostOwner>>().WithEntityAccess())
         {
             if (entity == localEntity) continue;
 
-            TeamSideType teamSide;
-            if (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
-            {
-                teamSide = PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId);
-            }
-            else
-            {
-                teamSide = PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
-            }
+            TeamSideType teamSide = (ClientServerBootstrap.RequestedPlayType == ClientServerBootstrap.PlayType.Server)
+                ? PlayerHelpers.GetPlayerInTeamOnServer(ghostOwner.ValueRO.NetworkId)
+                : PlayerHelpers.GetPlayerInTeam(ghostOwner.ValueRO.NetworkId);
 
             if (teamSide == TeamSideType.Neutre) continue;
 
-            if (clientLocalTeamSide == teamSide)
-            {
-                tpsModel.ModelGameObject.layer = 13; // Visibility through walls is managed just by using that layer
-                tpsModel.ModelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().materials[1].SetColor("_OutlineColor", Color.cyan);
-            }
-            else
-            {
-                tpsModel.ModelGameObject.layer = 14; // Enemy outline layer
-                tpsModel.ModelGameObject.GetComponentInChildren<SkinnedMeshRenderer>().materials[1].SetColor("_OutlineColor", Color.magenta);
-            }
+            int layer = (clientLocalTeamSide == teamSide) ? 13 : 14;
+            Color outlineColor = (clientLocalTeamSide == teamSide) ? Color.cyan : Color.magenta;
 
-            query.Dispose();
+            tpsModel.ModelGameObject.layer = layer;
+            var renderer = tpsModel.ModelGameObject.GetComponentInChildren<SkinnedMeshRenderer>();
+
+            if (renderer.materials.Length > 1)
+            {
+                renderer.materials[1].SetColor("_OutlineColor", outlineColor);
+            }
         }
+
+        entities.Dispose();
+        query.Dispose();
     }
 }

@@ -66,16 +66,25 @@ public partial struct TeamChoiceSystemClient : ISystem
                 continue;
             }
 
+            if (!SystemAPI.HasComponent<GhostOwner>(correctEntity))
+            {
+                Debug.LogWarning("No GhostOwner component found on the correct entity.");
+                continue;
+            }
+
+            var ghostOwner = SystemAPI.GetComponent<GhostOwner>(correctEntity);
+            var networkID = ghostOwner.NetworkId;  
 
             ChooseTeamRpc rpc = new ChooseTeamRpc
             {
-                clientEntity = correctEntity,
+                networkID = networkID,  
                 team = choiceTeam.ValueRO.team
             };
 
             RpcUtils.SendClientToServerRpc(ref rpc);
             ecb.RemoveComponent<TeamChoiceComponent>(clientEntity);
         }
+
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }

@@ -1,5 +1,7 @@
 ﻿using GameNetwork.Utils;
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Entities;
@@ -106,6 +108,92 @@ public partial class ServerSystem : SystemBase
     private async Task InitializeAsync()
     {
         Debug.Log("ServerSystem InitializeAsync started");
+        string configFilePath = "config.txt";
+
+        if (!File.Exists(configFilePath))
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Enter the number of players you want to support (Max: 10): ");
+            Console.ResetColor();
+
+            string input = Console.ReadLine();
+
+            while (true)
+            {
+                if (!string.IsNullOrWhiteSpace(input) && input.All(char.IsDigit))
+                {
+                    int numberOfPlayers = int.Parse(input);
+
+                    if (numberOfPlayers > 0 && numberOfPlayers <= 10)
+                    {
+                        ClientTransportHelper.MaxNbOfPlayers = numberOfPlayers;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Max number of players set to: {ClientTransportHelper.MaxNbOfPlayers}");
+                        Console.ResetColor();
+
+                        File.WriteAllText(configFilePath, $"MaxPlayers: {numberOfPlayers}");
+                        break; 
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid input. The number of players must be between 1 and 10.");
+                        Console.ResetColor();
+                        input = Console.ReadLine(); 
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid input. Please enter only numbers (no spaces or special characters).");
+                    Console.ResetColor();
+                    input = Console.ReadLine();
+                }
+            }
+        }
+        else
+        {
+            string savedConfig = File.ReadAllText(configFilePath);
+
+            string[] configParts = savedConfig.Split(':');
+            if (configParts.Length == 2 && configParts[0].Trim() == "MaxPlayers")
+            {
+                string savedMaxPlayers = configParts[1].Trim();
+
+                if (int.TryParse(savedMaxPlayers, out int numberOfPlayers))
+                {
+                    if (numberOfPlayers > 0 && numberOfPlayers <= 10)
+                    {
+                        ClientTransportHelper.MaxNbOfPlayers = numberOfPlayers;
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine($"Max number of players set to: {ClientTransportHelper.MaxNbOfPlayers} (from saved config)");
+                        Console.ResetColor();
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Invalid value in config file. The number of players must be between 1 and 10.");
+                        Console.ResetColor();
+                        return; // Exit as the config file has invalid data
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Invalid data in config file. Defaulting to 2.");
+                    Console.ResetColor();
+                    ClientTransportHelper.MaxNbOfPlayers = 2;
+                }
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Invalid configuration format in the file. Defaulting to 2.");
+                Console.ResetColor();
+                ClientTransportHelper.MaxNbOfPlayers = 2;
+            }
+        }
+
         try
         {
             await ClientTransportHelper.StartServicesAsync();
@@ -118,7 +206,6 @@ public partial class ServerSystem : SystemBase
             Debug.LogError($"ServerSystem failed to initialize async logic: {ex}");
         }
     }
-
     #region Public Methods
 
     public void InstantiateClient(Entity ownerEntity, EntityCommandBuffer ecb)
